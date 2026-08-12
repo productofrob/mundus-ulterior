@@ -13,7 +13,7 @@
   ],
   "milestone_target": "~25-30 documents, 3-5 per region, spanning all 7 regions",
   "milestone_status": "24 documents captured across 7 regions",
-  "schema_note": "Each document JSON carries: id, region, title, source_type, language_code, language_note, date, findspot (where applicable), original_text_excerpt, original_text_note, reference_translation, translation_source, citation, citation_original (where available), notes.",
+  "schema_note": "Each document JSON carries: id, region, title, source_type, language_code, language_note, date, findspot (where applicable), original_text_excerpt, original_text_note, reference_translation, translation_source, citation, citation_original (where available), notes. Phase 2 W1 adds two optional place blocks, findspot_places and subject_places — shape, vocabulary and conditional requirements are specified in PLACES.md and enforced by ingest/places.py; coordinates are never written into a record, only pleiades_id, which ingest/gazetteer.py resolves against a dated cached snapshot.",
   "follow_up_before_ingestion": [
     "Several records (Palmyrene Tariff, Weilue, Hou Hanshu, Akananuru 149, Ezana Stone) have original_text_excerpt fields that are paraphrased or partial — pull verbatim transliterations from the cited critical editions before chunking/embedding in Part 3.",
     "Confirm long-term link stability for non-museum citations (Wikipedia, academic PDFs) and consider archiving snapshots (e.g. via the Wayback Machine) for provenance permanence.",

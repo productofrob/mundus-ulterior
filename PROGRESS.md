@@ -3569,3 +3569,205 @@ Block F, where the HTR spike targets this very record. When a transcription
 lands, the field must become either a real translation or an honest `null`.
 Logged rather than fixed, because fixing it now would change a seed record for no
 behavioural gain and invalidate spans for nothing.
+
+---
+
+# Phase 2 — Block A1: place-field shape and the gazetteer client (2026-08-12)
+
+Zero API calls, zero corpus records edited. A1 is the session that decides what
+24 records will be edited *against*, so the deliverable is a shape, a client and
+fourteen mutation-verified guards — not a placement.
+
+## The finding: Pleiades per-id JSON is behind an anti-bot wall
+
+`PHASE2_PLAN.md` A1 specifies fetching `pleiades.stoa.org/places/<id>/json`
+once per id and caching it. Checked before writing the client:
+
+| request | result |
+| --- | --- |
+| `https://pleiades.stoa.org/places/39274195/json` | **empty body** |
+| `https://pleiades.stoa.org/places/39274195` | **Anubis** challenge page — "Making sure you're not a bot", JavaScript proof-of-work |
+
+A `urllib` call from the host meets the same wall, and meets it as an *empty
+200* — which a naive client reports as "this id did not resolve". That is
+**the third appearance of *a check that matches too broadly names the wrong
+cause***: after Part 4's Voyage rate limit reported as a dead gateway, and Block
+0's suite failure reported as a corrupted working tree. Caught this time before
+it was written rather than after it cost an afternoon, which is the only
+difference worth noting.
+
+**Route taken (your decision):** the dated bulk dump. Pleiades publishes
+complete places tables at `atlantides.org/downloads/pleiades/dumps/`,
+regenerated each morning and named by date; `pleiades-places-20260812.csv.gz` is
+6.5 MB. One network act, no per-id calls, and — the reason it is *better* than
+the plan's design rather than merely a workaround — **every cached entry carries
+the dump date it came from**. A coordinate can be told from a coordinate that
+was correct under an earlier snapshot, which is the standing lesson this
+repository has recorded five times.
+
+The per-id route is not deleted. It is `--probe`, which **reports what it found
+and never caches**: it distinguishes an HTTP error, a transport failure, an
+empty body and a challenge page, and says so in four different sentences. The
+day Anubis is reconfigured, this is one flag away.
+
+## What was decided, and what was deliberately not
+
+Four decisions, taken before any record was edited:
+
+1. **Bulk dump, dated.** Above.
+2. **No defaults; conditional requirements.** `ground_citation` is *required*
+   when `ground` is `identified`, because that ground **is** the claim that a
+   scholar made an identification. Nothing is inherited from a default — the
+   `expect_untranslatable` rule, applied to geography.
+3. **`regional` may or may not carry a Pleiades id, decided per record.** With
+   an id it renders as an extent, never a pin. Without one it renders as
+   nothing, and **must carry a note** saying what is known and why no place
+   resolved — otherwise "24/24 carry at least `regional`" is satisfied by a
+   field asserting nothing.
+4. **The licence is recorded verbatim or not at all.** See the open item below.
+
+**Two departures from the plan's draft shape**, both for the same reason:
+`"note": ""` and `"contested": false` are now **load-time errors**. An empty
+string is a third state reading "a value exists, and it is nothing" — this
+repository already carries one, `arabia-02-palmyrene-tariff`'s
+`reference_translation`, logged in Block 0 and due to be paid for at Block F.
+`contested` may appear only as `true`; absent means not contested. One way to
+say each thing.
+
+**Not decided, and named so it is not decided by accident:** `subject_places`
+carries no `role` or direction key. A5 renders trade texts as *edges* between
+subject places, and an edge needs to know origin from destination. Adding a key
+now that A5 might define differently is worse than re-editing the **7 literary
+records** that will carry edges. Flagged for A5, not deferred silently.
+
+## What was built
+
+| file | role |
+| --- | --- |
+| `data/seed_corpus/PLACES.md` | the spec 24 records are edited against, with worked examples |
+| `ingest/places.py` | strict loader for `findspot_places` / `subject_places`. Unknown keys, empty strings and empty blocks are load-time errors |
+| `ingest/gazetteer.py` | the **only** thing in the repository that turns an id into a point. Offline by default; `--inspect`, `--refresh`, `--check`, `--stats`, `--record-licence`, `--probe` |
+| `data/gazetteer.json` | the cache, empty, with an `UNCONFIRMED` licence that fails the check |
+| `ingest/test_places.py` | 46 offline assertions, no network, no DB |
+| `scripts/mutate_places.py` | **14 mutations, all verified** |
+| `ingest/verify.py` | placement audit wired in — malformed is a failure, incomplete coverage is a progress note |
+
+Read `places.py` and `gazetteer.py` together and there is no path from a seed
+record to a map pin that does not pass through a cached lookup with a dated
+source.
+
+## The column-discovery decision, which is not fussiness
+
+The dumps `README.txt` (last modified **2022-11-07**) documents the places table
+as `id, title, description, path, timePeriods, featureTypes` and **mentions no
+coordinate columns at all**, while the file itself is regenerated daily. A
+parser written from that README is a parser written against documentation
+rather than against data — and the dump could not be downloaded into the
+development sandbox to check.
+
+So `map_columns()` **discovers** columns from the header row against candidate
+lists, and a logical field that matches nothing raises with **the header it
+actually observed** printed in the message. `--inspect` prints the header, the
+resolved column map and the first row while writing nothing, so the shape can be
+confirmed on the host before a single entry is cached. The observed header is
+then stored in `data/gazetteer.json` alongside the data it produced.
+
+## Coverage now, against G1
+
+```
+documents: 24   chunks: 56   parallel pairs: 15
+note: W1 placements: 0/24 records placed, 0/17 with a named place,
+      0 distinct Pleiades ids, 0 contested (G1 criteria 1 and 3)
+```
+
+Zero is the correct number today. `verify` reports it as a **note**, not a
+failure: Block A spends three sessions getting from 0 to 24, and a suite that
+fails throughout is a suite that gets ignored throughout. A *malformed*
+placement is a failure from the first record edited.
+
+## The fourteen guards, and why each exists
+
+Every one is broken in turn by `scripts/mutate_places.py` and confirmed to make
+its own assertion fail — not merely to make something fail. The first four are
+Gate G1 criterion 2 in code:
+
+1. a specific place no longer needs a `pleiades_id` — **the authored-coordinate hole**
+2. `identified` no longer needs the citation that makes the identification
+3. an uncached id resolves to `None` instead of raising
+4. a hand-written `lat`/`lon` in a seed record is accepted
+
+…then: unknown keys ignored; empty strings accepted; a `uri` allowed to disagree
+with the id beside it; a contested identification with one side; `contested:
+false` re-creating the third state; a `regional` placement not having to say why
+it is sparse; a dump header with no geometry accepted; an undated `latest` dump
+stamped with today; the licence gate removed; a cached entry with neither point
+nor extent passing.
+
+**On guard 4 and a rule that nearly matched too broadly.** The forbidden-key
+list is *exact key names*, not a substring rule. A substring rule for `lat`
+fires on `translation_source`. Written as a substring rule first, caught by
+asking what else contains those three letters — and there is an assertion
+holding the answer in place, because the next person will reach for the
+substring rule too.
+
+**On the test output.** `cmd_check` prints its own `FAILED` block, and three of
+the assertions are that it does. Un-suppressed, a *passing* run of
+`test_places` scrolled four genuine-looking `FAILED` lines past the reader.
+Redirected. A message pointing at something healthy is the defect family this
+repository has paid for twice; there was no reason to manufacture a third
+instance inside a test suite.
+
+## Also found
+
+- **`ingest/test_embed.py` still has four function-scope imports.** Block 0
+  moved *one* to module scope and the file was called fixed. The remaining four
+  gate the "SQL and schema agree" section behind `from . import db`, and in an
+  environment without `psycopg` the suite still **truncates rather than
+  reports** — exactly the two-day defect, one layer down. It passes on the host
+  because the host has `psycopg`. **The class is unfixed; W2/Block C owns it.**
+- `ingest/gazetteer.py` had one function-scope import (`urllib`) written out of
+  habit. Moved to module scope on the same argument, before anyone had to find
+  it.
+
+## Open — yours, both small, both blocking
+
+1. **The Pleiades licence text.** It is *not* in the dumps `README.txt` and the
+   credits page is behind the same Anubis wall, so it could not be read here.
+   `--check` **fails** while the cache holds `UNCONFIRMED` — the same discipline
+   as `calibrated: false`, so a guess can never be mistaken for a record. Read
+   it in a browser, save it to a file, and run:
+
+   ```powershell
+   python -m ingest.gazetteer --record-licence licence.txt `
+       --licence-source-url https://pleiades.stoa.org/credits
+   ```
+
+2. **Download one dated dump** (not `...-latest...`, which `--refresh` refuses
+   for want of a snapshot date), then confirm its shape before caching:
+
+   ```powershell
+   python -m ingest.gazetteer --inspect --dump pleiades-places-20260812.csv.gz
+   python -m ingest.gazetteer --refresh --dump pleiades-places-20260812.csv.gz
+   python -m ingest.gazetteer --check
+   ```
+
+   `--refresh` before any record carries an id is a no-op, so the natural order
+   is A2's first record, then refresh, then check.
+
+## A1 exit
+
+Field shape approved and written down. `ingest/places.py` and
+`ingest/gazetteer.py` built, 46 assertions and **14/14 mutations verified**,
+`ingest/verify` wired and passing at 24 documents / 56 chunks. No record edited,
+no coordinate anywhere in the corpus, no API call spent. **A2 is clear to begin
+placing the 17 findspot records** once the licence is recorded and one dated
+dump is on disk.
+
+## Standing lesson added
+
+- **When the plan names an endpoint, check it answers before designing around
+  it.** One request would have been the cheapest possible check at any point in
+  Phase 1, and the same one-request check is what refuted two confident
+  hypotheses at the exit gate. *Prefer a cheap check to a confident hypothesis*
+  now has a fourth instance, and it is the first where the hypothesis was in a
+  written plan rather than in someone's head.

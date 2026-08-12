@@ -16,6 +16,14 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from .loader import SEED_CORPUS_DIR, load_corpus
+from .places import PlaceError, assert_no_authored_coordinates, parse_record_places
+
+# Gate G1, criterion 1: 24/24 records carry at least a `regional` placement, and
+# at least 17 carry a named place with a resolving pleiades_id. Held here as
+# numbers rather than prose so the progress line below cannot drift from the
+# gate it reports against.
+G1_PLACED_TARGET = 24
+G1_NAMED_TARGET = 17
 
 EXPECTED_REGIONS = {
     "Arabia", "East Asia", "Persia", "Scandinavia",
@@ -191,6 +199,48 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             "modern historian's judgement nearly reached a reader as Palmyrene "
             "testimony."
         )
+
+    # 11. Placements (Phase 2 W1). Two different things are checked here and
+    #     they are deliberately not the same severity.
+    #
+    #     A malformed placement is a FAILURE, from the first record edited: it
+    #     would put an unsourced point on a map, which is the one thing G1
+    #     asserts cannot happen.
+    #
+    #     Incomplete *coverage* is a NOTE, because Block A spends three sessions
+    #     getting from 0 to 24 and a suite that fails throughout is a suite that
+    #     gets ignored throughout. The progress line names the gate it is
+    #     heading for so it cannot be mistaken for a pass.
+    placed = 0
+    named = 0
+    contested = 0
+    by_ground: Counter = Counter()
+    place_ids: set[str] = set()
+
+    for doc_id, rec in sorted(raw_fields.items()):
+        try:
+            assert_no_authored_coordinates(rec, doc_id)
+            record_places = parse_record_places(rec, doc_id)
+        except PlaceError as exc:
+            failures.append(str(exc))
+            continue
+        if not record_places:
+            continue
+        placed += 1
+        by_ground.update(p.ground for p in record_places)
+        contested += sum(1 for p in record_places if p.contested)
+        if any(p.locatable for p in record_places):
+            named += 1
+        place_ids.update(p.pleiades_id for p in record_places if p.pleiades_id)
+
+    notes.append(
+        f"W1 placements: {placed}/{G1_PLACED_TARGET} records placed, "
+        f"{named}/{G1_NAMED_TARGET} with a named place, "
+        f"{len(place_ids)} distinct Pleiades ids, {contested} contested "
+        f"(G1 criteria 1 and 3). Grounds: {dict(sorted(by_ground.items()))}. "
+        f"Resolution is not checked here — run `python -m ingest.gazetteer --check`, "
+        f"which is the only thing that turns an id into a coordinate."
+    )
 
     print(f"documents: {len(docs)}   chunks: {len(chunks)}   parallel pairs: {paired}")
     for n in notes:

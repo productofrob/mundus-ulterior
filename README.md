@@ -49,10 +49,13 @@ exist to hold a specific past defect down.
 | `db.py` | Idempotent upsert + prune; clears all four embedding columns together when text changes |
 | `embed.py` | Gateway-routed embeddings: batching, bounded retry, dimension validation, `input_type` document/query |
 | `run_ingest.py` / `run_embed.py` | CLIs — `--dry-run`, `--stats`, `--limit`, `--force` |
-| `verify.py` | Corpus integrity; asserts `source_text[start:end] == chunk.text` |
+| `verify.py` | Corpus integrity; asserts `source_text[start:end] == chunk.text`; audits W1 placements |
+| `places.py` | Strict loader for `findspot_places` / `subject_places`; unknown keys, empty strings and empty blocks are load-time errors. Shape spec: `data/seed_corpus/PLACES.md` |
+| `gazetteer.py` | The only module that turns a `pleiades_id` into a coordinate. Offline by default, reading a **dated** cached snapshot; `--inspect`, `--refresh`, `--check`, `--stats`, `--record-licence`, `--probe` |
 | `test_chunker.py` | Splitting + offset round-trip |
 | `test_sql.py` | SQL ↔ dataclass alignment, CHECK coverage |
-| `test_embed.py` | 26 assertions; guards the missing `::text[]` cast and the doc-id-proxy probe bug |
+| `test_embed.py` | 26 assertions; guards the missing `::text[]` cast and the doc-id-proxy probe bug. **Four function-scope imports remain** — the truncation defect's class is unfixed, W2 owns it |
+| `test_places.py` | 46 assertions; every guard mutation-verified by `scripts/mutate_places.py` |
 
 **Retrieval — `retrieve/`**
 
@@ -105,6 +108,7 @@ exist to hold a specific past defect down.
 | `test_recover_baseline.py` | 45 assertions on that reconstruction |
 | `check_db.py` / `hello.py` | Part 1 milestones — pgvector present, gateway answering |
 | `mutate_part7b.py` / `mutate_part8.py` / `mutate_recover.py` | **Mutation testing** — 35 deliberate defects, each verified to break the guard meant to catch it |
+| `mutate_places.py` | **Mutation testing, W1** — 14 deliberate defects; the first four are Gate G1 criterion 2 in code |
 
 ### Two names that are traps
 
@@ -166,7 +170,9 @@ Code complete and verified offline; the Postgres load is run on the host.
 ```powershell
 python -m ingest.test_chunker    # splitting + exact-offset round-trip tests
 python -m ingest.test_sql        # SQL <-> dataclass alignment, CHECK coverage
-python -m ingest.verify          # corpus integrity checks
+python -m ingest.test_places     # place-block + gazetteer assertions (Phase 2 W1)
+python -m ingest.verify          # corpus integrity checks, incl. placement audit
+python -m ingest.gazetteer --check   # every placement resolves to a dated snapshot
 python -m ingest.run_ingest --dry-run
 python -m ingest.run_ingest      # applies scripts/schema-part3.sql, loads Postgres
 python -m ingest.run_ingest --stats
