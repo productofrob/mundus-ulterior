@@ -96,6 +96,11 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           """    if False:""")],
     ),
     (
+        "the licence may be asserted without the publisher declaring it",
+        [("""    elif not (licence.get("declared_by") or {}).get("text"):""",
+          """    elif False:""")],
+    ),
+    (
         "a cached entry with neither point nor extent passes the check",
         [("""        if not entry.has_point and not entry.has_extent:""",
           """        if False:""")],
@@ -115,7 +120,14 @@ EXPECTED = [
     "a hand-written coordinate in a seed record is refused",
     "a header with no geometry fails loudly",
     "an undated 'latest' dump is refused",
-    "a resolving placement STILL fails while the licence is unconfirmed",
+    # NOT the exit-code assertion: two licence rules run in sequence, so
+    # disabling the first lets the second fail the run and the code never moves.
+    # Over-determined exactly as the Aksum and floor cases were in
+    # mutate_part8.py, and as there, the guard that pins it is what the failure
+    # NAMES. Third occurrence of this shape in the repository.
+    "the unconfirmed-licence failure names it as unconfirmed",
+    "the licence terms alone are not enough — the publisher's declaration that "
+    "they apply is a second claim",
     "an entry resolving to neither point nor extent fails",
 ]
 

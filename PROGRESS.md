@@ -3771,3 +3771,184 @@ dump is on disk.
   hypotheses at the exit gate. *Prefer a cheap check to a confident hypothesis*
   now has a fourth instance, and it is the first where the hypothesis was in a
   written plan rather than in someone's head.
+
+## A1 addendum — the licence, and an attribution gap it exposed (2026-08-12)
+
+Recording the licence surfaced two things worth keeping.
+
+**1. `--record-licence` raised a traceback on a missing file.** `FileNotFoundError`
+pointing at `pathlib`, where what the reader needs is *which path was tried and
+what it resolved to* — this command is nearly always run with a relative path
+against a file just saved somewhere else. Now a `GazetteerError` naming both.
+Reading is also `utf-8-sig` rather than `utf-8`: the text is pasted from a
+browser and saved on Windows, where a BOM is the default, and recorded verbatim
+a leading U+FEFF would sit invisibly at the front of the licence forever.
+
+**2. The licence text is the Creative Commons deed, not a Pleiades page.**
+`source_url` is therefore recorded as
+`https://creativecommons.org/licenses/by/3.0/us/`, which is where the text
+actually is. Writing `pleiades.stoa.org/credits` would have claimed the text was
+read off the Pleiades page; it was not. Same rule as not writing a place id from
+memory, applied to the one field whose whole purpose is to say where something
+came from.
+
+**Still unrecorded, and named so it is not forgotten:** *that Pleiades declares
+this licence* is a separate claim from *what the licence says*, and only the
+second is in the cache. The credits page is behind the same Anubis wall.
+
+**The gap that mattered more.** CC BY 3.0 requires "appropriate credit", and
+Pleiades credits **the authors and contributors of each place**, not the project
+as a whole. The dump carries `authors` and `creators` columns; had `--refresh`
+not captured them, attributing a single point later would have meant
+re-extracting the entire dump. Added to `COLUMN_CANDIDATES` and stored per
+entry, in the same pass as the coordinates, before the pass was ever run.
+
+`cmd_check` reports entries with neither authors nor creators as a **note, not a
+failure**. Whether an unattributed entry is a defect in the dump or a genuinely
+uncredited place is not something this check can distinguish — and a guard that
+cannot tell those apart would name the wrong cause, which is the mistake this
+repository has now recorded three times.
+
+`--check` passes at exit 0. 48 assertions, 14/14 mutations still verified.
+
+## A1 addendum 2 — the declaration recorded, and a guard that could not pin itself
+
+The Pleiades statement was read and is now on the record:
+
+> Copyrights on software and content are held by the participating institutions
+> and by the individual contributors listed below. Using, sharing, and remixing
+> of the content is permitted under terms of the Creative Commons Attribution
+> 3.0 License (cc-by).
+
+Stored as `licence.declared_by`, **separately from `licence.text`**, because they
+are two different claims:
+
+| field | claim | source |
+| --- | --- | --- |
+| `licence.text` | what CC BY 3.0 US says | creativecommons.org |
+| `licence.declared_by` | that Pleiades says it governs their content | pleiades.stoa.org/credits |
+
+Collapsing them would put the publisher's URL on the licensor's words. Both are
+verbatim, both dated, and `--check` now fails on either being absent —
+`--record-declaration` is the new command. Verbatim text kept in the repository
+at `data/pleiades-licence.txt` and `data/pleiades-licence-declaration.txt`, so
+the cache can be rebuilt from tracked sources rather than from a browser tab.
+
+**The statement also settles the attribution question the previous addendum
+opened.** Copyright is held "by the participating institutions and by the
+individual contributors" — per place, not per project. Capturing `authors` and
+`creators` during `--refresh` was the right call, and is now sourced rather
+than inferred.
+
+### A guard that could not pin itself, for the third time
+
+Adding the declaration rule as an `elif` beneath the licence rule **broke an
+existing mutation**: disabling the first rule let the second fail the run, the
+exit code never moved, and the assertion "a resolving placement STILL fails
+while the licence is unconfirmed" went on passing. The mutation harness said so
+immediately — `expected ... to fail, got no failures` — which is the harness
+doing precisely the job it exists for.
+
+This is the **third instance of the same shape** in the repository.
+`mutate_part8.py` records the other two, both in Part 8: the Aksum case fails on
+five assertions so removing one leaves the verdict unchanged, and the quotation
+floor is shadowed by `expect_quoted_docs`. Both times the guard that actually
+pinned the defect was **the check on what the failure NAMES**, not on whether
+the run failed.
+
+Same answer here: `check_with_output` returns the captured text alongside the
+exit code, and the guard is now *"the unconfirmed-licence failure names it as
+unconfirmed"*. Verified to fire.
+
+**The generalisation, now that it has happened three times and is worth
+stating:** *when two rules can fail the same run, an exit-code assertion pins
+neither.* Assert on the message. Defence in depth is good, and it is exactly
+what makes a verdict-level assertion worthless as a guard.
+
+State: 50 assertions, **15/15 mutations verified**, `ingest.verify` and
+`gazetteer --check` both at exit 0. Licence and declaration recorded. The only
+thing standing between here and A2 is one dated dump.
+
+## A1 addendum 3 — fixing the instance instead of the class, within one session
+
+`--record-licence` raised a `FileNotFoundError` traceback on a missing file. It
+was fixed. Two commands later, `--inspect` raised the identical traceback from
+`_open_dump`, because the fix had been written into one function rather than
+applied to the module.
+
+That is **the same mistake in miniature that Part 4 recorded at scale**: a point
+fix where a structural one was needed. There, `chunks_embedding_provenance`
+cleared one column and left three, and the correction was to move the columns
+and the constraint into the `CREATE TABLE` so a fresh database and a migrated
+one have the same shape. Here the correction is a single `require_file(path,
+what, hint)` used by all four paths the module accepts — dump, licence,
+declaration, and the existence check now leading `cmd_refresh`.
+
+Asserted at every call site rather than once, so the next command that takes a
+path is caught by a failing test rather than by the user:
+
+```
+ok  a missing dump raises with its resolved path, not a traceback
+ok  a missing licence file raises with its resolved path, not a traceback
+ok  a missing declaration file raises with its resolved path, not a traceback
+```
+
+Each message now names the path, what it resolved to, that the path is relative
+to the working directory, and — for the dump — where to download one and how
+large it is. The traceback named `gzip.py` line 208.
+
+**Standing lesson, restated because it recurred inside a single session:** *fix
+the class, not the instance.* Two occurrences an hour apart, and the second was
+avoidable by asking, at the moment of the first, which other call sites take a
+path. 53 assertions, 15/15 mutations.
+
+## A1 addendum 4 — a filename asserted from the wrong index, and a message that named the wrong cause twice
+
+The `--inspect` step failed again, and both causes were mine.
+
+**1. The dump filename did not exist.** `pleiades-places-20260812.csv.gz` was
+put in the instructions and in the module's own hint text. The **places CSV
+dumps run only to `20260810`**; `pleiades-places-latest.csv.gz` is dated
+2026-08-10. The `20260812` files are in `downloads/pleiades/json/` — the 129 MB
+JSON dumps — a **different directory on a different regeneration schedule**. The
+date was carried across from the JSON index to the CSV one, and the download
+404'd.
+
+This is *a place id written from memory* in its purest form, committed by the
+same session that built a module whose founding rule is that no such thing may
+happen. The rule was applied to Pleiades ids and not to the filename that
+delivers them. The hint text now says: open the index and take a name that is
+**actually listed there**, and do not construct one from a date.
+
+**2. The error message asserted something false.** It ended, unconditionally,
+*"The path is relative to the directory you ran this from"* — printed against
+`C:\Users\chemi\Downloads\pleiades-places-20260812.csv.gz`, a fully qualified
+path to which that sentence cannot apply, alongside a redundant "resolved to"
+repeating the same string back.
+
+So the helper written **specifically to stop messages naming the wrong cause**
+named the wrong cause on its second outing. Fourth occurrence of that family in
+this repository, and the first inside the fix for the third.
+
+Corrected to branch on the path:
+
+| path | message |
+| --- | --- |
+| relative | where it resolved to, and that it is relative to the working directory |
+| absolute, parent exists | **what that directory does contain** — because then the likeliest cause is the filename, not the location |
+| absolute, parent missing | that the directory does not exist either |
+
+Had the second branch existed an hour ago, the listing of `Downloads` would have
+shown at a glance that nothing matching had ever arrived.
+
+Three assertions added, including one that the string "relative to" **cannot**
+appear in an absolute-path message.
+
+**The lesson, and it is a new one:** *an error message is an assertion, and it
+is subject to the same standard as any other.* This project asserts nothing
+about a translation, a coordinate or a citation without a source, and then
+prints diagnostic sentences that were never checked against the case they
+appear in. Three of the roughly thirty-five Phase 1 defects were messages
+pointing at healthy things; none of them had a test.
+
+56 assertions, 15/15 mutations, `verify` and `--check` at exit 0.

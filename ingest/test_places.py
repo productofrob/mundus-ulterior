@@ -27,11 +27,14 @@ from .gazetteer import (
     GazetteerError,
     LICENCE_UNCONFIRMED,
     cmd_check,
+    cmd_record_declaration,
+    cmd_record_licence,
     dump_date_from_name,
     empty_cache,
     entries,
     map_columns,
     read_dump,
+    require_file,
     resolve,
     write_cache,
 )
@@ -309,6 +312,41 @@ def test_gazetteer() -> None:
         contains="observed header",
     )
 
+    # A missing file is the likeliest failure in this module — every command
+    # takes a path to something just saved or downloaded elsewhere. It must
+    # never reach the user as a pathlib traceback. Written as one helper and
+    # asserted at every call site, because the first version of this fix was
+    # applied to --record-licence alone and --inspect produced the identical
+    # traceback the same evening.
+    for label, call in (
+        ("dump", lambda: read_dump(Path("no-such-dump-20260812.csv.gz"), set())),
+        ("licence file", lambda: cmd_record_licence(
+            Path("no-such-licence.txt"), "https://example.invalid", Path("g.json"))),
+        ("declaration file", lambda: cmd_record_declaration(
+            Path("no-such-decl.txt"), "https://example.invalid", Path("g.json"))),
+    ):
+        expect_raises(
+            call,
+            f"a missing {label} raises with its resolved path, not a traceback",
+            contains="resolved to",
+        )
+
+    # An absolute path must NOT be told it is relative to the working directory.
+    # The first version of this message said so unconditionally, and said it to
+    # a fully-qualified Windows path — a message naming a cause that cannot
+    # apply, produced by the very helper written to stop that happening.
+    with tempfile.TemporaryDirectory() as tmp:
+        absent = Path(tmp).resolve() / "no-such-dump-20260810.csv.gz"
+        try:
+            require_file(absent, "Pleiades dump", "hint text")
+        except GazetteerError as exc:
+            msg = str(exc)
+            expect("relative to" not in msg,
+                   "an absolute missing path is not told it is relative")
+            expect("holds no" in msg or "holds:" in msg,
+                   "an absolute missing path reports what its directory does hold")
+            expect("hint text" in msg, "the hint survives either branch")
+
     # A snapshot with no date is the defect family this repository has recorded
     # five times: a result comparable only within the thing that produced it.
     expect(dump_date_from_name(Path("pleiades-places-20260812.csv.gz")) == "2026-08-12",
@@ -326,7 +364,8 @@ def test_gazetteer() -> None:
             ",".join(REAL_DUMP_HEADER),
             _row({"id": "39274195", "title": "Adulis", "description": "Red Sea port",
                   "reprLat": "15.2617", "reprLong": "39.6606",
-                  "timePeriods": "RL", "featureTypes": "settlement"}),
+                  "timePeriods": "RL", "featureTypes": "settlement",
+                  "authors": "R. Talbert", "creators": "S. Gillies"}),
             _row({"id": "981523", "title": "Limyrike", "description": "coastal region",
                   "bbox": "75.0 8.0 77.0 12.0"}),
             _row({"id": "000000", "title": "Nowhere"}),
@@ -340,6 +379,12 @@ def test_gazetteer() -> None:
         expect(found["981523"]["bbox"] == [75.0, 8.0, 77.0, 12.0],
                "a bbox-only place keeps its extent")
         expect(header == REAL_DUMP_HEADER, "the observed header is reported back")
+        expect(found["39274195"]["authors"] == "R. Talbert"
+               and found["39274195"]["creators"] == "S. Gillies",
+               "per-place attribution is captured in the same pass as the "
+               "coordinates — CC BY credits places, not projects")
+        expect(found["981523"]["authors"] is None,
+               "a place with no credited authors records none rather than ''")
 
         found_none, _, _ = read_dump(dump, {"000000"})
         expect(found_none["000000"]["repr_point"] is None
@@ -377,8 +422,14 @@ def quiet_check(corpus: Path, gaz: Path) -> int:
     "FAILED" lines past the reader — and a message that points at something
     healthy is a defect this repository has already paid for twice.
     """
-    with contextlib.redirect_stdout(io.StringIO()):
-        return cmd_check(corpus, gaz)
+    return check_with_output(corpus, gaz)[0]
+
+
+def check_with_output(corpus: Path, gaz: Path) -> tuple[int, str]:
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = cmd_check(corpus, gaz)
+    return code, buf.getvalue()
 
 
 def test_check_exits_nonzero() -> None:
@@ -402,20 +453,40 @@ def test_check_exits_nonzero() -> None:
         cache["places"]["39274195"] = {
             "pleiades_id": "39274195", "title": "Adulis", "description": None,
             "repr_point": [39.6606, 15.2617], "bbox": None, "time_periods": "RL",
-            "feature_types": "settlement", "dump_date": "2026-08-12",
+            "feature_types": "settlement", "authors": "R. Talbert", "creators": None,
+            "dump_date": "2026-08-12",
             "retrieved": "2026-08-12",
         }
         cache["source"]["dump_date"] = "2026-08-12"
         write_cache(cache, gaz)
-        expect(quiet_check(tmp / "seed_corpus", gaz) == 1,
+        code, out = check_with_output(tmp / "seed_corpus", gaz)
+        expect(code == 1,
                "a resolving placement STILL fails while the licence is unconfirmed")
+        # The exit code alone cannot pin this. Two licence rules run in
+        # sequence, so disabling the first lets the second fail the run and the
+        # exit code never moves — the over-determination `mutate_part8.py`
+        # records twice, where the guard that did the work was always the check
+        # on what the failure NAMES. Third instance; same answer.
+        expect("unconfirmed" in out.lower(),
+               "the unconfirmed-licence failure names it as unconfirmed")
 
-        cache["licence"] = {"text": "…verbatim publisher text…",
+        cache["licence"] = {"text": "…verbatim licence terms…",
                             "source_url": "https://example.invalid/licence",
                             "recorded": "2026-08-12"}
         write_cache(cache, gaz)
+        expect(quiet_check(tmp / "seed_corpus", gaz) == 1,
+               "the licence terms alone are not enough — the publisher's "
+               "declaration that they apply is a second claim")
+
+        cache["licence"]["declared_by"] = {
+            "publisher": "Pleiades", "text": "…verbatim publisher statement…",
+            "source_url": "https://example.invalid/credits",
+            "recorded": "2026-08-12",
+        }
+        write_cache(cache, gaz)
         expect(quiet_check(tmp / "seed_corpus", gaz) == 0,
-               "with the id cached and the licence recorded, the check passes")
+               "with the id cached, the licence recorded and its declaration "
+               "recorded, the check passes")
 
         cache["places"]["39274195"]["repr_point"] = None
         write_cache(cache, gaz)

@@ -91,6 +91,12 @@ COLUMN_CANDIDATES: dict[str, tuple[str, ...]] = {
     "time_periods": ("timePeriods", "time_periods"),
     "feature_types": ("featureTypes", "feature_types"),
     "path": ("path",),
+    # CC BY requires appropriate credit, and Pleiades credits the individual
+    # authors and contributors of each place rather than the project as a whole.
+    # Captured in the same pass as the coordinates because the alternative is
+    # re-extracting the whole dump later to attribute one point.
+    "authors": ("authors",),
+    "creators": ("creators",),
 }
 
 # Without these the dump is not usable and the run stops before writing anything.
@@ -99,6 +105,49 @@ REQUIRED_LOGICAL = ("id", "title")
 
 class GazetteerError(RuntimeError):
     pass
+
+
+def require_file(path: Path, what: str, hint: str = "") -> Path:
+    """Every path this module is handed goes through here.
+
+    A `FileNotFoundError` traceback names the failing library call and not the
+    thing the reader needs: which path was tried, what it resolved to, and where
+    the file was supposed to come from. Every command here takes a path to
+    something the user has just saved or downloaded somewhere else, so this is
+    the single most likely failure in the module.
+
+    Written once as a helper rather than three times as a check, because the
+    first version of this fix was applied to `--record-licence` alone and
+    `--inspect` produced the identical traceback the same evening. Fixing an
+    instance is not fixing the class — the standing lesson from Part 4's
+    `AmbiguousParameter`, arriving here in its most ordinary form.
+    """
+    if not path.exists():
+        message = f"no {what} at '{path}'."
+        # Both of these are only true of a RELATIVE path. Printed against an
+        # absolute one, "resolved to <the same string>" is noise and "the path
+        # is relative to where you ran this" is false — a message naming a cause
+        # that does not apply, which is the defect family this repository has
+        # recorded three times and which this very message walked into.
+        if not path.is_absolute():
+            message += (
+                f" It resolved to '{path.resolve()}'; the path is relative to "
+                f"the directory you ran this from."
+            )
+        elif path.parent.exists():
+            # The directory is there and the file is not, so the likeliest
+            # cause is the filename, not the location. Say what IS there.
+            siblings = sorted(p.name for p in path.parent.glob(f"*{path.suffix}"))[:8]
+            if siblings:
+                message += f" That directory holds: {siblings}."
+            else:
+                message += f" '{path.parent}' exists but holds no {path.suffix} files."
+        else:
+            message += f" The directory '{path.parent}' does not exist either."
+        if hint:
+            message += f" {hint}"
+        raise GazetteerError(message)
+    return path
 
 
 @dataclass(frozen=True)
@@ -110,6 +159,8 @@ class Entry:
     bbox: list[float] | None            # [min_lon, min_lat, max_lon, max_lat]
     time_periods: str | None
     feature_types: str | None
+    authors: str | None
+    creators: str | None
     dump_date: str
     retrieved: str
 
@@ -174,6 +225,8 @@ def entries(cache: dict[str, Any]) -> dict[str, Entry]:
             bbox=raw.get("bbox"),
             time_periods=raw.get("time_periods"),
             feature_types=raw.get("feature_types"),
+            authors=raw.get("authors"),
+            creators=raw.get("creators"),
             dump_date=raw["dump_date"],
             retrieved=raw["retrieved"],
         )
@@ -268,6 +321,16 @@ def _bbox_from_row(row: dict[str, str], cmap: dict[str, str]) -> list[float] | N
 
 
 def _open_dump(path: Path) -> io.TextIOWrapper:
+    require_file(
+        path,
+        "Pleiades dump",
+        f"Download a DATED places dump from {DUMP_BASE} — open that index and "
+        f"take the most recent 'pleiades-places-<YYYYMMDD>.csv.gz' (~6.5 MB) "
+        f"that is actually listed there. Do not construct the filename from a "
+        f"date: the places CSVs and the JSON dumps are regenerated on different "
+        f"schedules and sit in different directories, so a plausible-looking "
+        f"name can 404.",
+    )
     raw = gzip.open(path, "rb") if path.suffix == ".gz" else path.open("rb")
     return io.TextIOWrapper(raw, encoding="utf-8", newline="")
 
@@ -309,6 +372,10 @@ def read_dump(
                 if "time_periods" in cmap else None,
                 "feature_types": (row.get(cmap["feature_types"]) or "").strip() or None
                 if "feature_types" in cmap else None,
+                "authors": (row.get(cmap["authors"]) or "").strip() or None
+                if "authors" in cmap else None,
+                "creators": (row.get(cmap["creators"]) or "").strip() or None
+                if "creators" in cmap else None,
             }
             if wanted is not None and len(found) == len(wanted):
                 break
@@ -365,6 +432,9 @@ def cmd_inspect(dump: Path) -> int:
 
 
 def cmd_refresh(dump: Path, corpus_dir: Path, path: Path) -> int:
+    # Existence first, so a missing file is reported as a missing file rather
+    # than as whatever the filename check happens to notice about its name.
+    _open_dump(dump).close()
     wanted = wanted_ids(corpus_dir)
     if not wanted:
         print("no pleiades_id appears in the corpus yet — nothing to look up.")
@@ -402,7 +472,13 @@ def cmd_refresh(dump: Path, corpus_dir: Path, path: Path) -> int:
 
 
 def cmd_record_licence(licence_file: Path, source_url: str, path: Path) -> int:
-    text = licence_file.read_text(encoding="utf-8").strip()
+    require_file(licence_file, "licence file",
+                 "Save the licence terms verbatim to that path.")
+    # utf-8-sig, not utf-8: this text is pasted out of a browser and saved on
+    # Windows, where a BOM is the default rather than the exception. It is
+    # stripped if present and changes nothing if absent — but recorded verbatim,
+    # a leading U+FEFF would sit invisibly at the front of the licence forever.
+    text = licence_file.read_text(encoding="utf-8-sig").strip()
     if not text:
         raise GazetteerError(f"{licence_file} is empty")
     cache = load_cache(path)
@@ -413,6 +489,36 @@ def cmd_record_licence(licence_file: Path, source_url: str, path: Path) -> int:
     }
     write_cache(cache, path)
     print(f"licence recorded verbatim from {source_url} ({len(text)} chars)")
+    return 0
+
+
+def cmd_record_declaration(decl_file: Path, source_url: str, path: Path) -> int:
+    """Record the publisher's own statement that this licence applies.
+
+    Two different claims, deliberately stored apart:
+
+      licence.text            — what CC BY 3.0 US says (from creativecommons.org)
+      licence.declared_by     — that Pleiades says it governs their content
+
+    Collapsing them would put the publisher's URL on the licensor's words, which
+    is the one field whose entire purpose is to say where something came from.
+    """
+    require_file(decl_file, "declaration file",
+                 "Save the publisher's statement verbatim to that path.")
+    text = decl_file.read_text(encoding="utf-8-sig").strip()
+    if not text:
+        raise GazetteerError(f"{decl_file} is empty")
+    cache = load_cache(path)
+    if "licence" not in cache or not cache["licence"].get("text"):
+        raise GazetteerError("record the licence itself before its declaration")
+    cache["licence"]["declared_by"] = {
+        "publisher": "Pleiades",
+        "text": text,
+        "source_url": source_url,
+        "recorded": _today(),
+    }
+    write_cache(cache, path)
+    print(f"declaration recorded verbatim from {source_url} ({len(text)} chars)")
     return 0
 
 
@@ -452,6 +558,15 @@ def cmd_check(corpus_dir: Path, path: Path) -> int:
             "recorded verbatim or not at all — the same rule that forbids "
             "writing a place id from memory."
         )
+    elif not (licence.get("declared_by") or {}).get("text"):
+        # Knowing what CC BY says is not knowing that Pleiades chose it. A cache
+        # holding only the first is a cache asserting a licence on the strength
+        # of somebody's recollection that it applies.
+        failures.append(
+            "the licence text is recorded but the publisher's declaration is "
+            "not. Save the statement from https://pleiades.stoa.org/credits and "
+            "run `--record-declaration <file> --declaration-source-url <url>`."
+        )
 
     stale = sorted(
         {
@@ -464,6 +579,20 @@ def cmd_check(corpus_dir: Path, path: Path) -> int:
 
     print(f"placements: {len(places)}   locatable: {len(locatable)}   cached ids: {len(known)}")
     print(f"documents with a placement: {sum(1 for v in by_doc.values() if v)} of {len(by_doc)}")
+
+    # A note rather than a failure. CC BY asks for appropriate credit and
+    # Pleiades credits per place, so an entry with neither authors nor creators
+    # is a point the UI cannot attribute — but whether that is a defect in the
+    # dump or a genuinely uncredited place is not something this check can tell,
+    # and a guard that cannot tell those apart would name the wrong cause.
+    unattributed = sorted(
+        pid for pid, e in known.items() if not e.authors and not e.creators
+    )
+    if unattributed:
+        print(
+            f"note: {len(unattributed)} cached entries carry no authors or "
+            f"creators, so they cannot be attributed per place: {unattributed[:5]}"
+        )
     if stale:
         print(f"note: entries from earlier dump dates are present: {stale}")
 
@@ -537,7 +666,11 @@ def cmd_stats(path: Path, corpus_dir: Path) -> int:
     print(f"  snapshot: {cache['source'].get('dump_date')} (retrieved {cache['source'].get('retrieved')})")
     licence_text = cache.get("licence", {}).get("text", "")
     confirmed = bool(licence_text) and licence_text != LICENCE_UNCONFIRMED
-    print(f"  licence:  {'recorded' if confirmed else 'UNCONFIRMED'}")
+    declared = bool((cache.get("licence", {}).get("declared_by") or {}).get("text"))
+    print(f"  licence:  {'recorded' if confirmed else 'UNCONFIRMED'}"
+          f" ({cache.get('licence', {}).get('source_url')})")
+    print(f"  declared: {'recorded' if declared else 'NOT RECORDED'}"
+          f" ({(cache.get('licence', {}).get('declared_by') or {}).get('source_url')})")
     print(f"  entries:  {len(known)}  (with point: {sum(1 for e in known.values() if e.has_point)},"
           f" with extent: {sum(1 for e in known.values() if e.has_extent)})")
     print(f"corpus:     {len(by_doc)} records, {sum(1 for v in by_doc.values() if v)} placed")
@@ -561,8 +694,12 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--probe", metavar="PLEIADES_ID",
                     help="report what the per-id endpoint returns; never caches")
     ap.add_argument("--record-licence", type=Path, metavar="FILE",
-                    help="file holding the publisher's licence text, verbatim")
+                    help="file holding the licence terms, verbatim")
     ap.add_argument("--licence-source-url", default=None)
+    ap.add_argument("--record-declaration", type=Path, metavar="FILE",
+                    help="file holding the publisher's statement that this "
+                         "licence governs their content, verbatim")
+    ap.add_argument("--declaration-source-url", default=None)
     args = ap.parse_args(argv)
 
     try:
@@ -584,6 +721,12 @@ def main(argv: list[str] | None = None) -> int:
                 ap.error("--record-licence needs --licence-source-url")
             return cmd_record_licence(
                 args.record_licence, args.licence_source_url, args.gazetteer
+            )
+        if args.record_declaration:
+            if not args.declaration_source_url:
+                ap.error("--record-declaration needs --declaration-source-url")
+            return cmd_record_declaration(
+                args.record_declaration, args.declaration_source_url, args.gazetteer
             )
         if args.stats:
             return cmd_stats(args.gazetteer, args.corpus)

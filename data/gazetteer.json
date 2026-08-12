@@ -1,8 +1,14 @@
 {
   "licence": {
-    "recorded": null,
-    "source_url": null,
-    "text": "UNCONFIRMED — record the licence text verbatim from the publisher"
+    "declared_by": {
+      "publisher": "Pleiades",
+      "recorded": "2026-08-12",
+      "source_url": "https://pleiades.stoa.org/credits",
+      "text": "Copyrights on software and content are held by the participating institutions and by the individual contributors listed below. Using, sharing, and remixing of the content is permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).\n\nLinks in the original:\n  \"individual contributors listed below\" -> https://pleiades.stoa.org/credits#credits-list\n  \"Creative Commons Attribution 3.0 License (cc-by)\" -> http://creativecommons.org/licenses/by/3.0/us/"
+    },
+    "recorded": "2026-08-12",
+    "source_url": "https://creativecommons.org/licenses/by/3.0/us/",
+    "text": "CC BY 3.0 US\nAttribution 3.0 United States\n \nCC BY 3.0 US\nDeed\n\nYou are free to:\nShare — copy and redistribute the material in any medium or format for any purpose, even commercially.\nAdapt — remix, transform, and build upon the material for any purpose, even commercially.\nThe licensor cannot revoke these freedoms as long as you follow the license terms.\nUnder the following terms:\nAttribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.\nNo additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.\nNotices:\nYou do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.\n\nNo warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material."
   },
   "places": {},
   "source": {
