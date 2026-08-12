@@ -15,15 +15,58 @@
  * highlighted, and that every citation marker resolves to a source card.
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import vm from "node:vm";
 
 const UI = dirname(fileURLToPath(import.meta.url));
+const ROOT = dirname(UI);
 const fail = [];
 const note = (ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${msg}`);
                             if (!ok) fail.push(msg); };
+
+/* ---- 0. the bundle is not older than the evidence ----
+ *
+ * Added 2026-08-12, Phase 2 Block 0. This file reported "all checks passed"
+ * over 61 runs and 139 spans while the archive held 77 and 168: data.js was
+ * built at 09:02 and the exit-gate session ran at 13:36. Every assertion below
+ * was true of the bundle and none of them was true of the project.
+ *
+ * A checker that validates whatever it is handed will certify a stale artefact
+ * without complaint. README.md already carried the instruction — "run the
+ * builder after any corpus edit" — and an instruction is not a guard.
+ *
+ * This runs FIRST and hard-fails, because every count printed after it is
+ * meaningless if the bundle is behind.
+ */
+{
+  const bundleAge = statSync(join(UI, "data.js")).mtimeMs;
+  const newer = [];
+  for (const dir of ["eval/answer_runs", "data/seed_corpus"]) {
+    const walk = (d) => {
+      for (const entry of readdirSync(d, { withFileTypes: true })) {
+        const p = join(d, entry.name);
+        if (entry.isDirectory()) walk(p);
+        else if (entry.name.endsWith(".json") &&
+                 statSync(p).mtimeMs > bundleAge) newer.push(p);
+      }
+    };
+    try { walk(join(ROOT, dir)); } catch { /* directory absent is not this check's business */ }
+  }
+  note(
+    newer.length === 0,
+    newer.length === 0
+      ? "ui/data.js is at least as new as every archived run and seed record"
+      : `ui/data.js is STALE — ${newer.length} file(s) changed after it was ` +
+        `built (e.g. ${newer.slice(0, 3).map(p => p.replace(ROOT + "/", "")).join(", ")}). ` +
+        `Run: python ui/build_ui_data.py`,
+  );
+  if (newer.length) {
+    console.log("\nStopping: every count below would describe a bundle that is behind the evidence.");
+    process.exit(1);
+  }
+}
 
 /* ---- 1. the page parses, and its data loads ---- */
 const html = readFileSync(join(UI, "index.html"), "utf8");

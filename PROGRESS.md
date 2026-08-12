@@ -3508,3 +3508,64 @@ is that the claim is currently an anecdote rather than a regression test. Adding
 Corpus state confirmed and documented. All offline suites pass; all 35 mutation
 checks verify. Three of four defects fixed. `git init` and the `adulis-exports`
 gold case remain, both on the host.
+
+## Block 0 addendum — the UI bundle was stale, and its checker said so was fine
+
+Found while confirming the baseline commit. `ui/build_ui_data.py --verify` and
+`ui/check_ui.mjs` were both passing, and reporting different worlds:
+
+| | `build_ui_data.py --verify` | `check_ui.mjs` |
+| --- | --- | --- |
+| runs | 77 | 61 |
+| spans | 168 | 139 |
+| resolved / case_only | 158 / 9 | 132 / 6 |
+
+`ui/data.js` was written at **09:02**. Sixteen archived runs are newer than it —
+the whole of the exit-gate session, 13:36 to 13:40. `grep 53afe41c ui/data.js`
+returned nothing: **the Adulis answer the persevere verdict rests on was not in
+the UI at all**, alongside not being in the gold set. The one artefact you would
+show somebody, and the one run the argument depends on, and they had not met.
+
+Every assertion `check_ui.mjs` makes was true of the bundle. None was true of the
+project. This is the fifth appearance of *a test that passes for the wrong
+reason*, and the second in a single day — the first being `test_embed.py`
+truncating itself.
+
+The instruction already existed. `README.md`, Part 9: *"Run the builder after any
+corpus edit. That is what would have caught the drift on the day it happened."*
+It was not run after the exit gate. **An instruction in a README is not a guard**,
+which is the lesson, and it is new.
+
+Fixed by adding a staleness check as **check 0** in `check_ui.mjs`: if any file
+under `eval/answer_runs/` or `data/seed_corpus/` is newer than `ui/data.js`, the
+run hard-fails and exits before printing a single count, because every count
+after it would describe a bundle behind the evidence. Verified against the real
+defect rather than a synthetic one — it fired on the actual stale bundle and
+named the Adulis run first.
+
+Bundle regenerated: 673 KB → 827 KB, 61 → 77 runs, 139 → 168 spans, and the two
+audits now agree at **158 resolved / 9 case_only / 0 moved / 1 absent**.
+
+**This is the argument for tracking `ui/data.js` in git, made on day one.** The
+bundle is derived, and it is also evidence; a gate result that cannot be compared
+against the artefact that produced it is the Phase 1 defect family again.
+
+## Block 0 addendum — a third state in `reference_translation`
+
+`ingest.verify` reports `parallel pairs: 15` against Part 3's 16, with one loader
+warning:
+
+```
+! arabia-02-palmyrene-tariff: empty reference_translation, no translation chunk emitted
+```
+
+Part 3's design says a record with no translation carries
+`reference_translation: null`, and accounted for exactly 8 such records, all
+find/coin. The Palmyrene Tariff is a ninth, and its field is **empty rather than
+null** — a third state that reads as "a translation exists, and it is nothing."
+
+Benign today: the record is held back as a `pointer` regardless. It matters at
+Block F, where the HTR spike targets this very record. When a transcription
+lands, the field must become either a real translation or an honest `null`.
+Logged rather than fixed, because fixing it now would change a seed record for no
+behavioural gain and invalidate spans for nothing.
