@@ -1,0 +1,20 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: mundus-db
+    # Come back up automatically after a reboot or a Docker Desktop restart.
+    # Without this the container stops silently and the next ingest/embed run
+    # fails at the connection step, after already printing a full report — which
+    # looks like a hang rather than a dead database.
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: mundus
+      POSTGRES_PASSWORD: mundus
+      POSTGRES_DB: mundus
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+volumes:
+  pgdata:

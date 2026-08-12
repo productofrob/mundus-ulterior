@@ -1,0 +1,214 @@
+{
+  "timestamp": "2026-08-10T13:00:08+00:00",
+  "timestamp_meaning": "answers.created_at — the row's last write, not necessarily the first run of this answer (UPSERT_ANSWER sets created_at = now() on conflict)",
+  "recovered": true,
+  "recovered_from": "answers + answer_citations",
+  "recovered_absent": [
+    "passages[].text — the passage text shown to the model was never persisted",
+    "passages[].english.text — likewise",
+    "sources_block — the rendered evidence block was never persisted",
+    "refused — not a stored column; infer from the answer text if needed"
+  ],
+  "question": "How did Chinese sources describe the Roman empire?",
+  "question_lang": null,
+  "answer": "The Weilüe, a Chinese text composed in the early third century CE, describes the Roman Empire (Da Qin) as a vast kingdom located west of Parthia and the Great Sea, containing \"more than four hundred smaller cities and towns\" and extending \"several thousand li in all directions.\" [S1] According to this source, the Roman capital was situated \"close to the mouth of a river\" with \"outer walls of the city made of stone.\" [S1] A later Chinese historical text, the Hou Hanshu, records that in 166 CE the king of Da Qin sent envoys bearing elephant tusks, rhinoceros horn, and turtle shell, though the text notes that \"the tribute brought was neither precious nor rare, raising suspicion that the accounts [of the 'envoys'] might be exaggerated.\" [S3]",
+  "grounded": false,
+  "model": "anthropic/claude-haiku-4-5-20251001",
+  "prompt_version": "p7-answer-v2",
+  "embedding_model": "voyage/voyage-3.5",
+  "retrieval_k": 12,
+  "answer_id": "1da900b82230871b672229c66a740477",
+  "grounding": {
+    "ok": false,
+    "notes": [],
+    "coverage": 1.0,
+    "failures": {
+      "quoted_metadata": 0,
+      "unknown_markers": 0,
+      "uncited_sentences": 0,
+      "unverified_quotes": 1,
+      "unlabelled_machine": 0,
+      "misattributed_quotes": 0,
+      "claims_on_untranslated": 0
+    },
+    "quote_spans": [
+      {
+        "match": "exact",
+        "quote": "more than four hundred smaller cities and towns",
+        "doc_id": "eastasia-01-weilue",
+        "marker": "S1",
+        "within": "english",
+        "abs_end": 499,
+        "chunk_id": "eastasia-01-weilue::translation::000",
+        "abs_start": 452,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "several thousand li in all directions.",
+        "doc_id": "eastasia-01-weilue",
+        "marker": "S1",
+        "within": "english",
+        "abs_end": 549,
+        "chunk_id": "eastasia-01-weilue::translation::000",
+        "abs_start": 512,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "close to the mouth of a river",
+        "doc_id": "eastasia-01-weilue",
+        "marker": "S1",
+        "within": "english",
+        "abs_end": 633,
+        "chunk_id": "eastasia-01-weilue::translation::000",
+        "abs_start": 604,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "the tribute brought was neither precious nor rare, raising suspicion that the accounts [of the 'envoys'] might be exaggerated.",
+        "doc_id": "eastasia-02-hou-hanshu",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 516,
+        "chunk_id": "eastasia-02-hou-hanshu::translation::000",
+        "abs_start": 391,
+        "source_field": "reference_translation"
+      }
+    ],
+    "cited_markers": [
+      "S1",
+      "S3"
+    ],
+    "cited_sentences": 3,
+    "claim_sentences": 3,
+    "quoted_metadata": [],
+    "unknown_markers": [],
+    "uncited_sentences": [],
+    "unverified_quotes": [
+      {
+        "cited": [
+          "S1"
+        ],
+        "quote": "outer walls of the city made of stone.",
+        "reason": "this text appears in no supplied passage, in either the source language or the English. It was not copied from the evidence.",
+        "sentence": "According to this source, the Roman capital was situated \"close to the mouth of a river\" with \"outer walls of the city made of stone.\" [S1]"
+      }
+    ],
+    "unlabelled_machine": [],
+    "misattributed_quotes": [],
+    "claims_on_untranslated": []
+  },
+  "passages": [
+    {
+      "marker": "S1",
+      "chunk_id": "eastasia-01-weilue::original::000",
+      "doc_id": "eastasia-01-weilue",
+      "similarity": 0.5759680786104275,
+      "cited": true,
+      "quoted": true,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 52,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S2",
+      "chunk_id": "seasia-02-oc-eo-site::original::000",
+      "doc_id": "seasia-02-oc-eo-site",
+      "similarity": 0.5197253095858078,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 398,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S3",
+      "chunk_id": "eastasia-02-hou-hanshu::original::000",
+      "doc_id": "eastasia-02-hou-hanshu",
+      "similarity": 0.5165527636636462,
+      "cited": true,
+      "quoted": true,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 36,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S4",
+      "chunk_id": "eastasia-03-hwangnam-glass::original::000",
+      "doc_id": "eastasia-03-hwangnam-glass",
+      "similarity": 0.3945585010814221,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 162,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S5",
+      "chunk_id": "scandinavia-01-hoby-treasure::original::000",
+      "doc_id": "scandinavia-01-hoby-treasure",
+      "similarity": 0.3820335225432985,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 110,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S6",
+      "chunk_id": "arabia-02-palmyrene-tariff::translation::000",
+      "doc_id": "arabia-02-palmyrene-tariff",
+      "similarity": 0.3745185546433496,
+      "cited": false,
+      "quoted": false,
+      "source_field": "reference_translation",
+      "char_start": 0,
+      "char_end": 275,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    }
+  ],
+  "notes": null
+}

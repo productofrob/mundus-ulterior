@@ -1,0 +1,17 @@
+{
+  "id": "seasia-01-oc-eo-medallion",
+  "region": "Southeast Asia",
+  "title": "Gold medallion/pendant imitating a Roman coin of Antoninus Pius, from Óc Eo",
+  "source_type": "find_record",
+  "language_code": ["en", "la"],
+  "language_note": "Museum/scholarly catalogue record in English; the object itself carries a (slightly corrupted) Latin coin legend, given in original_text_excerpt.",
+  "date": "Roman prototype minted under Antoninus Pius, r. 138-161 CE; deposited/found at Óc Eo (excavated 1944)",
+  "findspot": "Óc Eo, Thoại Sơn District, An Giang Province, Mekong Delta, southern Vietnam (Funan-culture port site, possibly Ptolemy's 'Cattigara')",
+  "original_text_excerpt": "Legend on the gold sheet: ANTONINVS AVG PIVS NVRP (or NVAP) XV [slightly corrupted Latin legend]. Diameter 19mm, gold sheet thickness 0.3mm, weight 1.4135g, fineness 916 (22 carat). Formerly Musee Blanchard de la Brosse, Saigon, inv. no. MBB 3460 (unlocated after 1975).",
+  "original_text_note": "Object description and legend transcription from Brigitte Borell's numismatic study; treat as the closest available 'original text' for this find-record type.",
+  "reference_translation": "A single-sided gold pendant imitating a Roman aureus of Antoninus Pius — 'costume jewelry' rather than circulating coinage — excavated by Louis Malleret at Oc Eo in 1944 alongside a second gold piece imitating a coin of Marcus Aurelius. Both were originally reported as 'Roman coins' but are now understood as locally worn imitations/pendants of Roman coin types.",
+  "translation_source": "Brigitte Borell, 'The Movement of Roman Coins into Southeast Asia' and 'The Power of Images — Coin Portraits of Roman Emperors on Jewellery Pendants in Early Southeast Asia'.",
+  "citation": "https://en.wikipedia.org/wiki/%C3%93c_Eo",
+  "citation_original": "https://www.academia.edu/12682533/The_Power_of_Images_Coin_Portraits_of_Roman_Emperors_on_Jewellery_Pendants_in_Early_Southeast_Asia",
+  "notes": "The named Phase 1 candidate for Southeast Asia ('Óc Eo Roman medallion / Antoninus Pius coin find'). Note the important nuance for groundedness eval: these are imitation pendants, not genuine circulating Roman coinage — an answer that calls them 'Roman coins found in Vietnam' without that caveat would be a groundedness failure worth testing for."
+}

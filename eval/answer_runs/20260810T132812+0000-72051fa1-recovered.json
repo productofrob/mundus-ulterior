@@ -1,0 +1,207 @@
+{
+  "timestamp": "2026-08-10T13:28:12+00:00",
+  "timestamp_meaning": "answers.created_at — the row's last write, not necessarily the first run of this answer (UPSERT_ANSWER sets created_at = now() on conflict)",
+  "recovered": true,
+  "recovered_from": "answers + answer_citations",
+  "recovered_absent": [
+    "passages[].text — the passage text shown to the model was never persisted",
+    "passages[].english.text — likewise",
+    "sources_block — the rendered evidence block was never persisted",
+    "refused — not a stored column; infer from the answer text if needed"
+  ],
+  "question": "How did Chinese sources describe the Roman empire?",
+  "question_lang": null,
+  "answer": "The Weilüe, a Chinese text composed in the early third century CE, provides the most direct Chinese description of the Roman Empire. It states that \"The kingdom of Da Qin (Rome) is also called Lijian. It is west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea,\" locating Rome geographically in relation to other known regions [S1]. The text describes Rome's extent and infrastructure, noting that \"This country (the Roman Empire) has more than four hundred smaller cities and towns. It extends several thousand li in all directions. The king has his capital (that is, the city of Rome) close to the mouth of a river (the Tiber). The outer walls of the city are made of stone\" [S1]. A later Chinese historical record, the Hou Hanshu, documents a Roman embassy to China in 166 CE, describing how \"the king of Da Qin (the Roman Empire), Andun (Marcus Aurelius Antoninus), sent envoys from beyond the frontiers through Rinan (Commandery on the central Vietnamese coast), to offer elephant tusks, rhinoceros horn, and turtle shell,\" though the Chinese compilers expressed skepticism about the tribute, noting it was \"neither precious nor rare\" [S3].",
+  "grounded": false,
+  "model": "anthropic/claude-haiku-4-5-20251001",
+  "prompt_version": "p7-answer-v3",
+  "embedding_model": "voyage/voyage-3.5",
+  "retrieval_k": 12,
+  "answer_id": "72051fa11e8e042a092c00ce4bf00851",
+  "grounding": {
+    "ok": false,
+    "notes": [],
+    "coverage": 0.75,
+    "failures": {
+      "quoted_metadata": 0,
+      "unknown_markers": 0,
+      "uncited_sentences": 1,
+      "unverified_quotes": 0,
+      "unlabelled_machine": 0,
+      "misattributed_quotes": 0,
+      "claims_on_untranslated": 0
+    },
+    "quote_spans": [
+      {
+        "match": "exact",
+        "quote": "The kingdom of Da Qin (Rome) is also called Lijian. It is west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea,",
+        "doc_id": "eastasia-01-weilue",
+        "marker": "S1",
+        "within": "english",
+        "abs_end": 143,
+        "chunk_id": "eastasia-01-weilue::translation::000",
+        "abs_start": 0,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "This country (the Roman Empire) has more than four hundred smaller cities and towns. It extends several thousand li in all directions. The king has his capital (that is, the city of Rome) close to the mouth of a river (the Tiber). The outer walls of the city are made of stone",
+        "doc_id": "eastasia-01-weilue",
+        "marker": "S1",
+        "within": "english",
+        "abs_end": 692,
+        "chunk_id": "eastasia-01-weilue::translation::000",
+        "abs_start": 416,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "the king of Da Qin (the Roman Empire), Andun (Marcus Aurelius Antoninus), sent envoys from beyond the frontiers through Rinan (Commandery on the central Vietnamese coast), to offer elephant tusks, rhinoceros horn, and turtle shell,",
+        "doc_id": "eastasia-02-hou-hanshu",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 298,
+        "chunk_id": "eastasia-02-hou-hanshu::translation::000",
+        "abs_start": 68,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "neither precious nor rare",
+        "doc_id": "eastasia-02-hou-hanshu",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 440,
+        "chunk_id": "eastasia-02-hou-hanshu::translation::000",
+        "abs_start": 415,
+        "source_field": "reference_translation"
+      }
+    ],
+    "cited_markers": [
+      "S1",
+      "S3"
+    ],
+    "cited_sentences": 3,
+    "claim_sentences": 4,
+    "quoted_metadata": [],
+    "unknown_markers": [],
+    "uncited_sentences": [
+      "The Weilüe, a Chinese text composed in the early third century CE, provides the most direct Chinese description of the Roman Empire."
+    ],
+    "unverified_quotes": [],
+    "unlabelled_machine": [],
+    "misattributed_quotes": [],
+    "claims_on_untranslated": []
+  },
+  "passages": [
+    {
+      "marker": "S1",
+      "chunk_id": "eastasia-01-weilue::original::000",
+      "doc_id": "eastasia-01-weilue",
+      "similarity": 0.5759680786104275,
+      "cited": true,
+      "quoted": true,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 52,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S2",
+      "chunk_id": "seasia-02-oc-eo-site::original::000",
+      "doc_id": "seasia-02-oc-eo-site",
+      "similarity": 0.5197253095858078,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 398,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S3",
+      "chunk_id": "eastasia-02-hou-hanshu::original::000",
+      "doc_id": "eastasia-02-hou-hanshu",
+      "similarity": 0.5165527636636462,
+      "cited": true,
+      "quoted": true,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 36,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S4",
+      "chunk_id": "eastasia-03-hwangnam-glass::original::000",
+      "doc_id": "eastasia-03-hwangnam-glass",
+      "similarity": 0.3945585010814221,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 162,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S5",
+      "chunk_id": "scandinavia-01-hoby-treasure::original::000",
+      "doc_id": "scandinavia-01-hoby-treasure",
+      "similarity": 0.3820335225432985,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 110,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S6",
+      "chunk_id": "arabia-02-palmyrene-tariff::translation::000",
+      "doc_id": "arabia-02-palmyrene-tariff",
+      "similarity": 0.3745185546433496,
+      "cited": false,
+      "quoted": false,
+      "source_field": "reference_translation",
+      "char_start": 0,
+      "char_end": 275,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    }
+  ],
+  "notes": null
+}

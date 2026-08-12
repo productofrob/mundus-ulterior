@@ -1,0 +1,27 @@
+{
+  "id": "scandinavia-03-vimose",
+  "region": "Scandinavia",
+  "title": "The Vimose inscriptions — earliest datable Elder Futhark runic texts",
+  "source_type": "inscription",
+  "language_code": [
+    "gmq-pro"
+  ],
+  "language_note": "Early Proto-Norse / late Proto-Germanic, written in the Elder Futhark runic alphabet — the earliest attested Scandinavian writing system, emerging during the period of intensive Roman-era contact (possibly influenced by contact with Mediterranean/Roman-provincial alphabets, though the exact model is debated).",
+  "date": "c. 160-300 CE (Roman Iron Age in Scandinavia)",
+  "findspot": "Vimose bog, island of Funen (Fyn), Denmark — a wetland weapon-deposit site",
+  "original_text_excerpt": "harja\naadagasu / laasauwija\nmariha [.]ala / makija\ntalijo gisai oj / tkbis hleuno an[.] regu\nawgns\n[w]agni[ŋ]o",
+  "original_text_note": "Transliterations per the Kiel Runenprojekt database as summarized on Wikipedia; readings for several items remain debated among runologists. RESTRUCTURED 2026-08-10: this field previously read as an English catalogue listing with the runic text embedded in it — 'Vimose Comb (c. 160 CE, oldest known datable runic inscription): harja ...' — so the retrieval index held the cataloguer's English prose labelled as Proto-Norse source text, and a Part 7 citation of it would have quoted a museum label as if it were an inscription. The Part 3 fidelity classifier passed it because catalogue prose contains few English function words, so english_marker_ratio stayed under threshold; the Part 6 translation check caught it downstream instead, when the model correctly declined to translate an English list and handed it straight back (chrF 0.981 against the source, flagged untranslated_echo). The field now holds the transliterated runic text only, one object per line. Object identification, dates and the comb's runic characters moved to `notes` and `object_sequence`, where they are documentation rather than something retrieval can mistake for a source.",
+  "reference_translation": "harja: likely a personal name or 'comb'/'warrior'. mariha ... makija: possibly 'Mari (the famous one) is the sword of Alla'. awgns: possibly 'son/descendant of Awa'. Several inscriptions remain only partially deciphered.",
+  "translation_source": "Kiel Runenprojekt (runenprojekt.uni-kiel.de) interpretive database, as summarized on Wikipedia (Vimose inscriptions).",
+  "citation": "https://en.wikipedia.org/wiki/Vimose_inscriptions",
+  "citation_original": "https://web.archive.org/web/20151122163034/http://www.runenprojekt.uni-kiel.de/abfragen/standard/deutung2.asp?findno=20&ort=Vimose&objekt=Kamm",
+  "notes": "Vimose is a weapon-sacrifice bog deposit containing Roman-influenced military equipment alongside the earliest Scandinavian writing — making it the clearest Scandinavian case where a genuinely regional-language text (proto-Norse runes, not Latin or Greek) and direct Roman-contact material culture come from the very same findspot and period. High-value candidate for the hero cross-lingual demo, notwithstanding that many individual readings are short and contested. Object identification for original_text_excerpt, in line order: (1) Vimose Comb, c. 160 CE, harja, runes ᚺᚨᚱᛃᚨ, the oldest known datable runic inscription; (2) Vimose Buckle, c. 200 CE; (3) Vimose Chape, c. 250 CE; (4) Vimose Woodplane, c. 300 CE; (5) Vimose Sheathplate, c. 300 CE; (6) Vimose Spearhead. Moved out of the original-text field 2026-08-10 — see original_text_note.",
+  "object_sequence": [
+    "Vimose Comb, c. 160 CE — harja (runes: ᚺᚨᚱᛃᚨ). The oldest known datable runic inscription.",
+    "Vimose Buckle, c. 200 CE — aadagasu / laasauwija",
+    "Vimose Chape, c. 250 CE — mariha [.]ala / makija",
+    "Vimose Woodplane, c. 300 CE — talijo gisai oj / tkbis hleuno an[.] regu",
+    "Vimose Sheathplate, c. 300 CE — awgns",
+    "Vimose Spearhead — [w]agni[ŋ]o"
+  ]
+}

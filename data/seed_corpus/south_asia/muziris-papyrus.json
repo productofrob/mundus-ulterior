@@ -1,0 +1,19 @@
+{
+  "id": "southasia-03-muziris-papyrus",
+  "region": "South Asia",
+  "title": "The Muziris Papyrus (SB XVIII 13167) — loan/cargo contract for the ship Hermapollon",
+  "source_type": "literary_text",
+  "language_code": [
+    "grc"
+  ],
+  "language_note": "Original Greek, Roman-Egyptian commercial/legal document. Held in the Papyrus Collection, Austrian National Library, Vienna (purchased 1980, first published 1985).",
+  "date": "mid-2nd century CE",
+  "original_text_excerpt": "[recto, col. ii] δώσω καμηλείτηι ἀξιοχρέωι πρὸς ἐπίθεσιν τῆς εἰς Κόπτον\nεἰσόδου καὶ ἀνοίσω διὰ τοῦ ὄρους μετὰ παραφυλακῆς καὶ ἀσφαλείας\nεἰς τὰς ἐπὶ Κόπτου δημοσίας παραλημπτικὰς ἀποθήκας καὶ ποιήσω\nὑπὸ τὴν σὴν ἢ τῶν σῶν ἐπιτρόπων ἢ τοῦ παρόντος αὐτῶν\nἐξουσίαν καὶ σφραγεῖδα μέχρι ποταμοῦ ἐμβολῆς καὶ ἐμβαλοῦμαι\nτῶι δέοντι καιρῶι εἰς ποταμὸν ἀσφαλὲς πλοῖον καὶ κατοίσω εἰς τὴν\nἐν Ἀλεξανδρείᾳ τῆς τετάρτης παραλημπτικὴν ἀποθήκην\n\n[verso, col. ii] νάρδου Γανγιτικῆς κιστῶν ξ ὧν ὁμοίως\nτιμὴ λογίζεται ὡς τῆς κίστης (δραχμῶν) Δφ ἀργυρίου (τάλαντα) με\nἐλέφαντος ὑγιοῦς μὲν ὁλκ(ῆς) (τάλαντα) οη μν(ῶν) νδ\nἐπὶ τὸ αὐτὸ τιμῆς μερῶν γ τῶν ἐκπεπλευκότων\nἐν τῷ Ἑρμαπόλλωνι πλοίῳ φορτίων ἀργυρίου (τάλαντα) Ανα (δραχμαὶ) Εωνβ",
+  "original_text_note": "Verbatim Greek recovered 2026-08-09 from the DDbDP transcription of SB 18 13167 (Trismegistos 27666; ed. pr. Tyche 26 [2011] 199-233), served by papyri.info under CC BY 3.0. Two passages are excerpted: the recto transport clause (col. ii, lines 2-8) and the verso cargo valuation (col. ii, lines 1-4, 27-29). Editorial brackets marking lacunae, dots under uncertain letters, and line numbers have been removed for readability; column/line provenance is given inline. Consult papyri.info for the full critical apparatus.",
+  "reference_translation": "[Recto, loan/security contract clause] ...I will convey the goods through the desert under guard and protection up to the public tax-receiving warehouses at Koptos... [Verso, cargo valuation] Gangetic nard: 60 boxes, price reckoned at 4,500 drachmas of silver per box, 45 talents. Ivory: first grade, sound: 78 talents-weight 54¾ minas... Makes the price of the 3 parts of the cargoes shipped out in the ship 'Hermapollon' 1,154 talents 2,852 drachmas of silver.",
+  "translation_source": "D. Rathbone, 'The Muziris papyrus (SB XVIII.13167): financing Roman trade with India', Bulletin of the American Society of Papyrologists 46 (2000), pp. 39-50, as hosted on Attalus.org (Select Papyri 1.187A).",
+  "citation": "https://www.attalus.org/docs/select1/p187A.html",
+  "citation_original": "https://papyri.info/ddbdp/sb;18;13167 (DDbDP, CC BY 3.0)",
+  "notes": "Direct documentary evidence of the financial scale of Rome-India trade: this single cargo (nard, ivory, and other goods, ivory/nard portion alone valued near 1,154 talents of silver) corroborates the 'gold for pepper' exchange described in Akananuru 149 (southasia-01) and the Periplus (southasia-02) with hard numbers. High-value hero-demo candidate for showing how a legal/financial document, a poem, and a geography text all converge on the same trade relationship.",
+  "text_recovered": "2026-08-09"
+}

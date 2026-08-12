@@ -1,0 +1,27 @@
+{
+  "note": "The Part 8 hard floor. Set from the first repeated sweep: 5 gold questions x 2 prompt versions x 3 repetitions, 30 runs, 2026-08-10. Every number below sits in a gap where no observed case straddles it — the Part 6 threshold rule, confirmed by repetition rather than assumed.",
+  "why_content_and_not_grounded": "Measured, not argued. Across ten cells of three repetitions each, CONTENT pass was stable in 10 of 10 — every cell landed 0/3 or 3/3, with nothing in between. GROUNDED was unstable in 3 of 10: the same question, the same evidence, the same prompt, at temperature 0, produced different grounding verdicts. A floor on `grounded` would be measuring the sampler. A floor on content is measuring the pipeline.",
+  "calibrated": false,
+  "n_runs": 30,
+  "n_cells": 10,
+  "calibrated_from": "eval/sweeps/20260810T191414-p7-answer-v2r_p7-answer-v4-r3.json",
+  "required_cases": [
+    "antikythera-absent",
+    "chinese-da-qin",
+    "muziris-cargo",
+    "vimose-runes"
+  ],
+  "required_cases_note": "Each must pass in EVERY repetition, not on average. All four were 3/3 under p7-answer-v2r. Expressed per case rather than as an aggregate rate because an aggregate lets a total failure on one question be paid for by successes on others, and the questions are not interchangeable. vimose-runes is retained as required DESPITE failing the second sweep, because the failure is not a regression in the pipeline — the evidence block is bit-identical and the corpus edit never touched it. Removing a case because the model had a bad session is how a floor is quietly lowered to whatever is currently passing.",
+  "known_failing_cases": {
+    "aksum-exports": "Fails 0/3 under BOTH prompt versions, and 4/4 across the archived Part 7 runs — seven consecutive failures under four prompts. The corpus contains the answer in published English, aligned by section, verified present in the evidence block by the sweep's dry run. This is not a prompt defect and must not be folded into the floor as tolerated; it is an open defect tracked separately so that a floor pass can never be read as 'the system answers these questions'."
+  },
+  "max_refusal_rate": 0.5,
+  "max_refusal_rate_note": "Observed 0.40 for p7-answer-v2r and 0.60 for p7-answer-v4. 0.5 sits in the gap with no observation on it. Refusal rate is a floor term in its own right because citation hygiene is maximised by saying as little as possible: a prompt that refuses more while erring no less is a regression, and no metric built on grounding can see it.",
+  "max_unstable_content_cells": 0,
+  "max_unstable_content_cells_note": "Observed 0 for both prompt versions. If a content cell ever splits across its own repetitions, the floor stops being measurable before it stops being met, and that must fail loudly rather than average out.",
+  "min_repetitions": 3,
+  "min_repetitions_note": "A single shot is one sample of a distribution nobody has looked at. Part 6 measured a 0.317 chrF spread within one case at temperature 0; this sweep found three grounding verdicts flipping on identical input. Checking the floor against an unrepeated run is not checking it. Superseded in part: three repetitions in a single session proved insufficient to detect a case that swings completely between sessions. Repetitions should span sessions before any threshold here is called calibrated again.",
+  "cross_check": "The floor is a REGRESSION gate, not a definition of success. It says the four questions that work still work, and that the system has not bought tidiness with silence. It says nothing about whether the corpus is large enough or the answers good enough — those are Part 10 questions.",
+  "calibration_invalidated": "2026-08-10, hours after being set. The floor was calibrated on the observation that CONTENT was stable in 10 of 10 cells across three repetitions each. A second sweep, with the vimose-runes evidence block BYTE-IDENTICAL (sha256 verified across all six archived runs), produced the opposite result: 3/3 pass with seven resolved quotations in the first session, 0/3 with none in the second. Same prompt version, same model, same evidence, temperature 0. The stability that justified this floor was itself a single sample.",
+  "session_caveat": "REPETITIONS WITHIN ONE SESSION ARE CORRELATED AND ARE NOT INDEPENDENT SAMPLES. Both sweeps were internally consistent — 3/3 one way, then 3/3 the other — so repetition inside a session measures a mode, not a distribution. Part 6's lesson was 'one shot is one sample of a distribution nobody has looked at'. This is the same lesson one level up: three shots in one session may also be one sample. Until repetitions span sessions, this floor is a WITHIN-SESSION regression gate and nothing more."
+}

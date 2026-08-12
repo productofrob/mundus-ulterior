@@ -1,0 +1,22 @@
+# Git must not rewrite a single byte of this repository, on checkout or commit.
+#
+# The product's central claim is that every quotation resolves to an absolute
+# character range in a named field of a named file — `ingest/verify` asserts
+# `source_text[char_start:char_end] == chunk.text`, and 168 archived citation
+# spans in eval/answer_runs/ point into the seed corpus by exact offset.
+#
+# Git for Windows installs with core.autocrlf=true by default, which converts
+# LF to CRLF on checkout and back on commit. On a multi-line field that shifts
+# every offset after the first line by one byte. The corpus would still look
+# correct in an editor; the citations would quietly stop resolving, and the
+# failure would be indistinguishable from corpus drift.
+#
+# `-text` disables all end-of-line conversion for every path. Do not narrow it:
+# the seed corpus, the archived runs and the gold set are all offset-bearing.
+* -text
+
+# Belt and braces: never treat these as text for diffing or conversion either.
+data/seed_corpus/**    -text -diff=auto
+eval/answer_runs/**    -text
+eval/runs/**           -text
+eval/sweeps/**         -text

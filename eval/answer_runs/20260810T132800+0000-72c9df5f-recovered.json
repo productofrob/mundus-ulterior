@@ -1,0 +1,194 @@
+{
+  "timestamp": "2026-08-10T13:28:00+00:00",
+  "timestamp_meaning": "answers.created_at — the row's last write, not necessarily the first run of this answer (UPSERT_ANSWER sets created_at = now() on conflict)",
+  "recovered": true,
+  "recovered_from": "answers + answer_citations",
+  "recovered_absent": [
+    "passages[].text — the passage text shown to the model was never persisted",
+    "passages[].english.text — likewise",
+    "sources_block — the rendered evidence block was never persisted",
+    "refused — not a stored column; infer from the answer text if needed"
+  ],
+  "question": "What did ships carry from Muziris?",
+  "question_lang": null,
+  "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S1] The text also lists other exports from Muziris: \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S1] A Tamil literary text from the Sangam period describes Yavana (Greek-Roman) vessels at Muciri \"arriving with gold and departing with pepper.\" [S5]",
+  "grounded": true,
+  "model": "anthropic/claude-haiku-4-5-20251001",
+  "prompt_version": "p7-answer-v3",
+  "embedding_model": "voyage/voyage-3.5",
+  "retrieval_k": 12,
+  "answer_id": "72c9df5f02e0b382c28e0eb0e03fe6c5",
+  "grounding": {
+    "ok": true,
+    "notes": [],
+    "coverage": 1.0,
+    "failures": {
+      "quoted_metadata": 0,
+      "unknown_markers": 0,
+      "uncited_sentences": 0,
+      "unverified_quotes": 0,
+      "unlabelled_machine": 0,
+      "misattributed_quotes": 0,
+      "claims_on_untranslated": 0
+    },
+    "quote_spans": [
+      {
+        "match": "exact",
+        "quote": "is produced in quantity in only one region near these markets, a district called Cottonara.",
+        "doc_id": "southasia-02-periplus-muziris",
+        "marker": "S1",
+        "within": "english",
+        "abs_end": 2071,
+        "chunk_id": "southasia-02-periplus-muziris::translation::003",
+        "abs_start": 1981,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.",
+        "doc_id": "southasia-02-periplus-muziris",
+        "marker": "S1",
+        "within": "english",
+        "abs_end": 2304,
+        "chunk_id": "southasia-02-periplus-muziris::translation::003",
+        "abs_start": 2105,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "arriving with gold and departing with pepper.",
+        "doc_id": "southasia-01-akananuru-149",
+        "marker": "S5",
+        "within": "english",
+        "abs_end": 204,
+        "chunk_id": "southasia-01-akananuru-149::translation::000",
+        "abs_start": 160,
+        "source_field": "reference_translation"
+      }
+    ],
+    "cited_markers": [
+      "S1",
+      "S5"
+    ],
+    "cited_sentences": 3,
+    "claim_sentences": 3,
+    "quoted_metadata": [],
+    "unknown_markers": [],
+    "uncited_sentences": [],
+    "unverified_quotes": [],
+    "unlabelled_machine": [],
+    "misattributed_quotes": [],
+    "claims_on_untranslated": []
+  },
+  "passages": [
+    {
+      "marker": "S1",
+      "chunk_id": "southasia-02-periplus-muziris::original::003",
+      "doc_id": "southasia-02-periplus-muziris",
+      "similarity": 0.46311074935069696,
+      "cited": true,
+      "quoted": true,
+      "source_field": "original_text_excerpt",
+      "char_start": 1301,
+      "char_end": 2220,
+      "english": {
+        "kind": "published",
+        "ground": "section",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S2",
+      "chunk_id": "southasia-04-pattanam::original::000",
+      "doc_id": "southasia-04-pattanam",
+      "similarity": 0.4580744641445469,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 409,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S3",
+      "chunk_id": "southasia-02-periplus-muziris::original::001",
+      "doc_id": "southasia-02-periplus-muziris",
+      "similarity": 0.44750694066203356,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 418,
+      "char_end": 990,
+      "english": {
+        "kind": "published",
+        "ground": "section",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S4",
+      "chunk_id": "arabia-01-periplus::original::001",
+      "doc_id": "arabia-01-periplus",
+      "similarity": 0.4465442927751375,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 635,
+      "char_end": 1111,
+      "english": {
+        "kind": "machine",
+        "ground": "passage",
+        "band": "high",
+        "profile": "prose",
+        "flags": []
+      }
+    },
+    {
+      "marker": "S5",
+      "chunk_id": "southasia-01-akananuru-149::original::000",
+      "doc_id": "southasia-01-akananuru-149",
+      "similarity": 0.4397355723853884,
+      "cited": true,
+      "quoted": true,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 632,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S6",
+      "chunk_id": "africa-03-periplus-adulis::original::002",
+      "doc_id": "africa-03-periplus-adulis",
+      "similarity": 0.43952602508509087,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 1170,
+      "char_end": 2089,
+      "english": {
+        "kind": "published",
+        "ground": "section",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    }
+  ],
+  "notes": null
+}

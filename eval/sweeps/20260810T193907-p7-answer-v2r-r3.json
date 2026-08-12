@@ -1,0 +1,327 @@
+{
+  "prompt_versions": [
+    "p7-answer-v2r"
+  ],
+  "repeat": 3,
+  "results": [
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with Aksum (the Kingdom of Zoskales) in the Periplus of the Erythraean Sea, but they detail what Rome exported to Aksum rather than what Rome imported from it [S1].",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193719+0000-e5184d86.json"
+    },
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with Aksum (the Kingdom of Zoskales) in the Periplus of the Erythraean Sea, but they detail what Rome exported to Aksum rather than what Rome imported from it [S1].",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193724+0000-e5184d86.json"
+    },
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with Aksum (the Kingdom of Zoskales) in the Periplus of the Erythraean Sea, but they detail what Rome exported to Aksum rather than what Rome imported from it [S1].",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193729+0000-e5184d86.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources do contain information about the Vimose inscriptions, which are early runic texts from Scandinavia, but they provide only partial and uncertain interpretations rather than complete readings of what the inscriptions say [S3].",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes scandinavia-03-vimose, resolving to characters on disk",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193735+0000-467d3b0a.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "content_ok": false,
+      "grounded": false,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources do include information about the Vimose inscriptions, which are \"earliest datable Elder Futhark runic texts\" from Scandinavia dated to c. 160-300 CE, but the English translation provided consists only of interpretive summaries rather than complete renderings of what the inscriptions say [S3].",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "says one of ['likely', 'possibly', 'partially deciphered', 'uncertain']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes scandinavia-03-vimose, resolving to characters on disk",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193739+0000-467d3b0a.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "content_ok": false,
+      "grounded": false,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources do include information about the Vimose inscriptions, which are \"earliest datable Elder Futhark runic texts\" from Scandinavia dated to c. 160-300 CE, but the English translation provided consists only of partial and uncertain interpretations rather than complete readings of what the inscriptions say [S3].",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes scandinavia-03-vimose, resolving to characters on disk",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193744+0000-467d3b0a.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 5,
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source describes Yavana (Greek-Roman) vessels at Muciri \"arriving with gold and departing with pepper.\" [S5] Archaeological evidence from the candidate site of ancient Muziris at Pattanam includes \"frankincense crumbs\" among West Asian and South Arabian objects. [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193753+0000-429413cd.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 5,
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source describes Yavana (Greek-Roman) vessels at Muciri \"arriving with gold and departing with pepper.\" [S5] Archaeological evidence from the Pattanam excavation site, a candidate location for ancient Muziris, includes \"frankincense crumbs\" among West Asian and South Arabian objects. [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193759+0000-429413cd.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 5,
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source describes Yavana (Greek-Roman) vessels at Muciri \"arriving with gold and departing with pepper.\" [S5] Archaeological evidence from the candidate site of ancient Muziris at Pattanam includes \"frankincense crumbs\" among West Asian and South Arabian objects. [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193805+0000-429413cd.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 3,
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, describes the Roman Empire (Da Qin) as a vast kingdom located west of Parthia and the Great Sea, accessible by sea from Egypt in as little as two months with favorable winds [S1]. According to this source, the Roman Empire \"has more than four hundred smaller cities and towns\" and \"extends several thousand li in all directions,\" with its capital city built with stone walls near the mouth of a river [S1]. The Hou Hanshu records that in 166 CE, the king of Da Qin sent envoys bearing elephant tusks, rhinoceros horn, and turtle shell, which the Chinese source notes were \"neither precious nor rare,\" suggesting skepticism about the account [S3]. These Chinese sources present the Roman Empire as a distant, wealthy, and organized state, though one whose tribute offerings seemed unremarkable to Chinese observers.",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193842+0000-5b688b51.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 4,
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, described the Roman Empire (Da Qin) as a vast kingdom located west of Parthia and the Great Sea, containing \"more than four hundred smaller cities and towns\" and extending \"several thousand li in all directions.\" [S1] According to this source, the Roman capital was situated \"close to the mouth of a river\" with \"outer walls of the city made of stone.\" [S1] The Hou Hanshu records that in 166 CE, the king of Da Qin sent envoys bearing elephant tusks, rhinoceros horn, and turtle shell, though the Chinese historian noted that \"the tribute brought was neither precious nor rare, raising suspicion that the accounts [of the 'envoys'] might be exaggerated.\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193848+0000-5b688b51.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 3,
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, describes the Roman Empire (Da Qin) as a vast kingdom located west of Parthia and the Great Sea, accessible by sea from Egypt in as little as two months with favorable winds. [S1] According to this source, the Roman Empire \"has more than four hundred smaller cities and towns\" and \"extends several thousand li in all directions,\" with its capital city positioned near a river and featuring \"outer walls of the city made of stone.\" [S1] A later Chinese historical record, the Hou Hanshu, documents that in 166 CE the king of Da Qin sent envoys bearing elephant tusks, rhinoceros horn, and turtle shell, though the Chinese compiler noted that \"the tribute brought was neither precious nor rare, raising suspicion that the accounts [of the 'envoys'] might be exaggerated.\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193854+0000-5b688b51.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources provided discuss Roman contact with regions beyond the Mediterranean world, including South Asia, Scandinavia, and East Asia, through archaeological finds and literary records dating from roughly the 2nd to 5th centuries CE [S1][S2][S3][S4][S5][S6].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193900+0000-56fb5151.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources provided contain information about Roman contact with regions beyond the Mediterranean, including finds of Roman objects in Scandinavia, South Asia, and East Asia, and records of trade and diplomatic exchanges [S1][S2][S3][S4][S5][S6].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193904+0000-56fb5151.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources provided contain information about Roman contact with regions beyond the Mediterranean world, including South Asia, Scandinavia, and East Asia, through archaeological finds and literary records dating from roughly the 2nd to 5th centuries CE [S1][S2][S3][S4][S5][S6].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260810T193907+0000-56fb5151.json"
+    }
+  ],
+  "summary": {
+    "cells": [
+      {
+        "case": "aksum-exports",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "antikythera-absent",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 3,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "chinese-da-qin",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 3,
+        "quotes_min": 3,
+        "quotes_max": 4,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "muziris-cargo",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 2,
+        "quotes_min": 5,
+        "quotes_max": 5,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "vimose-runes",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 1,
+        "grounded_stable": false,
+        "distinct_texts": 3,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      }
+    ],
+    "by_version": {
+      "p7-answer-v2r": {
+        "cases": 5,
+        "runs": 15,
+        "content_pass_rate": 0.6,
+        "grounded_rate": 0.6666666666666666,
+        "refusal_rate": 0.6,
+        "unstable_content_cells": 0,
+        "unstable_grounded_cells": 1,
+        "mean_resolved_quotes": 1.6666666666666667
+      }
+    }
+  },
+  "floor": {
+    "p7-answer-v2r": {
+      "meets_floor": false,
+      "problems": [
+        "vimose-runes: 0/3 — a required case must pass every repetition",
+        "refusal rate 60% exceeds 50% — tidiness bought with silence"
+      ],
+      "known_failing": {
+        "aksum-exports": {
+          "observed": "0/3",
+          "reason": "Fails 0/3 under BOTH prompt versions, and 4/4 across the archived Part 7 runs — seven consecutive failures under four prompts. The corpus contains the answer in published English, aligned by section, verified present in the evidence block by the sweep's dry run. This is not a prompt defect and must not be folded into the floor as tolerated; it is an open defect tracked separately so that a floor pass can never be read as 'the system answers these questions'."
+        }
+      }
+    }
+  }
+}

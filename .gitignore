@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+gateway/.secrets*
+
+# The seed corpus IS the asset — 28 files, 140K of hand-curated JSON with
+# provenance. It is tracked. The original `data/**` rule was written for "large
+# blobs" that do not exist in this repository, and would have excluded the most
+# expensive, hardest-to-rebuild thing the project owns.
+#
+# Ignore genuinely large or derived artefacts by name as they appear, not the
+# whole tree.
+data/**/*.zip
+data/**/*.tar.gz
+data/**/*.sqlite
+data/**/*.dump
+
+# ui/data.js is derived and 673K, but it IS tracked deliberately: --verify is a
+# criterion at G1 and G3, and having the bundle in history lets you diff what it
+# looked like at each gate. A result is comparable only within the thing that
+# produced it.
+
+# "Most recent invocation" files. Calibrate from eval/runs/, eval/answer_runs/
+# and eval/sweeps/ — which ARE tracked — never from these.
+eval/*_last_run.json

@@ -1,0 +1,9 @@
+# Test-only dependencies. Install with:  pip install -r requirements-dev.txt
+#
+# Kept separate from requirements.txt so adding a test tool can never trigger a
+# re-resolution of the runtime tree (which is how a one-line sqlglot addition
+# ended up trying to compile litellm from source with a Rust toolchain).
+#
+# Every test suite degrades gracefully without these — they add checks, they are
+# not required to run the suites.
+sqlglot                 # parses schema + queries in ingest/test_sql.py and test_embed.py

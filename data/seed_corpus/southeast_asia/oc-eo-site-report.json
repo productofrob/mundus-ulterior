@@ -1,0 +1,16 @@
+{
+  "id": "seasia-02-oc-eo-site",
+  "region": "Southeast Asia",
+  "title": "Óc Eo archaeological site and culture — excavation summary (Funan port, possible Cattigara)",
+  "source_type": "find_record",
+  "language_code": ["en", "vi", "fr"],
+  "language_note": "Primary excavation reports are in French (Louis Malleret, 1944 onward) and Vietnamese (modern Vietnamese Institute of Archaeology publications); English summary used here for the seed record.",
+  "date": "site occupation 2nd century BCE - 12th century CE; Óc Eo culture proper c. 1-630 CE; excavations began 1942",
+  "findspot": "Óc Eo commune, Thoại Sơn District, An Giang Province, Mekong Delta, southern Vietnam",
+  "original_text_excerpt": "The remains found at Oc Eo include pottery, tools, jewelry, casts for making jewelry, coins, and religious statues. Among the finds are gold jewellery imitating coins from the Roman Empire of the Antonine period... Oc Eo was near Chinese-controlled Jiaozhou and the region where Chinese historical texts claim the Romans first landed before venturing further into China to conduct diplomacy in 166.",
+  "original_text_note": "English synthesis from Wikipedia, citing Malleret 1957/1962 and C. Higham, Early Mainland Southeast Asia (2014); primary French excavation volumes (Malleret, L'Archeologie du delta du Mekong) should be consulted directly for ingestion-grade original text.",
+  "reference_translation": null,
+  "translation_source": null,
+  "citation": "https://en.wikipedia.org/wiki/%C3%93c_Eo",
+  "notes": "Óc Eo is the maritime-route site connecting the Southeast Asia seed cluster: it sits on the same 166 CE 'Romans-first-landed-here-before-China' tradition documented from the Chinese side by the Hou Hanshu (eastasia-02). Strong graph-edge candidate linking Southeast Asia and East Asia records. Scholarly identification with Ptolemy's 'Cattigara' remains debated — flag as contested when used in answers."
+}

@@ -1,0 +1,114 @@
+{
+  "schema": "mundus-ulterior/retrieval-probes/v1",
+  "updated": "2026-08-10",
+  "about": "Cross-lingual retrieval probes. Moved out of retrieve/crosslingual_check.py in Part 6 so that expectations are reviewable data rather than code. Every probe states what it asserts and why; `expect_text_contains` exists because a probe that asserts only expect_doc can pass against the wrong passage of the right document.",
+  "pools": {
+    "non_english": {
+      "langs": ["grc", "lzh", "oty", "xpr", "xna", "xsa", "gmq-pro"],
+      "note": "Every non-English language in the corpus. Used as the candidate pool for cross-lingual probes so an English query cannot be satisfied by an English translation — which would make the probe a same-language test wearing a cross-lingual label."
+    }
+  },
+  "probes": [
+    {
+      "name": "greek query -> greek Periplus (Muziris)",
+      "kind": "same_language",
+      "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
+      "query_lang": "grc",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "roles": ["original"],
+      "note": "Can the model see Greek script at all? Failure here means nothing downstream is interpretable."
+    },
+    {
+      "name": "chinese query -> Weilue Da Qin",
+      "kind": "same_language",
+      "query": "大秦國在安息西，海西之地",
+      "query_lang": "lzh",
+      "expect_doc": "eastasia-01-weilue",
+      "roles": ["original"],
+      "note": "Literary Chinese, no word spaces. The corpus holds only two Chinese chunks, so this is a thin measurement."
+    },
+    {
+      "name": "tamil query -> Akananuru 149",
+      "kind": "same_language",
+      "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+      "query_lang": "oty",
+      "expect_doc": "southasia-01-akananuru-149",
+      "roles": ["original"],
+      "note": "Old Tamil scored 0.368 in Part 4 against 0.6-0.7 for other scripts. It still ranked first, but with one Tamil chunk in the corpus that number means little. Recheck when Tamil coverage grows."
+    },
+    {
+      "name": "parthian query -> SKZ",
+      "kind": "same_language",
+      "query": "šāhān šāh Ērān ud Anēran Šābuhr",
+      "query_lang": "xpr",
+      "expect_doc": "persia-01-skz",
+      "roles": ["original"],
+      "note": "Romanised Parthian, not its own script. Tests whether scholarly transliteration survives the tokenizer."
+    },
+    {
+      "name": "english query -> greek source (frankincense at Kane)",
+      "kind": "cross_lingual",
+      "query": "the frankincense-bearing country and the port of Kane in Arabia",
+      "query_lang": "en",
+      "expect_doc": "arabia-01-periplus",
+      "lang_pool": "non_english",
+      "note": "The claim the project rests on: an English question reaching a Greek source with no English in the pool."
+    },
+    {
+      "name": "english query -> greek source (Adulis ivory)",
+      "kind": "cross_lingual",
+      "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+      "query_lang": "en",
+      "expect_doc": "africa-03-periplus-adulis",
+      "lang_pool": "non_english"
+    },
+    {
+      "name": "english query -> chinese source (Roman embassy)",
+      "kind": "cross_lingual",
+      "query": "an envoy sent by the king of Da Qin, the Roman empire",
+      "query_lang": "en",
+      "expect_doc": "eastasia-02-hou-hanshu",
+      "lang_pool": "non_english",
+      "note": "English to Literary Chinese, two writing systems with no shared vocabulary. Scored 0.472 in Part 4."
+    },
+    {
+      "name": "english query -> parthian source (Roman provinces)",
+      "kind": "cross_lingual",
+      "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+      "query_lang": "en",
+      "expect_doc": "persia-01-skz",
+      "lang_pool": "non_english",
+      "note": "The ŠKZ §20 province list is direct Rome-contact evidence in Parthian."
+    },
+    {
+      "name": "paired EN: Muziris and Nelkynda ports",
+      "kind": "paired",
+      "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+      "query_lang": "en",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "roles": ["original"],
+      "pair": "muziris-ports",
+      "note": "Originally asked about pepper and failed — correctly, because pepper is §56 and the record then held only §53-54. The corpus did not contain the answer being asked for. The probe was fixed to ask what §53-54 says; the corpus was separately extended to §56, and the pepper question became its own probe."
+    },
+    {
+      "name": "paired GRC: Muziris and Nelkynda ports",
+      "kind": "paired",
+      "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
+      "query_lang": "grc",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "roles": ["original"],
+      "pair": "muziris-ports",
+      "note": "Same question as the probe above, in Greek. Both must rank the expected document first AND agree with each other."
+    },
+    {
+      "name": "english query -> greek source (pepper cargo at Muziris)",
+      "kind": "cross_lingual",
+      "query": "large ships loading pepper and malabathrum from Kottanarike",
+      "query_lang": "en",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "lang_pool": "non_english",
+      "expect_text_contains": "πέπερι",
+      "note": "The passage-level assertion is the point. Without it this probe reported PASS against §53 while §56 was not in the database."
+    }
+  ]
+}

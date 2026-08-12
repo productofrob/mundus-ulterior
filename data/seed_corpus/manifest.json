@@ -1,0 +1,349 @@
+{
+  "corpus_name": "Mundus Ulterior Phase 1 Part 2 — Seed Corpus",
+  "generated": "2026-08-09",
+  "total_documents": 24,
+  "regions": [
+    "Arabia",
+    "East Asia",
+    "Persia",
+    "Scandinavia",
+    "South Asia",
+    "Southeast Asia",
+    "Sub-Saharan Africa"
+  ],
+  "milestone_target": "~25-30 documents, 3-5 per region, spanning all 7 regions",
+  "milestone_status": "24 documents captured across 7 regions",
+  "schema_note": "Each document JSON carries: id, region, title, source_type, language_code, language_note, date, findspot (where applicable), original_text_excerpt, original_text_note, reference_translation, translation_source, citation, citation_original (where available), notes.",
+  "follow_up_before_ingestion": [
+    "Several records (Palmyrene Tariff, Weilue, Hou Hanshu, Akananuru 149, Ezana Stone) have original_text_excerpt fields that are paraphrased or partial — pull verbatim transliterations from the cited critical editions before chunking/embedding in Part 3.",
+    "Confirm long-term link stability for non-museum citations (Wikipedia, academic PDFs) and consider archiving snapshots (e.g. via the Wayback Machine) for provenance permanence.",
+    "Sabaic Jabal Dabub inscription (arabia-04) is 6th century and not directly Rome-linked; consider swapping or supplementing with a denser Himyarite/Roman-contact Sabaic text if Arabia needs stronger Roman-contact anchoring."
+  ],
+  "documents": [
+    {
+      "id": "arabia-03-jsnab17",
+      "region": "Arabia",
+      "title": "Epitaph of Raqōš (JSNab 17) — Nabataean tomb inscription, Hegra (Mada'in Salih)",
+      "source_type": "inscription",
+      "language_code": [
+        "xna",
+        "arb"
+      ],
+      "date": "267 CE",
+      "path": "arabia/nabataean-epitaph-raqosh.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/JSNab_17"
+    },
+    {
+      "id": "arabia-02-palmyrene-tariff",
+      "region": "Arabia",
+      "title": "The Palmyrene Tax Tariff (CIS II 3913 / PAT 0259)",
+      "source_type": "inscription",
+      "language_code": [
+        "arc",
+        "grc"
+      ],
+      "date": "137 CE",
+      "path": "arabia/palmyrene-tax-tariff.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/Palmyra_Tariff"
+    },
+    {
+      "id": "arabia-01-periplus",
+      "region": "Arabia",
+      "title": "Periplus of the Erythraean Sea — Cana and the Frankincense Country (§27–29)",
+      "source_type": "literary_text",
+      "language_code": [
+        "grc"
+      ],
+      "date": "c. 40–70 CE",
+      "path": "arabia/periplus-frankincense-country.json",
+      "has_reference_translation": true,
+      "citation": "https://topostext.org/work/491#27"
+    },
+    {
+      "id": "arabia-04-jabal-dabub",
+      "region": "Arabia",
+      "title": "Jabal Ḏabūb inscription (South Arabian graffito, Late Sabaic)",
+      "source_type": "inscription",
+      "language_code": [
+        "xsa"
+      ],
+      "date": "mid-6th century CE",
+      "path": "arabia/sabaic-jabal-dabub.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/Jabal_Dabub_inscription"
+    },
+    {
+      "id": "eastasia-02-hou-hanshu",
+      "region": "East Asia",
+      "title": "Hou Hanshu (後漢書) 88, Xiyu Zhuan — the 166 CE embassy of 'Andun, King of Da Qin'",
+      "source_type": "literary_text",
+      "language_code": [
+        "lzh"
+      ],
+      "date": "compiled 5th century CE; records an event of 166 CE",
+      "path": "east_asia/hou-hanshu-166-envoy.json",
+      "has_reference_translation": true,
+      "citation": "https://depts.washington.edu/silkroad/texts/hhshu/hou_han_shu.html#sec12"
+    },
+    {
+      "id": "eastasia-03-hwangnam-glass",
+      "region": "East Asia",
+      "title": "Hwangnam-daechong Roman Glassware — Glass Ewer and Cups from the South Mound of Tomb No. 98, Gyeongju (National Treasure No. 193)",
+      "source_type": "find_record",
+      "language_code": [
+        "ko",
+        "en"
+      ],
+      "date": "late 4th century CE (manufacture, likely Roman Syria); deposited in tomb c. 450 CE",
+      "path": "east_asia/hwangnam-daechong-roman-glass.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/Hwangnam-daechong_Roman_Glassware"
+    },
+    {
+      "id": "eastasia-01-weilue",
+      "region": "East Asia",
+      "title": "Weilüe (魏略), 'Peoples of the West' — Section 11, The Kingdom of Da Qin (Rome)",
+      "source_type": "literary_text",
+      "language_code": [
+        "lzh"
+      ],
+      "date": "composed c. 239-265 CE; describes conditions as of the early 3rd century CE",
+      "path": "east_asia/weilue-da-qin.json",
+      "has_reference_translation": true,
+      "citation": "https://depts.washington.edu/silkroad/texts/weilue/weilue.html#section11"
+    },
+    {
+      "id": "persia-03-coin",
+      "region": "Persia",
+      "title": "Sasanian silver drachm of Shapur I",
+      "source_type": "coin_record",
+      "language_code": [
+        "en"
+      ],
+      "date": "241–272 CE",
+      "path": "persia/coin-bm-1843-0620-5.json",
+      "has_reference_translation": false,
+      "citation": "https://www.britishmuseum.org/collection/object/C_1843-0620-5"
+    },
+    {
+      "id": "persia-02-silver-plate",
+      "region": "Persia",
+      "title": "Gilded silver plate showing a Sasanian king hunting (attributed Shapur I or II)",
+      "source_type": "find_record",
+      "language_code": [
+        "en"
+      ],
+      "date": "4th century CE (production); reign attribution disputed between Shapur I, r. 240–272, and Shapur II, r. 309–379",
+      "path": "persia/silver-plate-bm-124091.json",
+      "has_reference_translation": false,
+      "citation": "https://www.britishmuseum.org/collection/object/W_1908-1118-1"
+    },
+    {
+      "id": "persia-01-skz",
+      "region": "Persia",
+      "title": "Res Gestae Divi Saporis (ŠKZ) — Inscription of Shapur I at the Ka'ba-ye Zartosht, Naqsh-e Rostam",
+      "source_type": "inscription",
+      "language_code": [
+        "pal",
+        "xpr",
+        "grc"
+      ],
+      "date": "c. 262 CE (events narrated span 224–262 CE)",
+      "path": "persia/skz-shapur-inscription.json",
+      "has_reference_translation": true,
+      "citation": "https://topostext.org/work/561"
+    },
+    {
+      "id": "scandinavia-02-gudme-hoard",
+      "region": "Scandinavia",
+      "title": "Roman denarius/siliquae hoards from Gudme, Funen, Denmark",
+      "source_type": "find_record",
+      "language_code": [
+        "en",
+        "da"
+      ],
+      "date": "settlement flourished 3rd-7th century CE; the Gudme III hoard's coins are 4th-century CE Roman silver siliquae",
+      "path": "scandinavia/gudme-denarius-hoard.json",
+      "has_reference_translation": false,
+      "citation": "https://en.natmus.dk/historical-knowledge/denmark/prehistoric-period-until-1050-ad/the-late-iron-age/gudme-gold-gods-and-people/the-roman-connection/"
+    },
+    {
+      "id": "scandinavia-01-hoby-treasure",
+      "region": "Scandinavia",
+      "title": "The Hoby treasure — Roman silver drinking cups from a chieftain's grave, Lolland, Denmark",
+      "source_type": "find_record",
+      "language_code": [
+        "en",
+        "grc"
+      ],
+      "date": "grave: 1st century CE (Early Roman Iron Age); table service made in Italy around the start of the Common Era",
+      "path": "scandinavia/hoby-treasure.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/Hoby_treasure"
+    },
+    {
+      "id": "scandinavia-04-illerup-adal",
+      "region": "Scandinavia",
+      "title": "Illerup Ådal weapon sacrifice — Roman coins among a Germanic war-booty deposit",
+      "source_type": "find_record",
+      "language_code": [
+        "en",
+        "da"
+      ],
+      "date": "deposited soon after 205 CE (dendrochronology of shield boards); latest coin minted 187/8 CE",
+      "path": "scandinavia/illerup-adal-weapon-deposit.json",
+      "has_reference_translation": false,
+      "citation": "https://en.wikipedia.org/wiki/Illerup_%C3%85dal"
+    },
+    {
+      "id": "scandinavia-03-vimose",
+      "region": "Scandinavia",
+      "title": "The Vimose inscriptions — earliest datable Elder Futhark runic texts",
+      "source_type": "inscription",
+      "language_code": [
+        "gmq-pro"
+      ],
+      "date": "c. 160-300 CE (Roman Iron Age in Scandinavia)",
+      "path": "scandinavia/vimose-runic-inscriptions.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/Vimose_inscriptions"
+    },
+    {
+      "id": "southasia-01-akananuru-149",
+      "region": "South Asia",
+      "title": "Akananuru 149.7-11 (Erukkattur Tayankannanar) — Yavana ships at Muciri",
+      "source_type": "literary_text",
+      "language_code": [
+        "oty"
+      ],
+      "date": "c. 1st-3rd century CE (Sangam period)",
+      "path": "south_asia/akananuru-149-yavanas.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/Muziris#cite_note-Kulke1-24"
+    },
+    {
+      "id": "southasia-03-muziris-papyrus",
+      "region": "South Asia",
+      "title": "The Muziris Papyrus (SB XVIII 13167) — loan/cargo contract for the ship Hermapollon",
+      "source_type": "literary_text",
+      "language_code": [
+        "grc"
+      ],
+      "date": "mid-2nd century CE",
+      "path": "south_asia/muziris-papyrus.json",
+      "has_reference_translation": true,
+      "citation": "https://www.attalus.org/docs/select1/p187A.html"
+    },
+    {
+      "id": "southasia-04-pattanam",
+      "region": "South Asia",
+      "title": "Pattanam excavation find record (candidate site of ancient Muziris)",
+      "source_type": "find_record",
+      "language_code": [
+        "en"
+      ],
+      "date": "Mediterranean-linked layers: 100 BCE - 400 CE; site occupation from c. 1000 BCE",
+      "path": "south_asia/pattanam-excavation-record.json",
+      "has_reference_translation": false,
+      "citation": "https://en.wikipedia.org/wiki/Muziris#Archeological_excavations"
+    },
+    {
+      "id": "southasia-02-periplus-muziris",
+      "region": "South Asia",
+      "title": "Periplus of the Erythraean Sea — Muziris, Nelkynda and the Limyrike coast (§53-56)",
+      "source_type": "literary_text",
+      "language_code": [
+        "grc"
+      ],
+      "date": "c. 40-70 CE",
+      "path": "south_asia/periplus-muziris.json",
+      "has_reference_translation": true,
+      "citation": "http://depts.washington.edu/silkroad/texts/periplus/periplus.html"
+    },
+    {
+      "id": "seasia-03-khao-sam-kaeo",
+      "region": "Southeast Asia",
+      "title": "Roman carnelian intaglio (Mars?) from Khao Sam Kaeo",
+      "source_type": "find_record",
+      "language_code": [
+        "en"
+      ],
+      "date": "mid-2nd to early 3rd century CE (Roman production); Khao Sam Kaeo site occupied 4th-3rd century BCE onward",
+      "path": "southeast_asia/khao-sam-kaeo-intaglio.json",
+      "has_reference_translation": false,
+      "citation": "https://real.mtak.hu/141407/1/11_HoppalK_DissArch_2021_v01.pdf"
+    },
+    {
+      "id": "seasia-01-oc-eo-medallion",
+      "region": "Southeast Asia",
+      "title": "Gold medallion/pendant imitating a Roman coin of Antoninus Pius, from Óc Eo",
+      "source_type": "find_record",
+      "language_code": [
+        "en",
+        "la"
+      ],
+      "date": "Roman prototype minted under Antoninus Pius, r. 138-161 CE; deposited/found at Óc Eo (excavated 1944)",
+      "path": "southeast_asia/oc-eo-antoninus-medallion.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/%C3%93c_Eo"
+    },
+    {
+      "id": "seasia-02-oc-eo-site",
+      "region": "Southeast Asia",
+      "title": "Óc Eo archaeological site and culture — excavation summary (Funan port, possible Cattigara)",
+      "source_type": "find_record",
+      "language_code": [
+        "en",
+        "vi",
+        "fr"
+      ],
+      "date": "site occupation 2nd century BCE - 12th century CE; Óc Eo culture proper c. 1-630 CE; excavations began 1942",
+      "path": "southeast_asia/oc-eo-site-report.json",
+      "has_reference_translation": false,
+      "citation": "https://en.wikipedia.org/wiki/%C3%93c_Eo"
+    },
+    {
+      "id": "africa-02-aksumite-coin",
+      "region": "Sub-Saharan Africa",
+      "title": "Aksumite gold coin of King Ezanas",
+      "source_type": "coin_record",
+      "language_code": [
+        "en"
+      ],
+      "date": "c. 340-400 CE",
+      "path": "subsaharan_africa/aksumite-gold-coin-ezanas.json",
+      "has_reference_translation": false,
+      "citation": "https://www.britishmuseum.org/collection/object/C_1915-0108-81"
+    },
+    {
+      "id": "africa-01-ezana-stone",
+      "region": "Sub-Saharan Africa",
+      "title": "The Ezana Stone — trilingual inscription of King Ezana of Aksum",
+      "source_type": "inscription",
+      "language_code": [
+        "gez",
+        "xsa",
+        "grc"
+      ],
+      "date": "4th century CE (Ezana reigned c. 330-356 CE)",
+      "path": "subsaharan_africa/ezana-stone.json",
+      "has_reference_translation": true,
+      "citation": "https://en.protothema.gr/the-ezana-stone-of-aksum-a-trilingual-monument-similar-to-the-rosetta-stone/"
+    },
+    {
+      "id": "africa-03-periplus-adulis",
+      "region": "Sub-Saharan Africa",
+      "title": "Periplus of the Erythraean Sea — Adulis and the kingdom of Zoskales (§4, §6)",
+      "source_type": "literary_text",
+      "language_code": [
+        "grc"
+      ],
+      "date": "c. 40-70 CE",
+      "path": "subsaharan_africa/periplus-adulis.json",
+      "has_reference_translation": true,
+      "citation": "https://topostext.org/work/491#4"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "southasia-01-akananuru-149",
+  "region": "South Asia",
+  "title": "Akananuru 149.7-11 (Erukkattur Tayankannanar) — Yavana ships at Muciri",
+  "source_type": "literary_text",
+  "language_code": [
+    "oty"
+  ],
+  "language_note": "Old Tamil. Akananuru is one of the Eight Anthologies (Ettuthokai) of Sangam literature, ~400 love poems by 144 poets, compiled roughly 1st-3rd century CE.",
+  "date": "c. 1st-3rd century CE (Sangam period)",
+  "original_text_excerpt": "சிறுபுன் சிதலை சேண்முயன்று எடுத்த;\nநெடுஞ்செம் புற்றத்து ஒடுங்கிரை முனையின்,\nபுல்லரை இருப்பைத் தொள்ளை வான்பூப்,\nபெருங்கை எண்கின் இருங்கிளை கவரும்\nஅத்த நீள்இடைப் போகி, நன்றும்\nஅரிதுசெய் விழுப்பொருள் எளிதினிற் பெறினும்\nவாரேன்- வாழி, என் நெஞ்சே!- சேரலர்\nசுள்ளியம் பேரியாற்று வெண்நுரை கலங்க,\nயவனர் தந்த வினைமாண் நன்கலம்\nபொன்னொடு வந்து கறியொடு பெயரும்\nவளம்கெழு முசிறி ஆர்ப்பெழ வளஇ,\nஅருஞ்சமம் கடந்து படிமம் வவ்விய\nநெடுநல் யானை அடுபோர்ச் செழியன்\nகொடிநுடங்கு மறுகின் கூடற் குடாஅது,\nபல்பொறி மஞ்ஞை வெல்கொடி உயரிய,\nஒடியா விழவின், நெடியோன் குன்றத்து,\nவண்டுபட நீடிய குண்டுசுனை நீலத்து\nஎதிர்மலர்ப் பிணையல் அன்ன இவள்\nஅரிமதர் மழைக்கண் தெண்பனி கொளவே.",
+  "original_text_note": "Verbatim Old Tamil recovered 2026-08-09 from the Project Madurai Unicode etext of the Akanāṉūṟu (PM 0229), poem 149, complete (19 lines). The edition's marginal line-count markers (5, 10, 15, 19) have been stripped; the poem's wording and line division are unaltered. Lines 7-11 carry the Rome-contact material: the Yavanar (யவனர், Greeks/Romans) bringing gold to Muciri (முசிறி, Muziris) and departing with pepper.",
+  "reference_translation": "...the city where the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans], stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper—when that Muciri, brimming with prosperity, was besieged by the din of war.",
+  "translation_source": "Kulke, Hermann & Rothermund, Dietmar, A History of India (Routledge, 2004), as reproduced on Wikipedia (Muziris).",
+  "citation": "https://en.wikipedia.org/wiki/Muziris#cite_note-Kulke1-24",
+  "citation_original": "https://www.projectmadurai.org/pm_etexts/utf8/pmuni0229.html (Project Madurai PM 0229)",
+  "notes": "One of only 9 Yavana references across the Sangam corpus; directly names Roman/Greek trading ships 'arriving with gold and departing with pepper' at Muziris — a strong candidate for the hero cross-lingual retrieval demo alongside the Weilue/Hou Hanshu East Asia pair.",
+  "text_recovered": "2026-08-09"
+}

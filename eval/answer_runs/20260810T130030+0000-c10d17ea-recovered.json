@@ -1,0 +1,237 @@
+{
+  "timestamp": "2026-08-10T13:00:30+00:00",
+  "timestamp_meaning": "answers.created_at — the row's last write, not necessarily the first run of this answer (UPSERT_ANSWER sets created_at = now() on conflict)",
+  "recovered": true,
+  "recovered_from": "answers + answer_citations",
+  "recovered_absent": [
+    "passages[].text — the passage text shown to the model was never persisted",
+    "passages[].english.text — likewise",
+    "sources_block — the rendered evidence block was never persisted",
+    "refused — not a stored column; infer from the answer text if needed"
+  ],
+  "question": "What do the Vimose runes say?",
+  "question_lang": null,
+  "answer": "The Vimose inscriptions contain several runic texts, though their meanings remain partially uncertain. [S3] The inscriptions include \"harja,\" which is \"likely a personal name or 'comb'/'warrior'\"; \"mariha ... makija,\" which is \"possibly 'Mari (the famous one) is the sword of Alla'\"; and \"awgns,\" which is \"possibly 'son/descendant of Awa'.\" [S3] According to the source, \"Several inscriptions remain only partially deciphered.\" [S3]",
+  "grounded": true,
+  "model": "anthropic/claude-haiku-4-5-20251001",
+  "prompt_version": "p7-answer-v2",
+  "embedding_model": "voyage/voyage-3.5",
+  "retrieval_k": 12,
+  "answer_id": "c10d17eaf934dd076edec39025193ca9",
+  "grounding": {
+    "ok": true,
+    "notes": [],
+    "coverage": 1.0,
+    "failures": {
+      "quoted_metadata": 0,
+      "unknown_markers": 0,
+      "uncited_sentences": 0,
+      "unverified_quotes": 0,
+      "unlabelled_machine": 0,
+      "misattributed_quotes": 0,
+      "claims_on_untranslated": 0
+    },
+    "quote_spans": [
+      {
+        "match": "exact",
+        "quote": "harja,",
+        "doc_id": "scandinavia-03-vimose",
+        "marker": "S3",
+        "within": "source",
+        "abs_end": 5,
+        "chunk_id": "scandinavia-03-vimose::original::000",
+        "abs_start": 0,
+        "source_field": "original_text_excerpt"
+      },
+      {
+        "match": "exact",
+        "quote": "likely a personal name or 'comb'/'warrior'",
+        "doc_id": "scandinavia-03-vimose",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 48,
+        "chunk_id": "scandinavia-03-vimose::translation::000",
+        "abs_start": 7,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "mariha ... makija,",
+        "doc_id": "scandinavia-03-vimose",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 68,
+        "chunk_id": "scandinavia-03-vimose::translation::000",
+        "abs_start": 51,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "possibly 'Mari (the famous one) is the sword of Alla'",
+        "doc_id": "scandinavia-03-vimose",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 122,
+        "chunk_id": "scandinavia-03-vimose::translation::000",
+        "abs_start": 70,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "awgns,",
+        "doc_id": "scandinavia-03-vimose",
+        "marker": "S3",
+        "within": "source",
+        "abs_end": 98,
+        "chunk_id": "scandinavia-03-vimose::original::000",
+        "abs_start": 93,
+        "source_field": "original_text_excerpt"
+      },
+      {
+        "match": "exact",
+        "quote": "possibly 'son/descendant of Awa'.",
+        "doc_id": "scandinavia-03-vimose",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 163,
+        "chunk_id": "scandinavia-03-vimose::translation::000",
+        "abs_start": 132,
+        "source_field": "reference_translation"
+      },
+      {
+        "match": "exact",
+        "quote": "Several inscriptions remain only partially deciphered.",
+        "doc_id": "scandinavia-03-vimose",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 219,
+        "chunk_id": "scandinavia-03-vimose::translation::000",
+        "abs_start": 166,
+        "source_field": "reference_translation"
+      }
+    ],
+    "cited_markers": [
+      "S3"
+    ],
+    "cited_sentences": 3,
+    "claim_sentences": 3,
+    "quoted_metadata": [],
+    "unknown_markers": [],
+    "uncited_sentences": [],
+    "unverified_quotes": [],
+    "unlabelled_machine": [],
+    "misattributed_quotes": [],
+    "claims_on_untranslated": []
+  },
+  "passages": [
+    {
+      "marker": "S1",
+      "chunk_id": "arabia-04-jabal-dabub::original::000",
+      "doc_id": "arabia-04-jabal-dabub",
+      "similarity": 0.43307924270629883,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 79,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S2",
+      "chunk_id": "arabia-03-jsnab17::original::000",
+      "doc_id": "arabia-03-jsnab17",
+      "similarity": 0.4009270191468902,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 206,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S3",
+      "chunk_id": "scandinavia-03-vimose::original::000",
+      "doc_id": "scandinavia-03-vimose",
+      "similarity": 0.38405317759196955,
+      "cited": true,
+      "quoted": true,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 110,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S4",
+      "chunk_id": "scandinavia-01-hoby-treasure::original::000",
+      "doc_id": "scandinavia-01-hoby-treasure",
+      "similarity": 0.35770437121391296,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 110,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S5",
+      "chunk_id": "southasia-01-akananuru-149::original::000",
+      "doc_id": "southasia-01-akananuru-149",
+      "similarity": 0.35490336149355006,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 632,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S6",
+      "chunk_id": "seasia-01-oc-eo-medallion::original::000",
+      "doc_id": "seasia-01-oc-eo-medallion",
+      "similarity": 0.3387709658971718,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 270,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    }
+  ],
+  "notes": null
+}

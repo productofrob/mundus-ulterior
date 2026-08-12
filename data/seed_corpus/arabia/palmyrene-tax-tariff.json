@@ -1,0 +1,21 @@
+{
+  "id": "arabia-02-palmyrene-tariff",
+  "region": "Arabia",
+  "title": "The Palmyrene Tax Tariff (CIS II 3913 / PAT 0259)",
+  "source_type": "inscription",
+  "language_code": [
+    "arc",
+    "grc"
+  ],
+  "language_note": "Bilingual: Palmyrene Aramaic and Greek. The longest lapidary Aramaic inscription known; the Aramaic and Greek versions are not exact translations of each other (the Aramaic is closer to the original 137 CE law, the Greek partially updated), which makes this a strong test case for translation-confidence scoring rather than a clean 1:1 pair.",
+  "date": "137 CE",
+  "findspot": "Palmyra, Syria (discovered 1881); now in the Hermitage Museum, St Petersburg",
+  "original_text_excerpt": "[Full Aramaic and Greek text spans ~400 lines across four inscribed faces (Greek i 1-15 / Aramaic i-ii); not reproduced here — see Healey 2009/2014 critical edition and PDF transcription at citation_pdf below.]",
+  "original_text_note": "No open full-text transliteration located in this pass; flagged for a follow-up pull from the Healey/Shifman critical edition (Oxford, 2014) or the PDF at ostia-antica.org during ingestion.",
+  "reference_translation": null,
+  "translation_source": null,
+  "citation": "https://en.wikipedia.org/wiki/Palmyra_Tariff",
+  "citation_pdf": "https://www.ostia-antica.org/dict/topics/portorium/images/palmyrene-tariff.pdf",
+  "notes": "Palmyra sat astride the Roman/Parthian frontier and the Arabian caravan routes — the tariff is direct documentary evidence of Roman-era customs administration in a non-Roman-language legal text. Original text needs a proper transcription pass before ingestion; currently only a summary is captured. What the tariff regulates: customs duties on goods entering and leaving Palmyra and on local trades, rather than long-distance caravan tolls specifically; J.F. Healey, Aramaic Inscriptions and Documents of the Roman Period (2009) and Shifman/Healey, The Palmyrene Tax Tariff (Oxford, 2014). John Matthews describes it as 'one of the most important single items of evidence for the economic life of any part of the Roman Empire.' This is editorial and secondary-literature material, kept here so it is not citable as source evidence.",
+  "reference_translation_note": "The reference_translation field previously held an editorial summary of what the tariff regulates, together with a quotation from the modern historian John Matthews. It was classified text_fidelity='translation' and was retrieval-eligible, so an answer could have quoted Matthews and presented a modern scholar's judgement as Palmyrene evidence with a citation attached. Moved to notes 2026-08-10. The field is now null: this record's original is a `pointer` and it has no translated text either, which is the honest state until Healey 2009/2014 is transcribed. Same correction as the Vimose record in Part 6, where an English catalogue listing sat in a field labelled as runic transliteration."
+}

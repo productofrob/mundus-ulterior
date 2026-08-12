@@ -1,0 +1,150 @@
+{
+  "note": "Part 8 gold answer cases. Every assertion here is a fact about strings — a substring of the answer, a doc id in the citation rows, a count of quotations that resolved to characters on disk. No judge, no model, nothing that has to be trusted. That is Part 8 decision 2, and it is the same standard Part 7's seven checks hold to.",
+  "why_content_and_not_groundedness": "The six grounding checks verify that a claim carries a citation and that quoted text is really in the source cited. They cannot verify that the claim FOLLOWS FROM the passage, so a refusal is trivially grounded and citation hygiene is maximised by saying as little as possible. Four archived answers to the Aksum question refuse; one of them is scored grounded while the corpus contains the answer in English. A case asserting only `grounded` cannot fail any of them. The loader therefore REFUSES to load a case that makes no content assertion.",
+  "matching": "Substring matching is case-insensitive and whitespace-normalised (runs of whitespace collapse to one space) — the same tolerances cite.locate_in_text already applies, and for the same reason: a writer fitting a phrase into a sentence changes spacing and case without changing what was said. Matching is NOT punctuation-insensitive, because `tortoise-shell` and `tortoise shell` are different strings a source may or may not use, and the case should say which it will accept rather than have the matcher decide.",
+  "baseline": "Expectations below were written against the 16 answers recovered into eval/answer_runs/ (p7-answer-v1, v2 and v3 x 5 questions, plus one extra v3 Aksum row from before the translation fix). `archived_status` records how the archived answers stand against each case at the time of writing. It is an observation, not an expectation — it must never be edited to make a case pass.",
+  "cases": [
+    {
+      "id": "aksum-exports",
+      "question": "What did Rome trade with the Kingdom of Aksum?",
+      "why": "The corpus contains the answer in published English. Schoff's translation of Periplus §6 reads 'There are exported from these places ivory, and tortoise-shell and rhinoceros-horn' at reference_translation[3073:3156] of subsaharan_africa/periplus-adulis.json, aligned to the Greek in original::002. Every archived answer refuses anyway, and the last v3 run refuses while stating the opposite of its own printed evidence — 'they detail what Rome exported to Aksum rather than what Rome imported from it' — and is scored grounded for it. This case exists so that answer cannot pass.",
+      "expect_cited_docs": [
+        "africa-03-periplus-adulis"
+      ],
+      "expect_quoted_docs": [
+        "africa-03-periplus-adulis"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "ivory"
+        ],
+        [
+          "tortoise-shell",
+          "tortoise shell"
+        ],
+        [
+          "rhinoceros"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "FAILS on all four archived answers — but not for the same reason, and the difference matters. v1 (grounded, 2 resolved quotations) quotes the Greek export sentence in full and says 'no English translation is available for the second passage', which was TRUE when it ran: the Adulis translation gap was closed later in Part 7. Its refusal was correct behaviour under the corpus it saw. v3-after-fix (grounded, 0 quotations) refuses with the aligned English present and states the opposite of it. The case scores both FAIL because it is written against today's corpus; separating them needs the corpus state each answer was made against, which the archives do not carry. Do not weaken the case to accommodate v1 — record the corpus version instead."
+    },
+    {
+      "id": "vimose-runes",
+      "question": "What do the Vimose runes say?",
+      "why": "Case zero. Under p7-answer-v2 this produced three runic sequences with their published hedges intact and seven quotations all resolving to disk; under v1 and v3 it retreats to a sentence and quotes the record's title. All three are 'grounded' or 'not grounded' for reasons that have nothing to do with which one serves a reader. The content assertions separate them mechanically, which is what Part 8 exists to do instead of adjudicating prompt versions by hand.",
+      "expect_cited_docs": [
+        "scandinavia-03-vimose"
+      ],
+      "expect_quoted_docs": [
+        "scandinavia-03-vimose"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "harja"
+        ],
+        [
+          "mariha",
+          "makija"
+        ],
+        [
+          "awgns"
+        ],
+        [
+          "likely",
+          "possibly",
+          "partially deciphered",
+          "uncertain"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 3,
+      "note": "The hedge alternatives are required, not decorative. A confident English rendering of a partly undeciphered runic sequence is the worst output this system could produce, because it would arrive attached to a citation. The Part 6 translation case asserts the same thing from the other side, by passing only when the round trip is refused.",
+      "archived_status": "PASSES on v2 (7 resolved quotes, all three sequences, hedges present). FAILS on v1 and v3, both of which refuse and quote the title."
+    },
+    {
+      "id": "muziris-cargo",
+      "question": "What did ships carry from Muziris?",
+      "why": "The case where the pipeline already works, kept so a regression is visible. Periplus §56 is the cargo manifest and was added to the corpus in Part 4 precisely because a record titled 'Muziris and the Limyrike coast' that stopped at §54 omitted the passage documenting the trade.",
+      "expect_cited_docs": [
+        "southasia-02-periplus-muziris"
+      ],
+      "expect_quoted_docs": [
+        "southasia-02-periplus-muziris"
+      ],
+      "expect_answer_contains": [
+        "pepper"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Cottonara",
+          "Kottanarike"
+        ],
+        [
+          "pearls",
+          "ivory",
+          "malabathrum",
+          "tortoise-shell"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 3,
+      "archived_status": "PASSES on v1, v2 and v3 (4, 5 and 3 resolved quotes). v1 is scored NOT grounded on an unrelated check while satisfying every content assertion here."
+    },
+    {
+      "id": "chinese-da-qin",
+      "question": "How did Chinese sources describe the Roman empire?",
+      "why": "The mirror of the Aksum case. All three archived answers are scored NOT grounded — an uncited opening sentence, a real catch — while all three contain accurate, well-quoted content drawn from the Weilue and the Hou Hanshu. Aksum shows groundedness passing a useless answer; this shows it failing a useful one. A harness that tracks only the exit code sees neither.",
+      "expect_cited_docs": [
+        "eastasia-01-weilue"
+      ],
+      "expect_quoted_docs": [
+        "eastasia-01-weilue"
+      ],
+      "expect_answer_contains": [
+        "Da Qin"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "four hundred smaller cities",
+          "four hundred"
+        ],
+        [
+          "166",
+          "Hou Hanshu",
+          "Andun"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 3,
+      "note": "'outer walls of the city made of stone' was recorded in PROGRESS.md across two runs as the corpus's one genuine fabrication. It was not: Hill's translation reads 'The outer walls of the city ARE made of stone' and the model dropped one word while compressing the quotation. Not asserted here — a case should not encode a misquotation, and unverified_quotes already catches it.",
+      "archived_status": "Content PASSES on v1, v2 and v3; all three are scored NOT grounded."
+    },
+    {
+      "id": "antikythera-absent",
+      "question": "When was the Antikythera mechanism built?",
+      "why": "The control. The corpus genuinely contains nothing about the Antikythera mechanism — it is a Mediterranean find, outside the seven regions — so refusal is the correct answer and must be scored as such. Without this case the harness rewards saying more, which is the mirror of the failure it was built to catch.",
+      "expect_refusal": true,
+      "refusal_is_correct_because": "No seed record concerns the Antikythera mechanism. The corpus covers Roman contact with seven regions beyond the Mediterranean; the mechanism is from a wreck off Greece and is not in scope. A confident date here would be invented, not retrieved.",
+      "expect_answer_excludes": [
+        "Antikythera mechanism was built",
+        "second century BC",
+        "1st century BC",
+        "87 BC",
+        "150 BC"
+      ],
+      "note": "The excluded strings are the dangerous failure, not the merely wrong one: a fabricated date arriving attached to a citation. Across five live runs no answer has produced one.",
+      "archived_status": "PASSES on v1, v2 and v3 — all three refuse and none names a date."
+    }
+  ],
+  "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database."
+}

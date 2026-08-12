@@ -1,0 +1,16 @@
+# Runtime dependencies. Keep this file stable — see the pin note below.
+#
+# litellm is PINNED deliberately. It was left unpinned, and adding one unrelated
+# package (sqlglot) made pip re-resolve the whole tree: it backtracked from the
+# working 1.95.0 down to 1.93.0, which ships as an sdist with no cp314 wheel and
+# tried to install a Rust toolchain to build it. On Python 3.14 that fails.
+# Pinning stops the backtracking. Bump it deliberately, not accidentally.
+litellm[proxy]==1.95.0  # model-agnostic gateway
+fastapi==0.115.5        # pinned: litellm proxy imports get_flat_dependant, removed in newer FastAPI
+psycopg[binary]         # Postgres client
+pgvector                # pgvector Python bindings
+python-dotenv           # env/secrets loading
+openai                  # OpenAI-compatible client for the LiteLLM proxy
+
+# Test-only dependencies live in requirements-dev.txt so that installing them
+# can never disturb the runtime resolution above.

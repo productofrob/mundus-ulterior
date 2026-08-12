@@ -1,0 +1,320 @@
+{
+  "ran_at": "2026-08-10T08:44:22+00:00",
+  "cases_requested": "all",
+  "translation_model": "anthropic/claude-haiku-4-5-20251001",
+  "embedding_model": "voyage/voyage-3.5",
+  "back_prompt_version": "p6-backtranslate-v2",
+  "prompt_version": "p6-translate-v1",
+  "results": [
+    {
+      "case": "muziris-54-grc",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "southasia-02-periplus-muziris",
+      "chunk_id": "southasia-02-periplus-muziris::original::001",
+      "lang": "grc",
+      "profile": "prose",
+      "reference_ground": "section",
+      "score": {
+        "profile": "prose",
+        "band": "high",
+        "chrf_back": 0.5625492639368379,
+        "cos_back": 0.9653901207521305,
+        "chrf_ref": 0.5636498137401038,
+        "cos_ref": 0.9376014840548565,
+        "chrf_echo": 0.005535381974697328,
+        "flags": [],
+        "notes": []
+      },
+      "translation": "54. Of the kingdom, Tyndis is a coastal village of Keprobotros, notable; and Muziri is of the same kingdom, flourishing through the ships coming to it from Ariake and through Greek ones; and it lies beside a river, being distant from Tyndis through the river and through the sea five hundred stadia, and from the one at it twenty. And Nelkynda is distant from Muziri about five hundred stadia, similarly through a river and on foot and through the sea, and it is of another kingdom, that of Pandion; and it too lies beside a river, as it were about one hundred twenty stadia from the sea.",
+      "back_translation": "54. Τῆς βασιλείας Τύνδις μὲν κώμη παράλιος τοῦ Κεπροβότρου ἐπίσημος· καὶ Μουζιρὶς τῆς αὐτῆς βασιλείας, εὐθηνοῦσα διά τε τῶν ἐκ τῆς Ἀριάκης πλοίων καὶ τῶν Ἑλληνικῶν· καὶ κεῖται παρὰ ποταμόν, ἀπέχουσα ἀπὸ Τύνδιος διά τε τοῦ ποταμοῦ καὶ τῆς θαλάσσης πεντακοσίους σταδίους, καὶ ἀπὸ τοῦ ἐν αὐτῇ εἴκοσι. Καὶ Νελκύνδα ἀπέχει ἀπὸ Μουζιρίδος ὡς πεντακοσίους σταδίους, ὁμοίως διά τε ποταμοῦ καὶ πεζῇ καὶ διὰ θαλάσσης, καὶ ἐστὶν ἑτέρας βασιλείας, τῆς Πανδίωνος· καὶ αὕτη παρὰ ποταμὸν κεῖται, ὡς ἂν εἴη ἑκατὸν εἴκοσι σταδίων ἀπὸ τῆς θαλάσσης.",
+      "translation_notes": []
+    },
+    {
+      "case": "muziris-56-grc",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "southasia-02-periplus-muziris",
+      "chunk_id": "southasia-02-periplus-muziris::original::003",
+      "lang": "grc",
+      "profile": "prose",
+      "reference_ground": "section",
+      "score": {
+        "profile": "prose",
+        "band": "high",
+        "chrf_back": 0.5536724627383335,
+        "cos_back": 0.9628611338930773,
+        "chrf_ref": 0.4895183575198549,
+        "cos_ref": 0.9237080215538926,
+        "chrf_echo": 0.005752624893673343,
+        "flags": [],
+        "notes": []
+      },
+      "translation": "56. Large ships sail to these trading posts because of the bulk and quantity of pepper and malabathrum. A great deal of money is sent ahead to it, chrysolite, simple clothing not much, multicolored fabrics, stibium, coral, raw glass, copper, tin, lead, wine not much, about as much as in Barygaza, realgar, arsenic, and grain as much as will suffice for those concerned with the ship's operation, because the merchants do not use it. Pepper is brought, being produced uniquely in one place of these trading posts, in the so-called Kottonarike, a considerable and varied amount; and pearl is also brought, and ivory, and Seric linen, and spikenard, the Gangetic kind, and malabathrum from the interior regions to it, and transparent stones of all kinds, and diamond, and hyacinth, and tortoise shell both the Chrysonesian kind and that hunted around the islands lying off Limyrike itself. Those who set out from Egypt in season sail to it around the month of July, which is Epiphi.",
+      "back_translation": "56. Μεγάλα πλοῖα πλέουσιν εἰς τὰ ἐμπόρια ταῦτα διὰ τὸ μέγεθος καὶ τὸ πλῆθος τοῦ πεπέρεως καὶ τοῦ μαλαβάθρου. Χρήματα πολλὰ προπέμπεται εἰς αὐτά, χρυσόλιθος, ἱμάτια ἁπλᾶ οὐ πολλά, ἱμάτια ποικίλα, στίβιον, κοράλλιον, ὕαλος ὠμή, χαλκός, κασσίτερος, μόλυβδος, οἶνος οὐ πολύς, ὅσον περ ἐν Βαρυγάζῃ, ῥεαλγάρ, ἀρσενικόν, καὶ σῖτος ὅσος ἂν ἱκανὸς ᾖ τοῖς περὶ τὴν τοῦ πλοίου ἐργασίαν, ὅτι οἱ ἔμποροι αὐτῷ οὐ χρῶνται. Πέπερι φέρεται, γεννώμενον μόνον ἐν ἑνὶ τόπῳ τῶν ἐμπορίων τούτων, ἐν τῇ λεγομένῃ Κοττοναρικῇ, ἱκανὸν καὶ ποικίλον πλῆθος· καὶ μαργαρῖται φέρονται, καὶ ἐλέφας, καὶ λίνον Σηρικόν, καὶ νάρδος, ἡ Γαγγητικὴ εἶδος, καὶ μαλάβαθρον ἐκ τῶν ἐσωτέρω χωρῶν εἰς αὐτά, καὶ λίθοι διαφανεῖς πάντων εἰδῶν, καὶ ἀδάμας, καὶ ὑάκινθος, καὶ χελώνης ὄστρακον ἥ τε Χρυσονησίων εἶδος καὶ ἡ θηρευομένη περὶ τὰ νησία τὰ κείμενα ἀπὸ τῆς Λιμυρικῆς αὐτῆς. Οἱ ἀπὸ Αἰγύπτου ἐξιόντες κατὰ καιρὸν πλέουσιν εἰς αὐτὰ περὶ τὸν μῆνα τὸν Ἰούλιον, ὅς ἐστιν Ἐπιφί.",
+      "translation_notes": []
+    },
+    {
+      "case": "frankincense-28-grc",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "arabia-01-periplus",
+      "chunk_id": "arabia-01-periplus::original::001",
+      "lang": "grc",
+      "profile": "prose",
+      "reference_ground": "document",
+      "score": {
+        "profile": "prose",
+        "band": "high",
+        "chrf_back": 0.5531823252041391,
+        "cos_back": 0.9365564899407227,
+        "chrf_ref": 0.2748041547067489,
+        "cos_ref": 0.7556380373419731,
+        "chrf_echo": 0.005681171180468091,
+        "flags": [],
+        "notes": []
+      },
+      "translation": "28. And into it are brought from Egypt likewise a small amount of grain and wine just as also into Mousa, and Arabian clothing, similarly both common and plain and the inferior in greater quantity, and copper and tin and coral and styrax and the other things as many as into Mousa; but the greater part silver vessels worked and money for the king, and also horses and statues and clothing of various kinds plain. And exported from it are local cargoes, frankincense and aloe, and the remaining things according to the participation of the other trading posts.",
+      "back_translation": "28. Καὶ εἰς αὐτὴν κομίζεται ἐξ Αἰγύπτου ὁμοίως σῖτος μικρὸς καὶ οἶνος καθάπερ καὶ εἰς Μοῦσαν, καὶ ἱμάτια Ἀραβικά, ὁμοίως καὶ κοινὰ καὶ ἁπλᾶ καὶ τὰ χείρω πλείονι ποσότητι, καὶ χαλκὸς καὶ κασσίτερος καὶ κοράλλιον καὶ στύραξ καὶ τὰ ἄλλα ὅσα καὶ εἰς Μοῦσαν· ἀλλὰ τὸ πλεῖστον σκεύη ἀργυρᾶ κατειργασμένα καὶ χρήματα τῷ βασιλεῖ, καὶ ἵπποι ἔτι καὶ ἀγάλματα καὶ ἱμάτια παντοῖα ἁπλᾶ. Καὶ ἐξάγεται ἐξ αὐτῆς τὰ ἐπιχώρια φορτία, λίβανος καὶ ἀλόη, καὶ τὰ λοιπὰ κατὰ τὴν μέθεξιν τῶν ἄλλων ἐμπορίων.",
+      "translation_notes": []
+    },
+    {
+      "case": "weilue-lzh",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "eastasia-01-weilue",
+      "chunk_id": "eastasia-01-weilue::original::000",
+      "lang": "lzh",
+      "profile": "prose",
+      "reference_ground": "index",
+      "score": {
+        "profile": "prose",
+        "band": "medium",
+        "chrf_back": 0.30889292584571837,
+        "cos_back": 0.8992870028200858,
+        "chrf_ref": 0.20454755319532367,
+        "cos_ref": 0.7960878360157474,
+        "chrf_echo": 0.025732312708637264,
+        "flags": [
+          "short_source_chrf_noisy"
+        ],
+        "notes": [
+          "the source is 52 characters; below 150 the chrF of repeated runs varies by around 0.09, against 0.01 on longer passages. Read cos_back here and treat chrF as indicative only."
+        ]
+      },
+      "translation": "The great Qin state has one name Lijian, located west of the great sea which is west of Anxi and Tiaozhi ... From Angu city one boards a ship and crosses the sea directly, the people west of the sea name it Haixi ... the city has walls made of stone.",
+      "back_translation": "大秦國一名利堅，在大海之西，西於安息、條支之西……自安谷城乘船，直渡海，海西之人名之為海西……城有石為之牆。",
+      "translation_notes": []
+    },
+    {
+      "case": "hou-hanshu-lzh",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "eastasia-02-hou-hanshu",
+      "chunk_id": "eastasia-02-hou-hanshu::original::000",
+      "lang": "lzh",
+      "profile": "prose",
+      "reference_ground": "index",
+      "score": {
+        "profile": "prose",
+        "band": "high",
+        "chrf_back": 0.6309260691079951,
+        "cos_back": 0.9709793705495515,
+        "chrf_ref": 0.25406403729175053,
+        "cos_ref": 0.8734247582980891,
+        "chrf_echo": 0.0,
+        "flags": [
+          "short_source_chrf_noisy"
+        ],
+        "notes": [
+          "the source is 36 characters; below 150 the chrF of repeated runs varies by around 0.09, against 0.01 on longer passages. Read cos_back here and treat chrF as indicative only."
+        ]
+      },
+      "translation": "By the ninth year of Huan Emperor's Yanxi era, the Great Qin king Antoninus sent envoys from beyond the border of Rinan to present ivory, rhinoceros horn, and tortoiseshell, and thus there was first contact.",
+      "back_translation": "至桓帝延熹九年，大秦王安敦遣使自日南外界來獻象牙、犀角、玳瑁，始有往來。",
+      "translation_notes": []
+    },
+    {
+      "case": "akananuru-149-oty",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "southasia-01-akananuru-149",
+      "chunk_id": "southasia-01-akananuru-149::original::000",
+      "lang": "oty",
+      "profile": "verse",
+      "reference_ground": "index",
+      "score": {
+        "profile": "verse",
+        "band": "medium",
+        "chrf_back": 0.32807806404553913,
+        "cos_back": 0.6958261943203331,
+        "chrf_ref": 0.3090882493518251,
+        "cos_ref": 0.7110853239167249,
+        "chrf_echo": 0.004105090311986864,
+        "flags": [],
+        "notes": []
+      },
+      "translation": "Small fragments of broken pottery were picked up;\nIn the long red ant-hill, concealed at the tip,\nThe grass-dwellers rest, the bees swarm in the open sky,\nThe large-handed one counts, the dark-haired youth seizes—\nThat distant-waisted woman, even if\nDifficult deeds and precious things are obtained easily,\nI will not go—Hail, O my heart!—The Chera lords\nWhere the Sulliyan great river's white foam churns,\nThe Yavana-given excellent vessel of deeds\nComes with gold and departs with cargo,\nThe prosperous Musiri rises with abundance,\nHaving crossed the difficult strait, the merchant ship sailed\nThe long noble elephant, the warrior of battle, the fertile one,\nIn the fort where the banner sways, the gathered fortress,\nMany-wheeled chariots, victorious banners raised high,\nFrom the unwearied festival, on the tall mountain,\nExtended by the bees, in the blue pool,\nLike the doe with flowers facing it, this woman\nIn the rain-eyed gaze of the fierce one, receives the cool dew.",
+      "back_translation": "சிறிய பொடிந়த குவளை துண்டுகள் எடுக்கப்பட்டன;\nநீண்ட சிவப்பு எறும்புப் பாழ், முனையில் மறைந்த,\nபுல்-வாழ்வோர் இளைப்பாறுகின்றனர், தேனீ கூட்டம் திறந்த ആகாயத்தில் திரளுகின்றன,\nபெரிய-கையுடையோன் எண்ணுகிறான், இருண்ட-முடியுடைய இளைஞன் பிடிக்கிறான்—\nஅந்த தூர-இடுப்புடைய பெண், இருந்தாலும்\nகடினமான செயல்கள் மற்றும் விலையுயர்ந்த பொருட்கள் எளிதாக பெறப்பட்டாலும்,\nநான் செல்ல மாட்டேன்—வணக்கம், ஓ என் இதயமே!—சேர நாயகர்\nசுள்ளியன் பெரிய நதியின் வெள்ளை நுரை கொந்தளிக்கும் இடத்தில்,\nயவன-கொடுக்கப்பட்ட சிறந்த செயல்களின் பாত்திரம்\nதங்கத்துடன் வந்து சரக்குடன் செல்கிறது,\nசெழிப்பான முசிരி ஏராளத்துடன் எழுகிறது,\nகடினமான நீரிணையைக் கடந்து, வணிக கப்பல் பயணம் செய்தது\nநீண்ட உன்னத யானை, போரின் வீரன், வளமுடையோன்,\nகொடி ஆடும் கோட்டையில், திரண்ட கோட்டை,\nபல-சக்கர தேர்கள், வெற்றி கொடிகள் உயர்த்தப்பட்டன,\nகளைப்பற்ற விழாவிலிருந்து, உயர்ந்த மலையில்,\nதேனீ மூலம் நீட்டப்பட்ட, நீல குளத்தில்,\nமலர்களை எதிர்கொண்ட மான் போல், இந்த பெண்\nகடுமையானவனின் மழை-கண் பார்வையில், குளிர்ந்த பனியைப் பெறுகிறாள்.",
+      "translation_notes": []
+    },
+    {
+      "case": "skz-xpr",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "persia-01-skz",
+      "chunk_id": "persia-01-skz::original::000",
+      "lang": "xpr",
+      "profile": "inscription",
+      "reference_ground": "index",
+      "score": {
+        "profile": "inscription",
+        "band": "medium",
+        "chrf_back": 0.1926552969844242,
+        "cos_back": 0.902397582345453,
+        "chrf_ref": 0.6526643245042477,
+        "cos_ref": 0.9598523817086476,
+        "chrf_echo": 0.10034042249286824,
+        "flags": [
+          "semantic_ok_lexical_low"
+        ],
+        "notes": [
+          "meaning survives the round trip but wording does not — a paraphrase. Expected for verse and for heavily formulaic inscriptions; worth a look in plain prose."
+        ]
+      },
+      "translation": "[§1] I am Mazdean, the god Shapur, king of kings of Iran and non-Iran, whose form is from the gods, son of Mazdean, the god Ardashir, king of kings of Iran, whose form is from the gods, grandson of the god Pabag, king, lord of the Iranian empire.\n\n[§20] From the province of Thrace, from the province of Bithynia, from the province of Asia, from the province of Pamphylia, from the province of Isauria, from the province of Lykaonia, from the province of Galatia, from the province of Lycia, from the province of Cilicia, from the province of Cappadocia, from the province of Phrygia, from the province of Syria.",
+      "back_translation": "[§1] az man Mazdēsn, yazd Šābuhr, šāh šāhān Ērānšahr ud anērānšahr, kē tis az yazdan, puhr Mazdēsn, yazd Ardašīr, šāh šāhān Ērānšahr, kē tis az yazdan, nap yazd Pābag, šāh, xwadāy šāhīh Ērānšahr.\n\n[§20] az šahr Thrākē, az šahr Bithyniyē, az šahr Āsiyē, az šahr Pamphyliyē, az šahr Īsauriyē, az šahr Lykaoniyē, az šahr Galatiyē, az šahr Lykiyē, az šahr Kilikiyē, az šahr Kappadokiyē, az šahr Phrygiyē, az šahr Suriyē.",
+      "translation_notes": []
+    },
+    {
+      "case": "jabal-dabub-xsa",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "arabia-04-jabal-dabub",
+      "chunk_id": "arabia-04-jabal-dabub::original::000",
+      "lang": "xsa",
+      "profile": "inscription",
+      "reference_ground": "index",
+      "score": {
+        "profile": "inscription",
+        "band": "medium",
+        "chrf_back": 0.11316057082478478,
+        "cos_back": 0.7681254506165133,
+        "chrf_ref": 0.33589539838394067,
+        "cos_ref": 0.8964475663229451,
+        "chrf_echo": 0.055114638447971785,
+        "flags": [
+          "short_source_chrf_noisy"
+        ],
+        "notes": [
+          "the source is 79 characters; below 150 the chrF of repeated runs varies by around 0.09, against 0.01 on longer passages. Read cos_back here and treat chrF as indicative only."
+        ]
+      },
+      "translation": "In the name of Rahmanan, Rahmanan the Lord of the heavens / [and] sustenance, the one who favors you and the other, the one who protects you, the power of the right hand.",
+      "back_translation": "B-sm Raḥmānan, Raḥmānan Rabb s-smwt / w-r-rzq, ḏ-y-ʿṭyk w-ʾḫr, ḏ-y-ḥmyk, ʿzz y-mn.",
+      "translation_notes": []
+    },
+    {
+      "case": "raqosh-xna",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "arabia-03-jsnab17",
+      "chunk_id": "arabia-03-jsnab17::original::000",
+      "lang": "xna",
+      "profile": "inscription",
+      "reference_ground": "index",
+      "score": {
+        "profile": "inscription",
+        "band": "medium",
+        "chrf_back": 0.23702024227148222,
+        "cos_back": 0.7887715458488596,
+        "chrf_ref": 0.13462350670805542,
+        "cos_ref": 0.7710149478522812,
+        "chrf_echo": 0.1540491729822211,
+        "flags": [],
+        "notes": []
+      },
+      "translation": "This tomb which ʿbd Kʿbw son of Ḥrtt made for Rqwš daughter of ʿbdmnwtw his mother...",
+      "back_translation": "hdn' qbr' dy ʿbd Kʿbw br Ḥrtt ʿbd l-Rqwš brt ʿbdmnwtw ʾmh...",
+      "translation_notes": []
+    },
+    {
+      "case": "vimose-gmq-pro",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "scandinavia-03-vimose",
+      "chunk_id": "scandinavia-03-vimose::original::000",
+      "lang": "gmq-pro",
+      "profile": "inscription",
+      "reference_ground": "index",
+      "score": {
+        "profile": "inscription",
+        "band": "low",
+        "chrf_back": 0.14196047733235528,
+        "cos_back": 0.6262047545728254,
+        "chrf_ref": 0.13260934965018234,
+        "cos_ref": 0.6934881247667806,
+        "chrf_echo": 1.0,
+        "flags": [
+          "untranslated_echo",
+          "short_source_chrf_noisy"
+        ],
+        "notes": [
+          "the 'translation' is 1.00 chrF identical to the source — the model echoed the passage instead of translating it. The round-trip score below is meaningless.",
+          "the source is 110 characters; below 150 the chrF of repeated runs varies by around 0.09, against 0.01 on longer passages. Read cos_back here and treat chrF as indicative only."
+        ]
+      },
+      "translation": "harja\naadagasu / laasauwija\nmariha [.]ala / makija\ntalijo gisai oj / tkbis hleuno an[.] regu\nawgns\n[w]agni[ŋ]o",
+      "back_translation": "I cannot provide this translation. The passage you've provided appears to be already in runic transliteration or a proto-language form, not English. It does not contain English text that can be translated into Proto-Norse.\n\nTo complete this task, I would need an English passage to translate.",
+      "translation_notes": []
+    },
+    {
+      "case": "adulis-4-grc",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "africa-03-periplus-adulis",
+      "chunk_id": "africa-03-periplus-adulis::original::000",
+      "lang": "grc",
+      "profile": "prose",
+      "reference_ground": "section",
+      "score": {
+        "profile": "prose",
+        "band": "medium",
+        "chrf_back": 0.48607064649957615,
+        "cos_back": 0.924572354520069,
+        "chrf_ref": 0.4183591496180106,
+        "cos_ref": 0.8370286848397618,
+        "chrf_echo": 0.004115623867917878,
+        "flags": [],
+        "notes": []
+      },
+      "translation": "4. After Ptolemais of the Beasts, at a distance of about three thousand stadia, there is a lawful trading post, Adulis, situated in a deep gulf facing directly south, in front of which lies an island called Oreine, distant from the innermost gulf about two hundred stadia toward the open sea, and having the mainland adjacent on both sides, where the ships that are brought down now anchor because of the raids from the land. And on the very mainland in Oreine, at a distance of twenty stadia from the sea, is Adulis, a moderate-sized village, from which to Koloe, an inland city and the first trading post for elephant, is a journey of three days. And from this to the very metropolis of the so-called Auxomites is another five days, to which all the elephant is brought from beyond the Nile through the so-called Kyenaion, and from there to Adulis.",
+      "back_translation": "4. Μετὰ τὴν Πτολεμαΐδα τῶν θηρίων, διαστήματι περὶ τρισχιλίων σταδίων, ἔστι λεγιτίμη ἐμπορία, Ἄδουλις, κειμένη ἐν κόλπῳ βαθεῖ πρὸς νότον ἀντικρύ, πρὸ ἧς νῆσος κειμένη, Ὀρείνη καλουμένη, ἀπέχουσα τοῦ ἐσχάτου κόλπου περὶ διακοσίων σταδίων πρὸς τὸ πέλαγος, καὶ ἔχουσα τὴν ἤπειρον ἐφ' ἑκάτερα προσκειμένην, ὅπου τὰ νῦν καταγόμενα πλοῖα ὁρμοῦνται διὰ τὰς ἀπὸ τῆς γῆς ἐπιδρομάς. Καὶ αὐτῇ τῇ ἠπείρῳ ἐν τῇ Ὀρείνῃ, διαστήματι εἴκοσι σταδίων ἀπὸ τῆς θαλάσσης, Ἄδουλις, κώμη μετρία, ἀφ' ἧς εἰς Κόλοην, πόλιν ἐσωτέρω καὶ πρώτην ἐμπορίαν ἐλεφάντων, ὁδὸς τριῶν ἡμερῶν. Καὶ ἀπὸ ταύτης εἰς αὐτὴν τὴν μητρόπολιν τῶν λεγομένων Αὐξωμιτῶν ἄλλαι πέντε ἡμέραι, εἰς ἣν πᾶς ὁ ἐλέφας κομίζεται ἀπὸ τῶν ἐπέκεινα τοῦ Νείλου διὰ τοῦ λεγομένου Κυναίου, κἀκεῖθεν εἰς Ἄδουλιν.",
+      "translation_notes": []
+    },
+    {
+      "case": "muziris-papyrus-grc",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "southasia-03-muziris-papyrus",
+      "chunk_id": "southasia-03-muziris-papyrus::original::000",
+      "lang": "grc",
+      "profile": "documentary",
+      "reference_ground": "index",
+      "score": {
+        "profile": "documentary",
+        "band": "high",
+        "chrf_back": 0.47772644576385453,
+        "cos_back": 0.9053578554062135,
+        "chrf_ref": 0.44041876927604,
+        "cos_ref": 0.8594742403531657,
+        "chrf_echo": 0.04039077411187788,
+        "flags": [],
+        "notes": []
+      },
+      "translation": "[recto, col. ii] I will give to a worthy camel-driver for the passage at the entrance to Koptos, and I will bring up through the mountain with guard and security to the public receiving warehouses at Koptos, and I will place under your authority or that of your agents or the present representative of them and seal until the river embarkation point, and I will put into the river at the appropriate time a safe boat, and I will bring down to the fourth receiving warehouse in Alexandria\n\n[verso, col. ii] of Gangetic spikenard sixty chests, of which likewise the price is reckoned as per chest (drachmas) 450 of silver (talents) 45, of healthy elephant of weight (talents) 78 minas 54, for the same price of the goods that sailed out in the Hermapollōn boat of cargo of silver (talents) 150 (drachmas) 5052",
+      "back_translation": "[recto, col. ii] δώσω ἀξίῳ κάμηλάρχῳ εἰς τὸ πέρασμα τῆς εἰσόδου τῆς Κόπτου, καὶ ἀναγάγω διὰ τοῦ ὄρους μετὰ φυλακῆς καὶ ἀσφαλείας εἰς τὰ δημόσια ἀποθηκεύματα τῆς Κόπτου, καὶ θήσω ὑπὸ τὴν σὴν ἐξουσίαν ἢ τῶν σῶν ἀντιπροσώπων ἢ τοῦ νῦν ἀντιπροσώπου αὐτῶν καὶ σφραγίσω ἕως τοῦ σημείου τῆς ποταμίας ἐμβάσεως, καὶ θήσω εἰς τὸν ποταμὸν κατὰ τὸν προσήκοντα καιρὸν σκάφος ἀσφαλές, καὶ κατενέγκω εἰς τὸ τέταρτον ἀποθήκευμα τὸ ἐν Ἀλεξανδρείᾳ\n\n[verso, col. ii] τοῦ Γαγγιτικοῦ νάρδου σπικάτου σάκκους ἑξήκοντα, ὧν ὁμοίως ἡ τιμὴ λογίζεται κατὰ σάκκον (δραχμαί) τετρακόσιαι πεντήκοντα τοῦ ἀργύρου (τάλαντα) τεσσαράκοντα πέντε, τοῦ ὑγιοῦς ἐλέφαντος τοῦ βάρους (τάλαντα) ἑβδομήκοντα ὀκτὼ μνᾶ πεντήκοντα τέσσαρα, ἀντὶ τῆς αὐτῆς τιμῆς τῶν ἐμπορευμάτων τῶν ἐκπλευσάντων ἐν τῷ Ἑρμαπόλλωνος σκάφει τοῦ φορτίου τοῦ ἀργύρου (τάλαντα) ἑκατὸν πεντήκοντα (δραχμαί) πεντακισχίλιαι πεντακόσιαι δύο",
+      "translation_notes": []
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "africa-02-aksumite-coin",
+  "region": "Sub-Saharan Africa",
+  "title": "Aksumite gold coin of King Ezanas",
+  "source_type": "coin_record",
+  "language_code": ["en"],
+  "language_note": "British Museum catalogue record in English; Aksumite coin legends are typically in Greek (for gold/silver issues aimed at external trade) or Ge'ez, not transcribed in this record.",
+  "date": "c. 340-400 CE",
+  "findspot": "Found/acquired in Yemen, ~300km north of Aden; minted at Aksum",
+  "original_text_excerpt": "Gold coin. Half-length bust of Ezanas right, crowned, holding stick or sceptre, flanked by two wheat-stalks, the whole in a beaded circle. Half-length bust of Ezanas right, wearing headcloth, holding branch (?) or stick, flanked by two wheat-stalks, the whole in a beaded circle.",
+  "original_text_note": "British Museum catalogue description used as the artefact record.",
+  "reference_translation": null,
+  "translation_source": null,
+  "citation": "https://www.britishmuseum.org/collection/object/C_1915-0108-81",
+  "museum_number": "1915,0108.81",
+  "notes": "Aksum was one of only a handful of ancient states to strike its own gold coinage (alongside Rome, Persia, and the Kushan Empire) — itself a signal of engagement with the Roman-dominated Red Sea gold-trade economy. This specimen's findspot in Yemen, not Ethiopia, is a direct data point for Aksum-Arabia contact (pairs with the Sabaic/Himyarite material in the Arabia cluster). Ezana's later coinage replaced the pagan disc-and-crescent with a cross — possibly the earliest use of the Christian cross on any coinage anywhere — a good fact to verify against a second source before use in an answer."
+}

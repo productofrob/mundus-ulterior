@@ -1,0 +1,21 @@
+{
+  "id": "africa-01-ezana-stone",
+  "region": "Sub-Saharan Africa",
+  "title": "The Ezana Stone — trilingual inscription of King Ezana of Aksum",
+  "source_type": "inscription",
+  "language_code": [
+    "gez",
+    "xsa",
+    "grc"
+  ],
+  "language_note": "Trilingual: Ge'ez (Ethiopic script), Sabaean/Old South Arabian script, and Greek — an African parallel to the ŠKZ (Persia) and Palmyrene Tariff (Arabia) trilingual/bilingual inscriptions already in this seed set, useful for consistent cross-lingual test design.",
+  "date": "4th century CE (Ezana reigned c. 330-356 CE)",
+  "findspot": "Aksum, Tigray Region, Ethiopia (still standing in situ)",
+  "original_text_excerpt": "[Ge'ez, Sabaean, and Greek texts of the Ezana Stone are not transcribed in this pass; pull from Encyclopaedia Aethiopica or the DAE (Deutsche Aksum-Expedition) corpus during ingestion.]",
+  "original_text_note": "English translation of the Greek recension opening located and quoted below; full trilingual transcription needs a dedicated pull (see Bernand, Drewes & Schneider, Recueil des inscriptions de l'Ethiopie, for the critical edition).",
+  "reference_translation": "Aeizanas, king of the Aksumites, Himyarites and Raeidan, the Ethiopians, the Sabaeans and Silei, Tiamo and the Beja and Kasu, king of kings, son of the invincible god Ares.",
+  "translation_source": "Greek titulature as quoted in secondary sources (ProtoThema, 'The Ezana Stone of Aksum'); cross-check against DAE IV / RIE 185 during ingestion.",
+  "citation": "https://en.protothema.gr/the-ezana-stone-of-aksum-a-trilingual-monument-similar-to-the-rosetta-stone/",
+  "notes": "Often called the 'African Rosetta Stone.' Documents Aksum's self-presentation as a multi-regional power (Himyar, Saba, Beja, Kasu/Kush) in direct dialogue with the Greek-speaking Mediterranean world — the clearest African parallel to the Persia ŠKZ inscription for a same-genre, cross-region comparison in the graph phase. Beyond the titulature quoted in reference_translation, the inscription records Ezana's military campaigns and, in later versions, his conversion to Christianity. That is an editorial summary of untranscribed text, not translated wording, and is kept here rather than in a quotable field. The original remains a `pointer` pending DAE IV / RIE 185.",
+  "reference_translation_note": "The field held the translated Greek titulature followed by a bracketed editorial sentence — '[Records Ezana's military campaigns and, in later versions, his conversion to Christianity.]' — summarising what the rest of the inscription contains. The titulature is genuine rendered translation and is kept; the bracketed summary was the corpus editor's prose sitting inside quotable text and moved to notes 2026-08-10. translation_source no longer says 'summarized', because after the edit it is not."
+}

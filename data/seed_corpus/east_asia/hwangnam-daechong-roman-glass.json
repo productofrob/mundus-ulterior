@@ -1,0 +1,17 @@
+{
+  "id": "eastasia-03-hwangnam-glass",
+  "region": "East Asia",
+  "title": "Hwangnam-daechong Roman Glassware — Glass Ewer and Cups from the South Mound of Tomb No. 98, Gyeongju (National Treasure No. 193)",
+  "source_type": "find_record",
+  "language_code": ["ko", "en"],
+  "language_note": "Official Korean Heritage Service record is in Korean (경주 98호 남분 유리병 및 잔); English summary from Wikipedia/Met Museum catalogue (Lee & Leidy, Silla: Korea's Golden Kingdom, 2013) used here. No direct textual original — this is an artefact/find record, included for Pillar 4 (multimodal artefact intelligence) rather than text-pair retrieval.",
+  "date": "late 4th century CE (manufacture, likely Roman Syria); deposited in tomb c. 450 CE",
+  "findspot": "Hwangnam-daechong tomb (South Mound, Tomb No. 98), Gyeongju, North Gyeongsang Province, South Korea; excavated 1975",
+  "original_text_excerpt": "경주 98호 남분 유리병 및 잔 (慶州 九十八號 南墳 琉璃甁 및 盞) — Glass Ewer and Cups from the South Mound of Tomb No. 98, Gyeongju. Designated National Treasure No. 193, 7 December 1978.",
+  "original_text_note": "Korean-language official designation and record held by the Korean Heritage Service (citation_original); full descriptive text should be pulled from that record during ingestion.",
+  "reference_translation": "Set of one ewer (25 x 9.5 cm) and three cups, identified as Late Roman glass, determined on chemical/stylistic grounds to be of Syrian workshop origin (one of four known Roman glass-producing centers: Rome, Alexandria, Cologne, Syria). Imported into the Silla kingdom via Silk Road exchange and deposited as royal grave goods.",
+  "translation_source": "Summarized from Lee, Soyoung & Leidy, Denise Patry, Silla: Korea's Golden Kingdom (Metropolitan Museum of Art, 2013), pp. 115-131, as reproduced on Wikipedia.",
+  "citation": "https://en.wikipedia.org/wiki/Hwangnam-daechong_Roman_Glassware",
+  "citation_original": "https://www.heritage.go.kr/heri/cul/culSelectDetail.do?pageNo=1_1_1_1&VdkVgwKey=11,01930000,11",
+  "notes": "One of the clearest physical-evidence anchors for direct Rome-East Asia material contact via the Silk Road, independent of the textual Weilue/Hou Hanshu sources (eastasia-01, -02). Good candidate for a graph edge linking 'Roman Syria glass workshops' to 'Silla royal tombs' in the Pillar 2 knowledge graph."
+}

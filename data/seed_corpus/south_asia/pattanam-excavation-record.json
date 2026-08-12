@@ -1,0 +1,17 @@
+{
+  "id": "southasia-04-pattanam",
+  "region": "South Asia",
+  "title": "Pattanam excavation find record (candidate site of ancient Muziris)",
+  "source_type": "find_record",
+  "language_code": ["en"],
+  "language_note": "English-language excavation reporting by the Kerala Council for Historical Research (KCHR); no single regional-language primary text — included as an archaeological/artefact anchor (Pillar 4).",
+  "date": "Mediterranean-linked layers: 100 BCE - 400 CE; site occupation from c. 1000 BCE",
+  "findspot": "Pattanam, near North Paravur, Ernakulam district, Kerala, India; excavated 2007-2014 by KCHR",
+  "original_text_excerpt": "Mediterranean objects (100 BC to 400 AD): Amphora and terra sigillata shards; fragments of Roman glass pillar bowls; and gaming counters. West Asian, South Arabian, and Mesopotamian objects (300 BC to 1000 AD): turquoise glazed pottery; torpedo jar fragments; frankincense crumbs. Most remarkable: a fired brick wharf complex with nine teak bollards and a mummified 6-metre dugout canoe (Artocarpus hirsutus).",
+  "original_text_note": "Summary drawn from Wikipedia's synthesis of KCHR season reports; pull the primary KCHR 'Pattanam Seventh Season Handbook' (linked in citation_original) for the authoritative excavation-report text during ingestion.",
+  "reference_translation": null,
+  "translation_source": null,
+  "citation": "https://en.wikipedia.org/wiki/Muziris#Archeological_excavations",
+  "citation_original": "https://web.archive.org/web/20160304031410/http://www.keralahistory.ac.in/pdf2013/pattanam_7th_season_handbook1.pdf",
+  "notes": "Physical corroboration for the textual Muziris cluster (southasia-01 through -03): Roman amphora/terra sigillata shards and a 1983 hoard of Roman coins found ~9.7 km inland support the port identification. DNA analysis of skeletal remains also shows West Eurasian genetic imprints, though ASI has urged caution pending further sampling — worth flagging as a contested/uncertain claim in the eval harness rather than an established fact."
+}

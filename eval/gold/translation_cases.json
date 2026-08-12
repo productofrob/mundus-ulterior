@@ -1,0 +1,124 @@
+{
+  "schema": "mundus-ulterior/translation-cases/v1",
+  "updated": "2026-08-10",
+  "about": "Back-translation gold cases for Part 6. Each names one chunk, the genre profile its score should be read against, and the floor below which the result is a genuine problem rather than a characteristic of the material.",
+  "on_expectations": "The floors are deliberately loose while the thresholds in confidence_profiles.json are uncalibrated. What every case does assert is `expect_no_blocking_flags`: that a round trip happened at all — no echoed source, no refusal, no empty response. That assertion is true or false independently of any threshold, so it is worth failing on today. Tighten the band floors once the first run gives a distribution to argue from.",
+  "cases": [
+    {
+      "id": "muziris-54-grc",
+      "doc_id": "southasia-02-periplus-muziris",
+      "section": "54",
+      "source_lang": "grc",
+      "profile": "prose",
+      "expect_min_band": "medium",
+      "expect_no_blocking_flags": true,
+      "note": "The corpus's cleanest case: Müller's Greek and Schoff's English cover the same four sections and split into four chunks each, so the reference comparison is section-to-section rather than document-to-document. If the confidence check does not work here it does not work."
+    },
+    {
+      "id": "muziris-56-grc",
+      "doc_id": "southasia-02-periplus-muziris",
+      "section": "56",
+      "source_lang": "grc",
+      "profile": "prose",
+      "expect_min_band": "medium",
+      "expect_no_blocking_flags": true,
+      "note": "The cargo manifest — pepper from Kottanarike, Gangetic nard, ivory, Chinese silk cloth, pearls, diamonds. A long list of commodities and place names, which is harder on a round trip than continuous prose: proper names survive, syntax does not."
+    },
+    {
+      "id": "frankincense-28-grc",
+      "doc_id": "arabia-01-periplus",
+      "section": "28",
+      "source_lang": "grc",
+      "profile": "prose",
+      "expect_min_band": "medium",
+      "expect_no_blocking_flags": true,
+      "reference_ground_expected": "document",
+      "note": "Greek §27-29 splits into three chunks against a single English summary chunk, so no section alignment is available and the published translation can only be compared at document level. The run records that as reference_ground='document'; chrf_ref is correspondingly weak evidence here and should not be read as a translation error."
+    },
+    {
+      "id": "weilue-lzh",
+      "doc_id": "eastasia-01-weilue",
+      "source_lang": "lzh",
+      "profile": "prose",
+      "expect_min_band": "low",
+      "expect_no_blocking_flags": true,
+      "note": "52 characters of Literary Chinese with an internal elision, against 693 characters of expansive English. chrf_ref will be very low for reasons that have nothing to do with translation quality: the reference is not a translation of this excerpt so much as a summary around it. Watch cos_back, not chrf_ref."
+    },
+    {
+      "id": "hou-hanshu-lzh",
+      "doc_id": "eastasia-02-hou-hanshu",
+      "source_lang": "lzh",
+      "profile": "prose",
+      "expect_min_band": "low",
+      "expect_no_blocking_flags": true,
+      "note": "36 characters — the single sentence recording the 166 CE embassy from Da Qin. Short texts have few character n-grams, so chrF is noisy at this length; this case is really a test of whether a 36-character source round-trips at all."
+    },
+    {
+      "id": "akananuru-149-oty",
+      "doc_id": "southasia-01-akananuru-149",
+      "source_lang": "oty",
+      "profile": "verse",
+      "expect_min_band": "low",
+      "expect_no_blocking_flags": true,
+      "allow_flags": ["semantic_ok_lexical_low"],
+      "note": "Sangam verse. A low chrF here is the correct answer, not a defect — which is why the flag is allowed rather than tolerated silently. Old Tamil also scored lowest of any script in the Part 4 retrieval check (0.368), so a poor cos_back would be ambiguous between the translator and the embedding model. Do not draw a conclusion about either from this case alone."
+    },
+    {
+      "id": "skz-xpr",
+      "doc_id": "persia-01-skz",
+      "source_lang": "xpr",
+      "profile": "inscription",
+      "expect_min_band": "low",
+      "expect_no_blocking_flags": true,
+      "note": "The hardest case in the corpus and the most valuable: Parthian in scholarly transliteration, where a low confidence score would be the CORRECT result. If this scores as high as the Greek prose, the metric is not measuring anything. Watch for `untranslated_echo` in particular — a Latin-script source is the shape a model is most likely to hand straight back."
+    },
+    {
+      "id": "jabal-dabub-xsa",
+      "doc_id": "arabia-04-jabal-dabub",
+      "source_lang": "xsa",
+      "profile": "inscription",
+      "expect_min_band": "low",
+      "expect_no_blocking_flags": true,
+      "note": "79 characters of Sabaic in transliteration, word-divided by pipes. Also the record the manifest flags as 6th-century and not directly Rome-linked; it earns its place here as a script test, not as evidence."
+    },
+    {
+      "id": "raqosh-xna",
+      "doc_id": "arabia-03-jsnab17",
+      "source_lang": "xna",
+      "profile": "inscription",
+      "expect_min_band": "low",
+      "expect_no_blocking_flags": true,
+      "note": "Added 2026-08-10. The Nabataean epitaph of Raqosh, in transliteration. Added because the inscription profile had only two cases and both scored below its chrF floor for the same structural reason — a transliteration/transcription convention gap rather than a translation error. Two more cases are needed before that reading can be trusted."
+    },
+    {
+      "id": "vimose-gmq-pro",
+      "doc_id": "scandinavia-03-vimose",
+      "source_lang": "gmq-pro",
+      "profile": "inscription",
+      "expect_min_band": "low",
+      "expect_no_blocking_flags": false,
+      "expect_untranslatable": true,
+      "note": "Added 2026-08-10, and it earned its place on the first run. The record's original field then mixed English object labels with the runic text; the model correctly declined to translate an English catalogue listing and returned it verbatim, scoring chrF 0.981 against its own source and failing on `untranslated_echo`. That was a corpus defect, not a translator defect — an English museum label was sitting in the retrieval index labelled as Proto-Norse source text. The record was restructured the same day to hold the transliterations only. It echoed again on the clean field (chrf_echo 1.00), and that is the answer, not a failure to fix. Six short, partly undeciphered runic sequences — the published translation itself reads 'likely', 'possibly', 'remain only partially deciphered' — carry too little context to translate, and the model returning them verbatim is the correct behaviour. Reclassified 2026-08-10 as `expect_untranslatable`: the case now passes when the pipeline REFUSES, and fails if a clean translation ever appears. That inversion is the point. A confident English rendering of an undeciphered runic sequence is the single worst output this system could produce, because it would arrive attached to a citation. Part 7 must present this record as source plus published gloss, never as a machine translation."
+    },
+    {
+      "id": "adulis-4-grc",
+      "doc_id": "africa-03-periplus-adulis",
+      "section": "4",
+      "source_lang": "grc",
+      "profile": "prose",
+      "expect_min_band": "medium",
+      "expect_no_blocking_flags": true,
+      "reference_ground_expected": "document",
+      "note": "Added 2026-08-10 to give the prose profile a sixth case and a second region. Three Greek chunks against one English summary, so the published translation compares at document level only."
+    },
+    {
+      "id": "muziris-papyrus-grc",
+      "doc_id": "southasia-03-muziris-papyrus",
+      "source_lang": "grc",
+      "profile": "documentary",
+      "expect_min_band": "low",
+      "expect_no_blocking_flags": true,
+      "note": "SB 18 13167, the Muziris papyrus: a shipping contract with editorial markers ([recto, col. ii]), abbreviations and figures. Documentary Greek behaves nothing like the Periplus's narrative Greek, which is the point of scoring it under a separate profile."
+    }
+  ]
+}

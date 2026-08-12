@@ -1,0 +1,202 @@
+{
+  "timestamp": "2026-08-10T12:46:02+00:00",
+  "timestamp_meaning": "answers.created_at — the row's last write, not necessarily the first run of this answer (UPSERT_ANSWER sets created_at = now() on conflict)",
+  "recovered": true,
+  "recovered_from": "answers + answer_citations",
+  "recovered_absent": [
+    "passages[].text — the passage text shown to the model was never persisted",
+    "passages[].english.text — likewise",
+    "sources_block — the rendered evidence block was never persisted",
+    "refused — not a stored column; infer from the answer text if needed"
+  ],
+  "question": "What do the Vimose runes say?",
+  "question_lang": null,
+  "answer": "The sources retrieved do not answer this question. The sources do provide information about the Vimose inscriptions: they are \"earliest datable Elder Futhark runic texts\" from \"c. 160-300 CE (Roman Iron Age in Scandinavia),\" and several individual words or phrases are partially deciphered, such as \"harja: likely a personal name or 'comb'/'warrior'\" and \"mariha ... makija: possibly 'Mari (the famous one) is the sword of Alla',\" though \"several inscriptions remain only partially deciphered.\" [S3]",
+  "grounded": false,
+  "model": "anthropic/claude-haiku-4-5-20251001",
+  "prompt_version": "p7-answer-v1",
+  "embedding_model": "voyage/voyage-3.5",
+  "retrieval_k": 12,
+  "answer_id": "45564976ad3fdd8a595aa7903a92cfb4",
+  "grounding": {
+    "ok": false,
+    "notes": [],
+    "coverage": 1.0,
+    "failures": {
+      "unknown_markers": 0,
+      "uncited_sentences": 0,
+      "unverified_quotes": 4,
+      "unlabelled_machine": 0,
+      "misattributed_quotes": 0,
+      "claims_on_untranslated": 0
+    },
+    "quote_spans": [
+      {
+        "match": "exact",
+        "quote": "harja: likely a personal name or 'comb'/'warrior'",
+        "doc_id": "scandinavia-03-vimose",
+        "marker": "S3",
+        "within": "english",
+        "abs_end": 49,
+        "chunk_id": "scandinavia-03-vimose::translation::000",
+        "abs_start": 0,
+        "source_field": "reference_translation"
+      }
+    ],
+    "cited_markers": [
+      "S3"
+    ],
+    "cited_sentences": 1,
+    "claim_sentences": 1,
+    "unknown_markers": [],
+    "uncited_sentences": [],
+    "unverified_quotes": [
+      {
+        "cited": [
+          "S3"
+        ],
+        "quote": "earliest datable Elder Futhark runic texts",
+        "reason": "this text appears in no supplied passage, in either the source language or the English. It was not copied from the evidence.",
+        "sentence": "The sources do provide information about the Vimose inscriptions: they are \"earliest datable Elder Futhark runic texts\" from \"c. 160-300 CE (Roman Iron Age in Scandinavia),\" and several individual words or phrases are partially deciphered, such as \"harja: likely a personal name or 'comb'/'warrior'\" and \"mariha ... makija: possibly 'Mari (the famous one) is the sword of Alla',\" though \"several inscriptions remain only partially deciphered.\" [S3]"
+      },
+      {
+        "cited": [
+          "S3"
+        ],
+        "quote": "c. 160-300 CE (Roman Iron Age in Scandinavia),",
+        "reason": "this text appears in no supplied passage, in either the source language or the English. It was not copied from the evidence.",
+        "sentence": "The sources do provide information about the Vimose inscriptions: they are \"earliest datable Elder Futhark runic texts\" from \"c. 160-300 CE (Roman Iron Age in Scandinavia),\" and several individual words or phrases are partially deciphered, such as \"harja: likely a personal name or 'comb'/'warrior'\" and \"mariha ... makija: possibly 'Mari (the famous one) is the sword of Alla',\" though \"several inscriptions remain only partially deciphered.\" [S3]"
+      },
+      {
+        "cited": [
+          "S3"
+        ],
+        "quote": "mariha ... makija: possibly 'Mari (the famous one) is the sword of Alla',",
+        "reason": "this text appears in no supplied passage, in either the source language or the English. It was not copied from the evidence.",
+        "sentence": "The sources do provide information about the Vimose inscriptions: they are \"earliest datable Elder Futhark runic texts\" from \"c. 160-300 CE (Roman Iron Age in Scandinavia),\" and several individual words or phrases are partially deciphered, such as \"harja: likely a personal name or 'comb'/'warrior'\" and \"mariha ... makija: possibly 'Mari (the famous one) is the sword of Alla',\" though \"several inscriptions remain only partially deciphered.\" [S3]"
+      },
+      {
+        "cited": [
+          "S3"
+        ],
+        "quote": "several inscriptions remain only partially deciphered.",
+        "reason": "this text appears in no supplied passage, in either the source language or the English. It was not copied from the evidence.",
+        "sentence": "The sources do provide information about the Vimose inscriptions: they are \"earliest datable Elder Futhark runic texts\" from \"c. 160-300 CE (Roman Iron Age in Scandinavia),\" and several individual words or phrases are partially deciphered, such as \"harja: likely a personal name or 'comb'/'warrior'\" and \"mariha ... makija: possibly 'Mari (the famous one) is the sword of Alla',\" though \"several inscriptions remain only partially deciphered.\" [S3]"
+      }
+    ],
+    "unlabelled_machine": [],
+    "misattributed_quotes": [],
+    "claims_on_untranslated": []
+  },
+  "passages": [
+    {
+      "marker": "S1",
+      "chunk_id": "arabia-04-jabal-dabub::original::000",
+      "doc_id": "arabia-04-jabal-dabub",
+      "similarity": 0.43307924270629883,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 79,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S2",
+      "chunk_id": "arabia-03-jsnab17::original::000",
+      "doc_id": "arabia-03-jsnab17",
+      "similarity": 0.4009270191468902,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 206,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S3",
+      "chunk_id": "scandinavia-03-vimose::original::000",
+      "doc_id": "scandinavia-03-vimose",
+      "similarity": 0.38405317759196955,
+      "cited": true,
+      "quoted": true,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 110,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S4",
+      "chunk_id": "scandinavia-01-hoby-treasure::original::000",
+      "doc_id": "scandinavia-01-hoby-treasure",
+      "similarity": 0.35770437121391296,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 110,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S5",
+      "chunk_id": "southasia-01-akananuru-149::original::000",
+      "doc_id": "southasia-01-akananuru-149",
+      "similarity": 0.35490336149355006,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 632,
+      "english": {
+        "kind": "published",
+        "ground": "index",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S6",
+      "chunk_id": "seasia-01-oc-eo-medallion::original::000",
+      "doc_id": "seasia-01-oc-eo-medallion",
+      "similarity": 0.3387709658971718,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 270,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    }
+  ],
+  "notes": null
+}

@@ -1,0 +1,16 @@
+{
+  "id": "seasia-03-khao-sam-kaeo",
+  "region": "Southeast Asia",
+  "title": "Roman carnelian intaglio (Mars?) from Khao Sam Kaeo",
+  "source_type": "find_record",
+  "language_code": ["en"],
+  "language_note": "Scholarly excavation/gemological report in English (Bérénice Bellina et al. excavation project); no inscribed text on the object itself, which is a carved gemstone.",
+  "date": "mid-2nd to early 3rd century CE (Roman production); Khao Sam Kaeo site occupied 4th-3rd century BCE onward",
+  "findspot": "Khao Sam Kaeo, Chumphon Province, upper Thai-Malay Peninsula, Thailand",
+  "original_text_excerpt": "A Roman intaglio, yellow carnelian, depicting a standing figure, probably Mars, dressed in military costume with a crested helmet. Lacks secure stratigraphic context, but provenance from the site is not doubted.",
+  "original_text_note": "Description drawn from Borell/Hoppal gemological studies of Roman engraved gems from Southeast Asia; treat as the closest 'original text' available for this artefact record.",
+  "reference_translation": null,
+  "translation_source": null,
+  "citation": "https://real.mtak.hu/141407/1/11_HoppalK_DissArch_2021_v01.pdf",
+  "notes": "Khao Sam Kaeo is an early port-city (4th century BCE onward) on the trans-peninsular route linking the Indian Ocean to the South China Sea, and yielded South Asian seals alongside this Roman intaglio — direct physical evidence of the same Indian-Ocean exchange network documented textually in the South Asia cluster (Periplus, Muziris papyrus). Good candidate for a 'maritime route' graph edge spanning South Asia and Southeast Asia."
+}

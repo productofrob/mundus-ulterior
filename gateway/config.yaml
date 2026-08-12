@@ -1,0 +1,18 @@
+# LiteLLM proxy config. Every LLM + embedding call in the app goes through here,
+# so swapping models later (e.g. BGE-M3 in Part 4) is a config-only change.
+model_list:
+  # chat model — Anthropic Claude
+  - model_name: chat-default
+    litellm_params:
+      model: anthropic/claude-haiku-4-5-20251001   # cheap for the hello test; swap to claude-sonnet-5 anytime
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # embedding model — Voyage AI (Anthropic's recommended embeddings partner).
+  # BGE-M3 replaces this in Part 4.
+  - model_name: embed-default
+    litellm_params:
+      model: voyage/voyage-3.5
+      api_key: os.environ/VOYAGE_API_KEY
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY

@@ -1,0 +1,16 @@
+{
+  "id": "eastasia-01-weilue",
+  "region": "East Asia",
+  "title": "Weilüe (魏略), 'Peoples of the West' — Section 11, The Kingdom of Da Qin (Rome)",
+  "source_type": "literary_text",
+  "language_code": ["lzh"],
+  "language_note": "Classical Chinese. The Weilüe itself is lost as an independent work; this section survives because Pei Songzhi quoted it in his 429 CE commentary to the Sanguozhi (Wei Shu 30). Original composed by Yu Huan, c. 239-265 CE.",
+  "date": "composed c. 239-265 CE; describes conditions as of the early 3rd century CE",
+  "original_text_excerpt": "大秦國一號犂靬，在安息、條支西大海之西 ... 從安谷城乘船直渡海，海西人名之海西 ... 城以石為壁。",
+  "original_text_note": "Paraphrase-reconstructed excerpt based on secondary citations of the Pei Songzhi-preserved text; the authoritative transcription is at the Chinese Wikisource '魏略輯本' page (citation_original) and should be pulled verbatim, character-by-character, during ingestion rather than reproduced from this summary.",
+  "reference_translation": "The kingdom of Da Qin (Rome) is also called Lijian. It is west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea. From the city of Angu (Gerrha), on the frontier of Anxi (Parthia), you take a boat and cut directly across to Haixi ('West of the Sea' = Egypt). With favourable winds it takes two months; if the winds are slow, perhaps a year; if there is no wind, perhaps three years... This country (the Roman Empire) has more than four hundred smaller cities and towns. It extends several thousand li in all directions. The king has his capital (that is, the city of Rome) close to the mouth of a river (the Tiber). The outer walls of the city are made of stone.",
+  "translation_source": "John E. Hill, 'The Peoples of the West from the Weilüe by Yu Huan: A Third Century Chinese Account Composed between 239 and 265 CE', draft annotated translation, University of Washington Silk Road Seattle project.",
+  "citation": "https://depts.washington.edu/silkroad/texts/weilue/weilue.html#section11",
+  "citation_original": "https://zh.wikisource.org/wiki/%E9%AD%8F%E7%95%A5%E8%BC%AF%E6%9C%AC",
+  "notes": "This is the exact hero-demo source named in the project's AI Technology Showcase brief ('Retrieves the Weilue passage on Da Qin in Classical Chinese'). High priority for the cross-lingual retrieval sanity check — pair with the Hou Hanshu 166 CE envoy passage (eastasia-02) for a same-topic, two-source comparison."
+}

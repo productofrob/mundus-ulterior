@@ -1,0 +1,167 @@
+{
+  "timestamp": "2026-08-10T13:08:53+00:00",
+  "timestamp_meaning": "answers.created_at — the row's last write, not necessarily the first run of this answer (UPSERT_ANSWER sets created_at = now() on conflict)",
+  "recovered": true,
+  "recovered_from": "answers + answer_citations",
+  "recovered_absent": [
+    "passages[].text — the passage text shown to the model was never persisted",
+    "passages[].english.text — likewise",
+    "sources_block — the rendered evidence block was never persisted",
+    "refused — not a stored column; infer from the answer text if needed"
+  ],
+  "question": "What did Rome trade with the Kingdom of Aksum?",
+  "question_lang": null,
+  "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with Aksum (the kingdom of Zoskales/Auxumites) and with other regions, but they do not specify what Rome itself traded to Aksum in exchange for what Aksum provided. [S1][S4]",
+  "grounded": false,
+  "model": "anthropic/claude-haiku-4-5-20251001",
+  "prompt_version": "p7-answer-v3",
+  "embedding_model": "voyage/voyage-3.5",
+  "retrieval_k": 12,
+  "answer_id": "465fd008b4133e5534a1732990a50103",
+  "grounding": {
+    "ok": false,
+    "notes": [],
+    "coverage": 1.0,
+    "failures": {
+      "quoted_metadata": 0,
+      "unknown_markers": 0,
+      "uncited_sentences": 0,
+      "unverified_quotes": 0,
+      "unlabelled_machine": 0,
+      "misattributed_quotes": 0,
+      "claims_on_untranslated": 1
+    },
+    "quote_spans": [],
+    "cited_markers": [
+      "S1",
+      "S4"
+    ],
+    "cited_sentences": 1,
+    "claim_sentences": 1,
+    "quoted_metadata": [],
+    "unknown_markers": [],
+    "uncited_sentences": [],
+    "unverified_quotes": [],
+    "unlabelled_machine": [],
+    "misattributed_quotes": [],
+    "claims_on_untranslated": [
+      {
+        "marker": "S4",
+        "reason": "no English exists for this passage: the record carries no published translation, and no Part 6 machine translation has been made and scored for it. It has NOT been translated here — an untracked translation made at answer time would carry no confidence score and no provenance, and would still arrive attached to a citation.",
+        "chunk_id": "africa-03-periplus-adulis::original::002",
+        "sentence": "The sources describe Roman trade with Aksum (the kingdom of Zoskales/Auxumites) and with other regions, but they do not specify what Rome itself traded to Aksum in exchange for what Aksum provided. [S1][S4]"
+      }
+    ]
+  },
+  "passages": [
+    {
+      "marker": "S1",
+      "chunk_id": "africa-03-periplus-adulis::original::000",
+      "doc_id": "africa-03-periplus-adulis",
+      "similarity": 0.572662864486159,
+      "cited": true,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 762,
+      "english": {
+        "kind": "published",
+        "ground": "section",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S2",
+      "chunk_id": "southasia-02-periplus-muziris::original::003",
+      "doc_id": "southasia-02-periplus-muziris",
+      "similarity": 0.5300767737672875,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 1301,
+      "char_end": 2220,
+      "english": {
+        "kind": "published",
+        "ground": "section",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S3",
+      "chunk_id": "arabia-01-periplus::original::001",
+      "doc_id": "arabia-01-periplus",
+      "similarity": 0.5018333794872056,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 635,
+      "char_end": 1111,
+      "english": {
+        "kind": "machine",
+        "ground": "passage",
+        "band": "high",
+        "profile": "prose",
+        "flags": []
+      }
+    },
+    {
+      "marker": "S4",
+      "chunk_id": "africa-03-periplus-adulis::original::002",
+      "doc_id": "africa-03-periplus-adulis",
+      "similarity": 0.49782498148456145,
+      "cited": true,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 1170,
+      "char_end": 2089,
+      "english": {
+        "kind": "none",
+        "ground": null,
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S5",
+      "chunk_id": "scandinavia-04-illerup-adal::original::000",
+      "doc_id": "scandinavia-04-illerup-adal",
+      "similarity": 0.46330925603564865,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 238,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    },
+    {
+      "marker": "S6",
+      "chunk_id": "scandinavia-01-hoby-treasure::original::000",
+      "doc_id": "scandinavia-01-hoby-treasure",
+      "similarity": 0.45316046476365424,
+      "cited": false,
+      "quoted": false,
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 110,
+      "english": {
+        "kind": "source",
+        "ground": "self",
+        "band": null,
+        "profile": null,
+        "flags": []
+      }
+    }
+  ],
+  "notes": null
+}

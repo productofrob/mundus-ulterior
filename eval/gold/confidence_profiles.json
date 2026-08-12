@@ -1,0 +1,43 @@
+{
+  "schema": "mundus-ulterior/confidence-profiles/v1",
+  "updated": "2026-08-10",
+  "about": "Thresholds for the Part 6 back-translation confidence score, by genre of source text. They live in data because a threshold hard-coded in Python invites the wrong move — quietly loosening the metric until the corpus passes.",
+  "first_run_finding": "The run of 2026-08-10 (9 cases, claude-haiku-4-5) showed cos_back is COMPRESSED AND HIGH: 8 of 9 cases landed between 0.767 and 0.967, and the one outlier (0.573) was a script mismatch rather than a bad translation. Two texts in the same language about the same subject sit near each other in voyage space almost regardless of translation quality, so the original thresholds (prose cos_high 0.75) sat far below the entire observed distribution and could not have failed anything. Thresholds below are moved up to the bottom edge of the observed good cases, so that a regression now moves a band instead of disappearing into headroom.",
+  "threshold_origin": "All four profiles' original cos thresholds were too low, by roughly the same margin, and for one traceable reason: they were anchored on the Part 4 retrieval numbers, where an English query matched a Greek or Chinese source at 0.47-0.52 and same-language query-to-document ran 0.61-0.68. But this check compares two renderings of the SAME passage in the SAME language, which is a much easier problem and lands far higher. Every profile has since been moved up. Where a profile has enough cases to speak for itself (prose, n=5) that move is calibration; where it does not (documentary and verse at n=1, inscription at n=2) it is this systematic correction applied to a profile that remains uncalibrated. The distinction is kept in the `calibrated` flag deliberately — a threshold set by analogy is not a threshold set by measurement.",
+  "cross_profile_warning": "Bands are genre-relative and are NOT comparable across profiles. A `high` on verse (cos 0.699) and a `high` on prose (cos 0.967) do not describe the same quality of evidence. Part 7 must not rank or filter sources by band across genres without also reading the raw scores.",
+  "how_to_calibrate": "Run `python -m eval.run_translation_check` (add `--case ID` to re-run one case, `--limit N` to cap cost), read the `observed by profile` block and eval/translation_check_last_run.json, and set cos_high near the LOW end of the clearly-good cases, not at the mean. If a whole profile lands below its floor, ask whether the profile is wrong before concluding the translator is. Do not mark a profile calibrated on n=1: add cases to eval/gold/translation_cases.json first — 18 chunks are translatable and only 12 are covered.",
+  "profiles": {
+    "prose": {
+      "cos_high": 0.95,
+      "cos_low": 0.80,
+      "chrf_high": 0.50,
+      "chrf_low": 0.20,
+      "calibrated": true,
+      "note": "Continuous literary or descriptive prose — the Periplus sections, the Weilüe and Hou Hanshu notices. Recalibrated 2026-08-10 from 24 observations across five archived runs, sorted: 0.874 0.874 0.874 0.875 0.899 | 0.925 0.936 0.937 0.937 0.939 0.939 0.943 | 0.962 0.963 0.964 0.964 0.964 0.965 0.965 0.967 0.968 0.968 0.969 0.971. Three clusters, not two, and no natural binary split. The first setting of 0.93 fell in a narrow gap and adulis-4-grc promptly straddled it, banding high (0.943) in one run and medium (0.925) in the next on identical input — a band that changes when nothing changed is worse than a coarse one. 0.95 is chosen because NO observed case crosses it: everything at or above 0.962 is stably high, everything at or below 0.943 is stably medium. THE STABILITY CRITERION IS THE POINT — place a threshold where no observed case straddles it, and confirm with --repeat before trusting it. The cost of this choice is that frankincense-28 and adulis-4 (0.925-0.943, both sound translations) read as medium; that is a deliberate decision about what 'high' should mean — reserved for the top cluster, so the band carries signal — and not something the data decides on its own. chrf_low was LOWERED from 0.25 to 0.20 for a specific reason: the two Literary Chinese cases scored 0.213 and 0.579 on materially similar work. That was first read as chrF being script-sensitive; the variance run of 2026-08-10 corrected it. Three repetitions of each case gave a chrF spread of 0.009-0.012 on sources of 476-919 characters and 0.093 on the 52-character Weilüe notice, with cosine moving 0.003 or less throughout. The driver is LENGTH, not script — both Chinese chunks are the shortest in the corpus. Sources under 150 characters now carry a non-blocking `short_source_chrf_noisy` flag, and their chrF should be read as indicative only."
+    },
+    "documentary": {
+      "cos_high": 0.88,
+      "cos_low": 0.72,
+      "chrf_high": 0.40,
+      "chrf_low": 0.20,
+      "calibrated": false,
+      "note": "Contracts, accounts and papyri — the Muziris papyrus. Formulaic, heavily abbreviated, and full of figures and proper names, so wording is brittle even when meaning is right. Observed 2026-08-10 at n=1: cos 0.896, chrF 0.506 — comfortably the best chrF of any non-Greek-prose case, which is worth noticing but is one data point. cos thresholds raised by the systematic correction described in `threshold_origin`, not calibrated: there is exactly one documentary text in the corpus, so this profile cannot be set from its own evidence until the corpus grows."
+    },
+    "inscription": {
+      "cos_high": 0.90,
+      "cos_low": 0.72,
+      "chrf_high": 0.40,
+      "chrf_low": 0.20,
+      "calibrated": false,
+      "note": "Monumental and epigraphic text — ŠKZ, Jabal Ḏabūb, the Nabataean epitaph, the Vimose runes. Observed 2026-08-10 at n=2: cos 0.767-0.897, chrF 0.113-0.194. cos_high moved UP from 0.70, which sat below the entire observed range and would have promoted ŠKZ to 'high' — the outcome that was named in advance as the sign the metric had stopped measuring anything. Both inscription cases now read medium, which is the honest answer: at n=2 they are not yet distinguishable from each other. chrf_low deliberately NOT lowered to accommodate them, because their low chrF has a known cause worth keeping visible: these records are stored in one scholarly convention (ŠKZ as heterographic transliteration, 'ANE mzdyzn ALHA') and the model back-translates into another (phonemic transcription, 'az man Mazdēsn'). Same text, same meaning — cos 0.897 says so — different conventions. The right fix is to score against the transcription the ŠKZ record already contains, not to move a threshold."
+    },
+    "verse": {
+      "cos_high": 0.85,
+      "cos_low": 0.65,
+      "chrf_high": 0.35,
+      "chrf_low": 0.15,
+      "calibrated": false,
+      "note": "Poetry — Akanāṉūṟu 149, the only verse text in the corpus. Expect low chrF and a `semantic_ok_lexical_low` flag as the normal result, not a failure: a translator of Sangam verse is not trying to preserve wording. Three attempts, two valid: cos 0.699 / chrF 0.333 and cos 0.669 / chrF 0.342, consistent with each other. The third returned Devanagari and is now blocked as `script_mismatch`, as is the earlier romanised attempt. At cos_high 0.65 the first valid result banded `high`, which would have made every future verse case pass automatically; raised to 0.85 so both read `medium`, which is what two observations of a poem round-tripping near 0.67-0.70 support. Still uncalibrated: n=2 on a single text, and one attempt in three came back in the wrong script — Old Tamil is the language this model handles worst, and that is itself a Part 7 constraint on what may be claimed about Tamil sources."
+    }
+  }
+}

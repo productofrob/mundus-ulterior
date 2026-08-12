@@ -1,0 +1,17 @@
+{
+  "id": "persia-03-coin",
+  "region": "Persia",
+  "title": "Sasanian silver drachm of Shapur I",
+  "source_type": "coin_record",
+  "language_code": ["en"],
+  "language_note": "Museum catalogue record in English. Coin legends are in Pahlavi script but the BM record does not transcribe them; flagged for follow-up during ingestion if legend transliteration is needed.",
+  "date": "241–272 CE",
+  "findspot": "Not recorded (acquired via Robertson sale, 1843)",
+  "original_text_excerpt": "Bust of Shapur I right, wearing crenellated crown with earflap and diadem, globe; tied beard, large ball of hair, moustache. Fire altar and two armed attendants leaning on long staff, looking away from altar, crenellated crowns.",
+  "original_text_note": "British Museum catalogue description used as the artefact record; no reference translation applicable (numismatic object).",
+  "reference_translation": null,
+  "translation_source": null,
+  "citation": "https://www.britishmuseum.org/collection/object/C_1843-0620-5",
+  "museum_number": "1843,0620.5",
+  "notes": "Coinage of Shapur I is directly contemporary with the ŠKZ inscription (persia-01) and the Valerian campaign it narrates — useful for cross-referencing numismatic and epigraphic evidence in the graph phase."
+}

@@ -1,0 +1,67 @@
+{
+  "ran_at": "2026-08-10T08:30:06+00:00",
+  "cases_requested": [
+    "vimose-gmq-pro",
+    "akananuru-149-oty"
+  ],
+  "translation_model": "anthropic/claude-haiku-4-5-20251001",
+  "embedding_model": "voyage/voyage-3.5",
+  "back_prompt_version": "p6-backtranslate-v2",
+  "prompt_version": "p6-translate-v1",
+  "results": [
+    {
+      "case": "akananuru-149-oty",
+      "status": "PASS",
+      "reasons": [],
+      "doc_id": "southasia-01-akananuru-149",
+      "chunk_id": "southasia-01-akananuru-149::original::000",
+      "lang": "oty",
+      "profile": "verse",
+      "reference_ground": "index",
+      "score": {
+        "profile": "verse",
+        "band": "medium",
+        "chrf_back": 0.34175383389416497,
+        "cos_back": 0.6694124066467478,
+        "chrf_ref": 0.29350237455382844,
+        "cos_ref": 0.7119396563605759,
+        "chrf_echo": 0.004086302713305002,
+        "flags": [],
+        "notes": []
+      },
+      "translation": "Small fragments of broken pottery were picked up;\nIn the long red ant-hill, concealed at the tip,\nThe grass-dwellers rest, the bees swarm in the wide sky,\nThe large-handed one counts, the dark-haired youth seizes—\nThat distant-waisted woman, even if\nDifficult deeds and precious things are obtained easily,\nI will not go—Hail, O my heart!—The Chera lords\nWhere the Sulliyan great river's white foam churns,\nThe Yavana-given excellent vessel of deeds\nComes with gold and departs with cargo,\nThe prosperous Musiri rises with abundance,\nHaving crossed the difficult strait, the merchant ship sailed\nThe long noble elephant, the warrior of battle, the fertile one,\nIn the fort where the banner sways, the gathered fortress,\nMany-wheeled chariots, victorious banners raised high,\nFrom the unwearied festival, the tall one's mountain,\nWhere bees swarm, the extended cool spring in the blue,\nLike the doe facing the blooming flowers, this woman\nReceives the fine mist from the rain-eyed noble one.",
+      "back_translation": "சிறிய பொடிந்த குவளைப் பாண்டங்கள் எடுக்கப்பட்டன;\nநீண்ட சிவப்பு எறும்புக் குன்றில், முனையில் மறைந்து,\nபுல்வாழ் வாழ்வோர் இளைப்பாறுகின்றனர், தேனீக்கள் பரந்த ആकাশில் திரளாய் வருகின்றன,\nபெரிய கையுடையவன் எண்ணுகிறான், கருமுடையான் இளைஞன் பிடிக்கிறான்—\nஅந்த தூரவயிற்றுப் பெண், கூட\nகடினமான செயல்களும் விலையுயர்ந்த பொருட்களும் எளிதாய் பெறப்பட்டாலும்,\nநான் போகமாட்டேன்—வாழ்க, ஓ என் உள்ளமே!—சேர நாயகர்\nசுள்ளியன் பெரிய நதியின் வெண்ணிற நுரை கொந்தளிக்கும் இடத்தில்,\nயவனர் கொடுத்த சிறந்த செயல்களின் பாত்திரம்\nபொன்னுடன் வந்து சரக்குடன் செல்கிறது,\nசெழிப்பான முசிരி ஆதிக்கத்துடன் எழுகிறது,\nகடினமான நீரிணையைக் கடந்து, வணிக நாவாய் பயணம் செய்தது\nநீண்ட உயர்ந்த யானை, போர் வீரன், வளமுடையவன்,\nகொடி அசைகின்ற கோட்டையில், திரண்ட கோட்டை,\nபல சக்கரங்களுடைய தேர்கள், வெற்றிக் கொடிகள் உயர்த்தப்பட்டு,\nகளைப்பற்ற விழாவிலிருந்து, உயர்ந்தவனின் மலை,\nதேனீக்கள் திரளாய் வரும், விரிந்த குளிர்ந்த ஊற்று நீலத்தில்,\nபூத்த பூக்களை எதிர்கொள்ளும் மான் போல், இந்த பெண்\nமழைக் கண்ணுடைய உயர்ந்தவனிடமிருந்து நுண்ணிய மூடலைப் பெறுகிறாள்.",
+      "translation_notes": []
+    },
+    {
+      "case": "vimose-gmq-pro",
+      "status": "FAIL",
+      "reasons": [
+        "blocking flag(s): ['untranslated_echo']"
+      ],
+      "doc_id": "scandinavia-03-vimose",
+      "chunk_id": "scandinavia-03-vimose::original::000",
+      "lang": "gmq-pro",
+      "profile": "inscription",
+      "reference_ground": "index",
+      "score": {
+        "profile": "inscription",
+        "band": "low",
+        "chrf_back": 0.13879691110479672,
+        "cos_back": 0.6189238814997919,
+        "chrf_ref": 0.13260934965018234,
+        "cos_ref": 0.693880745898646,
+        "chrf_echo": 1.0,
+        "flags": [
+          "untranslated_echo"
+        ],
+        "notes": [
+          "the 'translation' is 1.00 chrF identical to the source — the model echoed the passage instead of translating it. The round-trip score below is meaningless."
+        ]
+      },
+      "translation": "harja\naadagasu / laasauwija\nmariha [.]ala / makija\ntalijo gisai oj / tkbis hleuno an[.] regu\nawgns\n[w]agni[ŋ]o",
+      "back_translation": "I cannot provide this translation. The passage you've provided appears to be already in runic transliteration or a non-standard notation system, not English. It does not contain English text that can be translated into Proto-Norse.\n\nTo complete this task, I would need an actual English passage to translate.",
+      "translation_notes": []
+    }
+  ]
+}
