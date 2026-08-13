@@ -10,13 +10,85 @@
     "source_url": "https://creativecommons.org/licenses/by/3.0/us/",
     "text": "CC BY 3.0 US\nAttribution 3.0 United States\n \nCC BY 3.0 US\nDeed\n\nYou are free to:\nShare — copy and redistribute the material in any medium or format for any purpose, even commercially.\nAdapt — remix, transform, and build upon the material for any purpose, even commercially.\nThe licensor cannot revoke these freedoms as long as you follow the license terms.\nUnder the following terms:\nAttribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.\nNo additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.\nNotices:\nYou do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.\n\nNo warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material."
   },
-  "places": {},
-  "source": {
-    "column_map": {},
-    "columns_observed": [],
-    "dump_date": null,
-    "dump_url": null,
-    "name": "Pleiades",
-    "retrieved": null
+  "places": {
+    "pleiades:98983": {
+      "authors": "Bloemers, J., DARMC, S. Gillies, R. Talbert, T. Elliott",
+      "bbox": [
+        11.230919,
+        54.740603,
+        11.230919,
+        54.740603
+      ],
+      "creators": "J.H.F. Bloemers",
+      "description": "An ancient place, cited: BAtlas 10 H2 Hoby",
+      "dump_date": "2026-08-10",
+      "feature_types": "cemetery",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "98983",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        11.230919,
+        54.740603
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Hoby"
+    }
+  },
+  "sources": {
+    "pleiades": {
+      "column_map": {
+        "authors": "authors",
+        "bbox": "bbox",
+        "creators": "creators",
+        "description": "description",
+        "feature_types": "featureTypes",
+        "id": "id",
+        "lat": "reprLat",
+        "location_precision": "locationPrecision",
+        "lon": "reprLong",
+        "max_date": "maxDate",
+        "min_date": "minDate",
+        "path": "path",
+        "time_period_keys": "timePeriodsKeys",
+        "time_periods": "timePeriods",
+        "title": "title"
+      },
+      "columns_observed": [
+        "authors",
+        "bbox",
+        "connectsWith",
+        "created",
+        "creators",
+        "currentVersion",
+        "description",
+        "extent",
+        "featureTypes",
+        "geoContext",
+        "hasConnectionsWith",
+        "id",
+        "locationPrecision",
+        "maxDate",
+        "minDate",
+        "modified",
+        "path",
+        "reprLat",
+        "reprLatLong",
+        "reprLong",
+        "tags",
+        "timePeriods",
+        "timePeriodsKeys",
+        "timePeriodsRange",
+        "title",
+        "uid"
+      ],
+      "dump_date": "2026-08-10",
+      "dump_url": "https://atlantides.org/downloads/pleiades/dumps/pleiades-places-20260810.csv.gz",
+      "name": "Pleiades",
+      "retrieved": "2026-08-13"
+    }
   }
 }

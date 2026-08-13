@@ -32,8 +32,9 @@ The same rule governs `contested`, which may appear **only** as `true`. Absent
 means not contested. Permitting an explicit `false` would create exactly the
 third state this module exists to refuse.
 
-Coordinates appear nowhere in this module. A placement carries a `pleiades_id`;
-`ingest/gazetteer.py` turns ids into points, and nothing else may.
+Coordinates appear nowhere in this module. A placement carries a `gazetteer`
+and a `gazetteer_id`; `ingest/gazetteer.py` turns ids into points, and nothing
+else may.
 """
 
 from __future__ import annotations
@@ -55,11 +56,35 @@ GROUNDS = {
     "regional",
 }
 
-PLEIADES_URI_PREFIX = "https://pleiades.stoa.org/places/"
+# Two gazetteers, because one is not enough and the reason is the project's own
+# premise. Pleiades is a Greco-Roman gazetteer; this corpus was deliberately
+# built outside the Roman world. The 2026-08-12 survey found no Pleiades entry
+# for Gyeongju, Óc Eo, Khao Sam Kaeo or Jabal Ḏabūb — roughly half the findspot
+# records — which is the premise of Mundus Ulterior showing up in its own gate.
+#
+# The field was `pleiades_id` until the survey. A field name that hard-codes one
+# source is the `translation_chunk_id` trap — a name that will be wrong for half
+# its values — and it was renamed while exactly ONE record carried a placement.
+GAZETTEERS: dict[str, dict[str, str]] = {
+    "pleiades": {
+        "uri_prefix": "https://pleiades.stoa.org/places/",
+        "uri_suffix": "",
+        "scope": "Greco-Roman world; ancient places",
+    },
+    "geonames": {
+        # The human-readable page, not the sws.geonames.org linked-data URI,
+        # because PHASE2_PLAN A5 requires every point to click through to
+        # something a reader can read.
+        "uri_prefix": "https://www.geonames.org/",
+        "uri_suffix": "",
+        "scope": "modern places worldwide; used where no ancient gazetteer covers the site",
+    },
+}
 
 _REQUIRED = {"name", "ground"}
 _OPTIONAL = {
-    "pleiades_id",
+    "gazetteer",
+    "gazetteer_id",
     "uri",
     "ground_citation",
     "contested",
@@ -67,7 +92,9 @@ _OPTIONAL = {
     "note",
 }
 
-_STRING_KEYS = ("name", "ground", "pleiades_id", "uri", "ground_citation", "note")
+_STRING_KEYS = (
+    "name", "ground", "gazetteer", "gazetteer_id", "uri", "ground_citation", "note",
+)
 
 
 class PlaceError(ValueError):
@@ -86,7 +113,8 @@ class Place:
     index: int
     name: str
     ground: str
-    pleiades_id: str | None
+    gazetteer: str | None
+    gazetteer_id: str | None
     uri: str | None
     ground_citation: str | None
     contested: bool
@@ -99,17 +127,34 @@ class Place:
 
     @property
     def locatable(self) -> bool:
-        """True when this placement licenses a lookup in the gazetteer.
+        """True when this placement licenses a lookup in a gazetteer.
 
         False only for a `regional` placement carrying no id — the honest
         'we know the region and no more' case, which renders as nothing on
         the map rather than as a guessed point.
         """
-        return self.pleiades_id is not None
+        return self.gazetteer_id is not None
+
+    @property
+    def cache_key(self) -> str | None:
+        """How the gazetteer cache addresses this place.
+
+        Namespaced by gazetteer, because ids collide: GeoNames 98983 and
+        Pleiades 98983 are different places, and a cache keyed on the bare
+        number would serve one for the other with no error anywhere.
+        """
+        if self.gazetteer is None or self.gazetteer_id is None:
+            return None
+        return f"{self.gazetteer}:{self.gazetteer_id}"
 
 
-def canonical_uri(pleiades_id: str) -> str:
-    return f"{PLEIADES_URI_PREFIX}{pleiades_id}"
+def canonical_uri(gazetteer: str, gazetteer_id: str) -> str:
+    spec = GAZETTEERS.get(gazetteer)
+    if spec is None:
+        raise PlaceError(
+            f"unknown gazetteer '{gazetteer}'; known: {sorted(GAZETTEERS)}"
+        )
+    return f"{spec['uri_prefix']}{gazetteer_id}{spec['uri_suffix']}"
 
 
 def _reject_empty(raw: dict[str, Any], where: str) -> None:
@@ -197,38 +242,53 @@ def parse_place(raw: Any, doc_id: str, block: str, index: int) -> Place:
             f"{where}: ground '{ground}' is not one of {sorted(GROUNDS)}."
         )
 
-    pleiades_id = raw.get("pleiades_id")
-    pleiades_id = pleiades_id.strip() if pleiades_id else None
-    if pleiades_id is not None and not pleiades_id.isdigit():
+    gazetteer = raw.get("gazetteer")
+    gazetteer = gazetteer.strip() if gazetteer else None
+    gazetteer_id = raw.get("gazetteer_id")
+    gazetteer_id = gazetteer_id.strip() if gazetteer_id else None
+
+    if (gazetteer is None) != (gazetteer_id is None):
         raise PlaceError(
-            f"{where}: pleiades_id '{pleiades_id}' is not a bare numeric id. "
+            f"{where}: 'gazetteer' and 'gazetteer_id' are written together or "
+            f"not at all. An id with no source names nothing; a source with no "
+            f"id identifies nothing."
+        )
+    if gazetteer is not None and gazetteer not in GAZETTEERS:
+        raise PlaceError(
+            f"{where}: gazetteer '{gazetteer}' is not one of "
+            f"{sorted(GAZETTEERS)}. Adding one is a decision about sourcing and "
+            f"licensing, not a spelling."
+        )
+    if gazetteer_id is not None and not gazetteer_id.isdigit():
+        raise PlaceError(
+            f"{where}: gazetteer_id '{gazetteer_id}' is not a bare numeric id. "
             f"Write the id, not the URL."
         )
 
-    # A `stated` or `identified` placement asserts a specific ancient place, and
-    # a specific place is a point on the map. It must resolve to a gazetteer id
+    # A `stated` or `identified` placement asserts a specific place, and a
+    # specific place is a point on the map. It must resolve to a gazetteer id
     # or the point would be authored, which G1 criterion 2 forbids outright.
-    if pleiades_id is None and ground != "regional":
+    if gazetteer_id is None and ground != "regional":
         raise PlaceError(
             f"{where}: ground '{ground}' names a specific place and so requires "
-            f"a pleiades_id. If no id can be found, the honest ground is "
-            f"'regional'."
+            f"a gazetteer and gazetteer_id. If no id can be found in any "
+            f"gazetteer, the honest ground is 'regional'."
         )
 
     uri = raw.get("uri")
     uri = uri.strip() if uri else None
-    if pleiades_id is None and uri is not None:
-        raise PlaceError(f"{where}: 'uri' without a 'pleiades_id'.")
-    if pleiades_id is not None:
-        expected = canonical_uri(pleiades_id)
+    if gazetteer_id is None and uri is not None:
+        raise PlaceError(f"{where}: 'uri' without a 'gazetteer_id'.")
+    if gazetteer_id is not None:
+        expected = canonical_uri(gazetteer, gazetteer_id)  # type: ignore[arg-type]
         if uri is None:
-            raise PlaceError(f"{where}: pleiades_id without its 'uri' ({expected}).")
+            raise PlaceError(f"{where}: gazetteer_id without its 'uri' ({expected}).")
         if uri != expected:
             # Two fields, one fact. If they can disagree they eventually will,
             # and the reader has no way to know which one the map used.
             raise PlaceError(
-                f"{where}: uri '{uri}' does not match pleiades_id "
-                f"'{pleiades_id}' (expected '{expected}')."
+                f"{where}: uri '{uri}' does not match {gazetteer} id "
+                f"'{gazetteer_id}' (expected '{expected}')."
             )
 
     ground_citation = raw.get("ground_citation")
@@ -246,9 +306,9 @@ def parse_place(raw: Any, doc_id: str, block: str, index: int) -> Place:
 
     # The sparse case has to say why it is sparse, or 24/24 'at least regional'
     # is satisfied by a field that asserts nothing.
-    if ground == "regional" and pleiades_id is None and note is None:
+    if ground == "regional" and gazetteer_id is None and note is None:
         raise PlaceError(
-            f"{where}: a regional placement with no pleiades_id must carry a "
+            f"{where}: a regional placement with no gazetteer_id must carry a "
             f"note saying what is known and why no place could be resolved."
         )
 
@@ -260,7 +320,8 @@ def parse_place(raw: Any, doc_id: str, block: str, index: int) -> Place:
         index=index,
         name=raw["name"].strip(),
         ground=ground,
-        pleiades_id=pleiades_id,
+        gazetteer=gazetteer,
+        gazetteer_id=gazetteer_id,
         uri=uri,
         ground_citation=ground_citation,
         contested=contested,
@@ -293,7 +354,7 @@ def assert_no_authored_coordinates(record: dict[str, Any], doc_id: str | None = 
     if offending:
         raise PlaceError(
             f"{doc_id}: seed record carries coordinate key(s) {offending}. "
-            f"Coordinates are never authored — a record carries a pleiades_id "
+            f"Coordinates are never authored — a record carries a gazetteer id "
             f"and ingest/gazetteer.py supplies the point from a dated snapshot. "
             f"A hand-written coordinate is the one thing G1 asserts cannot exist."
         )
@@ -326,11 +387,11 @@ def parse_record_places(record: dict[str, Any], doc_id: str | None = None) -> li
         for index, raw in enumerate(raw_block):
             places.append(parse_place(raw, doc_id, block, index))
 
-        ids = [p.pleiades_id for p in places if p.block == block and p.pleiades_id]
-        dupes = sorted({i for i in ids if ids.count(i) > 1})
+        keys = [p.cache_key for p in places if p.block == block and p.cache_key]
+        dupes = sorted({k for k in keys if keys.count(k) > 1})
         if dupes:
             raise PlaceError(
-                f"{doc_id}::{block}: pleiades_id repeated within one block: "
+                f"{doc_id}::{block}: gazetteer id repeated within one block: "
                 f"{dupes}. One place, one entry."
             )
 

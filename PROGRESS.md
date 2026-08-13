@@ -3952,3 +3952,232 @@ appear in. Three of the roughly thirty-five Phase 1 defects were messages
 pointing at healthy things; none of them had a test.
 
 56 assertions, 15/15 mutations, `verify` and `--check` at exit 0.
+
+## A1 addendum 5 — the dump inspected, and what the first row changed (2026-08-12)
+
+`--inspect` ran against `pleiades-places-20260810.csv.gz`. This is the step the
+command was built for: the parser was written blind, against a README dated
+**2022-11-07** that documents six of the twenty-six columns actually present and
+**names no coordinate column at all**. Four things the first row settled.
+
+**Confirmed, unchanged:** `reprLat` / `reprLong` resolve, and `bbox` is
+comma-separated `lon, lat, lon, lat` — the `[min_lon, min_lat, max_lon, max_lat]`
+order already assumed. Both now asserted against a fixture shaped on the real
+row rather than on the guess.
+
+**1. `extent` is not a bbox.** It was second in the bbox candidate list. It holds
+GeoJSON — `{"type": "Point", "coordinates": [13.41, 42.08]}` — which parsed as
+four numbers yields nothing, silently, and would have done so on any place whose
+`bbox` column was empty. Removed rather than taught to read GeoJSON: `bbox` is
+present and direct, and a second geometry parser is a second thing to keep
+right. Asserted that `extent` is never mapped.
+
+**2. Pleiades is not confined to antiquity, and this matters.** The dump's first
+row is **"Borgo Medievale", minDate 640, maxDate 1453, timePeriods "M"** — a
+period code absent from the README's documented vocabulary
+(`A`/`C`/`H`/`R`/`L`). Mundus Ulterior covers 27 BC to AD 1204. **An id can
+resolve perfectly and still denote a place attested only centuries after the
+record citing it** — a misidentification that passes every check now in
+existence, because nothing compares the record's date to the gazetteer entry's.
+
+`minDate`, `maxDate` and `timePeriodsKeys` are therefore captured, and
+`locationPrecision` with them. The last is a **different axis from `ground`**:
+ours records how *we* arrived at the placement, Pleiades' records how well *they*
+know the point. A5 needs both to render honestly.
+
+Captured now rather than checked now, deliberately. Seed-record dates are free
+text — "c. 40-70 CE", "grave: 1st century CE" — and a date-overlap check built
+on parsing them would be a guess wearing an assertion. **The data is on disk
+from the first refresh; the check belongs at A6.** Logged as W1 debt.
+
+**3. The test fixture was built with a hand-rolled CSV writer, and it was
+wrong.** It quoted any field containing a comma or a space. The real `extent`
+value contains double quotes, which need doubling rather than wrapping — so the
+fixture was unparseable and the failure surfaced as `KeyError: '39274195'`, *a
+missing id*. **A fault in the test harness reported as a fault in the code under
+test**, which is the fifth appearance of a check naming the wrong cause and the
+first one this session that wasted a run rather than a message. Replaced with
+`csv.writer`.
+
+**4. The guessed header was wrong in one column** — `geometry` where the file has
+`geoContext`. Harmless, since neither is read, and it is the point: a header
+written from documentation is a header that can differ from the file in ways
+nothing notices.
+
+**What this vindicates.** The single most useful decision in A1 was refusing to
+write the parser from the README and building `--inspect` instead. Three of the
+four findings above would have become silent wrong data in `data/gazetteer.json`
+— the kind that is discovered when a map pin looks odd, six weeks later.
+
+59 assertions, 15/15 mutations, `verify` and `--check` at exit 0. **Nothing has
+been cached yet — `--refresh` is still a no-op until a record carries an id.**
+
+## A1 addendum 6 — the coverage survey, and the plan's own id was wrong
+
+Before editing any record, four searches against the 2026-08-10 snapshot —
+using `--find`, which was built for this and searches **the artefact the cache
+will be built from** rather than the live site.
+
+| searched | result |
+| --- | --- |
+| `Lolland` | nothing |
+| `Hoby` | **98983**, 54.741/11.231, precise, roman, BAtlas 10 H2 |
+| `Adulis` | nothing by title; one description mention (Matara) |
+| `Adule` | nothing — the only hit was "Padule di Raspollino" in a description |
+| `39271` (by id) | **Adouli**, 15.262/39.659, "port on the west coast of the Red Sea near modern Zula in Eritrea" |
+
+**1. `PHASE2_PLAN.md`'s worked example carries the wrong id.** It illustrates
+the field shape with `"name": "Adulis", "pleiades_id": "39274195"`. Adulis is
+**39271**. The wrong id sits in the section whose stated rule is that *no id,
+from me or any model, is written from memory* — and it was written from memory,
+in the document that forbids it, and then copied into this repository's test
+fixture, where it survived until the snapshot was searched. Fixture corrected to
+39271 with the real coordinates.
+
+Nothing downstream was affected, because no record had been edited. That is
+entirely down to sequencing: A1 built the machinery and placed nothing, so the
+wrong id had no path into the corpus. Had A1 and A2 been one session it would be
+in a seed record now.
+
+**2. Title search is unreliable, and would have failed on the most important
+record in the corpus.** Pleiades titles Adulis **"Adouli"** — a transliteration
+of Ἀδουλί containing neither "Adulis" nor "Adule". Three separate title searches
+missed it. The **names** dump found it immediately, holding both "Adouli" and
+"Adule" against place 39271.
+
+So the A2 method is: search the names dump, not just titles, and treat an empty
+title search as *no information* rather than as absence. `--find` now also
+matches a **bare numeric id**, which is what resolved this.
+
+**3. My hypothesis about coverage was wrong, usefully.** I predicted a
+Greco-Roman gazetteer would not cover Scandinavia, and that A2–A4 would need
+reordering. Wrong: Pleiades has **the site and not the modern region**. "Lolland"
+is a Danish administrative area and is absent; "Hoby" is an archaeological site
+in Barrington Atlas 10 H2 and is present with a precise coordinate. The plan's
+findspots-first ordering stands. Refuted by four searches costing about a
+minute — *prefer a cheap check to a confident hypothesis*, and this time the
+confident hypothesis was mine.
+
+**4. A name match is not an identification.** Both ids were accepted only after
+the **coordinate** was read: 54.741/11.231 is on Lolland, 15.262/39.659 is the
+Eritrean Red Sea coast. Matching on the name alone is the Part 4 defect exactly —
+a probe that passed on `doc_id` while pointing at the wrong passage. `--find`
+now prints the coordinate and description on every hit and says so in as many
+words.
+
+**5. The dumps README is wrong on three counts**, all found by reading the file:
+it documents six of twenty-six columns, names no coordinate column, and claims
+the names table's `pid` joins to the places table's `id` when it actually holds
+a path, `/places/39271`. Normalised in `--find`.
+
+**The unlocated case is real, not theoretical.** "Adulas M." (194037) is in the
+dump with no coordinate at all — precisely what `cmd_check` refuses.
+
+63 assertions, 15/15 mutations. Still nothing cached: `--refresh` remains a
+no-op until a record carries an id.
+
+## A2 begins — first record placed, chain confirmed end to end (2026-08-12)
+
+`scandinavia-01-hoby-treasure` carries a `findspot_places` block. Pleiades
+**98983**, `stated`, confirmed by coordinate (54.741/11.231, Lolland) and
+attested period (Roman, −30..300) rather than by title.
+
+```
+W1 placements: 1/24 records placed, 1/17 with a named place, 1 Pleiades id
+looked up 1 of 1 ids from pleiades-places-20260810.csv.gz (2026-08-10)
+Every placement resolves to a cached, dated gazetteer entry.
+```
+
+`verify` 0, `--check` 0. The cached entry carries the point, the attested date
+range, `locationPrecision: precise`, `featureTypes: cemetery` — which
+independently corroborates a chieftain's grave — and the attribution the CC BY
+licence requires: *"Bloemers, J., DARMC, S. Gillies, R. Talbert, T. Elliott"*.
+Capturing authors during `--refresh` has paid off on the first entry rather than
+at A5.
+
+### The first entry immediately showed a defect A5 would have inherited
+
+Pleiades writes a **degenerate bbox** for a point place:
+`[11.230919, 54.740603, 11.230919, 54.740603]` — min equal to max, the
+representative point wearing a rectangle. `--stats` duly reported
+`with extent: 1`, which is true and misleading.
+
+It matters because `PHASE2_PLAN.md` A5 says a `regional` placement renders as an
+extent and never as a pin. Had `has_extent` been the test, a point place would
+have drawn a zero-size box and a regional place holding only a degenerate bbox
+would have drawn nothing while claiming an extent. **Two different questions
+under one name** — the same trap as `translation_chunk` vs
+`translation_chunk_id`, which W2 is already scheduled to pay off.
+
+Split into `has_extent` (any bbox) and `has_area` (a bbox with area), both
+asserted. `--stats` now reads:
+
+```
+entries: 1  (with point: 1, with a bbox: 1, of which non-degenerate: 0)
+```
+
+Found by looking at the one real row cached, not by reasoning about the format.
+That is the fourth thing this snapshot has corrected about a parser written
+against documentation.
+
+65 assertions, 15/15 mutations.
+
+## A2 — a second gazetteer, and a field renamed while it cost one record
+
+The survey forced two decisions, both taken 2026-08-12 with one placement on
+disk.
+
+### The G1 shortfall is the project's premise appearing in its own gate
+
+Roughly **9 of 17** findspot records can carry a named Pleiades place. Seven have
+no entry at all — Jabal Ḏabūb, Gyeongju, Khao Sam Kaeo, Óc Eo ×2, and two coin
+records whose findspot is unrecorded or hearsay. With the 7 literary records that
+is **16 records with a resolving id, against G1's ≥17**.
+
+Pleiades is a Greco-Roman gazetteer; this corpus was deliberately built outside
+the Roman world. The gate assumed 17 findspots would yield 17 named places, and
+the assumption is exactly the thing Mundus Ulterior exists to test.
+
+**Decision: add GeoNames** for the extra-Roman sites, rather than lower the
+number or count region boxes toward it. GeoNames is CC BY 4.0, so the licence and
+declaration machinery already built applies unchanged, and its per-country dumps
+are small and dated — the same shape as the Pleiades path.
+
+A GeoNames placement is a **modern administrative place**, so it will usually be
+`identified` rather than `stated`, and its note must say what the coordinate
+denotes. A district centroid is not an excavation trench, and the schema should
+not let those read alike.
+
+### `pleiades_id` → `gazetteer` + `gazetteer_id`
+
+A field name that hard-codes one source is the `translation_chunk_id` trap: a
+name that is wrong for half its values. **Seen coming this time**, and renamed
+while exactly one record carried a placement — one record edit, a spec revision
+and a test pass, against seventeen record edits had it waited until A4.
+
+- `gazetteer` comes from a **closed vocabulary** (`pleiades`, `geonames`).
+  Adding one is a decision about sourcing and licensing, not a spelling.
+- `gazetteer` and `gazetteer_id` are written together or not at all. An id with
+  no source names nothing; a source with no id identifies nothing.
+- `uri` is checked against **that gazetteer's** canonical form.
+- **Cache keys are namespaced `<gazetteer>:<id>`.** Ids collide: Pleiades 98983
+  is Hoby on Lolland, GeoNames 98983 is something else. A cache keyed on the bare
+  number would serve one for the other and nothing would raise.
+- `sources` is a block **per gazetteer**. A single `source` was correct with one
+  gazetteer and would have become a lie with two — the same defect as the field
+  name it accompanied, one level up.
+
+Three new mutation-verified guards: an unlisted gazetteer, a gazetteer with no
+id, an id with no gazetteer. **71 assertions, 17/17 mutations.**
+
+The cache was reset to the namespaced shape; the licence and declaration blocks
+were preserved, so one `--refresh` restores it.
+
+### GeoNames is declared but has no reader, deliberately
+
+Its country files are **tab-separated with no header row**, so the
+header-discovery design cannot apply and writing the parser now would mean
+writing it from documentation — the mistake that has cost four corrections in
+this session alone (a filename from the wrong index, `extent` as a bbox, a
+guessed header column, and a hand-rolled CSV writer). The next step there is to
+download one country file and look at it first.

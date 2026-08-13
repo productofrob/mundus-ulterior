@@ -28,8 +28,18 @@ SOURCES = (PLACES, GAZETTEER)
 
 MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     (
-        "a specific place no longer needs a pleiades_id — the authored-coordinate hole",
-        [("""    if pleiades_id is None and ground != "regional":""",
+        "a specific place no longer needs a gazetteer id — the authored-coordinate hole",
+        [("""    if gazetteer_id is None and ground != "regional":""",
+          """    if False:""")],
+    ),
+    (
+        "any string is accepted as a gazetteer name",
+        [("""    if gazetteer is not None and gazetteer not in GAZETTEERS:""",
+          """    if False:""")],
+    ),
+    (
+        "a gazetteer and its id no longer have to appear together",
+        [("""    if (gazetteer is None) != (gazetteer_id is None):""",
           """    if False:""")],
     ),
     (
@@ -39,9 +49,9 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "an uncached id resolves to None instead of raising",
-        [("""    found = entries(cache).get(pleiades_id)
+        [("""    found = entries(cache).get(cache_key)
     if found is None:""",
-          """    found = entries(cache).get(pleiades_id)
+          """    found = entries(cache).get(cache_key)
     if False:""")],
     ),
     (
@@ -69,7 +79,7 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "a regional placement with no id no longer has to say why",
-        [("""    if ground == "regional" and pleiades_id is None and note is None:""",
+        [("""    if ground == "regional" and gazetteer_id is None and note is None:""",
           """    if False:""")],
     ),
     (
@@ -108,12 +118,14 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
 ]
 
 EXPECTED = [
-    "stated placement without a pleiades_id is refused",
+    "stated placement without a gazetteer id is refused",
+    "an unlisted gazetteer is refused",
+    "a gazetteer with no id is refused",
     "identified without a ground_citation is refused",
     "an uncached id raises rather than returning None",
     "unknown key is a load-time error",
     "an empty string is refused rather than stored",
-    "uri that disagrees with pleiades_id is refused",
+    "uri that disagrees with the gazetteer id is refused",
     "a contested identification with one citation is refused",
     "contested written as false is refused",
     "regional with no id and no note is refused",

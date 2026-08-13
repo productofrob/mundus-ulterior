@@ -83,7 +83,13 @@ COLUMN_CANDIDATES: dict[str, tuple[str, ...]] = {
     "description": ("description",),
     "lat": ("reprLat", "repr_lat", "representative_latitude", "y"),
     "lon": ("reprLong", "reprLon", "repr_long", "representative_longitude", "x"),
-    "bbox": ("bbox", "extent"),
+    # `extent` was a bbox candidate until the dump was inspected on 2026-08-12.
+    # It is not a bbox — it holds GeoJSON:
+    #   {"type": "Point", "coordinates": [13.4119837, 42.082885]}
+    # Parsed as four numbers it yields nothing, silently. Removed rather than
+    # taught to read GeoJSON, because `bbox` is present and carries the value
+    # directly; a second geometry parser would be a second thing to keep right.
+    "bbox": ("bbox",),
     "min_lon": ("minLong", "minLon", "min_long"),
     "min_lat": ("minLat", "min_lat"),
     "max_lon": ("maxLong", "maxLon", "max_long"),
@@ -97,6 +103,26 @@ COLUMN_CANDIDATES: dict[str, tuple[str, ...]] = {
     # re-extracting the whole dump later to attribute one point.
     "authors": ("authors",),
     "creators": ("creators",),
+    # Added after inspecting the 2026-08-10 dump, on the same argument as
+    # authors/creators: capture in the one pass, or re-extract 6.5 MB later to
+    # answer a question the row already contained.
+    #
+    # These four are not decoration. The dump's first row is "Borgo Medievale",
+    # minDate 640 / maxDate 1453, timePeriods "M" — Pleiades is **not** confined
+    # to antiquity, so an id can resolve perfectly and still denote a place
+    # attested only centuries after the record citing it. Mundus Ulterior covers
+    # 27 BC to AD 1204; a findspot whose gazetteer entry is mediaeval-only is a
+    # misidentification that resolves cleanly, and nothing else in the pipeline
+    # would notice.
+    #
+    # `locationPrecision` ("precise" in that row) is Pleiades' own statement of
+    # how well it knows the location, which is a different axis from `ground` —
+    # ours records how WE arrived at the placement, theirs how well THEY know
+    # the point. A5 needs both to render honestly.
+    "min_date": ("minDate",),
+    "max_date": ("maxDate",),
+    "time_period_keys": ("timePeriodsKeys",),
+    "location_precision": ("locationPrecision",),
 }
 
 # Without these the dump is not usable and the run stops before writing anything.
@@ -152,7 +178,8 @@ def require_file(path: Path, what: str, hint: str = "") -> Path:
 
 @dataclass(frozen=True)
 class Entry:
-    pleiades_id: str
+    gazetteer: str
+    gazetteer_id: str
     title: str
     description: str | None
     repr_point: list[float] | None      # [lon, lat], GeoJSON order
@@ -161,6 +188,10 @@ class Entry:
     feature_types: str | None
     authors: str | None
     creators: str | None
+    min_date: str | None
+    max_date: str | None
+    time_period_keys: str | None
+    location_precision: str | None
     dump_date: str
     retrieved: str
 
@@ -170,7 +201,30 @@ class Entry:
 
     @property
     def has_extent(self) -> bool:
+        """Any bbox at all — enough to say the entry is not empty."""
         return self.bbox is not None
+
+    @property
+    def has_area(self) -> bool:
+        """A bbox with actual area, which is a different question.
+
+        Observed on the first real entry cached (Hoby, 98983): Pleiades writes a
+        **degenerate** bbox for a point place — `[11.230919, 54.740603,
+        11.230919, 54.740603]`, min equal to max. It is the representative point
+        wearing a rectangle.
+
+        This matters at A5 and would have been discovered there. `PHASE2_PLAN.md`
+        says a `regional` placement renders as an extent and never as a pin; if
+        `has_extent` were the test, a point place would render as a box of zero
+        size and a regional place with only a degenerate bbox would render as
+        nothing while claiming an extent. Two different things called by one
+        name is the `translation_chunk` / `translation_chunk_id` trap that W2 is
+        already scheduled to pay off.
+        """
+        if self.bbox is None:
+            return False
+        min_lon, min_lat, max_lon, max_lat = self.bbox
+        return max_lon > min_lon and max_lat > min_lat
 
 
 # --------------------------------------------------------------------------
@@ -179,14 +233,10 @@ class Entry:
 
 def empty_cache() -> dict[str, Any]:
     return {
-        "source": {
-            "name": "Pleiades",
-            "dump_url": None,
-            "dump_date": None,
-            "retrieved": None,
-            "columns_observed": [],
-            "column_map": {},
-        },
+        # One block per gazetteer. A single `source` block was correct while
+        # there was one gazetteer and would have become a lie the moment there
+        # were two — the same shape as the field name it accompanies.
+        "sources": {},
         "licence": {
             "text": LICENCE_UNCONFIRMED,
             "source_url": None,
@@ -200,7 +250,7 @@ def load_cache(path: Path = GAZETTEER_PATH) -> dict[str, Any]:
     if not path.exists():
         return empty_cache()
     data = json.loads(path.read_text(encoding="utf-8"))
-    for key in ("source", "licence", "places"):
+    for key in ("sources", "licence", "places"):
         if key not in data:
             raise GazetteerError(f"{path}: cache is missing the '{key}' block")
     return data
@@ -215,10 +265,17 @@ def write_cache(cache: dict[str, Any], path: Path = GAZETTEER_PATH) -> None:
 
 
 def entries(cache: dict[str, Any]) -> dict[str, Entry]:
+    """Cached entries keyed `<gazetteer>:<id>`.
+
+    Namespaced because ids collide across gazetteers: Pleiades 98983 is Hoby on
+    Lolland and GeoNames 98983 is something else entirely. A cache keyed on the
+    bare number would serve one for the other and nothing would raise.
+    """
     out: dict[str, Entry] = {}
-    for pid, raw in cache["places"].items():
-        out[pid] = Entry(
-            pleiades_id=raw["pleiades_id"],
+    for key, raw in cache["places"].items():
+        out[key] = Entry(
+            gazetteer=raw["gazetteer"],
+            gazetteer_id=raw["gazetteer_id"],
             title=raw["title"],
             description=raw.get("description"),
             repr_point=raw.get("repr_point"),
@@ -227,27 +284,32 @@ def entries(cache: dict[str, Any]) -> dict[str, Entry]:
             feature_types=raw.get("feature_types"),
             authors=raw.get("authors"),
             creators=raw.get("creators"),
+            min_date=raw.get("min_date"),
+            max_date=raw.get("max_date"),
+            time_period_keys=raw.get("time_period_keys"),
+            location_precision=raw.get("location_precision"),
             dump_date=raw["dump_date"],
             retrieved=raw["retrieved"],
         )
-        if out[pid].pleiades_id != pid:
+        expected = f"{out[key].gazetteer}:{out[key].gazetteer_id}"
+        if expected != key:
             raise GazetteerError(
-                f"cache key '{pid}' does not match its entry's pleiades_id "
-                f"'{out[pid].pleiades_id}'"
+                f"cache key '{key}' does not match its entry, which says "
+                f"'{expected}'"
             )
     return out
 
 
-def resolve(pleiades_id: str, cache: dict[str, Any]) -> Entry:
+def resolve(cache_key: str, cache: dict[str, Any]) -> Entry:
     """The only way to get a coordinate. Raises rather than returning None.
 
     A caller that could receive None is a caller that could carry on with a
     missing point and render something anyway.
     """
-    found = entries(cache).get(pleiades_id)
+    found = entries(cache).get(cache_key)
     if found is None:
         raise GazetteerError(
-            f"pleiades_id '{pleiades_id}' is not in the gazetteer cache. Run "
+            f"'{cache_key}' is not in the gazetteer cache. Run "
             f"`python -m ingest.gazetteer --refresh` to look it up. It has NOT "
             f"been guessed."
         )
@@ -361,21 +423,26 @@ def read_dump(
                 continue
             lat = _float(row.get(cmap["lat"])) if "lat" in cmap else None
             lon = _float(row.get(cmap["lon"])) if "lon" in cmap else None
+            def opt(logical: str) -> str | None:
+                if logical not in cmap:
+                    return None
+                return (row.get(cmap[logical]) or "").strip() or None
+
             found[pid] = {
-                "pleiades_id": pid,
+                "gazetteer": "pleiades",
+                "gazetteer_id": pid,
                 "title": (row.get(cmap["title"]) or "").strip(),
-                "description": (row.get(cmap["description"]) or "").strip() or None
-                if "description" in cmap else None,
+                "description": opt("description"),
                 "repr_point": [lon, lat] if lat is not None and lon is not None else None,
                 "bbox": _bbox_from_row(row, cmap),
-                "time_periods": (row.get(cmap["time_periods"]) or "").strip() or None
-                if "time_periods" in cmap else None,
-                "feature_types": (row.get(cmap["feature_types"]) or "").strip() or None
-                if "feature_types" in cmap else None,
-                "authors": (row.get(cmap["authors"]) or "").strip() or None
-                if "authors" in cmap else None,
-                "creators": (row.get(cmap["creators"]) or "").strip() or None
-                if "creators" in cmap else None,
+                "time_periods": opt("time_periods"),
+                "feature_types": opt("feature_types"),
+                "authors": opt("authors"),
+                "creators": opt("creators"),
+                "min_date": opt("min_date"),
+                "max_date": opt("max_date"),
+                "time_period_keys": opt("time_period_keys"),
+                "location_precision": opt("location_precision"),
             }
             if wanted is not None and len(found) == len(wanted):
                 break
@@ -410,7 +477,10 @@ def _today() -> str:
 
 def wanted_ids(corpus_dir: Path = SEED_CORPUS_DIR) -> set[str]:
     by_doc = load_places(corpus_dir)
-    return {p.pleiades_id for p in iter_places(by_doc) if p.pleiades_id}
+    return {
+        p.gazetteer_id for p in iter_places(by_doc)
+        if p.gazetteer == "pleiades" and p.gazetteer_id
+    }
 
 
 def cmd_inspect(dump: Path) -> int:
@@ -431,13 +501,258 @@ def cmd_inspect(dump: Path) -> int:
     return 0
 
 
+def cmd_find(dump: Path, needle: str, names_dump: Path | None = None) -> int:
+    """Search the snapshot for a place name. Reports; never caches, never guesses.
+
+    Deliberately searches **the dump**, not the website. The cache is built from
+    a dated snapshot, so a name found on live Pleiades is not necessarily a name
+    in the file the coordinates will come from — and *a result is comparable
+    only within the thing that produced it* is the lesson this repository has
+    recorded five times. Searching the artefact you will cache from is the whole
+    point.
+
+    The places table carries only Pleiades' own modern title. Ancient attested
+    spellings live in the separate names table, so `--names-dump` is worth
+    passing whenever a search comes back empty: the corpus asks about Adulis and
+    Muziris, and it is the names table that knows Ἀδουλί.
+    """
+    needle_cf = needle.casefold()
+    # A bare number is almost always an id being checked, not a name. Matching
+    # it against titles only would answer a question nobody asked.
+    needle_id = needle.strip() if needle.strip().isdigit() else None
+    hits: list[dict[str, str]] = []
+
+    with _open_dump(dump) as handle:
+        reader = csv.DictReader(handle)
+        cmap = map_columns(list(reader.fieldnames or []))
+        for row in reader:
+            title = (row.get(cmap["title"]) or "")
+            desc = (row.get(cmap.get("description", "")) or "")
+            row_id = (row.get(cmap["id"]) or "").strip()
+            where = "ID" if needle_id and row_id == needle_id else (
+                "title" if needle_cf in title.casefold() else (
+                    "description" if needle_cf in desc.casefold() else None
+                )
+            )
+            if where:
+                lat = _float(row.get(cmap["lat"])) if "lat" in cmap else None
+                lon = _float(row.get(cmap["lon"])) if "lon" in cmap else None
+                hits.append({
+                    "id": (row.get(cmap["id"]) or "").strip(),
+                    "title": title.strip(),
+                    "matched": where,
+                    "precision": (row.get(cmap.get("location_precision", "")) or "").strip(),
+                    "dates": f"{(row.get(cmap.get('min_date','')) or '').strip()}.."
+                             f"{(row.get(cmap.get('max_date','')) or '').strip()}",
+                    "periods": (row.get(cmap.get("time_period_keys", "")) or "").strip(),
+                    # The coordinate is what tells one Hoby from another. Without
+                    # it a name match is a proxy for identity — the same shape as
+                    # the Part 4 probe that passed on `doc_id` while pointing at
+                    # the wrong passage.
+                    "where": f"{lat:.3f},{lon:.3f}" if lat is not None and lon is not None else "—",
+                    "desc": desc.strip(),
+                })
+
+    name_hits: list[str] = []
+    if names_dump is not None:
+        with _open_dump(names_dump) as handle:
+            reader = csv.DictReader(handle)
+            fields = list(reader.fieldnames or [])
+            pid_col = "pid" if "pid" in fields else None
+            attested = "nameAttested" if "nameAttested" in fields else None
+            title_col = "title" if "title" in fields else None
+            if not pid_col:
+                raise GazetteerError(
+                    f"names dump has no 'pid' column. Observed header: {fields}"
+                )
+            for row in reader:
+                blob = " ".join(
+                    (row.get(c) or "") for c in (attested, title_col) if c
+                )
+                # The dumps README says pid "can be joined to the id column of a
+                # places table". Observed 2026-08-12, it holds a PATH —
+                # '/places/39271' — which joins to nothing. Normalised here, and
+                # recorded because it is the third thing that README has been
+                # wrong about.
+                raw_pid = (row.get(pid_col) or "").strip()
+                pid = raw_pid.rstrip("/").rsplit("/", 1)[-1]
+                if needle_id and pid == needle_id:
+                    name_hits.append(
+                        f"  {pid}  {(row.get(attested or '') or '').strip()!r} "
+                        f"({(row.get(title_col or '') or '').strip()})"
+                    )
+                elif needle_cf in blob.casefold():
+                    name_hits.append(
+                        f"  {pid}  {(row.get(attested or '') or '').strip()!r} "
+                        f"({(row.get(title_col or '') or '').strip()})"
+                    )
+
+    print(f"searching {dump.name} for {needle!r}")
+    if hits:
+        for h in sorted(hits, key=lambda h: (h["matched"] != "title", h["title"]))[:25]:
+            print(
+                f"  {h['id']:>10}  {h['title'][:36]:<36} {h['where']:>17}  "
+                f"[{h['matched']}] {h['precision'] or '?'} {h['dates']} {h['periods']}"
+            )
+            if h["desc"]:
+                print(f"             {h['desc'][:150]}")
+        print(
+            "  A name match is not an identification. Open the URI and confirm "
+            "the coordinate and description describe YOUR site before using an id."
+        )
+        if len(hits) > 25:
+            print(f"  … and {len(hits) - 25} more")
+    else:
+        print("  no place title or description matches.")
+
+    if names_dump is not None:
+        print(f"attested names in {names_dump.name}: {len(name_hits)}")
+        for line in name_hits[:25]:
+            print(line)
+    elif not hits:
+        print(
+            "  Try --names-dump with pleiades-names-<date>.csv.gz from the same "
+            "index: the places table holds only Pleiades' modern title, and an "
+            "ancient name may be recorded only as an attested spelling."
+        )
+
+    if not hits and not name_hits:
+        print(
+            "\n  Nothing found. That is a RESULT, not a failure: if this "
+            "snapshot has no entry, the honest ground is 'regional' with a note "
+            "saying so. Do not reach for a nearby place."
+        )
+    return 0
+
+
+def load_survey(path: Path) -> list[tuple[str, list[str]]]:
+    """Read a survey file: `@label` lines group the terms that follow.
+
+    Blank lines and `#` comments are ignored. A term appearing under two labels
+    is searched once and reported under both.
+    """
+    require_file(path, "survey file")
+    groups: list[tuple[str, list[str]]] = []
+    label = "(unlabelled)"
+    terms: list[str] = []
+    for raw in path.read_text(encoding="utf-8-sig").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("@"):
+            if terms:
+                groups.append((label, terms))
+            label, terms = line[1:].strip(), []
+            continue
+        terms.append(line)
+    if terms:
+        groups.append((label, terms))
+    if not groups:
+        raise GazetteerError(f"{path}: no search terms")
+    return groups
+
+
+def cmd_survey(
+    survey_path: Path, dump: Path, names_dump: Path | None = None
+) -> int:
+    """Search many names in ONE pass over the dump.
+
+    Sixteen `--find` calls would decompress and scan 6.5 MB sixteen times and
+    produce sixteen outputs to read. One pass produces one report, grouped by
+    the record each term belongs to, which is the unit the curator actually
+    works in.
+
+    Reports only. Nothing is cached, nothing is chosen, and a group with no hits
+    is printed as an empty group rather than omitted — an absent name must be
+    visibly absent, or the reader silently reads a shorter list as a complete one.
+    """
+    groups = load_survey(survey_path)
+    all_terms = {t.casefold(): t for _, ts in groups for t in ts}
+    found: dict[str, list[str]] = {t: [] for t in all_terms}
+
+    with _open_dump(dump) as handle:
+        reader = csv.DictReader(handle)
+        cmap = map_columns(list(reader.fieldnames or []))
+        for row in reader:
+            title = (row.get(cmap["title"]) or "")
+            desc = (row.get(cmap.get("description", "")) or "")
+            title_cf, desc_cf = title.casefold(), desc.casefold()
+            for term_cf in all_terms:
+                where = "title" if term_cf in title_cf else (
+                    "desc" if term_cf in desc_cf else None
+                )
+                if not where:
+                    continue
+                lat = _float(row.get(cmap["lat"])) if "lat" in cmap else None
+                lon = _float(row.get(cmap["lon"])) if "lon" in cmap else None
+                coord = (f"{lat:.3f},{lon:.3f}"
+                         if lat is not None and lon is not None else "UNLOCATED")
+                found[term_cf].append(
+                    f"      {(row.get(cmap['id']) or '').strip():>10}  "
+                    f"{title[:34]:<34} {coord:>17}  [{where}] "
+                    f"{(row.get(cmap.get('location_precision','')) or '').strip() or '?'} "
+                    f"{(row.get(cmap.get('min_date','')) or '').strip()}.."
+                    f"{(row.get(cmap.get('max_date','')) or '').strip()}  "
+                    f"{(row.get(cmap.get('feature_types','')) or '').strip()}"
+                )
+
+    name_hits: dict[str, list[str]] = {t: [] for t in all_terms}
+    if names_dump is not None:
+        with _open_dump(names_dump) as handle:
+            reader = csv.DictReader(handle)
+            fields = list(reader.fieldnames or [])
+            if "pid" not in fields:
+                raise GazetteerError(f"names dump has no 'pid'. Header: {fields}")
+            for row in reader:
+                blob = " ".join(
+                    (row.get(c) or "") for c in ("nameAttested", "title") if c in fields
+                ).casefold()
+                if not blob.strip():
+                    continue
+                pid = (row.get("pid") or "").strip().rstrip("/").rsplit("/", 1)[-1]
+                for term_cf in all_terms:
+                    if term_cf in blob:
+                        name_hits[term_cf].append(
+                            f"      {pid:>10}  name: "
+                            f"{(row.get('nameAttested') or '').strip() or (row.get('title') or '').strip()}"
+                        )
+
+    total = 0
+    for label, terms in groups:
+        print(f"\n@{label}")
+        for term in terms:
+            key = term.casefold()
+            place_lines = found.get(key, [])
+            name_lines = name_hits.get(key, [])
+            total += len(place_lines)
+            if not place_lines and not name_lines:
+                print(f"  {term!r}: nothing")
+                continue
+            print(f"  {term!r}: {len(place_lines)} place(s), {len(name_lines)} name(s)")
+            for line in place_lines[:6]:
+                print(line)
+            if len(place_lines) > 6:
+                print(f"      … and {len(place_lines) - 6} more")
+            for line in name_lines[:6]:
+                print(line)
+            if len(name_lines) > 6:
+                print(f"      … and {len(name_lines) - 6} more")
+
+    print(
+        f"\n{total} place hits across {len(all_terms)} terms in {dump.name}. "
+        f"Nothing cached, nothing chosen. A name match is not an "
+        f"identification — the coordinate decides."
+    )
+    return 0
+
+
 def cmd_refresh(dump: Path, corpus_dir: Path, path: Path) -> int:
     # Existence first, so a missing file is reported as a missing file rather
     # than as whatever the filename check happens to notice about its name.
     _open_dump(dump).close()
     wanted = wanted_ids(corpus_dir)
     if not wanted:
-        print("no pleiades_id appears in the corpus yet — nothing to look up.")
+        print("no Pleiades id appears in the corpus yet — nothing to look up.")
         return 0
 
     dump_date = dump_date_from_name(dump)
@@ -446,8 +761,10 @@ def cmd_refresh(dump: Path, corpus_dir: Path, path: Path) -> int:
     cache = load_cache(path)
     today = _today()
     for pid, row in found.items():
-        cache["places"][pid] = {**row, "dump_date": dump_date, "retrieved": today}
-    cache["source"].update(
+        cache["places"][f"pleiades:{pid}"] = {
+            **row, "dump_date": dump_date, "retrieved": today
+        }
+    cache.setdefault("sources", {})["pleiades"] = (
         {
             "name": "Pleiades",
             "dump_url": DUMP_BASE + dump.name,
@@ -538,13 +855,13 @@ def cmd_check(corpus_dir: Path, path: Path) -> int:
     locatable = [p for p in places if p.locatable]
 
     for p in locatable:
-        entry = known.get(p.pleiades_id or "")
+        entry = known.get(p.cache_key or "")
         if entry is None:
-            failures.append(f"{p.key}: pleiades_id '{p.pleiades_id}' is not cached")
+            failures.append(f"{p.key}: '{p.cache_key}' is not cached")
             continue
         if not entry.has_point and not entry.has_extent:
             failures.append(
-                f"{p.key}: '{p.pleiades_id}' ({entry.title}) resolves to no "
+                f"{p.key}: '{p.cache_key}' ({entry.title}) resolves to no "
                 f"point and no extent — nothing to draw, and nothing may be "
                 f"invented to replace it"
             )
@@ -568,12 +885,13 @@ def cmd_check(corpus_dir: Path, path: Path) -> int:
             "run `--record-declaration <file> --declaration-source-url <url>`."
         )
 
+    sources = cache.get("sources", {})
     stale = sorted(
         {
-            e.dump_date
+            f"{e.gazetteer} {e.dump_date}"
             for e in known.values()
-            if cache["source"].get("dump_date")
-            and e.dump_date != cache["source"]["dump_date"]
+            if sources.get(e.gazetteer, {}).get("dump_date")
+            and e.dump_date != sources[e.gazetteer]["dump_date"]
         }
     )
 
@@ -662,8 +980,11 @@ def cmd_stats(path: Path, corpus_dir: Path) -> int:
         grounds[p.ground] = grounds.get(p.ground, 0) + 1
 
     print(f"gazetteer:  {path}")
-    print(f"  source:   {cache['source'].get('dump_url')}")
-    print(f"  snapshot: {cache['source'].get('dump_date')} (retrieved {cache['source'].get('retrieved')})")
+    for name, src in sorted(cache.get("sources", {}).items()):
+        print(f"  source:   {name} — {src.get('dump_url')}")
+        print(f"            snapshot {src.get('dump_date')} (retrieved {src.get('retrieved')})")
+    if not cache.get("sources"):
+        print("  source:   none yet")
     licence_text = cache.get("licence", {}).get("text", "")
     confirmed = bool(licence_text) and licence_text != LICENCE_UNCONFIRMED
     declared = bool((cache.get("licence", {}).get("declared_by") or {}).get("text"))
@@ -672,7 +993,8 @@ def cmd_stats(path: Path, corpus_dir: Path) -> int:
     print(f"  declared: {'recorded' if declared else 'NOT RECORDED'}"
           f" ({(cache.get('licence', {}).get('declared_by') or {}).get('source_url')})")
     print(f"  entries:  {len(known)}  (with point: {sum(1 for e in known.values() if e.has_point)},"
-          f" with extent: {sum(1 for e in known.values() if e.has_extent)})")
+          f" with a bbox: {sum(1 for e in known.values() if e.has_extent)},"
+          f" of which non-degenerate: {sum(1 for e in known.values() if e.has_area)})")
     print(f"corpus:     {len(by_doc)} records, {sum(1 for v in by_doc.values() if v)} placed")
     print(f"  placements by ground: {dict(sorted(grounds.items()))}")
     print(f"  contested: {sum(1 for p in places if p.contested)}")
@@ -693,6 +1015,14 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--stats", action="store_true")
     ap.add_argument("--probe", metavar="PLEIADES_ID",
                     help="report what the per-id endpoint returns; never caches")
+    ap.add_argument("--find", metavar="TEXT",
+                    help="search the snapshot for a place name; never caches")
+    ap.add_argument("--survey", type=Path, metavar="FILE",
+                    help="search many names in one pass, grouped by record; "
+                         "never caches")
+    ap.add_argument("--names-dump", type=Path,
+                    help="pleiades-names-<date>.csv.gz, to also search attested "
+                         "ancient spellings")
     ap.add_argument("--record-licence", type=Path, metavar="FILE",
                     help="file holding the licence terms, verbatim")
     ap.add_argument("--licence-source-url", default=None)
@@ -709,6 +1039,14 @@ def main(argv: list[str] | None = None) -> int:
             if not args.dump:
                 ap.error("--inspect needs --dump")
             return cmd_inspect(args.dump)
+        if args.find:
+            if not args.dump:
+                ap.error("--find needs --dump")
+            return cmd_find(args.dump, args.find, args.names_dump)
+        if args.survey:
+            if not args.dump:
+                ap.error("--survey needs --dump")
+            return cmd_survey(args.survey, args.dump, args.names_dump)
         if args.refresh:
             if not args.dump:
                 ap.error(

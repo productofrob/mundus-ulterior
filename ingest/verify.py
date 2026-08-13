@@ -231,12 +231,12 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
         contested += sum(1 for p in record_places if p.contested)
         if any(p.locatable for p in record_places):
             named += 1
-        place_ids.update(p.pleiades_id for p in record_places if p.pleiades_id)
+        place_ids.update(p.cache_key for p in record_places if p.cache_key)
 
     notes.append(
         f"W1 placements: {placed}/{G1_PLACED_TARGET} records placed, "
         f"{named}/{G1_NAMED_TARGET} with a named place, "
-        f"{len(place_ids)} distinct Pleiades ids, {contested} contested "
+        f"{len(place_ids)} distinct gazetteer ids, {contested} contested "
         f"(G1 criteria 1 and 3). Grounds: {dict(sorted(by_ground.items()))}. "
         f"Resolution is not checked here — run `python -m ingest.gazetteer --check`, "
         f"which is the only thing that turns an id into a coordinate."

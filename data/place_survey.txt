@@ -1,0 +1,90 @@
+# A2 findspot survey — the 16 unplaced find/coin/inscription records.
+#
+# @<record id> groups the terms searched for that record. Terms include the
+# modern site name, the ancient name where one is known, and common alternative
+# transliterations, because the 2026-08-12 survey established that Pleiades
+# titles Adulis "Adouli" and that a title search on the corpus's own vocabulary
+# misses it entirely.
+#
+# Run:
+#   python -m ingest.gazetteer --survey data/place_survey.txt --dump $d --names-dump $n
+#
+# Nothing here is a placement. It is a list of things to look at.
+
+@arabia-03-jsnab17  (Hegra / Mada'in Salih, Saudi Arabia)
+Hegra
+Mada'in Salih
+Madain Salih
+Egra
+
+@arabia-02-palmyrene-tariff  (Palmyra, Syria)
+Palmyra
+Tadmor
+
+@arabia-04-jabal-dabub  (Jabal Dabub, Dhale region, Yemen)
+Dabub
+Thaboob
+Dhale
+Dhala
+
+@eastasia-03-hwangnam-glass  (Gyeongju, South Korea)
+Gyeongju
+Silla
+Kyongju
+
+@persia-03-coin  (findspot NOT RECORDED — expected to place nothing)
+Robertson
+
+@persia-02-silver-plate  ("said to have been found in Anatolia")
+Anatolia
+Asia Minor
+
+@persia-01-skz  (Naqsh-e Rostam, Fars, Iran)
+Naqsh-e Rostam
+Naqsh-i Rustam
+Naqs-e Rostam
+Persepolis
+Istakhr
+
+@scandinavia-02-gudme-hoard  (Gudme / Lundeborg, Funen, Denmark)
+Gudme
+Lundeborg
+
+@scandinavia-04-illerup-adal  (Illerup Adal, East Jutland, Denmark)
+Illerup
+Skanderborg
+
+@scandinavia-03-vimose  (Vimose bog, Funen, Denmark)
+Vimose
+Funen
+Fyn
+
+@southasia-04-pattanam  (Pattanam, Kerala, India)
+Pattanam
+Paravur
+Muziris
+
+@seasia-03-khao-sam-kaeo  (Khao Sam Kaeo, Chumphon, Thailand)
+Khao Sam Kaeo
+Chumphon
+Takkola
+
+@seasia-01-oc-eo-medallion  (Oc Eo, Mekong Delta, Vietnam)
+Oc Eo
+Óc Eo
+Kattigara
+
+@seasia-02-oc-eo-site  (same site as seasia-01)
+Oc Eo
+Funan
+
+@africa-02-aksumite-coin  (found in Yemen ~300km N of Aden; minted at Aksum)
+Aden
+Aksum
+Axum
+Adane
+
+@africa-01-ezana-stone  (Aksum, Tigray, Ethiopia)
+Aksum
+Axum
+Auxumis

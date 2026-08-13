@@ -7,6 +7,16 @@
   "language_note": "National Museum of Denmark catalogue record in English/Danish; the cups themselves carry a Greek signature and Latin-alphabet owner's name (original_text_excerpt), not a regional-language literary text.",
   "date": "grave: 1st century CE (Early Roman Iron Age); table service made in Italy around the start of the Common Era",
   "findspot": "Hoby, island of Lolland, Denmark; discovered 1920, excavated by the National Museum of Denmark",
+  "findspot_places": [
+    {
+      "name": "Hoby",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "98983",
+      "uri": "https://pleiades.stoa.org/places/98983",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 54.741, 11.231, on Lolland — and by attested period (Roman, -30..300), not by title match alone. Pleiades describes it as 'An ancient place, cited: BAtlas 10 H2 Hoby'."
+    }
+  ],
   "original_text_excerpt": "Signature on the silver cups: [ΧEIPI]ΣΟΦΟΣ ЄΠΟΙΕΙ ('Cheirisophos made [this]'); engraved owner's name: SILIVS.",
   "original_text_note": "The maker's signature (Greek) and owner's name (Latin) are the only inscribed text associated with this find; the cups' relief scenes depict episodes from Homer's Iliad.",
   "reference_translation": "A Roman silver table service (washing dish, wine bucket and scoop, jug, tray, two drinking cups) of Italian manufacture, buried with a native chieftain c. 187cm tall, aged 25-35. The cups are signed by the silversmith Cheirisophos and engraved with the name Silius — possibly Gaius Silius, Roman commandant at Mainz 14-21 CE — suggesting the set may have been a diplomatic gift from a named Roman official to a Germanic elite figure.",

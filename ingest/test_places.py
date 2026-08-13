@@ -16,6 +16,7 @@ that has never been seen to fail is not known to work.
 from __future__ import annotations
 
 import contextlib
+import csv
 import gzip
 import io
 import json
@@ -27,7 +28,9 @@ from .gazetteer import (
     GazetteerError,
     LICENCE_UNCONFIRMED,
     cmd_check,
+    cmd_find,
     cmd_record_declaration,
+    cmd_survey,
     cmd_record_licence,
     dump_date_from_name,
     empty_cache,
@@ -80,11 +83,21 @@ def expect_raises(fn, label: str, contains: str | None = None) -> None:
 
 
 def place(**over):
+    # 39271 is the real Adulis — title "Adouli", 15.262/39.659, "port on the
+    # west coast of the Red Sea near modern Zula in Eritrea", confirmed against
+    # the 2026-08-10 snapshot on 2026-08-12.
+    #
+    # This fixture previously carried 39274195, copied from the worked example
+    # in PHASE2_PLAN.md — which is wrong, and wrong in the section that forbids
+    # writing an id from memory. It was harmless here, being synthetic, and it
+    # is corrected anyway: a fixture that is merely well-formed teaches the
+    # shape, and one that is also true teaches the shape and the value.
     base = {
         "name": "Adulis",
         "ground": "stated",
-        "pleiades_id": "39274195",
-        "uri": canonical_uri("39274195"),
+        "gazetteer": "pleiades",
+        "gazetteer_id": "39271",
+        "uri": canonical_uri("pleiades", "39271"),
     }
     base.update(over)
     return {k: v for k, v in base.items() if v is not _OMIT}
@@ -132,7 +145,7 @@ def test_valid_shapes() -> None:
     expect(p.contested and len(p.contested_citations) == 2,
            "a contested identification carries both sides")
 
-    p = parse(place(pleiades_id=_OMIT, uri=_OMIT, ground="regional",
+    p = parse(place(gazetteer=_OMIT, gazetteer_id=_OMIT, uri=_OMIT, ground="regional",
                     note="Region only; no Pleiades feature covers it."))
     expect(not p.locatable and p.note, "regional without an id parses, carrying its note")
 
@@ -164,16 +177,41 @@ def test_guards() -> None:
     # G2: the single most important rule in W1 — a specific place needs an id,
     #     because otherwise its coordinate would be authored.
     expect_raises(
-        lambda: parse(place(pleiades_id=_OMIT, uri=_OMIT)),
-        "stated placement without a pleiades_id is refused",
-        contains="pleiades_id",
+        lambda: parse(place(gazetteer=_OMIT, gazetteer_id=_OMIT, uri=_OMIT)),
+        "stated placement without a gazetteer id is refused",
+        contains="gazetteer",
     )
     expect_raises(
-        lambda: parse(place(pleiades_id=_OMIT, uri=_OMIT, ground="identified",
+        lambda: parse(place(gazetteer=_OMIT, gazetteer_id=_OMIT, uri=_OMIT, ground="identified",
                             ground_citation="Casson 1989.")),
-        "identified placement without a pleiades_id is refused",
-        contains="pleiades_id",
+        "identified placement without a gazetteer id is refused",
+        contains="gazetteer",
     )
+
+    # G2b: the gazetteer names the source of the id. Half the corpus's findspots
+    #      have no Pleiades entry, so a placement has to say WHICH gazetteer —
+    #      and adding one is a sourcing and licensing decision, not a spelling.
+    expect_raises(
+        lambda: parse(place(gazetteer="wikidata")),
+        "an unlisted gazetteer is refused",
+        contains="not one of",
+    )
+    expect_raises(
+        lambda: parse(place(gazetteer_id=_OMIT, uri=_OMIT)),
+        "a gazetteer with no id is refused",
+        contains="together or not at all",
+    )
+    expect_raises(
+        lambda: parse(place(gazetteer=_OMIT, uri=_OMIT)),
+        "an id with no gazetteer is refused",
+        contains="together or not at all",
+    )
+    p_geo = parse(place(gazetteer="geonames", gazetteer_id="1835235",
+                        uri="https://www.geonames.org/1835235"))
+    expect(p_geo.cache_key == "geonames:1835235",
+           "a geonames placement keys separately from a pleiades one")
+    expect(parse(place()).cache_key == "pleiades:39271",
+           "cache keys are namespaced, so id 98983 in two gazetteers cannot collide")
 
     # G3: `identified` IS the claim that a scholar made an identification.
     expect_raises(
@@ -186,15 +224,15 @@ def test_guards() -> None:
     #     will, and the reader cannot tell which one the map used.
     expect_raises(
         lambda: parse(place(uri="https://pleiades.stoa.org/places/999999")),
-        "uri that disagrees with pleiades_id is refused",
+        "uri that disagrees with the gazetteer id is refused",
         contains="does not match",
     )
     expect_raises(
         lambda: parse(place(uri=_OMIT)),
-        "pleiades_id without its uri is refused",
+        "a gazetteer id without its uri is refused",
     )
     expect_raises(
-        lambda: parse(place(pleiades_id="https://pleiades.stoa.org/places/39274195")),
+        lambda: parse(place(gazetteer_id="https://pleiades.stoa.org/places/39271")),
         "a URL written into pleiades_id is refused",
         contains="bare numeric",
     )
@@ -237,7 +275,7 @@ def test_guards() -> None:
 
     # G7: the sparse case must say why it is sparse.
     expect_raises(
-        lambda: parse(place(pleiades_id=_OMIT, uri=_OMIT, ground="regional")),
+        lambda: parse(place(gazetteer=_OMIT, gazetteer_id=_OMIT, uri=_OMIT, ground="regional")),
         "regional with no id and no note is refused",
         contains="note",
     )
@@ -280,9 +318,14 @@ def test_guards() -> None:
 # Gazetteer
 # --------------------------------------------------------------------------
 
+# The header of pleiades-places-20260810.csv.gz, as observed with --inspect on
+# 2026-08-12 — not a header written from the dumps README, which is dated
+# 2022-11-07 and documents six columns of the twenty-six that are actually
+# there, none of them a coordinate. An earlier version of this list was
+# guesswork and had `geometry` where the file has `geoContext`.
 REAL_DUMP_HEADER = [
     "authors", "bbox", "connectsWith", "created", "creators", "currentVersion",
-    "description", "extent", "featureTypes", "geometry", "hasConnectionsWith",
+    "description", "extent", "featureTypes", "geoContext", "hasConnectionsWith",
     "id", "locationPrecision", "maxDate", "minDate", "modified", "path",
     "reprLat", "reprLatLong", "reprLong", "tags", "timePeriods",
     "timePeriodsKeys", "timePeriodsRange", "title", "uid",
@@ -362,29 +405,93 @@ def test_gazetteer() -> None:
         dump = tmp / "pleiades-places-20260812.csv.gz"
         rows = [
             ",".join(REAL_DUMP_HEADER),
-            _row({"id": "39274195", "title": "Adulis", "description": "Red Sea port",
-                  "reprLat": "15.2617", "reprLong": "39.6606",
-                  "timePeriods": "RL", "featureTypes": "settlement",
+            # Shaped on the real first row of the 2026-08-10 dump: a bbox
+            # written comma-separated, and a GeoJSON `extent` that is NOT a bbox.
+            _row({"id": "39271", "title": "Adulis", "description": "Red Sea port",
+                  "reprLat": "15.262", "reprLong": "39.659",
+                  "bbox": "39.659, 15.262, 39.659, 15.262",
+                  "extent": '{"type": "Point", "coordinates": [39.659, 15.262]}',
+                  "timePeriods": "RL", "timePeriodsKeys": "roman, late-antique",
+                  "featureTypes": "settlement", "locationPrecision": "precise",
+                  "minDate": "-30", "maxDate": "640",
                   "authors": "R. Talbert", "creators": "S. Gillies"}),
             _row({"id": "981523", "title": "Limyrike", "description": "coastal region",
-                  "bbox": "75.0 8.0 77.0 12.0"}),
+                  "bbox": "75.0, 8.0, 77.0, 12.0"}),
             _row({"id": "000000", "title": "Nowhere"}),
         ]
         dump.write_bytes(gzip.compress(("\n".join(rows) + "\n").encode("utf-8")))
 
-        found, header, _ = read_dump(dump, {"39274195", "981523"})
-        expect(set(found) == {"39274195", "981523"}, "only the wanted ids are extracted")
-        expect(found["39274195"]["repr_point"] == [39.6606, 15.2617],
+        found, header, _ = read_dump(dump, {"39271", "981523"})
+        expect(set(found) == {"39271", "981523"}, "only the wanted ids are extracted")
+        expect(found["39271"]["repr_point"] == [39.659, 15.262],
                "the representative point is stored in GeoJSON [lon, lat] order")
         expect(found["981523"]["bbox"] == [75.0, 8.0, 77.0, 12.0],
-               "a bbox-only place keeps its extent")
+               "a comma-separated bbox parses as [min_lon, min_lat, max_lon, max_lat]")
+        expect(found["39271"]["bbox"] == [39.659, 15.262, 39.659, 15.262],
+               "bbox and repr_point agree on lon-then-lat, as the real dump has them")
+        expect(found["39271"]["min_date"] == "-30"
+               and found["39271"]["max_date"] == "640"
+               and found["39271"]["location_precision"] == "precise",
+               "attested dates and Pleiades' own location precision are captured — "
+               "an id can resolve cleanly and still denote a mediaeval place")
+        expect("extent" not in map_columns(REAL_DUMP_HEADER).values(),
+               "the GeoJSON `extent` column is never read as a bbox")
+
+        # Pleiades writes a degenerate bbox (min == max) for a point place —
+        # observed on Hoby/98983, the first entry ever cached. `has_extent` and
+        # `has_area` must not be the same question, or A5 renders a point as a
+        # zero-size box and a region as nothing.
+        point_like = Entry(
+            gazetteer="pleiades", gazetteer_id="98983", title="Hoby", description=None,
+            repr_point=[11.230919, 54.740603],
+            bbox=[11.230919, 54.740603, 11.230919, 54.740603],
+            time_periods="R", feature_types="cemetery", authors="…", creators="…",
+            min_date="-30", max_date="300", time_period_keys="roman",
+            location_precision="precise", dump_date="2026-08-10",
+            retrieved="2026-08-12",
+        )
+        expect(point_like.has_extent and not point_like.has_area,
+               "a degenerate bbox counts as a bbox but NOT as an area")
+        region_like = Entry(**{**vars(point_like), "bbox": [75.0, 8.0, 77.0, 12.0]})
+        expect(region_like.has_area, "a real bbox has area")
         expect(header == REAL_DUMP_HEADER, "the observed header is reported back")
-        expect(found["39274195"]["authors"] == "R. Talbert"
-               and found["39274195"]["creators"] == "S. Gillies",
+        expect(found["39271"]["authors"] == "R. Talbert"
+               and found["39271"]["creators"] == "S. Gillies",
                "per-place attribution is captured in the same pass as the "
                "coordinates — CC BY credits places, not projects")
         expect(found["981523"]["authors"] is None,
                "a place with no credited authors records none rather than ''")
+
+        # --find reports and never caches. Searching the snapshot rather than
+        # the website is the point: the cache is built from this file, so a name
+        # that exists on live Pleiades but not here would be a coordinate
+        # sourced from something other than what was searched.
+        with contextlib.redirect_stdout(io.StringIO()) as buf:
+            code = cmd_find(dump, "adul")
+        out = buf.getvalue()
+        expect(code == 0 and "39271" in out and "Adulis" in out,
+               "--find matches a title case-insensitively and reports the id")
+        with contextlib.redirect_stdout(io.StringIO()) as buf:
+            cmd_find(dump, "Lolland")
+        miss = buf.getvalue()
+        expect("no place title or description matches" in miss
+               and "regional" in miss,
+               "--find on an absent name says so, and names 'regional' as the "
+               "honest answer rather than inviting a nearby place")
+
+        # --survey: one pass, many terms, grouped by record. A group with no
+        # hits must still be PRINTED — an absent name has to be visibly absent,
+        # or a shorter list reads as a complete one.
+        survey = tmp / "survey.txt"
+        survey.write_text("@rec-a\nAdulis\n\n@rec-b\nLolland\n", encoding="utf-8")
+        with contextlib.redirect_stdout(io.StringIO()) as buf:
+            code = cmd_survey(survey, dump)
+        s_out = buf.getvalue()
+        expect(code == 0 and "@rec-a" in s_out and "@rec-b" in s_out,
+               "--survey groups its output by record label")
+        expect("'Lolland': nothing" in s_out,
+               "--survey prints a term with no hits rather than omitting it")
+        expect("39271" in s_out, "--survey reports the id of a hit")
 
         found_none, _, _ = read_dump(dump, {"000000"})
         expect(found_none["000000"]["repr_point"] is None
@@ -395,19 +502,19 @@ def test_gazetteer() -> None:
         # None is a caller that could render something anyway.
         cache = empty_cache()
         expect_raises(
-            lambda: resolve("39274195", cache),
+            lambda: resolve("pleiades:39271", cache),
             "an uncached id raises rather than returning None",
             contains="not been guessed",
         )
 
-        cache["places"]["39274195"] = {
-            **found["39274195"], "dump_date": "2026-08-12", "retrieved": "2026-08-12",
+        cache["places"]["pleiades:39271"] = {
+            **found["39271"], "dump_date": "2026-08-12", "retrieved": "2026-08-12",
         }
-        entry = resolve("39274195", cache)
+        entry = resolve("pleiades:39271", cache)
         expect(isinstance(entry, Entry) and entry.has_point and entry.dump_date == "2026-08-12",
                "a cached entry resolves and carries its snapshot date")
 
-        cache["places"]["39274195"]["pleiades_id"] = "999"
+        cache["places"]["pleiades:39271"]["gazetteer_id"] = "999"
         expect_raises(
             lambda: entries(cache),
             "a cache key that disagrees with its entry's id is refused",
@@ -450,14 +557,15 @@ def test_check_exits_nonzero() -> None:
         expect(quiet_check(tmp / "seed_corpus", gaz) == 1,
                "an unresolved placement fails the check")
 
-        cache["places"]["39274195"] = {
-            "pleiades_id": "39274195", "title": "Adulis", "description": None,
-            "repr_point": [39.6606, 15.2617], "bbox": None, "time_periods": "RL",
+        cache["places"]["pleiades:39271"] = {
+            "gazetteer": "pleiades", "gazetteer_id": "39271",
+            "title": "Adulis", "description": None,
+            "repr_point": [39.659, 15.262], "bbox": None, "time_periods": "RL",
             "feature_types": "settlement", "authors": "R. Talbert", "creators": None,
             "dump_date": "2026-08-12",
             "retrieved": "2026-08-12",
         }
-        cache["source"]["dump_date"] = "2026-08-12"
+        cache["sources"]["pleiades"] = {"dump_date": "2026-08-12"}
         write_cache(cache, gaz)
         code, out = check_with_output(tmp / "seed_corpus", gaz)
         expect(code == 1,
@@ -488,7 +596,7 @@ def test_check_exits_nonzero() -> None:
                "with the id cached, the licence recorded and its declaration "
                "recorded, the check passes")
 
-        cache["places"]["39274195"]["repr_point"] = None
+        cache["places"]["pleiades:39271"]["repr_point"] = None
         write_cache(cache, gaz)
         expect(quiet_check(tmp / "seed_corpus", gaz) == 1,
                "an entry resolving to neither point nor extent fails")
@@ -498,11 +606,20 @@ def test_check_exits_nonzero() -> None:
 
 
 def _row(values: dict[str, str]) -> str:
-    out = []
-    for col in REAL_DUMP_HEADER:
-        v = values.get(col, "")
-        out.append(f'"{v}"' if "," in v or " " in v else v)
-    return ",".join(out)
+    """Build a CSV row with the csv module, not by hand.
+
+    The hand-rolled version quoted any field containing a comma or a space and
+    was wrong the moment a real row was used as the fixture: Pleiades' `extent`
+    column holds GeoJSON, so the value contains double quotes, which need
+    doubling rather than wrapping. It produced a fixture the parser could not
+    read, and the failure surfaced as a missing id — a fault in the test
+    harness reported as a fault in the code under test.
+    """
+    buf = io.StringIO()
+    csv.writer(buf, lineterminator="").writerow(
+        [values.get(col, "") for col in REAL_DUMP_HEADER]
+    )
+    return buf.getvalue()
 
 
 def main() -> int:

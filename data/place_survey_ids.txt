@@ -1,0 +1,25 @@
+# A2 confirmation round — candidate ids from the 2026-08-12 name survey.
+#
+# --find (and --survey) match a bare numeric term against the id column, so this
+# pulls the full row for each candidate: title, coordinate, precision, attested
+# dates, feature types. That is what decides an identification; the name only
+# nominated it.
+#
+# Run:
+#   python -m ingest.gazetteer --survey data/place_survey_ids.txt --dump $d --names-dump $n
+
+@arabia-02-palmyrene-tariff — is 668331 the CITY of Palmyra, not one of its monuments?
+668331
+
+@arabia-03-jsnab17 — which, if either, of these is Hegra / Mada'in Salih (~26.79N, 37.95E)?
+814675
+427224440
+
+@persia-02-silver-plate — is 837 "Asia Minor" a region with a real extent?
+837
+
+@southasia-04-pattanam — full row for Muziris, whose point Pleiades places AT Pattanam
+50146
+
+@africa-02-aksumite-coin — Aden, for the record, though it is NOT the findspot
+39269
