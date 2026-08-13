@@ -3,10 +3,29 @@
   "region": "Sub-Saharan Africa",
   "title": "Aksumite gold coin of King Ezanas",
   "source_type": "coin_record",
-  "language_code": ["en"],
+  "language_code": [
+    "en"
+  ],
   "language_note": "British Museum catalogue record in English; Aksumite coin legends are typically in Greek (for gold/silver issues aimed at external trade) or Ge'ez, not transcribed in this record.",
   "date": "c. 340-400 CE",
   "findspot": "Found/acquired in Yemen, ~300km north of Aden; minted at Aksum",
+  "findspot_places": [
+    {
+      "name": "Yemen, roughly 300 km north of Aden",
+      "ground": "regional",
+      "note": "The record fixes the findspot as a distance and a bearing from Aden, not as a place. Searched against the Pleiades places snapshot of 2026-08-10: Pleiades 39269 is Aden itself (Adane/Athenae/Eudaimon Arabia, 12.772/45.039) and is roughly 300 km AWAY from where this coin was found, so it is deliberately NOT used — a resolving id at the wrong place is worse than no id. No Pleiades feature covers the intended area at this resolution, so nothing is drawn."
+    }
+  ],
+  "origin_places": [
+    {
+      "name": "Aksum",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39303",
+      "uri": "https://pleiades.stoa.org/places/39303",
+      "note": "The record states the coin was minted at Aksum. Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 14.134, 38.721, Tigray — feature types 'cultural-landscape, settlement', attested -30..2100; Pleiades titles it 'A(u)xoume'. This is the same id used as the FINDSPOT of africa-01-ezana-stone; here it is the place of manufacture, which is why the two are separate blocks. Aksum to Yemen is this object's journey, and it is the connection the record exists to document."
+    }
+  ],
   "original_text_excerpt": "Gold coin. Half-length bust of Ezanas right, crowned, holding stick or sceptre, flanked by two wheat-stalks, the whole in a beaded circle. Half-length bust of Ezanas right, wearing headcloth, holding branch (?) or stick, flanked by two wheat-stalks, the whole in a beaded circle.",
   "original_text_note": "British Museum catalogue description used as the artefact record.",
   "reference_translation": null,

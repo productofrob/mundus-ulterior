@@ -46,8 +46,11 @@ from .places import (
     GROUNDS,
     Place,
     PlaceError,
+    NO_PLACES_KEY,
+    PLACE_BLOCKS,
     assert_no_authored_coordinates,
     canonical_uri,
+    read_no_places_reason,
     parse_place,
     parse_record_places,
 )
@@ -304,6 +307,33 @@ def test_guards() -> None:
         "the coordinate rule matches exact keys, not the 'lat' inside "
         "'translation_source'",
     )
+
+    # G9b: a record declares places OR a reason it has none, never both. Without
+    #      this, an absent block means "not curated yet" AND "curated, nothing to
+    #      place", and at A6 nobody can tell them apart — the third state this
+    #      schema refuses everywhere else, one level up.
+    expect(read_no_places_reason({"id": "x"}) is None,
+           "a record with no places and no reason returns None, not an error")
+    expect(read_no_places_reason({"id": "x", NO_PLACES_KEY: "findspot not recorded"})
+           == "findspot not recorded",
+           "a declared reason is read back")
+    expect_raises(
+        lambda: read_no_places_reason(
+            {"id": "x", NO_PLACES_KEY: "none", "findspot_places": [place()]}),
+        "a record cannot both declare places and declare it has none",
+        contains="either has places",
+    )
+    expect_raises(
+        lambda: read_no_places_reason({"id": "x", NO_PLACES_KEY: "  "}),
+        "an empty no_places_reason is refused",
+        contains="non-empty",
+    )
+    expect("origin_places" in PLACE_BLOCKS,
+           "origin_places is a block: a mint is not a findspot, and origin to "
+           "findspot is an object moving")
+    expect(parse_record_places({"id": "x", "origin_places": [place()]})[0].block
+           == "origin_places",
+           "a placement records which block it came from")
 
     # G10: one place, one entry.
     expect_raises(

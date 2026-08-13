@@ -4304,3 +4304,74 @@ it appeared on the ninth entry cached. **A6 should build that check.**
 (hearsay, and Pleiades 837 "Asia Minor" is `related` precision, dated 1700..1799,
 with a representative point near Ephesus — a poor record for a peninsula), and
 `persia-03-coin` (no findspot recorded at all).
+
+## A2 — the three judgement records, and two schema gaps they exposed (2026-08-13)
+
+```
+W1 placements: 11 placed + 1 declared unplaceable = 12/24 considered,
+               10/17 with a named place, 10 gazetteer ids, 1 contested
+Grounds: {identified: 2, regional: 2, stated: 9}
+```
+
+### `no_places_reason` — because "unplaced" and "unplaceable" were the same thing
+
+`persia-03-coin`'s findspot is *"Not recorded (acquired via Robertson sale,
+1843)"*. Not vague — **absent**. No honest `regional` placement exists, and the
+record carries no mint either.
+
+An omitted block therefore meant both *not curated yet* and *curated, nothing to
+place*, which at A6 are indistinguishable. **The third state this schema refuses
+at every other level, appearing one level up.** A record now carries place blocks
+OR a record-level `no_places_reason`, never both, and `verify` reports
+`placed + declared unplaceable = considered`.
+
+This also makes **G1 criterion 1 achievable and honest at the same time.** "24/24
+records carry at least `regional`" is unreachable when a findspot is genuinely
+unrecorded; "24/24 have been considered" is reachable and is the claim actually
+worth making.
+
+### `origin_places` — a mint is not a findspot
+
+The Aksumite coin was minted at Aksum and found in Yemen. `subject_places` means
+"where the text is about" and a coin has no text; stretching it would have
+damaged the definition A4 depends on. So a third block, named for the general
+case — **manufacture** — rather than the instance that prompted it, because the
+general case is everywhere here: Hoby's cups made in Italy, Roman glass at
+Hwangnam-daechong, an Antoninus medallion at Óc Eo.
+
+**Origin to findspot is an object moving**, which is the connection this project
+exists to document and the edge A5 should draw. Added while 8 records were
+placed; only the coin uses it so far, and the other records will not be
+retro-fitted without a decision.
+
+### The three judgements
+
+**Pattanam** — `identified` + `contested`, on Pleiades **50146 Muziris**, whose
+point (10.154/76.213) *is Pattanam* and which Pleiades marks `precise`. **The
+gazetteer has already adopted the identification this record treats as open.**
+Our entry now says something Pleiades does not, which is exactly what the
+contested flag is for.
+
+The second citation is **explicitly provisional and says so in its own text**:
+the sceptical side currently rests on this record's `notes` summarising an ASI
+caution, which is our own prose, not published scholarship. Recorded that way
+rather than quietly satisfying the two-citation rule — a rule met by a citation
+that is not really a citation is worse than a rule seen to be pending.
+
+**Aksumite coin** — findspot `regional` with **no id**. Pleiades 39269 is Aden,
+about 300 km from where the coin was found, and is deliberately unused: *a
+resolving id at the wrong place is worse than no id*. Origin placed at Aksum
+(39303) — the same id that is africa-01's **findspot**, which is precisely why
+the two are separate blocks.
+
+**Silver plate** — `regional`, no id. "Said to have been found in Anatolia" is a
+reported attribution, not a findspot. **Pleiades 837 was examined and rejected**:
+`related` precision, attested 1700..1799, representative point near Ephesus
+rather than any centroid. The rejection is written into the note so the next
+curator does not re-find 837 and silently reach the opposite conclusion.
+
+**Recording the rejections is the point.** "We looked at this and decided against
+it" is invisible otherwise, and three separate questions would have been
+reopened from scratch.
+
+**81 assertions, 21/21 mutations.**

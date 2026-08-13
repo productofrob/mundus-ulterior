@@ -3,10 +3,28 @@
   "region": "South Asia",
   "title": "Pattanam excavation find record (candidate site of ancient Muziris)",
   "source_type": "find_record",
-  "language_code": ["en"],
+  "language_code": [
+    "en"
+  ],
   "language_note": "English-language excavation reporting by the Kerala Council for Historical Research (KCHR); no single regional-language primary text — included as an archaeological/artefact anchor (Pillar 4).",
   "date": "Mediterranean-linked layers: 100 BCE - 400 CE; site occupation from c. 1000 BCE",
   "findspot": "Pattanam, near North Paravur, Ernakulam district, Kerala, India; excavated 2007-2014 by KCHR",
+  "findspot_places": [
+    {
+      "name": "Pattanam (candidate site of ancient Muziris)",
+      "ground": "identified",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50146",
+      "uri": "https://pleiades.stoa.org/places/50146",
+      "ground_citation": "Kerala Council for Historical Research, Pattanam 7th season excavation handbook (2013), archived at https://web.archive.org/web/20160304031410/http://www.keralahistory.ac.in/pdf2013/pattanam_7th_season_handbook1.pdf",
+      "contested": true,
+      "contested_citations": [
+        "FOR — Kerala Council for Historical Research, Pattanam 7th season excavation handbook (2013): Roman amphora and terra sigillata sherds, and a 1983 Roman coin hoard ~9.7 km inland, adduced in support of the port identification. Archived at https://web.archive.org/web/20160304031410/http://www.keralahistory.ac.in/pdf2013/pattanam_7th_season_handbook1.pdf",
+        "AGAINST — PROVISIONAL, AND MUST BE REPLACED WITH A PUBLISHED SOURCE. This record's own `notes` field states that the Archaeological Survey of India has urged caution over the Pattanam DNA results pending further sampling. That is a summary in our own corpus, not a citation to published scholarship, and it does not yet meet the two-sides requirement in the spirit the rule intends. Recorded here so the contested flag is not carried on a single side; replace with the ASI statement or a published sceptical treatment."
+      ],
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10: Pleiades 50146 'Muziris' sits at 10.154, 76.213 — which IS Pattanam — feature types 'settlement, port', attested -30..640, locationPrecision 'precise'. Pleiades has therefore ALREADY ADOPTED the identification this record treats as open, and marks it precise. The coordinate is used because it is the excavation site; the label 'Muziris' is what is contested. Pleiades holds no entry titled 'Pattanam'."
+    }
+  ],
   "original_text_excerpt": "Mediterranean objects (100 BC to 400 AD): Amphora and terra sigillata shards; fragments of Roman glass pillar bowls; and gaming counters. West Asian, South Arabian, and Mesopotamian objects (300 BC to 1000 AD): turquoise glazed pottery; torpedo jar fragments; frankincense crumbs. Most remarkable: a fired brick wharf complex with nine teak bollards and a mummified 6-metre dugout canoe (Artocarpus hirsutus).",
   "original_text_note": "Summary drawn from Wikipedia's synthesis of KCHR season reports; pull the primary KCHR 'Pattanam Seventh Season Handbook' (linked in citation_original) for the authoritative excavation-report text during ingestion.",
   "reference_translation": null,

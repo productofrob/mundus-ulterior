@@ -17,8 +17,17 @@ neither.
 
 | block | means |
 | --- | --- |
-| `findspot_places` | where the object was found |
-| `subject_places` | where the text is *about* |
+| `findspot_places` | where the object was **found** |
+| `origin_places` | where the object was **made** |
+| `subject_places` | where the text is **about** |
+
+`origin_places` was added 2026-08-13 for the Aksumite coin — minted at Aksum,
+found in Yemen. A mint is not a findspot, and a coin has no text, so neither
+other block could hold it without damaging its own definition. The general case
+is manufacture, not minting, and it recurs across this corpus: the Hoby cups
+were made in Italy, the Hwangnam glass is Roman, the Óc Eo medallion is an
+Antoninus. **Origin to findspot is an object moving** — the connection the
+project exists to show, and the edge A5 should draw.
 
 They are strongest in opposite records. Findspots exist for the 17 object
 records; subject geography for the 7 literary ones. A findspot map of 24 objects
@@ -27,6 +36,25 @@ ORBIS-shaped thing.
 
 **A block that is present must be non-empty.** Omit the key rather than write
 `[]`.
+
+## A record with no geography at all
+
+A record carries place blocks **or** a record-level `no_places_reason`, never
+both and — at G1 — never neither.
+
+```json
+"no_places_reason": "Considered 2026-08-13 and no placement is possible. The findspot is 'Not recorded (acquired via Robertson sale, 1843)' — absent rather than vague …"
+```
+
+Without it, an absent block means two different things: *not curated yet* and
+*curated, and there is nothing to place*. At A6 nobody could tell them apart —
+the same third state this schema refuses at every other level.
+
+It also makes G1 criterion 1 checkable. "24/24 records carry at least
+`regional`" is **unreachable** when a record's findspot is genuinely unrecorded;
+"24/24 records have been considered" is both reachable and the thing worth
+asserting. `verify` reports `N placed + M declared unplaceable = N+M/24
+considered`.
 
 ---
 

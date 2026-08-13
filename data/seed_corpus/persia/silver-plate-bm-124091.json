@@ -3,10 +3,19 @@
   "region": "Persia",
   "title": "Gilded silver plate showing a Sasanian king hunting (attributed Shapur I or II)",
   "source_type": "find_record",
-  "language_code": ["en"],
+  "language_code": [
+    "en"
+  ],
   "language_note": "Museum catalogue record in English; object itself carries no inscription. No regional-language original text exists for this record — it is included as a multimodal/artefact anchor (Pillar 4) rather than a cross-lingual text pair.",
   "date": "4th century CE (production); reign attribution disputed between Shapur I, r. 240–272, and Shapur II, r. 309–379",
   "findspot": "Said to have been found in Anatolia (Turkey)",
+  "findspot_places": [
+    {
+      "name": "Anatolia (reported, unverified)",
+      "ground": "regional",
+      "note": "The record says the plate is 'said to have been found in Anatolia' — a reported attribution, not a documented findspot, so `stated` would misdescribe it. Pleiades 837 'Asia Minor' was examined against the Pleiades places snapshot of 2026-08-10 and REJECTED: locationPrecision 'related', attested 1700..1799, and a representative point at 37.910/27.279 near Ephesus rather than any centroid of the peninsula. Using it would put a confident-looking extent on the map for a dealer's attribution. Recorded here so the next curator does not re-find 837 and reach the opposite conclusion without knowing this one was made."
+    }
+  ],
   "original_text_excerpt": "Gilded silver plate showing a king hunting; the king sits astride a galloping fallow deer, which he grasps by the antlers with his left hand while plunging a sword into its upper neck; the king is wearing a crown with pendant, presumably pearl-drop, earrings...",
   "original_text_note": "This is the British Museum's own catalogue description, used here as the 'original record' field since the object is a visual/archaeological artefact rather than a text.",
   "reference_translation": null,

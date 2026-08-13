@@ -1,7 +1,17 @@
 """Strict loader for the two place blocks a seed record may carry.
 
 `findspot_places` — where the object was found.
+`origin_places`   — where the object was made.
 `subject_places`  — where the text is *about*.
+
+`origin_places` was added 2026-08-13 for the Aksumite coin, minted at Aksum and
+found in Yemen. A mint is not a findspot and a coin has no text, so neither
+existing block could hold it without damaging its own definition. The general
+case is not minting but **manufacture**, and it is everywhere in this corpus:
+the Hoby cups were made in Italy, the Hwangnam glass is Roman, the Óc Eo
+medallion is an Antoninus. **Origin to findspot is an object moving**, which is
+the connection this whole project exists to show, so the block is named for the
+general case rather than the instance that prompted it.
 
 They are strongest in opposite records: findspots exist for the 17 object
 records, subject geography for the 7 literary ones. A findspot map of 24 objects
@@ -44,7 +54,21 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterator
 
-PLACE_BLOCKS = ("findspot_places", "subject_places")
+PLACE_BLOCKS = ("findspot_places", "origin_places", "subject_places")
+
+# A record carries place blocks OR this, never both and (at G1) never neither.
+#
+# Without it, an absent block means two different things — "not curated yet" and
+# "curated, and there is nothing to place" — and at A6 nobody can tell them
+# apart. That is the third state this schema refuses everywhere else, arriving
+# at the level above the entry. `persia-03-coin` is the case that forced it:
+# its findspot is "Not recorded (acquired via Robertson sale, 1843)", which is
+# not vague, it is absent, and no honest `regional` placement exists.
+#
+# It also makes G1 criterion 1 checkable. "24/24 records carry at least
+# regional" is unreachable if two records have no geography; "24/24 records have
+# been considered" is both reachable and the thing actually worth asserting.
+NO_PLACES_KEY = "no_places_reason"
 
 GROUNDS = {
     # The record's own text names the place.
@@ -347,6 +371,27 @@ FORBIDDEN_COORDINATE_KEYS = {
 }
 
 
+def read_no_places_reason(record: dict[str, Any], doc_id: str | None = None) -> str | None:
+    """The record's declaration that it has been considered and cannot be placed."""
+    doc_id = doc_id or record.get("id") or "<unknown>"
+    if NO_PLACES_KEY not in record:
+        return None
+    reason = record[NO_PLACES_KEY]
+    if not isinstance(reason, str) or not reason.strip():
+        raise PlaceError(
+            f"{doc_id}: '{NO_PLACES_KEY}' must be a non-empty string saying what "
+            f"was looked for and why nothing could be placed."
+        )
+    present = [b for b in PLACE_BLOCKS if b in record]
+    if present:
+        raise PlaceError(
+            f"{doc_id}: '{NO_PLACES_KEY}' alongside {present}. A record either "
+            f"has places or has a reason it has none. Both is a record that "
+            f"contradicts itself, and the reader cannot tell which is current."
+        )
+    return reason.strip()
+
+
 def assert_no_authored_coordinates(record: dict[str, Any], doc_id: str | None = None) -> None:
     """A seed record may name a place. It may never state where the place is."""
     doc_id = doc_id or record.get("id") or "<unknown>"
@@ -406,6 +451,7 @@ def load_places(corpus_dir: Path) -> dict[str, list[Place]]:
             continue
         record = json.loads(path.read_text(encoding="utf-8"))
         assert_no_authored_coordinates(record)
+        read_no_places_reason(record)   # raises if it contradicts the blocks
         out[record["id"]] = parse_record_places(record)
     return out
 

@@ -83,6 +83,18 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           """    if False:""")],
     ),
     (
+        "a record may both declare places and declare it has none",
+        [("""    present = [b for b in PLACE_BLOCKS if b in record]
+    if present:""",
+          """    present = [b for b in PLACE_BLOCKS if b in record]
+    if False:""")],
+    ),
+    (
+        "an empty no_places_reason is accepted",
+        [("""    if not isinstance(reason, str) or not reason.strip():""",
+          """    if False:""")],
+    ),
+    (
         "a hand-written lat/lon in a seed record is accepted",
         [("""    offending = sorted(k for k in record if k.lower() in FORBIDDEN_COORDINATE_KEYS)""",
           """    offending = []""")],
@@ -138,6 +150,8 @@ EXPECTED = [
     "a contested identification with one citation is refused",
     "contested written as false is refused",
     "regional with no id and no note is refused",
+    "a record cannot both declare places and declare it has none",
+    "an empty no_places_reason is refused",
     "a hand-written coordinate in a seed record is refused",
     "a header with no geometry fails loudly",
     "an undated 'latest' dump is refused",

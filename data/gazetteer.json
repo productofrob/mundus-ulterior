@@ -63,6 +63,32 @@
       "time_periods": "RLM",
       "title": "A(u)xoume"
     },
+    "pleiades:50146": {
+      "authors": "Erdosy, M., DARMC, R. Talbert, B. Kiesling, S. Gillies, J. Becker, T. Elliott",
+      "bbox": [
+        76.213146,
+        10.153976,
+        76.213146,
+        10.153976
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An important port and trading village",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement, port",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50146",
+      "location_precision": "precise",
+      "max_date": "640",
+      "min_date": "-30",
+      "repr_point": [
+        76.213146,
+        10.153976
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,late-antique",
+      "time_periods": "RL",
+      "title": "Muziris"
+    },
     "pleiades:616346030": {
       "authors": "Becker, J.",
       "bbox": [

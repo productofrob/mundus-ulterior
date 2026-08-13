@@ -16,7 +16,12 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from .loader import SEED_CORPUS_DIR, load_corpus
-from .places import PlaceError, assert_no_authored_coordinates, parse_record_places
+from .places import (
+    PlaceError,
+    assert_no_authored_coordinates,
+    parse_record_places,
+    read_no_places_reason,
+)
 
 # Gate G1, criterion 1: 24/24 records carry at least a `regional` placement, and
 # at least 17 carry a named place with a resolving pleiades_id. Held here as
@@ -212,6 +217,7 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     #     gets ignored throughout. The progress line names the gate it is
     #     heading for so it cannot be mistaken for a pass.
     placed = 0
+    declared_unplaceable = 0
     named = 0
     contested = 0
     by_ground: Counter = Counter()
@@ -220,10 +226,13 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     for doc_id, rec in sorted(raw_fields.items()):
         try:
             assert_no_authored_coordinates(rec, doc_id)
+            reason = read_no_places_reason(rec, doc_id)
             record_places = parse_record_places(rec, doc_id)
         except PlaceError as exc:
             failures.append(str(exc))
             continue
+        if reason:
+            declared_unplaceable += 1
         if not record_places:
             continue
         placed += 1
@@ -234,7 +243,9 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
         place_ids.update(p.cache_key for p in record_places if p.cache_key)
 
     notes.append(
-        f"W1 placements: {placed}/{G1_PLACED_TARGET} records placed, "
+        f"W1 placements: {placed} placed + {declared_unplaceable} declared "
+        f"unplaceable = {placed + declared_unplaceable}/{G1_PLACED_TARGET} "
+        f"considered, "
         f"{named}/{G1_NAMED_TARGET} with a named place, "
         f"{len(place_ids)} distinct gazetteer ids, {contested} contested "
         f"(G1 criteria 1 and 3). Grounds: {dict(sorted(by_ground.items()))}. "

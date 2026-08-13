@@ -3,10 +3,13 @@
   "region": "Persia",
   "title": "Sasanian silver drachm of Shapur I",
   "source_type": "coin_record",
-  "language_code": ["en"],
+  "language_code": [
+    "en"
+  ],
   "language_note": "Museum catalogue record in English. Coin legends are in Pahlavi script but the BM record does not transcribe them; flagged for follow-up during ingestion if legend transliteration is needed.",
   "date": "241–272 CE",
   "findspot": "Not recorded (acquired via Robertson sale, 1843)",
+  "no_places_reason": "Considered 2026-08-13 and no placement is possible. The findspot is 'Not recorded (acquired via Robertson sale, 1843)' — absent rather than vague, so not even a `regional` placement would be honest. The record carries no mint attribution either, so `origin_places` has nothing to hold. This field exists so that 'considered, nothing to place' can be told apart from 'not yet curated'.",
   "original_text_excerpt": "Bust of Shapur I right, wearing crenellated crown with earflap and diadem, globe; tied beard, large ball of hair, moustache. Fire altar and two armed attendants leaning on long staff, looking away from altar, crenellated crowns.",
   "original_text_note": "British Museum catalogue description used as the artefact record; no reference translation applicable (numismatic object).",
   "reference_translation": null,
