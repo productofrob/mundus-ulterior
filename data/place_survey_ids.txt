@@ -23,3 +23,27 @@
 
 @africa-02-aksumite-coin — Aden, for the record, though it is NOT the findspot
 39269
+
+@persia-01-skz — is the Ka'ba-ye Zartosht a separate place from the necropolis?
+# The SKZ is carved on the Ka'ba-ye Zartosht, a free-standing tower within the
+# Naqsh-e Rostam necropolis. If Pleiades holds the tower separately, THAT is the
+# findspot and 922685 is its setting. If it does not, 922685 is correct and the
+# note should say the placement is the necropolis rather than the monument.
+922685
+Ka'ba
+Kaba-ye Zartosht
+Zartosht
+Zoroaster
+
+@africa-01-ezana-stone — full row for Aksum, to confirm what 39303 denotes
+39303
+
+@scandinavia-02-gudme-hoard — full rows, for the confirmation notes
+98970
+99004
+
+@scandinavia-04-illerup-adal
+20492
+
+@scandinavia-03-vimose
+99059

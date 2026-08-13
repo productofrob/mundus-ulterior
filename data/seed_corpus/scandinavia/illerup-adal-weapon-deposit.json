@@ -3,10 +3,23 @@
   "region": "Scandinavia",
   "title": "Illerup Ådal weapon sacrifice — Roman coins among a Germanic war-booty deposit",
   "source_type": "find_record",
-  "language_code": ["en", "da"],
+  "language_code": [
+    "en",
+    "da"
+  ],
   "language_note": "Excavation/scholarly reporting in Danish and English (Jørgen Ilkjær's multi-volume excavation publication is the primary academic source); no inscribed regional-language text associated with this find.",
   "date": "deposited soon after 205 CE (dendrochronology of shield boards); latest coin minted 187/8 CE",
   "findspot": "Illerup Ådal, near Skanderborg, East Jutland, Denmark — a lake/bog weapon-sacrifice site",
+  "findspot_places": [
+    {
+      "name": "Illerup Adal",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "20492",
+      "uri": "https://pleiades.stoa.org/places/20492",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 56.053, 9.939, East Jutland near Skanderborg — feature type 'settlement', attested -30..2099. Pleiades holds no separate entry for Skanderborg; the deposit site itself is what is placed."
+    }
+  ],
   "original_text_excerpt": "Contents include gold, silver, spear shafts, shield boards, ropes, cords, leather, textiles, tools, wooden vessels, spoons, beads, four horses and a cow. The deposit contains 194 Roman denarii, four barbarous imitations, and a sestertius.",
   "original_text_note": "Summarized from excavation reporting (Ilkjær) as synthesized on Wikipedia (Roman Iron Age weapon deposits / Illerup Ådal).",
   "reference_translation": null,

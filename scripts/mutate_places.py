@@ -111,6 +111,15 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           """    elif False:""")],
     ),
     (
+        "--survey stops matching ids, as it silently did until 2026-08-13",
+        [("""    if needle_id and (row.get(cmap["id"]) or "").strip() == needle_id:""",
+          """    if False:""")],
+    ),
+    (
+        "a record the gazetteer marks as an erroneous duplicate is accepted",
+        [("""        if looks_deprecated(entry.title):""", """        if False:""")],
+    ),
+    (
         "a cached entry with neither point nor extent passes the check",
         [("""        if not entry.has_point and not entry.has_extent:""",
           """        if False:""")],
@@ -140,6 +149,10 @@ EXPECTED = [
     "the unconfirmed-licence failure names it as unconfirmed",
     "the licence terms alone are not enough — the publisher's declaration that "
     "they apply is a second claim",
+    "--survey matches a bare numeric term against the id column, exactly as "
+    "--find does",
+    "a resolving id whose title marks it deprecated is refused, and the failure "
+    "says so",
     "an entry resolving to neither point nor extent fails",
 ]
 

@@ -3,10 +3,23 @@
   "region": "Arabia",
   "title": "Epitaph of Raqōš (JSNab 17) — Nabataean tomb inscription, Hegra (Mada'in Salih)",
   "source_type": "inscription",
-  "language_code": ["xna", "arb"],
+  "language_code": [
+    "xna",
+    "arb"
+  ],
   "language_note": "Mixed Nabataean Aramaic and Old Arabic, accompanied by a shorter Thamudic D inscription. One of the earliest attestations of Arabic embedded in a Nabataean-script legal text.",
   "date": "267 CE",
   "findspot": "Hegra / Mada'in Salih, Saudi Arabia",
+  "findspot_places": [
+    {
+      "name": "Hegra (Egra / Meda'in Salih)",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "814675",
+      "uri": "https://pleiades.stoa.org/places/814675",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 26.798, 37.952 — feature types 'settlement, cemetery', attested -330..2100. Note that Pleiades also holds 427224440, titled 'Erroneous Duplicate: Al-Hijr (Mada'in Salih)', at 26.792/37.961 — 700m away and marked by the publisher as wrong. It resolves and carries a plausible point; 814675 is the live record."
+    }
+  ],
   "original_text_excerpt": "[Nabataean script, transliterated: dnh qbrʾ dy ʿbd Kʿbw br Ḥrtt l-Rqwš brt ʿbdmnwtw ʾmh...] — see Wikipedia article for the two competing scholarly readings (original JS edition vs. O'Connor 1986 revision).",
   "original_text_note": "Transliteration given is a paraphrase reconstruction; pull the exact letter-by-letter transliteration from Healey, The Nabataean Tomb Inscriptions of Mada'in Salih (1993), during ingestion.",
   "reference_translation": "As for this grave/This is a grave, which Ka'b bar Haritat made for Raqash daughter of 'Abd-Manat, his mother. And she died in al-Hijr, year one-hundred-sixty-two, in the month of Tammuz. And may Mare 'Alma [the Lord of the World] curse him who alters this tomb or opens it, save for him whom he has begotten. And may he curse anyone who buries or exhumes anyone else in it.",

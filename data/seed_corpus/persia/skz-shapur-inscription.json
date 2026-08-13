@@ -11,6 +11,25 @@
   "language_note": "Trilingual: Middle Persian (Pahlavi, east wall), Parthian (west wall), Greek (south wall). Original composition likely Middle Persian/Parthian; Greek is a contemporary translation carved on the same monument.",
   "date": "c. 262 CE (events narrated span 224–262 CE)",
   "findspot": "Naqsh-e Rostam, Fars Province, Iran",
+  "findspot_places": [
+    {
+      "name": "Naqsh-e Rostam",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "922685",
+      "uri": "https://pleiades.stoa.org/places/922685",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 29.989, 52.875, Fars — feature types 'cemetery, monument', attested -750..2100. This is the necropolis named in this record's findspot field."
+    },
+    {
+      "name": "Ka'ba-ye Zartosht",
+      "ground": "identified",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "616346030",
+      "uri": "https://pleiades.stoa.org/places/616346030",
+      "ground_citation": "Parthian text ed. Huyse 1999; https://parthiansources.com/texts/skz/",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 29.988, 52.874 — feature type 'monument', attested -540..2100, roughly 100m from the necropolis point. The SKZ is carved on this tower, which stands within Naqsh-e Rostam; the record's findspot field names the necropolis, so that placement is 'stated' and this more precise one is 'identified'. The ground_citation is this record's own citation_original; the curator should expand it with the full title of Huyse 1999, which names the monument."
+    }
+  ],
   "original_text_excerpt": "[§1, transliteration] ANE mzdyzn ALHA šhypwhr MLKYN MLKA ʾryʾn W ʾnyʾryʾn MNW šyhr MN yʾztn BRY mzdyzn ALHA ʾrthštr MLKYN MLKA ʾryʾn MNW šyhr MN yʾztn BRYLBRY ALHA pʾpk ML[K]A ʾryʾnhštr hwtwy HWYm\n\n[§1, transcription] Az, mazdēzn baγ Šābuhr, šāhān šāh Ērān ud Anēran, kē čihr až yazdān, puhr mazdēzn baγ Ardašīr, šāhān šāh Ērān, kē čihr až yazdān, puhrēpuhr baγ Pābag šāh, Ērānšahr xwadāy ahēm\n\n[§20, transliteration] MN trʾkyʾ hštr MN b<tw>nyʾ hštr MN ʾsʾyʾ hštr MN pmp<l>ʾyʾ hštr MN ʾswryʾ hštr MN l<kw>nyʾ hštr MN glʾtynʾyʾ hštr MN lwkyʾ hštr MN kylkyʾ hštr MN kpwtkyʾ hštr MN pr<w>kʾyʾ hštr MN swryʾ hštr\n\n[§20, transcription] až Trākiyā šahr, až *Bitūniyā šahr, až Āsāyā šahr, až Pamfilāyā šahr, až Isawriyā šahr, až Likōniyā šahr, až Galātīniyā šahr, až Lūkiyā šahr, až Kīlikiyā šahr, až Kap(p)ōdakiyā šahr, až Frūgāyā šahr, až Sūriyā šahr",
   "original_text_note": "Verbatim Parthian recovered 2026-08-09 from Parthian Sources Online, reproducing Huyse 1999 (Corpus Inscriptionum Iranicarum III.I.1); English translation by Jake Nabel. Two chapters are given in both Huyse's transliteration and his transcription: §1 (Shapur's titulature) and §20 (the roll-call of Roman provinces taken — Thrace, Bithynia, Asia, Pamphylia, Isauria, Lycaonia, Galatia, Lycia, Cilicia, Cappadocia, Phrygia, Syria). The site notes that Huyse's text is reproduced there without diacritical marks. The Middle Persian recension is substantially damaged in situ; the Greek recension is separately available via PHI. Chapters 2-19 and 21-51 remain to be pulled if fuller coverage is wanted.",
   "reference_translation": "[§1] I, the Mazda-worshipping god Shapur, king of kings of Iran and Not-Iran, whose race is of the gods, son of the Mazda-worshipping god Ardashir, king of kings of Iran, whose race is of the gods, grandson of the god King Pabag, am lord of Iran. [§20] From the land of Thrace, from the land of Bithynia, from the land of Asia, from the land of Pamphylia, from the land of Isauria, from the land of Lyconia, from the land of Galatia, from the land of Lycia, from the land of Cilicia, from the land of Cappadocia, from the land of Phrygia, from the land of Syria.",

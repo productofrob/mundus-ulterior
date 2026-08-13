@@ -11,6 +11,16 @@
   "language_note": "Trilingual: Ge'ez (Ethiopic script), Sabaean/Old South Arabian script, and Greek — an African parallel to the ŠKZ (Persia) and Palmyrene Tariff (Arabia) trilingual/bilingual inscriptions already in this seed set, useful for consistent cross-lingual test design.",
   "date": "4th century CE (Ezana reigned c. 330-356 CE)",
   "findspot": "Aksum, Tigray Region, Ethiopia (still standing in situ)",
+  "findspot_places": [
+    {
+      "name": "Aksum",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39303",
+      "uri": "https://pleiades.stoa.org/places/39303",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 14.134, 38.721, Tigray — feature types 'cultural-landscape, settlement', attested -30..2100. Pleiades titles the place 'A(u)xoume'; a title search for 'Aksum' or 'Axum' does not reach it, and it was found through the description and the names table."
+    }
+  ],
   "original_text_excerpt": "[Ge'ez, Sabaean, and Greek texts of the Ezana Stone are not transcribed in this pass; pull from Encyclopaedia Aethiopica or the DAE (Deutsche Aksum-Expedition) corpus during ingestion.]",
   "original_text_note": "English translation of the Greek recension opening located and quoted below; full trilingual transcription needs a dedicated pull (see Bernand, Drewes & Schneider, Recueil des inscriptions de l'Ethiopie, for the critical edition).",
   "reference_translation": "Aeizanas, king of the Aksumites, Himyarites and Raeidan, the Ethiopians, the Sabaeans and Silei, Tiamo and the Beja and Kasu, king of kings, son of the invincible god Ares.",

@@ -501,6 +501,56 @@ def cmd_inspect(dump: Path) -> int:
     return 0
 
 
+# Pleiades retains deprecated records in the dump, titled so a reader can see
+# what they are: "Erroneous Duplicate: Al-Hijr (Madâ'in Sâlih)", id 427224440,
+# sitting at Hegra's own coordinate. Such a record resolves perfectly, carries a
+# plausible point, and is exactly what Pleiades is telling you not to cite.
+#
+# Found 2026-08-13 while confirming Hegra, and only because the title was read.
+# Nothing about an id says it is deprecated.
+DEPRECATED_TITLE_MARKERS = ("erroneous duplicate", "deprecated", "do not use")
+
+
+def looks_deprecated(title: str) -> bool:
+    lowered = (title or "").casefold()
+    return any(marker in lowered for marker in DEPRECATED_TITLE_MARKERS)
+
+
+def match_row(
+    row: dict[str, str],
+    cmap: dict[str, str],
+    needle_cf: str,
+    needle_id: str | None,
+) -> str | None:
+    """Where, if anywhere, a term matches a dump row: 'ID', 'title' or 'desc'.
+
+    ONE matcher, used by both `--find` and `--survey`.
+
+    They had two, and they disagreed: `--find` matched a bare number against the
+    id column and `--survey` did not, so a survey of ids reported `nothing` for
+    ids that plainly exist — and worse, reported a *hit* where the number
+    happened to appear inside another record's description. Plausible output,
+    silently wrong, from the command recommended for exactly that job.
+
+    Two implementations of one question is the `translation_chunk` trap and the
+    `check_ui.mjs` / `build_ui_data.py` disagreement over again. The fix is not
+    to correct the second copy; it is to stop having two.
+    """
+    if needle_id and (row.get(cmap["id"]) or "").strip() == needle_id:
+        return "ID"
+    if needle_cf in (row.get(cmap["title"]) or "").casefold():
+        return "title"
+    if "description" in cmap and needle_cf in (row.get(cmap["description"]) or "").casefold():
+        return "desc"
+    return None
+
+
+def as_needle_id(term: str) -> str | None:
+    """A bare number is an id being checked, not a name being searched."""
+    term = term.strip()
+    return term if term.isdigit() else None
+
+
 def cmd_find(dump: Path, needle: str, names_dump: Path | None = None) -> int:
     """Search the snapshot for a place name. Reports; never caches, never guesses.
 
@@ -517,9 +567,7 @@ def cmd_find(dump: Path, needle: str, names_dump: Path | None = None) -> int:
     Muziris, and it is the names table that knows Ἀδουλί.
     """
     needle_cf = needle.casefold()
-    # A bare number is almost always an id being checked, not a name. Matching
-    # it against titles only would answer a question nobody asked.
-    needle_id = needle.strip() if needle.strip().isdigit() else None
+    needle_id = as_needle_id(needle)
     hits: list[dict[str, str]] = []
 
     with _open_dump(dump) as handle:
@@ -528,12 +576,7 @@ def cmd_find(dump: Path, needle: str, names_dump: Path | None = None) -> int:
         for row in reader:
             title = (row.get(cmap["title"]) or "")
             desc = (row.get(cmap.get("description", "")) or "")
-            row_id = (row.get(cmap["id"]) or "").strip()
-            where = "ID" if needle_id and row_id == needle_id else (
-                "title" if needle_cf in title.casefold() else (
-                    "description" if needle_cf in desc.casefold() else None
-                )
-            )
+            where = match_row(row, cmap, needle_cf, needle_id)
             if where:
                 lat = _float(row.get(cmap["lat"])) if "lat" in cmap else None
                 lon = _float(row.get(cmap["lon"])) if "lon" in cmap else None
@@ -668,6 +711,9 @@ def cmd_survey(
     """
     groups = load_survey(survey_path)
     all_terms = {t.casefold(): t for _, ts in groups for t in ts}
+    # Same matcher as --find, so a numeric term is an id here too. It was not,
+    # and a survey of ten real ids reported "nothing" for every one of them.
+    needle_ids = {cf: as_needle_id(orig) for cf, orig in all_terms.items()}
     found: dict[str, list[str]] = {t: [] for t in all_terms}
 
     with _open_dump(dump) as handle:
@@ -675,12 +721,8 @@ def cmd_survey(
         cmap = map_columns(list(reader.fieldnames or []))
         for row in reader:
             title = (row.get(cmap["title"]) or "")
-            desc = (row.get(cmap.get("description", "")) or "")
-            title_cf, desc_cf = title.casefold(), desc.casefold()
             for term_cf in all_terms:
-                where = "title" if term_cf in title_cf else (
-                    "desc" if term_cf in desc_cf else None
-                )
+                where = match_row(row, cmap, term_cf, needle_ids[term_cf])
                 if not where:
                     continue
                 lat = _float(row.get(cmap["lat"])) if "lat" in cmap else None
@@ -689,6 +731,7 @@ def cmd_survey(
                          if lat is not None and lon is not None else "UNLOCATED")
                 found[term_cf].append(
                     f"      {(row.get(cmap['id']) or '').strip():>10}  "
+                    f"{'!DEPRECATED! ' if looks_deprecated(title) else ''}"
                     f"{title[:34]:<34} {coord:>17}  [{where}] "
                     f"{(row.get(cmap.get('location_precision','')) or '').strip() or '?'} "
                     f"{(row.get(cmap.get('min_date','')) or '').strip()}.."
@@ -858,6 +901,16 @@ def cmd_check(corpus_dir: Path, path: Path) -> int:
         entry = known.get(p.cache_key or "")
         if entry is None:
             failures.append(f"{p.key}: '{p.cache_key}' is not cached")
+            continue
+        if looks_deprecated(entry.title):
+            # A resolving id pointing at a record the publisher has marked as
+            # wrong. It has a plausible coordinate — 427224440 sits at Hegra's
+            # own point — so nothing downstream would ever query it.
+            failures.append(
+                f"{p.key}: '{p.cache_key}' is titled {entry.title!r}, which the "
+                f"gazetteer marks as deprecated. It resolves, and it is still "
+                f"not the place to cite. Find the record it duplicates."
+            )
             continue
         if not entry.has_point and not entry.has_extent:
             failures.append(

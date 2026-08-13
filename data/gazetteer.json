@@ -11,6 +11,188 @@
     "text": "CC BY 3.0 US\nAttribution 3.0 United States\n \nCC BY 3.0 US\nDeed\n\nYou are free to:\nShare — copy and redistribute the material in any medium or format for any purpose, even commercially.\nAdapt — remix, transform, and build upon the material for any purpose, even commercially.\nThe licensor cannot revoke these freedoms as long as you follow the license terms.\nUnder the following terms:\nAttribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.\nNo additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.\nNotices:\nYou do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.\n\nNo warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material."
   },
   "places": {
+    "pleiades:20492": {
+      "authors": "Warner, R., A. Bursche, DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        9.938972,
+        56.053145,
+        9.938972,
+        56.053145
+      ],
+      "creators": "R. Warner, A. Bursche",
+      "description": "An ancient place, cited: BAtlas 2 E2 Illerup Ådal",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "20492",
+      "location_precision": "precise",
+      "max_date": "2099",
+      "min_date": "-30",
+      "repr_point": [
+        9.938972,
+        56.053145
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,twentieth-ce,twenty-first-ce",
+      "time_periods": "RTT",
+      "title": "Illerup Ådal"
+    },
+    "pleiades:39303": {
+      "authors": "Potts, D., DARMC, R. Talbert, B. Kiesling, S. Gillies, J. Becker, T. Elliott",
+      "bbox": [
+        38.7179007,
+        14.1301502,
+        38.7295729,
+        14.1424809
+      ],
+      "creators": "D.T. Potts",
+      "description": "Present-day Aksum in Ethiopia. The center of the Aksumite Kingdom, a maritime trading power that flourished from the first to the tenth centuries AD. The city was listed as UNESCO World Heritage Site in 1980.",
+      "dump_date": "2026-08-10",
+      "feature_types": "cultural-landscape, settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39303",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-30",
+      "repr_point": [
+        38.7212920204,
+        14.1338504591
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,late-antique,modern",
+      "time_periods": "RLM",
+      "title": "A(u)xoume"
+    },
+    "pleiades:616346030": {
+      "authors": "Becker, J.",
+      "bbox": [
+        52.8739757,
+        29.9884368,
+        52.8740849,
+        29.9885362
+      ],
+      "creators": "jbecker",
+      "description": "A stone monument located in the Naqsh-e Rustam compound.",
+      "dump_date": "2026-08-10",
+      "feature_types": "monument",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "616346030",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-540",
+      "repr_point": [
+        52.874030317,
+        29.9884865102
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "achaemenid-central-asia,modern",
+      "time_periods": "AM",
+      "title": "Ka'ba-ye Zartosht"
+    },
+    "pleiades:668331": {
+      "authors": "Brown, J., P. Gatier, B. Kiesling, S. Gillies, J. Becker, H. Kopp, W. Röllig, T. Carlson, B. Siewert-Mayer, G. Bodard, R. Rattenborg, I. Luo, R. Talbert, A. Prins, V. Vitale, C. Johansson, T. Elliott, DARMC, D. Michelson, R. Warner, E. Kansa, F. Deblauwe, E. Yılandiloğlu",
+      "bbox": [
+        38.2445089,
+        34.5485705,
+        38.2735842,
+        34.5573429
+      ],
+      "creators": "J.P. Brown, P.-L. Gatier",
+      "description": "Palmyra is an ancient oasis and trading city with monumental remains located in modern Syria. Under Zenobia, It was the capital of the breakaway Palmyrene Empire, which led to Aurelian razing the city. In 1980, Palmyra was inscribed as a UNESCO World Heritage Site.",
+      "dump_date": "2026-08-10",
+      "feature_types": "urban, oasis, station, archaeological-site, settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "668331",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-1600",
+      "repr_point": [
+        38.2648672156,
+        34.5528093938
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "later-2nd-millennium-bc-mesopotamia,middle-hittite-anatolia,egyptian-hittite-levant,1200-bc-middle-east,neo-assyrian-babylonian-middle-east,classical,achaemenid-middle-east,hellenistic-republican,hellenistic-middle-east,roman-middle-east,roman,roman-early-empire-parthian-middle-east,transition-roman-early-empire-late-antique,late-antique,late-antique-sasanian-middle-east,caliphate-umayyad-middle-east,early-byzantine,abassid-middle-east,middle-byzantine,crusader-byzantine-seljuq-middle-east,ilkhanate-middle-east,1500-ad-middle-east,sixteenth-ce,ottoman-empire,late-ottoman-empire,modern,modern-middle-east",
+      "time_periods": "LME1NCAHHRRRTLLCEAMCI1SOLMM",
+      "title": "Palmyra"
+    },
+    "pleiades:814675": {
+      "authors": "Graf, D., S. Gillies, V. Vitale, J. Becker, T. Elliott, DARMC, G. Mckee, R. Horne, R. Talbert, G. Bodard",
+      "bbox": [
+        37.9187918,
+        26.7695448,
+        37.9715598,
+        26.8150442
+      ],
+      "creators": "D.F. Graf",
+      "description": "An ancient settlement located in the Hejaz of modern Saudi Arabia.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement, cemetery",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "814675",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-330",
+      "repr_point": [
+        37.9523454717,
+        26.7982135285
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "hellenistic-republican,roman,modern",
+      "time_periods": "HRM",
+      "title": "Egra/Meda'in Salih"
+    },
+    "pleiades:922685": {
+      "authors": "Hausleiter, A., M. Roaf, R. Wenke, S. Gillies, J. Åhlfeldt, J. Becker, C. Johansson, T. Elliott, DARMC, R. Talbert, P. Flensted Jensen, R. Rattenborg",
+      "bbox": [
+        52.8723397,
+        29.9874796,
+        52.8766156,
+        29.9896313
+      ],
+      "creators": "A. Hausleiter, M. Roaf, R. Wenke",
+      "description": "An ancient necropolis located northwest of Persepolis.",
+      "dump_date": "2026-08-10",
+      "feature_types": "cemetery, monument",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "922685",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-750",
+      "repr_point": [
+        52.8746054601,
+        29.9886564584
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "archaic,classical,hellenistic-republican,roman,late-antique,modern",
+      "time_periods": "ACHRLM",
+      "title": "Naqsh-i Rustam"
+    },
+    "pleiades:98970": {
+      "authors": "Bloemers, J., DARMC, S. Gillies, R. Talbert, J. Åhlfeldt, T. Elliott",
+      "bbox": [
+        10.7099126,
+        55.1477719,
+        10.710122,
+        55.149936
+      ],
+      "creators": "J.H.F. Bloemers",
+      "description": "An ancient place, cited: BAtlas 10 G1 Gudme",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "98970",
+      "location_precision": "precise",
+      "max_date": "640",
+      "min_date": "-30",
+      "repr_point": [
+        10.7100173,
+        55.14885395
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,late-antique",
+      "time_periods": "RL",
+      "title": "Gudme"
+    },
     "pleiades:98983": {
       "authors": "Bloemers, J., DARMC, S. Gillies, R. Talbert, T. Elliott",
       "bbox": [
@@ -36,6 +218,32 @@
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Hoby"
+    },
+    "pleiades:99059": {
+      "authors": "Bloemers, J., J. Becker, DARMC, T. Elliott, S. Gillies, R. Talbert",
+      "bbox": [
+        10.179996,
+        55.459989,
+        10.179996,
+        55.459989
+      ],
+      "creators": "J.H.F. Bloemers",
+      "description": "An ancient place, cited: BAtlas 10 G1 Vimose",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "99059",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        10.179996,
+        55.459989
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Vimose"
     }
   },
   "sources": {

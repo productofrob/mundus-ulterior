@@ -9,6 +9,16 @@
   "language_note": "Early Proto-Norse / late Proto-Germanic, written in the Elder Futhark runic alphabet — the earliest attested Scandinavian writing system, emerging during the period of intensive Roman-era contact (possibly influenced by contact with Mediterranean/Roman-provincial alphabets, though the exact model is debated).",
   "date": "c. 160-300 CE (Roman Iron Age in Scandinavia)",
   "findspot": "Vimose bog, island of Funen (Fyn), Denmark — a wetland weapon-deposit site",
+  "findspot_places": [
+    {
+      "name": "Vimose",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "99059",
+      "uri": "https://pleiades.stoa.org/places/99059",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 55.460, 10.180, island of Funen — feature type 'settlement', attested -30..300, which matches the deposit horizon. A search for 'Fyn' returned only 'Asfynis' in Egypt, a substring coincidence: the site name resolves, the modern island name does not."
+    }
+  ],
   "original_text_excerpt": "harja\naadagasu / laasauwija\nmariha [.]ala / makija\ntalijo gisai oj / tkbis hleuno an[.] regu\nawgns\n[w]agni[ŋ]o",
   "original_text_note": "Transliterations per the Kiel Runenprojekt database as summarized on Wikipedia; readings for several items remain debated among runologists. RESTRUCTURED 2026-08-10: this field previously read as an English catalogue listing with the runic text embedded in it — 'Vimose Comb (c. 160 CE, oldest known datable runic inscription): harja ...' — so the retrieval index held the cataloguer's English prose labelled as Proto-Norse source text, and a Part 7 citation of it would have quoted a museum label as if it were an inscription. The Part 3 fidelity classifier passed it because catalogue prose contains few English function words, so english_marker_ratio stayed under threshold; the Part 6 translation check caught it downstream instead, when the model correctly declined to translate an English list and handed it straight back (chrF 0.981 against the source, flagged untranslated_echo). The field now holds the transliterated runic text only, one object per line. Object identification, dates and the comb's runic characters moved to `notes` and `object_sequence`, where they are documentation rather than something retrieval can mistake for a source.",
   "reference_translation": "harja: likely a personal name or 'comb'/'warrior'. mariha ... makija: possibly 'Mari (the famous one) is the sword of Alla'. awgns: possibly 'son/descendant of Awa'. Several inscriptions remain only partially deciphered.",

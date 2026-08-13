@@ -4181,3 +4181,126 @@ writing it from documentation — the mistake that has cost four corrections in
 this session alone (a filename from the wrong index, `extent` as a bbox, a
 guessed header column, and a hand-rolled CSV writer). The next step there is to
 download one country file and look at it first.
+
+## A2 — two searches that answered different questions (2026-08-13)
+
+The id-confirmation survey came back reporting `nothing` for **ten ids that
+plainly exist**, including 922685, 50146, 39303 and 98970 — all four already
+confirmed by `--find` the day before. Two hits it did report were false.
+
+**Cause: `--find` and `--survey` did not implement the same search.** `--find`
+matches a bare numeric term against the `id` column; `--survey` was written
+first and only ever matched title and description. So a survey of ids searched
+for those digits *as text*, and:
+
+- `'814675'` "found" place **427224440**, because the string 814675 appears in
+  that record's **description**;
+- `'427224440'` found nothing, because no description contains it;
+- every id whose digits appear nowhere in prose reported `nothing`.
+
+The output was **plausible** rather than empty or erroring, and it was produced
+by the command recommended for exactly this job.
+
+This is the same defect family as `check_ui.mjs` and `build_ui_data.py`
+reporting different worlds while both passed, and as `translation_chunk` vs
+`translation_chunk_id`: **two implementations of one question, which will
+diverge, and whose divergence nothing checks.** Fixed by deleting one — `--find`
+and `--survey` now share a single `match_row()`, and a guard asserts `--survey`
+resolves a bare id. Mutation-verified.
+
+### What the broken run found anyway
+
+`427224440` is titled **"Erroneous Duplicate: Al-Hijr (Madâ'in Sâlih)"** and sits
+at **26.792, 37.961** — Hegra's own coordinate, `precise`, −330..2100.
+
+**Pleiades retains deprecated records in the dump.** Such an id resolves, carries
+a plausible point, and is the publisher explicitly saying *do not cite this*.
+Nothing in the pipeline would have noticed: it has a coordinate, a date range and
+a feature type, and the only thing marking it is prose in the title.
+
+`cmd_check` now **fails** on a cached entry whose title carries a deprecation
+marker, naming it and saying to find the record it duplicates. Mutation-verified.
+Found only because the title was read — the same reason the Muziris and Hoby
+placements were accepted by coordinate rather than by name.
+
+**19 mutations, 76 assertions.** The survey must be re-run; every id result from
+the 2026-08-13 run before this fix is void.
+
+### Standing lesson, sharpened
+
+*A test that passes for the wrong reason is worse than one that fails* — and its
+sibling, now seen three times: **two code paths answering one question will
+diverge, and the divergence will look like data rather than a bug.** The fix is
+never to correct the second copy. It is to stop having two.
+
+## A2 — seven records placed, nine ids resolved (2026-08-13)
+
+```
+W1 placements: 8/24 records placed, 8/17 with a named place, 9 gazetteer ids
+looked up 9 of 9 ids from pleiades-places-20260810.csv.gz (2026-08-10)
+entries: 9  (with point: 9, with a bbox: 9, of which non-degenerate: 6)
+Every placement resolves to a cached, dated gazetteer entry.
+```
+
+| record | id | title | ground |
+| --- | --- | --- | --- |
+| scandinavia-01-hoby | 98983 | Hoby | stated |
+| arabia-02-palmyrene-tariff | 668331 | Palmyra | stated |
+| arabia-03-jsnab17 | 814675 | Egra/Meda'in Salih | stated |
+| scandinavia-02-gudme | 98970 | Gudme | stated |
+| scandinavia-04-illerup | 20492 | Illerup Ådal | stated |
+| scandinavia-03-vimose | 99059 | Vimose | stated |
+| africa-01-ezana-stone | 39303 | A(u)xoume | stated |
+| persia-01-skz | 922685 | Naqsh-i Rustam | stated |
+| persia-01-skz | 616346030 | Ka'ba-ye Zartosht | **identified** |
+
+Every id was accepted on its **coordinate and feature types**, never its name,
+and each placement's note records what it was checked against.
+
+### The ŠKZ carries two placements, and the pair is the point
+
+Pleiades holds the **Ka'ba-ye Zartosht** (616346030, "A stone monument located in
+the Naqsh-e Rustam compound") separately from the **necropolis** (922685) — about
+100 m apart. The inscription is carved on the tower; the record's `findspot`
+field says "Naqsh-e Rostam".
+
+So both are placed, and the *difference in ground is the information*: `stated`
+for what the record says, `identified` for the more precise truth, with the
+citation that supports it. A single placement would have had to either lose the
+precision or misreport where the claim came from.
+
+### Three deliberate absences, each recorded in a note
+
+- **Lundeborg** (99004) — Gudme's findspot field calls it an associated trading
+  site *nearby*, not where the hoard was found.
+- **The Hermitage Museum** — the Palmyrene Tariff's current location. A findspot
+  is where it was found.
+- **Skanderborg** — no separate Pleiades entry; the deposit site carries it.
+
+Each is in the record rather than in anyone's memory, because "we considered this
+and decided against it" is invisible otherwise, and the next curator would
+otherwise re-open all three.
+
+### The deprecation guard earned itself immediately
+
+Hegra resolves to **814675 Egra/Meda'in Salih** (26.798/37.952). Pleiades also
+holds **427224440**, "Erroneous Duplicate: Al-Hijr (Madâ'in Sâlih)", 700 m away,
+`precise`, with the same feature types and date range. Both would have cached and
+drawn identically. The note on the Hegra placement names the duplicate so the
+question is not re-opened by someone reading a search result.
+
+### Watch item for A6
+
+The Ka'ba-ye Zartosht's `timePeriodsKeys` are `achaemenid-central-asia,modern` —
+no Roman or late-antique key — while the ŠKZ is a **3rd-century** inscription.
+The attested range (−540..2100) does cover it, so there is no contradiction, but
+this is precisely the shape the deferred date-overlap check exists to catch, and
+it appeared on the ninth entry cached. **A6 should build that check.**
+
+### Left for judgement, not placed
+
+`southasia-04-pattanam` (contested, needs two citations), `africa-02-aksumite-coin`
+(found ~300 km north of Aden — Aden is not the findspot), `persia-02-silver-plate`
+(hearsay, and Pleiades 837 "Asia Minor" is `related` precision, dated 1700..1799,
+with a representative point near Ephesus — a poor record for a peninsula), and
+`persia-03-coin` (no findspot recorded at all).

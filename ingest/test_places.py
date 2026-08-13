@@ -35,6 +35,7 @@ from .gazetteer import (
     dump_date_from_name,
     empty_cache,
     entries,
+    looks_deprecated,
     map_columns,
     read_dump,
     require_file,
@@ -233,7 +234,7 @@ def test_guards() -> None:
     )
     expect_raises(
         lambda: parse(place(gazetteer_id="https://pleiades.stoa.org/places/39271")),
-        "a URL written into pleiades_id is refused",
+        "a URL written into gazetteer_id is refused",
         contains="bare numeric",
     )
 
@@ -309,7 +310,7 @@ def test_guards() -> None:
         lambda: parse_record_places(
             {"id": "x", "findspot_places": [place(), place(name="Adulis again")]}
         ),
-        "a pleiades_id repeated inside one block is refused",
+        "a gazetteer id repeated inside one block is refused",
         contains="repeated",
     )
 
@@ -493,6 +494,19 @@ def test_gazetteer() -> None:
                "--survey prints a term with no hits rather than omitting it")
         expect("39271" in s_out, "--survey reports the id of a hit")
 
+        # --find and --survey must answer the SAME question. They did not: only
+        # --find matched a bare number against the id column, so a survey of ten
+        # real ids reported 'nothing' for every one — and reported a false hit
+        # where the number appeared inside another record's description.
+        id_survey = tmp / "ids.txt"
+        id_survey.write_text("@ids\n39271\n", encoding="utf-8")
+        with contextlib.redirect_stdout(io.StringIO()) as buf:
+            cmd_survey(id_survey, dump)
+        id_out = buf.getvalue()
+        expect("[ID]" in id_out and "Adulis" in id_out,
+               "--survey matches a bare numeric term against the id column, "
+               "exactly as --find does")
+
         found_none, _, _ = read_dump(dump, {"000000"})
         expect(found_none["000000"]["repr_point"] is None
                and found_none["000000"]["bbox"] is None,
@@ -600,6 +614,22 @@ def test_check_exits_nonzero() -> None:
         write_cache(cache, gaz)
         expect(quiet_check(tmp / "seed_corpus", gaz) == 1,
                "an entry resolving to neither point nor extent fails")
+
+        # Pleiades keeps deprecated records in the dump, with a plausible
+        # coordinate. 427224440 is "Erroneous Duplicate: Al-Hijr (Madâ'in
+        # Sâlih)" and sits at Hegra's own point — it resolves, and citing it
+        # would cite a record the publisher marks as wrong.
+        cache["places"]["pleiades:39271"]["repr_point"] = [39.659, 15.262]
+        cache["places"]["pleiades:39271"]["title"] = "Erroneous Duplicate: Adulis"
+        write_cache(cache, gaz)
+        code, out = check_with_output(tmp / "seed_corpus", gaz)
+        expect(code == 1 and "deprecated" in out.lower(),
+               "a resolving id whose title marks it deprecated is refused, and "
+               "the failure says so")
+        expect(looks_deprecated("Erroneous Duplicate: Al-Hijr")
+               and not looks_deprecated("Hoby"),
+               "the deprecation test reads the title and does not fire on "
+               "ordinary places")
 
         expect(LICENCE_UNCONFIRMED.startswith("UNCONFIRMED"),
                "the unconfirmed licence sentinel is unmistakable on sight")

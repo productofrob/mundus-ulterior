@@ -3,10 +3,23 @@
   "region": "Scandinavia",
   "title": "Roman denarius/siliquae hoards from Gudme, Funen, Denmark",
   "source_type": "find_record",
-  "language_code": ["en", "da"],
+  "language_code": [
+    "en",
+    "da"
+  ],
   "language_note": "National Museum of Denmark record, English-language version used here; Danish original also available at the same institution.",
   "date": "settlement flourished 3rd-7th century CE; the Gudme III hoard's coins are 4th-century CE Roman silver siliquae",
   "findspot": "Gudme, southeast Funen (Fyn), Denmark, with an associated trading site at nearby Lundeborg",
+  "findspot_places": [
+    {
+      "name": "Gudme",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "98970",
+      "uri": "https://pleiades.stoa.org/places/98970",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 55.149, 10.710, southeast Funen — feature type 'settlement', attested -30..640. Lundeborg (Pleiades 99004, 55.140/10.782) is named in this record's findspot field as an associated trading site nearby, NOT as where the hoard was found, and is deliberately not placed: findspot_places records where the object was found."
+    }
+  ],
   "original_text_excerpt": "Gudme III: a hoard of 293 Roman silver coins (siliquae) from the 4th century AD. A related treasure included nine gold bracteates, a small sword stud with garnets in cloisonne, a finger ring, two round pendants and a worn Roman silver denarius.",
   "original_text_note": "Summarized from the National Museum of Denmark's 'Gudme - gold, gods and people' exhibition text.",
   "reference_translation": null,

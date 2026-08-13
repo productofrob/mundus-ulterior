@@ -10,6 +10,16 @@
   "language_note": "Bilingual: Palmyrene Aramaic and Greek. The longest lapidary Aramaic inscription known; the Aramaic and Greek versions are not exact translations of each other (the Aramaic is closer to the original 137 CE law, the Greek partially updated), which makes this a strong test case for translation-confidence scoring rather than a clean 1:1 pair.",
   "date": "137 CE",
   "findspot": "Palmyra, Syria (discovered 1881); now in the Hermitage Museum, St Petersburg",
+  "findspot_places": [
+    {
+      "name": "Palmyra",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "668331",
+      "uri": "https://pleiades.stoa.org/places/668331",
+      "note": "Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 34.553, 38.265 — with feature types 'urban, oasis, station, archaeological-site, settlement' and attested range -1600..2100. The findspot is Palmyra, where the tariff was discovered in 1881; the Hermitage Museum is its current location, not a findspot, and is deliberately not placed."
+    }
+  ],
   "original_text_excerpt": "[Full Aramaic and Greek text spans ~400 lines across four inscribed faces (Greek i 1-15 / Aramaic i-ii); not reproduced here — see Healey 2009/2014 critical edition and PDF transcription at citation_pdf below.]",
   "original_text_note": "No open full-text transliteration located in this pass; flagged for a follow-up pull from the Healey/Shifman critical edition (Oxford, 2014) or the PDF at ostia-antica.org during ingestion.",
   "reference_translation": null,
