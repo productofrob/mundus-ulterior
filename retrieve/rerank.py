@@ -59,10 +59,17 @@ REQUEST_TIMEOUT_SECONDS = 60.0
 
 # Voyage's published table gives rerank-2.5 2000 RPM / 2M TPM. That table is
 # what an account WITH A PAYMENT METHOD gets. Measured on this project's account
-# on 2026-08-16, the provider answered:
+# on 2026-08-16, before one was added, the provider answered:
 #
 #   "You have not yet added your payment method ... and will have reduced rate
 #    limits of 3 RPM and 10K TPM"
+#
+# A payment method WAS added later on 2026-08-16, which should move the account
+# to the published table. **That is a claim from a document, and this file has
+# already been wrong three times today taking those at face value** — it is
+# recorded as unverified until a run without pacing completes. `--rerank-tpm`
+# stays regardless: it paces on what each call actually cost, so it is correct
+# under any ceiling and costs nothing under a generous one.
 #
 # — the same throttle that governs embeddings, and the reason `embed_texts`
 # batches every query into one request. Reranking CANNOT batch queries: one

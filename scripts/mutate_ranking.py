@@ -37,7 +37,10 @@ SEARCH = ROOT / "retrieve" / "search.py"
 # guard all live here, and they are the three places where a reranked run could
 # produce a plausible number about the wrong candidates.
 RERANK = ROOT / "retrieve" / "rerank.py"
-SOURCES = (CHECK, GOLDSET, SEARCH, RERANK)
+# Ruling 8's collapse. It decides which chunk retrieval RETURNS, so it decides
+# whether a G2 recall number is about the passage the pair names.
+COLLAPSE = ROOT / "retrieve" / "collapse.py"
+SOURCES = (CHECK, GOLDSET, SEARCH, RERANK, COLLAPSE)
 
 SUITE = "eval.test_ranking_check"
 
@@ -256,6 +259,73 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("        needed = max(needed, 60.0 * last_tokens / tpm_budget)",
           "        needed = min(needed, 60.0 * last_tokens / tpm_budget)")],
     ),
+    # ----------------------------------------------------------------------
+    # C2a, ruling 8. Each of these produces a plausible collapsed ranking that
+    # is about the wrong chunks — which is the only way this step can do harm,
+    # since it cannot touch a gap and cannot add a chunk retrieval did not find.
+    # ----------------------------------------------------------------------
+    (
+        "a section collapsed on positional alignment, not section alignment",
+        [("        if ground not in COLLAPSIBLE_GROUNDS:\n            continue",
+          "        if False:\n            continue")],
+    ),
+    (
+        "the collapsed row is whichever member ranked higher, not the original",
+        [("        canon_id = canonical.get(key, hit.chunk_id)",
+          "        canon_id = hit.chunk_id")],
+    ),
+    (
+        "a section is emitted once per member instead of once",
+        [("        if key in seen:\n            continue", "        if False:\n            continue")],
+    ),
+    (
+        "the collapse stops recording that a record was reached via English",
+        [("        if key is None or key in entry:\n            continue",
+          "        if key is None or True:\n            continue")],
+    ),
+    (
+        "collapsing quietly overwrites `rank`",
+        [("    result.rank_collapsed = rank_of(ordering, [result.resolved_chunk_id])",
+          "    result.rank_collapsed = rank_of(ordering, [result.resolved_chunk_id])\n"
+          "    result.rank = result.rank_collapsed")],
+    ),
+    (
+        # Ruling 9's whole strictness: a document with TWO index groups is the
+        # coincidence-of-counting case, and promoting it would fold a
+        # NEIGHBOURING section's translation into a passage.
+        "`sole` promotes any index group, not only the unambiguous one",
+        [("        if (ground == \"index\" and len(members) == 1\n"
+          "                and per_doc[canon.split(\"::\")[0]] == 1):",
+          "        if ground == \"index\":")],
+    ),
+    (
+        # Ruling 9's companion is the only number no translation-mediated fix
+        # can raise. Counting a translation entry as an original entry is
+        # exactly the inflation it exists to refuse.
+        "a record reached via its translation counts as via-original",
+        [('        and not (result.collapse_entry_role == "translation"\n                 and result.collapse_primary_role == "original")',
+          '        and not (result.collapse_entry_role == "not-a-role"\n                 and result.collapse_primary_role == "original")')],
+    ),
+    (
+        "every record's primary text is its original",
+        [('    return "translation" if source_type in FIND_TYPES else "original"',
+          '    return "original"')],
+    ),
+    (
+        'a multi-member section guesses a member instead of falling back',
+        [('        canonical[canon] = (members[0] if (wants == "translation"\n                                           and len(members) == 1) else canon)',
+          '        canonical[canon] = (members[0] if wants == "translation" else canon)')],
+    ),
+    (
+        'the via-original companion ignores whether a record HAS a source text',
+        [('        and not (result.collapse_entry_role == "translation"\n                 and result.collapse_primary_role == "original")',
+          '        and not (result.collapse_entry_role == "translation")')],
+    ),
+    (
+        "the rerank summary reassigns its dict and drops the collapse keys",
+        [("        extra.update({\n            \"reranked_units\":",
+          "        extra = ({\n            \"reranked_units\":")],
+    ),
     (
         "the lang_pool guard stops looking at the pool it is handed",
         [("    if langs:\n        wrong = sorted({h.lang for h in hits if h.lang not in set(langs)})",
@@ -299,10 +369,27 @@ EXPECTED = [
     "a 404 on the first rerank route falls through to the second",
     "a gateway refusal is raised, never scored as an empty ranking",
     "a rate-limited rerank waits a full window and retries",
+    # ORDER IS THE CONTRACT. This list is zipped against MUTATIONS positionally,
+    # so an entry added to one list and not the other in the same place silently
+    # mispairs EVERY entry after it — and the harness then reports a row of
+    # MISSes that read like real failures. That happened on 2026-08-16: four
+    # C2a guards were inserted here at a different offset than their mutations,
+    # and eight mutations that all worked were reported as unwatched.
     "a paced client waits before the call, not after it is refused",
     "the wait is the remainder of the interval, not the time already spent",
     "the run records WHAT the cross-encoder put above the target",
     "the longer of the two pacing constraints wins",
+    "only a section-aligned group becomes one record",
+    "the row is the ORIGINAL even when the translation ranked higher",
+    "each section appears exactly once",
+    "the run records WHICH member of a section got there first",
+    "collapsing does not touch `rank`, which every gap is denominated in",
+    "an `index` group in a document with others stays refused",
+    "a record reached via its translation does NOT count as via-original",
+    "a find record's primary text is its curatorial description",
+    "a multi-member section falls back to the original rather than guessing",
+    "reaching a record with no source text is not counted as a bypass",
+    "a run with BOTH collapse and rerank keeps BOTH sets of keys",
     "a pool that violates the pair's own lang filter is a loud failure",
 ]
 
@@ -385,14 +472,24 @@ def main() -> int:
                 print(f"  ok   {label}")
                 print(f"       -> {guard}")
             else:
+                # A mutation that made the suite fail — just not on the guard
+                # named for it — is almost never an unwatched mutation. It is
+                # these two lists having drifted out of alignment, and saying so
+                # is the difference between a one-line fix and an afternoon.
+                drifted = bool(failed) and SUITE_CRASHED not in failed
                 problems.append(
                     f"{label}: expected {guard!r} to fail, got "
                     f"{sorted(failed) or 'no failures'}"
                     + ("  <- the suite must FAIL on this mutation, not die on it"
                        if SUITE_CRASHED in failed else "")
+                    + ("  <- DETECTED, by a different guard. Check that "
+                       "MUTATIONS and EXPECTED are still in the same order."
+                       if drifted else "")
                 )
                 print(f"  MISS {label}"
-                      + ("  (suite crashed)" if SUITE_CRASHED in failed else ""))
+                      + ("  (suite crashed)" if SUITE_CRASHED in failed else "")
+                      + ("  (detected by another guard - list drift?)"
+                         if drifted else ""))
     finally:
         for f in SOURCES:
             f.write_text(originals[f], encoding="utf-8")

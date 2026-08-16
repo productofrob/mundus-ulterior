@@ -158,6 +158,12 @@ class UnitResult:
     # reranked; `recall_at_6` above stays the pre-rerank number so the two are
     # printed side by side and the intervention's effect is visible rather than
     # substituted.
+    collapsed: bool = False
+    best_rank_collapsed: int | None = None
+    recall_at_6_collapsed: bool = False
+    rr_at_10_collapsed: float = 0.0
+    coverage_n_collapsed: int = 0
+    recall_at_6_via_original: bool = False
     reranked: bool = False
     best_rank_reranked: int | None = None
     recall_at_6_reranked: bool = False
@@ -233,6 +239,32 @@ class PairResult:
     # over it. `rank` and `rank_accepted` keep their meaning, so a reranked run
     # and every run since B2 remain the same measurement plus one more column.
     # ------------------------------------------------------------------
+    # Ruling 8 (C2a). Sits beside `rank` for the same reason `rank_accepted`
+    # and `rank_reranked` do: collapsing changes what retrieval RETURNS, and
+    # every gap and the B2-comparable aggregate stay denominated in the
+    # uncollapsed ranking they were recorded against.
+    collapsed: bool = False
+    # Which member of the target's section got there first. "translation" means
+    # the record was reached on the strength of its ENGLISH, and the original is
+    # reported as found because its translation was. Reported, never gated —
+    # the same standing as ruling 1's coverage, and for the same reason.
+    collapse_entry_role: str | None = None
+    # Ruling 11. Which text IS this record, derived from `source_type` via
+    # `ingest.fidelity.FIND_TYPES`. It decides both which chunk the collapse
+    # emits and whether reaching the record through English was a shortcut past
+    # a source text or simply the record being read.
+    collapse_primary_role: str | None = None
+    rank_collapsed: int | None = None
+    recall_at_6_collapsed: bool = False
+    rank_accepted_collapsed: int | None = None
+    recall_at_6_accepted_collapsed: bool = False
+    # Ruling 9's mandatory companion. True only when the record was reached
+    # through its ORIGINAL. No translation-mediated intervention can inflate it:
+    # not ruling 2's alternates, not the collapse, not `sole`, not a reranker
+    # preferring English. It is defined on the COLLAPSED ordering, because the
+    # entry role is a fact about how retrieval reached the record and reranking
+    # only reorders what retrieval already found.
+    recall_at_6_via_original: bool = False
     reranked: bool = False
     rerank_window: int | None = None
     # Strict analogue of `rank`: where the resolved target ended up.
@@ -285,6 +317,9 @@ class Report:
     # measurement, not a better one, so it is archived with the numbers it
     # produced. The route is recorded because LiteLLM has exposed rerank at more
     # than one path and which one answered is an observation, not a citation.
+    collapsed: bool = False
+    collapse_sections: int = 0
+    collapse_stats: dict = field(default_factory=dict)
     reranked: bool = False
     rerank_model: str | None = None
     rerank_window: int | None = None
@@ -535,6 +570,44 @@ def resolve_alternates(conn, pairs, view: str, resolved: dict) -> dict:
     return out
 
 
+def resolve_sections(conn, view: str) -> list:
+    """[(canonical chunk id, [member ids], ground)] for every document. Ruling 8.
+
+    Built from `answer.align.pair_chunks`, the same module ruling 2 uses, so
+    "same section" has ONE definition in this repository rather than two that
+    agree until they do not. A document with no translation, or whose alignment
+    ground is not `section`, contributes nothing and its chunks are never
+    collapsed.
+    """
+    from answer.align import pair_chunks
+    from retrieve.collapse import primary_role
+
+    rows_by_doc: dict[str, list] = {}
+    source_types: dict[str, str] = {}
+    with conn.cursor() as cur:
+        cur.execute(
+            f"SELECT doc_id, chunk_id, role, text, source_type FROM {view} "
+            f"ORDER BY doc_id, role, char_start, chunk_id;"
+        )
+        for doc_id, chunk_id, role, text, source_type in cur.fetchall():
+            rows_by_doc.setdefault(doc_id, []).append((chunk_id, role, text))
+            source_types[doc_id] = source_type
+
+    groups = []
+    for rows in rows_by_doc.values():
+        originals = [_AlignRow(c, t) for c, r, t in rows if r == "original"]
+        translations = [_AlignRow(c, t) for c, r, t in rows if r == "translation"]
+        if not originals or not translations:
+            continue
+        for aligned in pair_chunks(originals, translations):
+            groups.append((aligned.original.chunk_id,
+                           [m.chunk_id for m in aligned.members],
+                           aligned.ground))
+    # Ruling 11: the caller needs to know which text is a record's primary, and
+    # `source_type` is where that already lives.
+    return groups, {d: primary_role(t) for d, t in source_types.items()}
+
+
 # --------------------------------------------------------------------------
 # Metrics
 # --------------------------------------------------------------------------
@@ -615,6 +688,51 @@ def score_pair(p, hits, target_chunk_id: str, target_text: str = "",
         ),
         note=p.note,
     )
+
+
+def apply_collapse(result: PairResult, ordering: list,
+                   entry: dict | None = None,
+                   section_of: dict | None = None,
+                   primary_by_doc: dict | None = None) -> PairResult:
+    """Record the post-collapse position. Pure, and it touches nothing else.
+
+    `ordering` is the collapsed ranked list — one row per aligned section, as
+    the ORIGINAL. The target chunk is either in it or it is not; nothing here
+    accepts a chunk retrieval did not return, which is the line ruling 7 drew
+    and ruling 8 stays on the correct side of.
+    """
+    from retrieve.rerank import rank_of
+
+    result.collapsed = True
+    result.collapse_primary_role = (primary_by_doc or {}).get(
+        result.expect_doc, "original"
+    )
+    if entry is not None and section_of is not None:
+        key = section_of.get(result.resolved_chunk_id)
+        result.collapse_entry_role = entry.get(key) if key else None
+    result.rank_collapsed = rank_of(ordering, [result.resolved_chunk_id])
+    result.recall_at_6_collapsed = bool(
+        result.rank_collapsed and result.rank_collapsed <= RECALL_AT
+    )
+    result.rank_accepted_collapsed = rank_of(ordering, result.accepted_chunk_ids)
+    result.recall_at_6_accepted_collapsed = bool(
+        result.rank_accepted_collapsed
+        and result.rank_accepted_collapsed <= RECALL_AT
+    )
+    # `!= "translation"` and not `== "original"`: a chunk belonging to no
+    # section has no entry role at all, and there was no translation for it to
+    # have been reached through. None means "the question does not arise", which
+    # is not the same as a miss.
+    # Ruling 11: a find record has no source text, so reaching it through its
+    # curatorial description is not a shortcut past anything. A unit counts as
+    # bypassed only where the record's primary IS the original and the entry was
+    # the translation.
+    result.recall_at_6_via_original = bool(
+        result.recall_at_6_accepted_collapsed
+        and not (result.collapse_entry_role == "translation"
+                 and result.collapse_primary_role == "original")
+    )
+    return result
 
 
 def apply_rerank(result: PairResult, ordering: list, scores: dict,
@@ -739,6 +857,15 @@ def build_units(results: list[PairResult], queries: dict | None = None
         # Block C3, computed exactly as above on the post-rerank column. A unit
         # counts as reranked only if every one of its pairs was, so a partial
         # run cannot produce a unit scored half one way and half the other.
+        collapsed = bool(members) and all(m.collapsed for m in members)
+        ranked_co = [m for m in members if m.rank_accepted_collapsed is not None]
+        best_co = (min(ranked_co, key=lambda m: m.rank_accepted_collapsed)
+                   if (collapsed and ranked_co) else None)
+        hits_co = sum(1 for m in members if m.recall_at_6_accepted_collapsed)
+        # A unit counts as reached via its original if ANY of its acceptable
+        # targets got there that way — the same "best acceptable target" reading
+        # ruling 1 gave the unit itself.
+        via_original = any(m.recall_at_6_via_original for m in members)
         reranked = bool(members) and all(m.reranked for m in members)
         ranked_rr = [m for m in members if m.rank_accepted_reranked is not None]
         best_rr = (min(ranked_rr, key=lambda m: m.rank_accepted_reranked)
@@ -756,6 +883,15 @@ def build_units(results: list[PairResult], queries: dict | None = None
             coverage_total=len(members),
             coverage=hits / len(members),
             best_pair=best.id if best else None,
+            collapsed=collapsed,
+            best_rank_collapsed=best_co.rank_accepted_collapsed if best_co else None,
+            recall_at_6_collapsed=bool(
+                best_co and best_co.rank_accepted_collapsed <= RECALL_AT
+            ),
+            rr_at_10_collapsed=(1.0 / best_co.rank_accepted_collapsed)
+            if (best_co and best_co.rank_accepted_collapsed <= MRR_AT) else 0.0,
+            coverage_n_collapsed=hits_co if collapsed else 0,
+            recall_at_6_via_original=via_original if collapsed else False,
             reranked=reranked,
             best_rank_reranked=best_rr.rank_accepted_reranked if best_rr else None,
             recall_at_6_reranked=bool(
@@ -776,19 +912,32 @@ def summarise_units(units: list[UnitResult]) -> dict:
     multi = [u for u in units if u.coverage_total > 1]
     reranked = [u for u in units if u.reranked]
     extra: dict = {}
+    if any(u.collapsed for u in units):
+        # Over ALL units, like the reranked keys and for the same reason: the
+        # gate's denominator is 30 whatever a run happened to touch.
+        extra.update({
+            "collapsed_units": sum(1 for u in units if u.collapsed),
+            "recall_at_6_collapsed": sum(u.recall_at_6_collapsed for u in units) / len(units),
+            "recall_at_6_collapsed_n": sum(u.recall_at_6_collapsed for u in units),
+            "mrr_at_10_collapsed": sum(u.rr_at_10_collapsed for u in units) / len(units),
+            "targets_in_top_6_collapsed": sum(u.coverage_n_collapsed for u in units),
+            "recall_at_6_via_original": sum(u.recall_at_6_via_original for u in units) / len(units),
+            "recall_at_6_via_original_n": sum(u.recall_at_6_via_original for u in units),
+        })
     if reranked:
-        # Reported over ALL units, not over the reranked ones, so the
-        # denominator is the same 30 the pre-rerank number uses. A run that
-        # reranked 29 of 30 would otherwise show a recall computed over a
-        # smaller gate than the one G2 names.
-        extra = {
+        # `.update`, NOT `=`. This was `extra = {...}` until 2026-08-16, which
+        # silently discarded the collapse keys added above it — so a run with
+        # BOTH interventions on died in print_report with KeyError after
+        # twenty-six minutes and 294,699 tokens of measurement. Neither
+        # intervention alone could show it.
+        extra.update({
             "reranked_units": len(reranked),
             "recall_at_6_reranked": sum(u.recall_at_6_reranked for u in units) / len(units),
             "recall_at_6_reranked_n": sum(u.recall_at_6_reranked for u in units),
             "mrr_at_10_reranked": sum(u.rr_at_10_reranked for u in units) / len(units),
             "targets_in_top_6_reranked": sum(u.coverage_n_reranked for u in units),
             "unranked_reranked": sum(1 for u in units if u.best_rank_reranked is None),
-        }
+        })
     return {**extra,
         "units": len(units),
         "pairs": sum(u.coverage_total for u in units),
@@ -834,6 +983,7 @@ def summarise(results: list[PairResult]) -> dict:
 # --------------------------------------------------------------------------
 
 def run(view: str, dry_run: bool = False, skip_check: bool = False,
+        collapse_sections: bool = False,
         rerank: bool = False, rerank_window: int | None = None,
         rerank_model: str | None = None, rerank_pace: float = 0.0,
         rerank_tpm: float = 0.0) -> Report:
@@ -885,6 +1035,19 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
         resolved, unresolvable = resolve_targets(conn, pairs, view)
         alternates = resolve_alternates(conn, pairs, view, resolved)
 
+        section_of: dict = {}
+        canonical: dict = {}
+        primary_by_doc: dict = {}
+        if collapse_sections:
+            from retrieve.collapse import section_maps
+
+            from retrieve.collapse import promote_sole
+
+            _groups, primary_by_doc = resolve_sections(conn, view)
+            section_of, canonical = section_maps(
+                promote_sole(_groups), primary_by_doc
+            )
+
         with conn.cursor() as cur:
             cur.execute(
                 f"SELECT doc_id, lower(string_agg(text, ' ')) FROM {view} "
@@ -908,6 +1071,16 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
             query_embedding_model="",
             unresolvable=unresolvable,
         )
+        if collapse_sections:
+            report.collapsed = True
+            report.collapse_sections = len(canonical)
+            if not canonical:
+                raise SystemExit(
+                    "--collapse was asked for and the alignment produced NO "
+                    "sections. A collapse that collapses nothing would report "
+                    "the uncollapsed ranking under a name that says otherwise, "
+                    "which is the failure this repository keeps paying for."
+                )
         if rerank:
             from retrieve.rerank import DEFAULT_MODEL as _RR_MODEL
             report.reranked = True
@@ -954,13 +1127,30 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
                                 doc_texts=doc_texts, shared_query=_qn[p.query] > 1,
                                 alternates=alt_ids, alternate_ground=alt_ground)
 
+            # The list everything downstream ranks against. Collapse comes
+            # FIRST when both are asked for: deduplicating a candidate set and
+            # then reranking it is a pipeline; reranking and then deduplicating
+            # would hand the cross-encoder the very sibling pair C2a exists to
+            # remove. The order is recorded in the header.
+            base = hits
+            if collapse_sections:
+                from retrieve.collapse import collapse, collapse_report
+
+                from retrieve.collapse import entry_roles
+
+                base = collapse(hits, section_of, canonical)
+                if not report.collapse_stats:
+                    report.collapse_stats = collapse_report(hits, base)
+                apply_collapse(result, base, entry_roles(hits, section_of),
+                               section_of, primary_by_doc)
+
             if rerank:
                 from retrieve.rerank import (
                     RerankError, pool_problems, reorder, rerank_documents,
                     scores_by_chunk,
                 )
                 window = report.rerank_window
-                candidates = hits[:window]
+                candidates = base[:window]
                 # Design constraint 1, asserted rather than described. `search()`
                 # applies langs and roles in SQL, so this is expected to be
                 # silent — and if a later change reranks a raw pool instead, five
@@ -1005,9 +1195,9 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
                     if rr.total_tokens is not None:
                         report.rerank_tokens = (report.rerank_tokens or 0) + rr.total_tokens
                 rr = rerank_cache[key]
-                ordering = reorder(hits, rr.scored, window)
+                ordering = reorder(base, rr.scored, window)
                 apply_rerank(result, ordering,
-                             scores_by_chunk(hits, rr.scored, window),
+                             scores_by_chunk(base, rr.scored, window),
                              window, p.expect_doc)
 
             if p.observed_chunk_id:
@@ -1050,6 +1240,12 @@ def print_report(report: Report) -> None:
     print(f"ranking check  {report.timestamp}  view={report.view}  "
           f"index={report.index_chunks} chunks  depth={report.search_k}  "
           f"models={report.embedding_models}")
+    if report.collapsed:
+        c = report.collapse_stats or {}
+        print(f"  C2a COLLAPSED  sections={report.collapse_sections} "
+              f"chunks {c.get('in', 0)} -> {c.get('out', 0)} "
+              f"(removed {c.get('removed', 0)})"
+              + ("  [collapse runs BEFORE rerank]" if report.reranked else ""))
     if report.reranked:
         print(f"  C3 RERANKED  model={report.rerank_model} "
               f"window={report.rerank_window} route={report.rerank_route} "
@@ -1131,6 +1327,8 @@ def print_report(report: Report) -> None:
                 if extra:
                     print(f"      accepts also: {extra}")
 
+        if report.collapsed:
+            _print_collapse(report)
         if report.reranked:
             _print_rerank(report)
 
@@ -1180,6 +1378,74 @@ def print_report(report: Report) -> None:
               f"chunks retrieval\nitself returned, so they cannot contain the "
               f"case where retrieval missed a\npassage entirely — their recall is "
               f"partly true by construction.")
+
+
+def _print_collapse(report: Report) -> None:
+    """The C2a block. Prints what was removed, not just that something was."""
+    u = report.aggregate_units
+    c = report.collapse_stats or {}
+    print()
+    print(f"  C2a collapse (ruling 8) — {report.collapse_sections} aligned "
+          f"section(s); on a full ranking {c.get('removed', 0)} of "
+          f"{c.get('in', 0)} chunks fold into a sibling, "
+          f"roles removed: {c.get('roles_removed', [])}")
+    print(f"  recall@{RECALL_AT} per unit   "
+          f"uncollapsed {u['recall_at_6']:.3f} ({u['recall_at_6_n']}/{u['units']})"
+          f"   ->   COLLAPSED {u['recall_at_6_collapsed']:.3f} "
+          f"({u['recall_at_6_collapsed_n']}/{u['units']})")
+    print(f"  MRR@{MRR_AT} per unit        uncollapsed {u['mrr_at_10']:.3f}"
+          f"   ->   collapsed {u['mrr_at_10_collapsed']:.3f}")
+
+    print(f"  recall@{RECALL_AT} VIA THE ORIGINAL TEXT   "
+          f"{u['recall_at_6_via_original']:.3f} "
+          f"({u['recall_at_6_via_original_n']}/{u['units']})"
+          f"   <- ruling 9's companion; no translation-mediated fix can raise it")
+
+    via_translation = [r for r in report.pairs
+                       if r.collapse_entry_role == "translation"
+                       and r.recall_at_6_collapsed]
+    if via_translation:
+        # Ruling 11 splits this list, and the split matters. A literary text or
+        # an inscription reached through its English was a SOURCE TEXT bypassed.
+        # A find record has no source text — its curatorial description IS the
+        # record — so reaching it that way bypasses nothing. Printing both under
+        # one heading said something false about three of them.
+        bypassed = [r for r in via_translation
+                    if r.collapse_primary_role == "original"]
+        no_source = [r for r in via_translation if r not in bypassed]
+        print(f"  {len(bypassed)} pair(s) reached a SOURCE TEXT through its "
+              f"English, bypassing the original:")
+        for r in bypassed:
+            print(f"    {r.id:28.28s} rank {r.rank} -> {r.rank_collapsed}")
+        if no_source:
+            print(f"  {len(no_source)} further pair(s) entered through a "
+                  f"translation-role chunk, but their record has NO source "
+                  f"text\n  (find or coin records, where the curatorial "
+                  f"description IS the record) — not a bypass:")
+            for r in no_source:
+                print(f"    {r.id:28.28s} rank {r.rank} -> {r.rank_collapsed}")
+        print("  Reported, never gated. The record was found, which is what the "
+              "product owes\n  the reader; for the first group the non-English "
+              "text was NOT shown to be\n  reachable, which is what the corpus "
+              "exists to demonstrate. Both are true\n  and only one is in the "
+              "number.")
+
+    flipped = [x for x in report.units
+               if x.collapsed and x.recall_at_6_collapsed != x.recall_at_6]
+    if flipped:
+        print(f"  {len(flipped)} unit(s) changed status:")
+        for x in flipped:
+            direction = "MISS -> hit" if x.recall_at_6_collapsed else "hit -> MISS"
+            print(f"    {x.unit:28.28s} {direction}   best rank "
+                  f"{x.best_rank} -> {x.best_rank_collapsed}")
+    else:
+        print("  no unit changed status.")
+    print("  Ruling 8's cost, which travels with this number: a collapsed "
+          "top 6 is six\n  RECORDS, not six chunks, and therefore covers more "
+          "underlying text than an\n  uncollapsed six. The gaps above are "
+          "computed on the UNCOLLAPSED ranking and\n  are unaffected — "
+          "collapsing within a document cannot move gapDoc, so C2a\n  is a "
+          "recall intervention only and the gap remains C2's.")
 
 
 def _print_rerank(report: Report) -> None:
@@ -1271,7 +1537,8 @@ def archive(report: Report) -> Path:
     RUNS_DIR.mkdir(parents=True, exist_ok=True)
     # A reranked run is a different measurement from an unreranked one at the
     # same view, and the two must not be told apart only by opening them.
-    suffix = f"-reranked{report.rerank_window}" if report.reranked else ""
+    suffix = "-collapsed" if report.collapsed else ""
+    suffix += f"-reranked{report.rerank_window}" if report.reranked else ""
     path = RUNS_DIR / f"{report.timestamp}-{Path(report.view).name}{suffix}.json"
     payload = asdict(report)
     path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -1289,6 +1556,11 @@ def main(argv=None) -> int:
     ap.add_argument("--skip-check", action="store_true",
                     help="run against an index that does not match the seed "
                          "corpus. Recorded in the archived run.")
+    ap.add_argument("--collapse", action="store_true",
+                    help="C2a (ruling 8): return one row per aligned section, "
+                         "as the ORIGINAL, instead of letting a passage compete "
+                         "with its own translation. Recorded BESIDE rank; the "
+                         "gaps are computed on the uncollapsed ranking.")
     ap.add_argument("--rerank", action="store_true",
                     help="C3: reorder the top --rerank-window candidates with "
                          "the cross-encoder. Recorded BESIDE rank; the gap is "
@@ -1322,17 +1594,26 @@ def main(argv=None) -> int:
             f"the number the gate reads."
         )
     report = run(view, dry_run=args.dry_run, skip_check=args.skip_check,
+                 collapse_sections=args.collapse,
                  rerank=args.rerank, rerank_window=args.rerank_window,
                  rerank_model=args.rerank_model, rerank_pace=args.rerank_pace,
                  rerank_tpm=args.rerank_tpm)
+
+    # ARCHIVE FIRST, then print. On 2026-08-16 a KeyError in `print_report`
+    # killed the process before `archive()` ran and a twenty-six-minute run —
+    # the first with both C2a and C3 on — was lost entirely. The archived run IS
+    # the evidence; the terminal output is a rendering of it. Ordering these the
+    # other way round made a formatting defect capable of destroying data.
+    path = None
+    if not args.dry_run:
+        path = archive(report)
 
     if args.json:
         print(json.dumps(asdict(report), indent=2, ensure_ascii=False))
     else:
         print_report(report)
 
-    if not args.dry_run:
-        path = archive(report)
+    if path:
         print(f"\narchived: {path}")
     return 0
 

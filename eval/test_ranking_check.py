@@ -79,8 +79,21 @@ class StubPair:
 
 
 def ranking(*specs) -> list[StubHit]:
-    """ranking(('doc-a::0', 0.9), ...) -> hits in the order given."""
-    return [StubHit(cid, cid.split("::")[0], sim) for cid, sim in specs]
+    """ranking(('doc-a::0', 0.9), ...) -> hits in the order given.
+
+    The role is read out of the chunk id, because that is where a real chunk
+    carries it: `d::t::0` and `arabia-01-periplus::translation::002` are
+    translations, everything else is an original. Ruling 8's honesty instrument
+    reads `.role`, and a stub that called every chunk an original would have let
+    "this record was reached via its English" pass while measuring nothing.
+    """
+    def role_of(cid: str) -> str:
+        parts = cid.split("::")
+        return ("translation" if len(parts) > 1 and parts[1].startswith("t")
+                else "original")
+
+    return [StubHit(cid, cid.split("::")[0], sim, role=role_of(cid))
+            for cid, sim in specs]
 
 
 # --------------------------------------------------------------------------
@@ -759,6 +772,169 @@ def test_the_rerank_transport_fails_loudly_and_never_silently() -> None:
           r.retries == 1 and sleeps and sleeps[0] >= 20, f"{sleeps}")
 
 
+def test_a_section_is_one_record_and_it_is_the_original() -> None:
+    """Block C ruling 8 (C2a). The index holds each passage twice and the two
+    competed for the same six slots; on 2026-08-16 that cost two units at the
+    gate. Collapsing changes what retrieval RETURNS — ruling 7 refused to change
+    what the metric COUNTS, and the difference is that after a collapse the top
+    6 literally contains the original chunk the pair names."""
+    from eval.run_ranking_check import apply_collapse
+    from retrieve.collapse import (
+        collapse, collapse_report, primary_role, promote_sole, section_maps,
+    )
+
+    # Ruling 11. Derived from `source_type` via ingest.fidelity.FIND_TYPES, not
+    # authored: the distinction has been in the codebase since Part 3, and it
+    # predicts which records break without having been fitted to them.
+    check("a source text IS its record, so its primary is the original",
+          primary_role("literary_text") == "original"
+          and primary_role("inscription") == "original")
+    check("a find record's primary text is its curatorial description",
+          primary_role("find_record") == "translation"
+          and primary_role("coin_record") == "translation",
+          f"{primary_role('find_record')}")
+
+    # `f` is a 1:1 find record: the row must be the TRANSLATION, because that is
+    # the text `au-hoby-silver` and two others name, and which the collapse
+    # folded away on 2026-08-16.
+    find_groups = [("f::o::0", ["f::t::0"], "sole"),
+                   ("g::o::0", ["g::t::0", "g::t::1"], "section")]
+    _so, canon_find = section_maps(find_groups, {"f": "translation",
+                                                 "g": "translation"})
+    check("a find record collapses to its curatorial description, not its caption",
+          canon_find["f::o::0"] == "f::t::0", f"{canon_find}")
+    check("a multi-member section falls back to the original rather than guessing",
+          canon_find["g::o::0"] == "g::o::0", f"{canon_find}")
+
+    groups = [
+        ("d::o::0", ["d::t::0", "d::t::1"], "section"),
+        ("d::o::1", ["d::t::2"], "index"),          # positional: NOT a section
+        ("e::o::0", ["e::t::0"], "section"),
+    ]
+    # Ruling 9. `d` contributes TWO groups, so its `index` one stays the
+    # coincidence-of-counting case and is refused. `f` contributes exactly one
+    # group with exactly one member — no neighbour exists to confuse it with,
+    # and that is the whole argument.
+    promoted = promote_sole(groups + [("f::o::0", ["f::t::0"], "index")])
+    by_canon = {c: g for c, _m, g in promoted}
+    check("a lone 1:1 `index` group is the mislabelled case and becomes `sole`",
+          by_canon["f::o::0"] == "sole", f"{by_canon}")
+    check("an `index` group in a document with others stays refused",
+          by_canon["d::o::1"] == "index")
+    check("`sole` collapses and `index` still does not",
+          set(section_maps(promoted)[1]) == {"d::o::0", "e::o::0", "f::o::0"},
+          f"{sorted(section_maps(promoted)[1])}")
+
+    section_of, canonical = section_maps(groups)
+    check("only a section-aligned group becomes one record",
+          set(canonical) == {"d::o::0", "e::o::0"}
+          and "d::t::2" not in section_of and "d::o::1" not in section_of,
+          f"canonical={sorted(canonical)}")
+    check("every member of a section maps to its original",
+          section_of["d::t::0"] == "d::o::0"
+          and section_of["d::t::1"] == "d::o::0")
+
+    # The translation outranks the original — the exact 2026-08-16 shape, where
+    # eastasia-01-weilue::translation::000 sat at rank 1 and its original at 5.
+    hits = ranking(("d::t::0", 0.90), ("x::o::0", 0.85), ("d::t::1", 0.80),
+                   ("e::t::0", 0.75), ("d::o::0", 0.70), ("e::o::0", 0.65),
+                   ("d::o::1", 0.60), ("d::t::2", 0.55))
+    out = collapse(hits, section_of, canonical)
+    ids = [h.chunk_id for h in out]
+    check("a section takes the position of its best-ranked member",
+          ids[0] == "d::o::0", f"{ids}")
+    check("the row is the ORIGINAL even when the translation ranked higher",
+          "d::t::0" not in ids and "d::t::1" not in ids and "e::t::0" not in ids,
+          f"{ids}")
+    check("each section appears exactly once",
+          ids == ["d::o::0", "x::o::0", "e::o::0", "d::o::1", "d::t::2"], f"{ids}")
+    check("a chunk in no section passes through untouched",
+          "x::o::0" in ids and "d::o::1" in ids and "d::t::2" in ids)
+    check("collapsing never lengthens the ranking and never invents a chunk",
+          len(out) <= len(hits)
+          and {h.chunk_id for h in out} <= {h.chunk_id for h in hits})
+    check("collapsing twice is collapsing once",
+          [h.chunk_id for h in collapse(out, section_of, canonical)] == ids)
+
+    stats = collapse_report(hits, out)
+    # `roles_removed == ["translation"]` is the assertion, and until the stub
+    # ranking carried real roles it read `["original"]` and PASSED — a green
+    # check about a fiction. What a collapse removes is translations, by
+    # construction, and a run reporting otherwise means ruling 8 is folding the
+    # wrong way round.
+    check("the run records what the collapse actually removed",
+          stats["in"] == 8 and stats["out"] == 5 and stats["removed"] == 3
+          and stats["roles_removed"] == ["translation"],
+          f"{stats}")
+
+    # The gate's arithmetic, on the shape that cost china-describes-rome.
+    r = _rr_pair(id="weilue", unit="china", expect_doc="d",
+                 resolved_chunk_id="d::o::0", accepted_chunk_ids=["d::o::0"],
+                 rank=5, recall_at_6=True, rank_accepted=5)
+    apply_collapse(r, out)
+    check("the collapsed rank is recorded under its own name",
+          r.collapsed and r.rank_collapsed == 1
+          and r.recall_at_6_collapsed and r.rank_accepted_collapsed == 1)
+    check("collapsing does not touch `rank`, which every gap is denominated in",
+          (r.rank, r.recall_at_6, r.gap_vs_other_doc) == (5, True, 0.07),
+          f"rank={r.rank} gapDoc={r.gap_vs_other_doc}")
+
+    # The honesty instrument. `d::t::0` reached rank 1 and `d::o::0` sat at 5,
+    # so the record was found on the strength of its ENGLISH. The number says
+    # hit; this says how.
+    from retrieve.collapse import entry_roles
+
+    entry = entry_roles(hits, section_of)
+    # `.get`, not `[...]`. With subscripting, the mutation that empties this map
+    # raised KeyError and KILLED the suite instead of failing this check — which
+    # `scripts/mutate_ranking.py` correctly reported as "(suite crashed)" rather
+    # than as a pass. A check must fail on the defect it guards, not die on it.
+    check("the run records WHICH member of a section got there first",
+          entry.get("d::o::0") == "translation"
+          and entry.get("e::o::0") == "translation",
+          f"{entry}")
+    r2 = _rr_pair(id="w2", expect_doc="d", resolved_chunk_id="d::o::0",
+                  accepted_chunk_ids=["d::o::0"], rank=5, rank_accepted=5)
+    apply_collapse(r2, out, entry, section_of)
+    check("a record reached via its translation says so on the pair",
+          r2.collapse_entry_role == "translation" and r2.recall_at_6_collapsed,
+          f"entry_role={r2.collapse_entry_role}")
+    check("a record reached via its translation does NOT count as via-original",
+          r2.recall_at_6_via_original is False)
+
+    # A chunk in no section has no entry role, and there was no translation for
+    # it to have been reached through — the question does not arise, which is
+    # not the same as a miss.
+    r3 = _rr_pair(id="x", expect_doc="x", resolved_chunk_id="x::o::0",
+                  accepted_chunk_ids=["x::o::0"], rank=2, rank_accepted=2)
+    apply_collapse(r3, ranking(("x::o::0", 0.9)), {}, {})
+    check("a record with no translation at all counts as via-original",
+          r3.recall_at_6_via_original and r3.collapse_entry_role is None)
+
+    # Ruling 11's consequence for ruling 9's companion: a find record has no
+    # source text, so reaching it through its description bypasses nothing.
+    r4 = _rr_pair(id="find", expect_doc="d", resolved_chunk_id="d::o::0",
+                  accepted_chunk_ids=["d::o::0"], rank=5, rank_accepted=5)
+    apply_collapse(r4, out, entry, section_of, {"d": "translation"})
+    check("reaching a record with no source text is not counted as a bypass",
+          r4.collapse_primary_role == "translation"
+          and r4.recall_at_6_via_original,
+          f"primary={r4.collapse_primary_role} via={r4.recall_at_6_via_original}")
+
+    plain = ranking(("d::o::0", 0.9), ("d::t::0", 0.5))
+    check("a record reached via its original says THAT",
+          entry_roles(plain, section_of)["d::o::0"] == "original")
+
+    # A target that is a TRANSLATION is folded away, and that is a miss, not a
+    # hit by proxy. Ruling 7 is what forbids scoring it any other way.
+    t = _rr_pair(id="tr", unit="tr", expect_doc="d",
+                 resolved_chunk_id="d::t::0", accepted_chunk_ids=["d::t::0"],
+                 rank=1, rank_accepted=1)
+    apply_collapse(t, out)
+    check("a target folded into its section is not counted as returned",
+          t.rank_collapsed is None and t.recall_at_6_collapsed is False,
+          f"rank_collapsed={t.rank_collapsed}")
+
 def test_the_paced_client_waits_before_the_call_not_after_the_refusal() -> None:
     """This account has no payment method, so Voyage holds it to 3 RPM / 10K TPM
     — the same throttle the embedding path batches around. Rerank cannot batch
@@ -863,6 +1039,21 @@ def test_post_rerank_units_are_scored_over_the_whole_gate() -> None:
           f"{s['recall_at_6_reranked_n']}/{s['units']} = {s['recall_at_6_reranked']:.3f}")
     check("the pre-rerank unit recall is still reported beside it",
           s["recall_at_6_n"] == 2 and s["reranked_units"] == 2)
+    # BOTH interventions at once. Neither alone could catch the defect this
+    # guards: the rerank branch of summarise_units REASSIGNED its dict instead
+    # of updating it, so a collapsed+reranked run lost every collapse key and
+    # died in print_report after twenty-six minutes of paced calls.
+    both = [pair("m", "u5", 9, 3)]
+    both[0].collapsed = True
+    both[0].rank_accepted_collapsed = 2
+    both[0].recall_at_6_accepted_collapsed = True
+    s_both = summarise_units(build_units(both))
+    check("a run with BOTH collapse and rerank keeps BOTH sets of keys",
+          "recall_at_6_collapsed" in s_both and "recall_at_6_reranked" in s_both
+          and s_both["recall_at_6_collapsed_n"] == 1
+          and s_both["recall_at_6_reranked_n"] == 1,
+          f"{sorted(s_both)}")
+
     check("an unreranked run reports no post-rerank keys at all",
           "recall_at_6_reranked" not in summarise_units(
               build_units([pair("z", "u9", 3, None, reranked=False)])))
@@ -879,6 +1070,7 @@ def main() -> int:
     test_observed_chunk_id_is_never_the_target()
     test_rerank_is_recorded_beside_the_baseline_and_never_over_it()
     test_the_rerank_transport_fails_loudly_and_never_silently()
+    test_a_section_is_one_record_and_it_is_the_original()
     test_the_paced_client_waits_before_the_call_not_after_the_refusal()
     test_post_rerank_units_are_scored_over_the_whole_gate()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")

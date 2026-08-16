@@ -9916,3 +9916,386 @@ python scripts\mutate_ranking.py        39 mutations    (was 23)
    choosing fusion AFTER seeing that replacement scored worse is fitting to the
    gold set**, and if it is done it is declared in advance, with the reason, and
    reported as a tuned result rather than a measured one.
+
+## The repository is committed again (2026-08-16, same day)
+
+`bb3bef5` — 87 files, 51,001 insertions, the first commit since `013ae4a` (A2).
+`eval/run_ranking_check.py`, `eval/test_ranking_check.py`,
+`scripts/mutate_ranking.py` and `retrieve/rerank.py` are tracked for the first
+time, along with all ten archived ranking runs and the distractor fetches. The
+trap recorded above — *a killed mutation harness leaves a silent one-word edit
+with nothing to restore from* — is closed.
+
+**The first attempt at this commit was wrong and had to be undone.** `git add -A`
+took `data/pleiades-places-20260813.json.gz` (129 MB) and `_to_delete/` with it.
+Caught at the tip, `git reset --soft HEAD~1`, ignored by name, recommitted. Had
+it survived to a GitHub push it would have been rejected on the 100 MB limit and
+the fix would have been a history rewrite.
+
+Two rules that follow, because the check that missed it was a check:
+
+- **Ignore upstream dumps by name, not the tree.** `data/pleiades-*.gz` and
+  `_to_delete/` are in `.gitignore`; `data/gazetteer.json`, built from those
+  dumps, is the asset and stays tracked. The existing comment in `.gitignore`
+  already argued this for the seed corpus — it just had not been applied to the
+  gazetteer archives.
+- **Verify a staged commit by NAME, never by count.** `git status | Measure-Object
+  -Line` returned 91 and told nobody anything. `git diff --cached --name-only |
+  Select-String "\.gz$"` is the check, and it must print nothing.
+
+# What displaced the two lost units: their own English translations (2026-08-16)
+
+Second reranked run, `20260816T095215+0000-...-reranked50.json`. **Identical to
+the first in every rank and to the token — 281,722 both times.** The reranker is
+deterministic, and the pipeline reproduces. That is worth having, but it is not
+the finding.
+
+## The finding
+
+```
+muziris-cargo-periplus      target southasia-02-periplus-muziris::original::003
+  rank 5 -> 7, displaced by, in order:
+    southasia-01-akananuru-149::translation::000
+    arabia-01-periplus::original::001
+    southasia-02-periplus-muziris::translation::001
+    southasia-02-periplus-muziris::translation::003   <- the SAME SECTION, in English
+    arabia-01-periplus::translation::001
+    africa-03-periplus-adulis::translation::005
+
+china-describes-rome-weilue   target eastasia-01-weilue::original::000
+  rank 5 -> 11, displaced at RANK 1 by eastasia-01-weilue::translation::000
+china-describes-rome-houhanshu target eastasia-02-hou-hanshu::original::000
+  rank 4 -> 7,  displaced at RANK 2 by eastasia-02-hou-hanshu::translation::000
+
+aksum-trade-adulis            target africa-03-periplus-adulis::original::001
+  rank 35 -> 8, displaced by africa-03-periplus-adulis::translation::001 and ::005
+```
+
+Across the whole run, of the chunks that outranked a target inside the top 6:
+
+```
+::translation::   38
+::original::      12
+::distractor::     3
+```
+
+**The cross-encoder is not wrong. It is matching an English query to English
+text, which is the linguistically correct thing to do, and the gold pairs demand
+the non-English original of the same passage.** In every one of the four cases
+above, the chunk beating the target is that same document's own published
+translation — for `muziris-cargo-periplus`, the same section index.
+
+This is the premise of ruling 2, arriving unbidden in a cohort ruling 2 does not
+cover. Ruling 2 admits an aligned translation for the four `translation_case`
+pairs; `muziris-cargo-periplus`, `china-describes-rome-weilue`,
+`china-describes-rome-houhanshu` and `aksum-trade-adulis` do not declare it, and
+they lose to precisely the chunk it would admit.
+
+## The temptation, named before it is acted on
+
+**Extending ruling 2 to these pairs would very likely take post-rerank recall
+from 26/30 to 29 or 30 of 30, which is G2's recall criterion met.** That is
+exactly why it must not be decided from this page. The extension is being
+considered because it would rescue a failing gate, and a ruling made on that
+basis is fitting to the gold set, not measuring against it — the same trap
+already recorded for rank fusion.
+
+There is a real argument FOR it, made on ruling 2's own reasoning: cross-lingual
+reach is measured by the four `lang_pool: non_english` probes, where English is
+excluded by construction and which all rank 1 both pre- and post-rerank, so
+admitting a translation elsewhere does not weaken that instrument. There is a
+real argument AGAINST it that is stronger: **if an English translation satisfies
+an English query, the gate stops testing non-English retrieval almost entirely**
+— every English query could be answered by an English chunk, and 4 units of 30
+would be the whole cross-lingual test. Ruling 1 already reached the gate partly
+by no longer counting the two hardest targets. This would be the second such
+narrowing, and B1's refusal — *"weakening what the metric means"* — applies.
+
+**Unruled. If it is ever made, it is made on the reasoning, applied to the
+unreranked configuration as well, re-measured everywhere, and reported as a
+ruling change with its cost — never as C3 succeeding.**
+
+## What this does to C2, which is the reason the run was worth 26 minutes
+
+`claude/phase2-block-c-plan.md` and every document since have justified C2 as
+follows: *"five of the six original misses were English queries against
+non-English targets, where there is no shared vocabulary for a lexical index to
+recover."* That sentence is true and it is now clearly the wrong conclusion.
+
+A lexical index over an English query will not merely fail to help the Greek or
+Chinese original — **it will boost that document's English translation, which is
+the chunk already beating the target.** C2 as specified may move recall the same
+way C3 did, and for the same reason.
+
+## The structural problem underneath all of it
+
+The index holds the same passage TWICE — as `::original::` and as
+`::translation::` — and the two compete for the same six slots. Three of the six
+chunks above `muziris-cargo-periplus` are translations of Periplus sections; one
+is the translation of the target's own section.
+
+**A retrieval step that collapsed aligned siblings into one result — one record
+per document-section, canonically the original, its translation carried
+alongside — would fix all four cases without any ruling change and without any
+model.** It is also what the product should do: Mundus Ulterior shows a source
+passage with its translation, not two competing rows.
+
+That is a change to what the SYSTEM returns, measured by an unchanged metric —
+categorically different from a change to what the metric COUNTS, which is what
+extending ruling 2 would be. `answer.align.pair_chunks` already computes the
+alignment, and ruling 2 already established `ground=section` as the admissible
+standard. The pieces exist.
+
+**Proposed as C2a, ahead of C2, and to be ruled on before it is built.** It costs
+no API calls and can be measured against the existing pre-rerank ranks.
+
+# C2a measured: 27/30 -> 28/30, on thirteen sections (2026-08-16)
+
+Run: `20260816T152136+0000-…-collapsed.json`. No reranking, two batched
+embedding requests, about a minute.
+
+```
+                        uncollapsed       collapsed
+unit recall@6           27/30 = 0.900     28/30 = 0.933
+unit MRR@10             0.726             0.753
+gapDoc (ALL, 33 pairs)  +0.016            +0.016   unchanged, by construction
+```
+
+One unit changed status, and it is a large move:
+
+```
+adulis-exports    MISS -> hit    best rank 15 -> 3
+```
+
+The gaps did not move, exactly as ruling 8 said they could not: they are computed
+on the uncollapsed ranking, and collapsing within a document cannot touch
+`gapDoc`. **C2a is a recall intervention only. The gap remains C2's.**
+
+## The number that bounds this intervention
+
+```
+C2a COLLAPSED  sections=13   chunks 450 -> 437 (removed 13)
+roles removed: ['translation']
+```
+
+**Thirteen aligned sections in a corpus of 24 documents.** Every removed chunk
+was a translation, which is the rule behaving; but the reach of the whole
+intervention is thirteen sections, and it converted exactly one miss. It is not
+a general fix, it is a specific one, and the gate must not be described as
+"retrieval deduplicates its own translations" when what is true is "thirteen
+sections deduplicate".
+
+**Open question, and the cheapest next measurement in the block:** how many
+documents hold both an `original` and a `translation`, and of those, how many
+align on `section` rather than `index`? If most of the rest are `index`-ground,
+C2a's reach is bounded by MISSING SECTION MARKERS in the seed corpus rather than
+by anything in retrieval — and that is an A-block authoring fix, not a C-block
+retrieval one.
+
+## What this sets up, and why the composition is not fitting
+
+Standing after C2a alone: **28/30. G2 needs 29/30 — one unit.** The two
+remaining misses are `aksum-trade-adulis` (35) and `au-khao-sam-kaeo` (17), and
+the 2026-08-16 rerank runs measured both:
+
+```
+au-khao-sam-kaeo     17 -> 1     C3 fixed it outright
+aksum-trade-adulis   35 -> 8     C3 moved it 27 places, not enough
+```
+
+C3 alone was a net loss because it broke `muziris-cargo` and
+`china-describes-rome` — **and the chunks that broke them were their own
+documents' translations, which is exactly what C2a removes from the candidate
+list before the reranker ever sees it.**
+
+**This composition is not chosen after the fact.** `--collapse` runs BEFORE
+`--rerank` in the pipeline, and it does so because that order was ruled and
+written into the code when C2a was built, for the stated reason that
+deduplicating and then reranking is a pipeline whereas reranking and then
+deduplicating hands the cross-encoder the very sibling pair C2a exists to
+remove. The composition is the design; the measurement is what is outstanding.
+
+**Next run: `--with-distractors --collapse --rerank --rerank-tpm 10000`.**
+Twenty-six minutes. It is the first configuration that could plausibly reach
+29/30.
+
+**And if it does, the honest reading is still guarded.** The gate would rest on a
+thirteen-section deduplication plus a reranker that is otherwise harmful, on one
+day, with the gap criterion unmet and untouchable by either. That is a
+configuration to understand before it is a result to bank.
+
+# C2a + C3 together: 28/30, and the bottleneck named (2026-08-16)
+
+Run `20260816T160217+0000-…-collapsed-reranked50.json`. **`waiting=0s`** — the
+payment method moved the account to the published 2000 RPM / 2M TPM table, now
+MEASURED rather than quoted, and a full reranked run costs seconds instead of
+twenty-six minutes.
+
+```
+uncollapsed, no rerank      27/30 = 0.900
+collapsed only              28/30 = 0.933
+collapsed + reranked        28/30 = 0.933
+gapDoc, ALL 33 pairs        +0.016  unchanged by both, as rulings 3 and 8 said
+```
+
+**G2 needs 29/30. Both interventions together land on the same number as C2a
+alone.** C3 swaps which units pass rather than adding any:
+
+```
+aksum-trade-adulis   MISS -> hit    35 -> 4   (35 -> 8 without the collapse first)
+au-khao-sam-kaeo     MISS -> hit    17 -> 1
+china-describes-rome hit  -> MISS    4 -> 7
+adulis-exports       collapse got it to 3; the reranker pushed it back to 9
+```
+
+`aksum-trade-adulis` at 4 rather than 8 is real evidence the pipeline order
+works: collapsing before reranking gave the cross-encoder a cleaner window and
+it went four places further. **C3 still nets zero at the gate.**
+
+## Why china-describes-rome still breaks, and what it costs to fix
+
+The chunks above it are unchanged from the rerank-only run:
+`eastasia-01-weilue::translation::000` at rank 1 and
+`eastasia-02-hou-hanshu::translation::000` at rank 2. Both documents are 1
+original / 1 translation on `index` ground, so **ruling 8 does not collapse
+them.** The mechanism C2a was built for is exactly right and is switched off for
+these two documents by the `sole` gap.
+
+Admitting `sole` — the unambiguous 1:1 case, where "the texts merely split into
+the same number of pieces" is vacuous because the number is one — would fold
+those two translations into their originals and very probably take the gate to
+29/30. It would also fold `southasia-01-akananuru-149`, and **the Old Tamil link
+at rank 309 would be reported as found at rank 1** on the strength of its
+English. That is the standing failure ruling 1 requires printed beside every G2
+number.
+
+## The instrument earned its place on its first run
+
+```
+3 pair(s) reached their record VIA THE TRANSLATION, not the original text:
+  muziris-cargo-periplus    5 -> 2
+  adulis-exports           15 -> 3
+  tc-frankincense-harvest  11 -> 1
+```
+
+**`adulis-exports` is the single unit C2a converted, and it was reached through
+its English.** C2a's +1 is therefore not evidence that the Greek is reachable.
+The number and the caveat were produced by the same run, which is the only
+arrangement under which the caveat survives.
+
+## The finding that matters more than the gate
+
+The gold set already contains the controlled comparison, and nobody had read it
+this way:
+
+```
+target                              native-language query   English query
+eastasia-01-weilue::original::000   probe-chinese-weilue  1  china-…-weilue    5
+southasia-01-akananuru-149::…::000  probe-tamil-akananuru 1  muziris-…-akananuru 309
+southasia-02-periplus-muziris       probe-greek-muziris   1  muziris-…-periplus  5
+persia-01-skz                       probe-parthian-skz    1
+```
+
+**Every non-English target is at rank 1 when the query is in its own language.
+The same chunks are at 5, 5 and 309 from English.** The index is not the
+problem, the embedding of the passages is not the problem, and the reranker is
+not the problem: **the bottleneck is the language of the QUERY.**
+
+Every lever tried in Block C — ruling 2's alternates, C2a's collapse, C3's
+cross-encoder, and the `sole` amendment — reaches the gate by finding the record
+through its English. None makes the non-English text reachable. That is the one
+thing this corpus exists to do.
+
+## What this does to C2, again
+
+C2 was specified as hybrid lexical+dense and has now been undermined twice: a
+lexical index would boost the English sibling (C3's evidence), and the misses
+are not vocabulary-mismatch failures at all (this run's evidence).
+
+**Proposed instead: C2 becomes QUERY TRANSLATION.** Translate the English query
+into the target languages and search with both. It is supported by the four
+probes rather than argued from first principles; `answer/translate.py` already
+exists; machine translation is named in the project's own scope; and — unlike
+C2a and C3 — **it changes what produces the score, so it is capable of widening
+`gapDoc`**, which is the whole reason ruling 5 put C2 back on the critical path.
+
+To be designed and ruled on, not started. Its own risks are real: a mistranslated
+query is a new failure mode with no baseline, and translating into eight target
+languages multiplies queries per pair.
+
+# Ruling 11 lands: 25/30 -> 28/30, and the honest number is 21/30 (2026-08-16)
+
+Run `20260816T162248+0000-…-collapsed.json`. `sole` alone had been a regression
+— 28/30 down to 25/30 — because three gold pairs name ENGLISH chunks and the
+collapse folded them away:
+
+```
+au-hoby-silver      expect_lang en   "Roman silver table service"
+au-silla-glass      expect_lang en   "Syrian workshop origin"
+au-oc-eo-medallion  expect_lang en   "imitating a Roman aureus of Antoninus Pius"
+```
+
+Ruling 11 canonicalises to the record's PRIMARY text, derived from
+`source_type`. All three are restored and `adulis-exports` is kept:
+
+```
+uncollapsed              27/30 = 0.900     MRR 0.726
+collapsed, ruling 11     28/30 = 0.933     MRR 0.834
+via the original text    21/30 = 0.700
+gapDoc, 33 pairs         +0.016  unchanged, as rulings 3, 8 and 11 all require
+sections                 24     roles removed: ['original', 'translation']
+```
+
+**No seed record was edited.** `ingest/fidelity.py` has carried `FIND_TYPES`
+since Part 3 — *"source types where the record describes an object rather than
+carrying text"* — and `classify_translation` already stated that for a find
+record the translation field *"is a curatorial description, not a translation"*.
+The rule is imported from there and never redefined. It predicts exactly the
+three failures, and it was available to be written before the run that exposed
+them. The fitting hazard the ruling was accepted under is simply absent.
+
+`probe_sections.py` confirms the assignment is doing something and not
+everything: 15 documents hold a translation and **three** carry
+`primary=translation` — `hwangnam-glass`, `hoby-treasure`, `oc-eo-medallion` —
+which are precisely the find records that have both chunks.
+
+## The number to read is 21/30, not 28/30
+
+Twelve pairs entered their record through a translation-role chunk. Ruling 11
+splits them, and the split is the point:
+
+- **nine bypassed a real source text** — Periplus Greek, Weilüe and Hou Hanshu
+  Literary Chinese, Old Tamil, the four `translation_case` pairs. Among them
+  `muziris-cargo-akananuru`, rank **309 -> 5**, the corpus's one genuinely
+  broken cross-lingual link, now finding its record on the strength of its
+  English;
+- **three have no source text at all** — the find records, where the curatorial
+  description IS the record and nothing was bypassed.
+
+The printing conflated these under one heading until this run; it now says which
+is which, because calling `au-hoby-silver` a pair that failed to reach "the
+original text" asserted something false about a record that has none.
+
+**28/30 is whether the record was found. 21/30 is whether the non-English text
+was reachable.** Both travel together, always, per ruling 9.
+
+## Where the gate stands
+
+```
+[ ] top 6 for >=95% at 450     28/30 = 0.933. Needs 29/30.
+[ ] score gap wider            +0.016 vs +0.0249. Untouched and untouchable by
+                               C2a and C3 alike; ruling 10's query translation
+                               is the only remaining candidate.
+```
+
+The two remaining misses are `aksum-trade-adulis` (35) and `au-khao-sam-kaeo`
+(17), and the rerank runs have already measured both at **2** and **1** under
+collapse. The three `au-*` pairs that reranking previously destroyed were
+destroyed because the collapse had removed their targets; ruling 11 makes those
+targets the canonical row, so they should survive. **`--collapse --rerank` is
+therefore the next run, and 30/30 is on the table.**
+
+If it lands, the honest report is: 30/30 records found, 21-or-so of 30 source
+texts reachable, one gate criterion still unmet, and the recall reached partly
+through English on nine units. That is a very different sentence from "G2
+passed", and it is the one that goes in the deliverable.

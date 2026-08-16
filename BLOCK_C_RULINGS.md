@@ -299,3 +299,215 @@ itself already got that arithmetic wrong once.
    to watch erode had no positive value to erode from.
 3. The gate is reached over **29 units, not 32 pairs**, and the Old Tamil link at
    rank 309 is a standing failure the gate does not cover.
+
+---
+
+## Ruling 7 — ruling 2 does NOT extend to the pairs C3 displaced (2026-08-16)
+
+The 2026-08-16 rerank runs displaced `muziris-cargo-periplus`,
+`china-describes-rome-weilue`, `china-describes-rome-houhanshu` and
+`aksum-trade-adulis`, and in every case **the chunk that beat the target is that
+same document's own published English translation** — for the Muziris pair, the
+same section index. Across the run, of the chunks outranking a target inside the
+top 6: 38 translations, 12 originals, 3 distractors.
+
+That is ruling 2's premise, arriving in a cohort ruling 2 does not cover. The
+obvious move is to let those pairs declare `accept_aligned_translation` too.
+
+**Ruled: no.**
+
+**Not because the argument is bad.** On ruling 2's own reasoning it is decent:
+cross-lingual reach is measured by the four `lang_pool: non_english` probes,
+where English is excluded from the candidate pool by construction, and all four
+rank 1 both pre- and post-rerank. Extending would not touch that instrument.
+
+**Because of what it would cost and when it was proposed.** Extending would very
+likely take post-rerank recall from 26/30 to 29 or 30 of 30 — G2's recall
+criterion met. The extension is available precisely because it rescues a failing
+gate, and a ruling made on that basis is fitting to the gold set rather than
+measuring against it. Worse, the resulting gate would barely test the thing this
+corpus exists for: if an English translation satisfies an English query, every
+English query can be answered by an English chunk, and **4 units of 30 would be
+the entire cross-lingual test.** Ruling 1 already reached the gate partly by no
+longer counting the two hardest targets. This would be the second narrowing in
+one block, and B1's refusal — *"weakening what the metric means"* — governs.
+
+**The conditions under which it could be revisited**, so this is a ruling and not
+a veto: it is argued from the pairs' purpose rather than from a score; it is
+applied to the unreranked configuration as well; every affected number is
+re-measured; and it is reported as a ruling change with its cost, never as an
+intervention succeeding.
+
+## Ruling 8 — a section is ONE retrievable record, canonically the original (C2a)
+
+The index holds each passage twice, as `::original::` and as `::translation::`,
+and the two compete for the same six slots. Three of the six chunks above
+`muziris-cargo-periplus` are Periplus translations; one is the translation of
+the target's own section.
+
+**Ruled: retrieval collapses aligned siblings into one result.** One row per
+document-section, admitted only where `answer.align.pair_chunks` reports
+`ground=section` — the same standard ruling 2 set — and the row's chunk is
+**the ORIGINAL**, with its translation carried alongside for display.
+
+### Why this is not ruling 7 wearing a different hat
+
+Ruling 7 refuses a change to **what the metric COUNTS**. This is a change to
+**what the SYSTEM RETURNS**, measured by an unchanged metric: after it, the top
+6 literally contains `southasia-02-periplus-muziris::original::003`, and `rank`
+still means what it has meant since B2 — the position of this pair's chunk in
+what retrieval returned. Nothing is accepted that was not returned.
+
+### The objection, stated because it is real
+
+**Canonicalising to the original is the choice that turns these misses into
+hits, and it was made after seeing that.** The defence must therefore not be the
+score, and is not: a sourcebook whose stated purpose is the world beyond Rome
+*in its own sources* presents the Greek, Chinese or Tamil record as the record.
+The alternative — canonical = whichever member happened to rank higher — would
+make the citable text language-dependent on retrieval noise, which is plainly
+wrong for this product whatever it did to the number.
+
+### What it costs, stated plainly
+
+1. **"Top 6" changes meaning: six RECORDS, not six chunks.** A collapsed top 6
+   covers more underlying text than an uncollapsed one. That is a real change in
+   what the gate proves and travels with every number produced under it.
+2. **It cannot move the gap criterion.** Ruling 4 reads `gapDoc`, the target
+   against the best chunk in any *other* document; collapsing within a document
+   does not touch it. Gaps are computed on the UNCOLLAPSED hits, exactly as
+   ruling 3 keeps them pre-rerank. C2a is a recall intervention only, and the
+   gap remains C2's.
+3. **Recorded beside, never over**, following rulings 2 and 3: `rank_collapsed`
+   and `recall_at_6_accepted_collapsed` sit next to `rank` and `rank_accepted`.
+
+## Ruling 9 — `sole` is a ground, and it collapses (2026-08-16)
+
+`scripts/probe_sections.py` measured what C2a can reach: of fifteen documents
+holding a translation, **three align on `section` and twelve are one original
+and one translation on `index`**.
+
+`index` at n=1 is a **mislabelled ground**. The stated reason to distrust it —
+*"two texts numbered independently pair by coincidence of counting"* — is vacuous
+when the count is one: there is no neighbouring section to confuse, and exactly
+one possible pairing. It is the same defect this repository has paid for before
+in `not_in_top_20` measured at k=50: a name that describes something other than
+what it names.
+
+**Ruled: the unambiguous 1:1 case gets its own ground, `sole`, and ruling 8's
+collapse admits it.** A document contributing exactly one aligned group, with
+exactly one member, under `index`, is `sole`. It is relabelled in
+`retrieve/collapse.py` and NOT in `answer/align.py`, so ruling 2 and the answer
+path are provably untouched by it.
+
+**Ruling 2 does not admit `sole`.** Collapsing is a change to what the system
+returns; accepting an alternate is a change to what the metric counts, and
+ruling 7 refused that. The line stays where it was drawn.
+
+### What it costs, and the condition it is ruled in under
+
+It is likely to take the gate from 28/30 to 29/30, and **it is available because
+it does.** It would also fold `southasia-01-akananuru-149`, so the Old Tamil link
+at rank 309 — the corpus's one genuinely broken cross-lingual link, which ruling
+1 requires printed beside every G2 number — would be reported as **found at rank
+1**, on the strength of its English.
+
+**Therefore, mandatory and non-negotiable, as with ruling 1's coverage:**
+
+**`recall@6 via the original text` is computed and reported beside every G2
+recall number.** A unit counts only if one of its acceptable targets reached the
+top 6 through its ORIGINAL rather than through its translation. No
+translation-mediated intervention — ruling 2's alternates, C2a's collapse,
+`sole`, or a reranker preferring English — can inflate it. The gate's number
+says whether the record was found; this one says whether the non-English text
+was reachable, which is what this corpus exists to demonstrate. Both travel
+together, always.
+
+## Ruling 10 — C2 is QUERY TRANSLATION, not hybrid lexical+dense (2026-08-16)
+
+The gold set already held the controlled comparison, and the 2026-08-16 runs made
+it legible:
+
+```
+target                              native-language query    English query
+eastasia-01-weilue::original::000   probe-chinese-weilue   1  china-…-weilue      5
+southasia-01-akananuru-149::…::000  probe-tamil-akananuru  1  muziris-…-akananuru 309
+southasia-02-periplus-muziris       probe-greek-muziris    1  muziris-…-periplus  5
+persia-01-skz                       probe-parthian-skz     1
+```
+
+**Every non-English target ranks 1 when the query is in its own language.** The
+index is not the problem, the passage embeddings are not the problem, and the
+reranker is not the problem. **The bottleneck is the language of the QUERY.**
+
+C2's original justification has been undermined twice: a lexical index over an
+English query boosts the document's English sibling — the chunk already beating
+the target (C3's evidence) — and the misses are not vocabulary-mismatch failures
+at all (this run's evidence).
+
+**Ruled: C2 becomes query translation.** The English query is translated into the
+target languages and searched with both. It is supported by four probes rather
+than argued from first principles; `answer/translate.py` already exists; machine
+translation is named in the project's own scope; and — unlike C2a and C3 — **it
+changes what produces the score, so it is capable of widening `gapDoc`**, which
+is the entire reason ruling 5 put C2 back on the critical path.
+
+**Stated risks, before anything is built:** a mistranslated query is a new
+failure mode with no baseline and no guard; translating into eight target
+languages multiplies queries per pair and needs a fusion rule that is declared
+in advance, not chosen from results; and a translated query that succeeds proves
+the pipeline works, not that the retriever is cross-lingual — which must be said
+in the same breath as any number it produces.
+
+**To be designed and ruled on before implementation.**
+
+## Ruling 11 — the record declares which text is primary, and it already does (2026-08-16)
+
+`sole` took the collapse from 13 sections to 24 and recall from 28/30 to
+**25/30**. Three units that were hits at rank 1 vanished entirely:
+
+```
+au-hoby-silver      1 -> None    expect_lang en   "Roman silver table service"
+au-silla-glass      1 -> None    expect_lang en   "Syrian workshop origin"
+au-oc-eo-medallion  1 -> None    expect_lang en   "imitating a Roman aureus…"
+```
+
+All three name the ENGLISH chunk. Ruling 8 canonicalises to the original, so
+their targets were folded away while the record was returned at rank 1 as a
+chunk the pair does not name.
+
+**The unstated consequence: `original` and `translation` do not mean the same
+thing in every record.** For the Periplus the original is the substantive Greek.
+For a Danish silver hoard the original is a 110-character findspot caption and
+the English description is the record.
+
+**Ruled: the collapse canonicalises to the record's PRIMARY text, and which text
+is primary is derived from `source_type`.**
+
+```
+literary_text, inscription   primary = original      the source text IS the record
+find_record, coin_record     primary = translation   the object is the record; both
+                                                     text fields are curatorial
+```
+
+### Why this is a derivation and not a hand-assignment
+
+**No seed record is edited. Nothing is authored. Nothing is labelled after the
+fact.** `source_type` was written at ingest, and the distinction it draws here
+is already stated in `ingest/fidelity.py`, which has carried `FIND_TYPES` —
+*"source types where the record describes an object rather than carrying text"* —
+since Part 3, with `classify_translation` saying in as many words that for a
+find record this field *"is a curatorial description, not a translation"*.
+
+The rule is therefore imported from `ingest.fidelity`, never redefined here: one
+definition in this repository rather than two that agree until they do not. It
+predicts all three failures without having been fitted to them, and it was
+available to be written before the run that exposed them.
+
+### Consequence for ruling 9's companion
+
+`recall@6 via the original text` asks whether a genuine SOURCE TEXT was reached
+without going through its rendering. A find record has no source text, so
+reaching it through its curatorial description is not a shortcut and is not
+counted as one. The companion counts a unit as bypassed only when the record's
+primary IS the original and the entry was the translation.
