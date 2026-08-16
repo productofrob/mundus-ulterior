@@ -3,7 +3,9 @@
   "region": "East Asia",
   "title": "Hou Hanshu (後漢書) 88, Xiyu Zhuan — the 166 CE embassy of 'Andun, King of Da Qin'",
   "source_type": "literary_text",
-  "language_code": ["lzh"],
+  "language_code": [
+    "lzh"
+  ],
   "language_note": "Classical Chinese. Hou Hanshu (Book of the Later Han) compiled by Fan Ye, 5th century CE, covering the Eastern Han period (25-220 CE); this chapter (88, Xiyu Zhuan / Chapter on the Western Regions) draws partly on the Weilüe.",
   "date": "compiled 5th century CE; records an event of 166 CE",
   "original_text_excerpt": "至桓帝延熹九年，大秦王安敦遣使自日南徼外獻象牙、犀角、瑇瑁，始乃一通焉。",
@@ -12,5 +14,19 @@
   "translation_source": "John E. Hill, '\"Chapter on the Western Regions\" from Hou Hanshu 88', draft annotated translation, University of Washington Silk Road Seattle project.",
   "citation": "https://depts.washington.edu/silkroad/texts/hhshu/hou_han_shu.html#sec12",
   "citation_original": "https://zh.wikisource.org/zh-hans/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B788",
-  "notes": "Records what Chinese sources present as the first direct Rome-China diplomatic contact (166 CE), traditionally identified with Marcus Aurelius. 'Andun' (安敦) as a transliteration of 'Antoninus' is itself a good micro-example of cross-lingual proper-noun handling for the translation/back-translation pipeline (Pillar 1, §6)."
+  "notes": "Records what Chinese sources present as the first direct Rome-China diplomatic contact (166 CE), traditionally identified with Marcus Aurelius. 'Andun' (安敦) as a transliteration of 'Antoninus' is itself a good micro-example of cross-lingual proper-noun handling for the translation/back-translation pipeline (Pillar 1, §6).",
+  "subject_places": [
+    {
+      "name": "Rinan",
+      "ground": "regional",
+      "role": "focus",
+      "note": "日南, the commandery on the central Vietnamese coast the embassy arrived through — 自日南徼外, 'from beyond the frontier of Rinan'. Pleiades is a Greco-Roman gazetteer and holds nothing here; this is GeoNames territory, and the GeoNames reader is the outstanding Block A item. Promote to a named place when it exists."
+    },
+    {
+      "name": "Da Qin",
+      "ground": "regional",
+      "role": "source",
+      "note": "大秦, whose king 安敦 sent the envoys. Same reasoning as `eastasia-01-weilue`: a polity with no gazetteer entry, and the identification with Rome is the gloss's rather than the record's. Luoyang, the court the tribute was offered to, is NOT named in this passage and is deliberately not placed."
+    }
+  ]
 }

@@ -1,0 +1,56 @@
+The Metropolitan Museum of Art — Open Access
+Licence declaration for Mundus Ulterior, Phase 2 Block B4 (distractor corpus)
+
+Source page : https://www.metmuseum.org/hubs/open-access
+Checked     : 2026-08-14, fetched and read; confirmed by Rob Padilla the same day
+Licence     : Creative Commons Zero (CC0 1.0 Universal)
+
+Wording quoted from the source page on the date above:
+
+    "available for unrestricted use under Creative Commons Zero (CC0)"
+
+    "Anyone can download, share, and remix images and data about artworks in
+    The Met collection."
+
+    "The Met's Open Access datasets are available through our API. The API
+    (RESTful web service in JSON format) gives access to all of The Met's Open
+    Access data and to corresponding high resolution images (JPEG format) that
+    are in the public domain."
+
+CONDITION THAT CONSTRAINS THE FETCH
+-----------------------------------
+The CC0 designation applies to PUBLIC-DOMAIN ARTWORKS ONLY. The Met's collection
+also contains objects that are not Open Access, and the API returns those too.
+CC0 is therefore a property of the individual object record, not of the API.
+
+Consequently every distractor record ingested from this source must be filtered
+on the API's own `isPublicDomain` field being true, and that field must be
+recorded on the ingested row rather than assumed at fetch time. A record whose
+`isPublicDomain` is false or absent is not admissible and must be dropped with a
+counted, named reason — not silently skipped.
+
+The page also directs readers to The Met's Image and Data Resources page and to
+its Terms and Conditions for material not covered here. Neither was needed for
+the decision above: the CC0 grant over public-domain object data is stated
+plainly on the page quoted.
+
+WHY THIS FILE EXISTS
+--------------------
+The same reason as data/pleiades-licence.txt and data/geonames-licence.txt. This
+project's standing rule is that nothing enters the corpus on a remembered
+provenance — a remembered gazetteer id is an authored coordinate wearing a
+citation, and a remembered licence is the same move one layer up. The wording
+above was fetched from the source, not recalled.
+
+SCOPE OF USE IN THIS PROJECT
+----------------------------
+Object descriptions are used as DISTRACTORS: plausibly similar, known-irrelevant
+padding for the W2b degradation curve. They are held in the same tables as the
+seed corpus but are unreachable from the answer path by construction (see
+scripts/schema-b4-distractors.sql). They are never cited, never translated,
+never placed on the map, and never presented as evidence.
+
+Per Block B3's ruling, material is drawn from a single collection and restricted
+to objects with no Roman-contact dimension — Egyptian dynastic, Mesopotamian,
+pre-Columbian, East Asian ceramics, European medieval — so that no distractor can
+answer a gold-set question by being about the same thing the corpus is about.

@@ -50,6 +50,17 @@ class ChunkRow:
         return self.text[:n].replace("\n", " ")
 
 
+# Every query in this module reads `chunks` directly rather than through
+# `retrievable_chunks`, because the translator needs chunks that have no vector
+# yet — which the retrieval view excludes by definition. That makes this module
+# the one place where Block B4's distractor containment is NOT inherited from
+# the view, so `AND NOT is_distractor` is written out in each query below.
+#
+# SELECT_TRANSLATABLE is the expensive one: without the clause it would feed
+# non-English distractors to the translation pipeline and spend money
+# translating Strabo. PHASE2_PLAN.md B4 lists ingest/verify, answer/run_answer
+# and ui/build_ui_data.py as the readers to make blind; this file is on none of
+# those lists and is the only one that spends.
 CHUNK_COLUMNS = (
     "chunk_id, doc_id, role, seq, lang, text, citation, region, source_type, "
     "text_fidelity"
@@ -61,6 +72,7 @@ FROM chunks
 WHERE doc_id = %(doc_id)s
   AND role = %(role)s
   AND eligible_for_retrieval
+  AND NOT is_distractor
 ORDER BY seq;
 """
 
@@ -68,6 +80,7 @@ SELECT_TRANSLATABLE = f"""
 SELECT {CHUNK_COLUMNS}
 FROM chunks
 WHERE eligible_for_retrieval
+  AND NOT is_distractor
   AND lang <> 'en'
   AND role = 'original'
   AND (%(doc_ids)s::text[] IS NULL OR doc_id = ANY(%(doc_ids)s::text[]))
@@ -118,7 +131,8 @@ SELECT
     (SELECT count(*) FROM current_translations)                      AS current,
     (SELECT count(*) FROM stale_translations)                        AS stale,
     (SELECT count(*) FROM chunks
-      WHERE eligible_for_retrieval AND lang <> 'en' AND role = 'original') AS translatable;
+      WHERE eligible_for_retrieval AND NOT is_distractor
+        AND lang <> 'en' AND role = 'original') AS translatable;
 """
 
 

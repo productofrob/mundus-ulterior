@@ -1,0 +1,41 @@
+The Cleveland Museum of Art — Open Access
+Licence declaration for Mundus Ulterior, Phase 2 Block B4 (distractor corpus)
+
+Source page : https://www.clevelandart.org/open-access-api
+Licence     : Creative Commons Zero (CC0 1.0 Universal)
+Attested    : 2026-08-14 by Rob Padilla, the project owner
+
+PROVENANCE OF THIS CLAIM — READ BEFORE RELYING ON IT
+-----------------------------------------------------
+This differs from data/met-licence-declaration.txt in one way that matters. The
+Met's terms were fetched from the source page in-session and quoted verbatim.
+Cleveland's were NOT: the fetch required an approval that was not given, so the
+CC0 statement here rests on the project owner's own check of the page rather
+than on text retrieved and quoted at the time.
+
+That is a legitimate source — it is a human reading the licence — and it is
+recorded as what it is rather than dressed up as a quotation. If this material
+is ever relied on outside the project, re-read the page and replace this note
+with the wording.
+
+CONDITION THAT CONSTRAINS THE FETCH
+-----------------------------------
+As with the Met, CC0 is a property of the individual object record and not of
+the API. Cleveland exposes this per record as `share_license_status`, and the
+API also returns records whose status is not CC0.
+
+`ingest/fetch_cma_distractors.py` therefore rejects any record whose
+`share_license_status` is not exactly "CC0", counts the rejection under that
+name, and records the value on the row it keeps. No record enters on the
+assumption that the collection is open; each one carries its own claim.
+
+SCOPE OF USE IN THIS PROJECT
+----------------------------
+Object records are used as DISTRACTORS: plausibly similar, known-irrelevant
+padding for the W2b degradation curve. They are unreachable from the answer path
+by construction (scripts/schema-b4-distractors.sql), never cited, never
+translated, never placed on the map, never presented as evidence.
+
+Selection is restricted to objects whose date range falls entirely outside
+27 BC – 1204 AD, and to a department allowlist that `--probe` must confirm
+against departments actually observed in the live API before `--fetch` will run.

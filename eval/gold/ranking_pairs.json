@@ -1,0 +1,464 @@
+{
+  "schema": "mundus-ulterior/ranking-pairs/v1",
+  "updated": "2026-08-14",
+  "about": "Ranking gold set for W2a (PHASE2_PLAN.md Block B1). One pair is one query plus one passage that query must retrieve. Built by mining what Phase 1 already proved rather than by authoring from scratch, and every pair records which seam it came from so the aggregate can never be read as one homogeneous number.",
+  "on_the_assertion": "A pair asserts `expect_doc` AND `expect_text_contains`, never a chunk_id. Chunk ids are not stable across a re-ingest: `africa-03-periplus-adulis` was re-chunked on 2026-08-13 (A4's Wikisource recovery of Periplus 4-6), and the Greek exports sentence the archived answers name as `original::002` now lives in `original::005`. A pair keyed on the id would, after re-ingest, silently measure ranking against the wrong passage - the doc-id-proxy failure this repository has already paid for once. `observed_chunk_id` is recorded as provenance only; the checker reports whether it survived and never asserts on it.",
+  "on_provenance": "`archived_answer` pairs are mined from chunks retrieval itself returned, so they cannot contain the case where retrieval missed a passage entirely. Their recall is partly true by construction and the checker reports every metric per cohort as well as in aggregate. `retrieval_probe` and `translation_case` pairs were written against the material, not against a ranking, and are the cohort that can actually surprise. Query-to-target lexical overlap is recorded per pair in every ranking run rather than minimised: for a short English object description a faithful, unambiguous question necessarily shares vocabulary with it, and forcing the overlap down produces contrived or ambiguous queries. Read the authored cohort's recall next to its overlap.",
+  "cohorts": {
+    "archived_answer": "question -> a chunk an archived answer quoted, verified by cite.py. eval/answer_runs/.",
+    "retrieval_probe": "eval/gold/retrieval_probes.json - query and expected document authored in Part 6 with a stated rationale.",
+    "translation_case": "eval/gold/translation_cases.json - the passage was already chosen; the query is written here to reach it.",
+    "authored": "written in Block B against a document with no Phase 1 query of its own. NOT yet ruled on by the project owner."
+  },
+  "pools": {
+    "non_english": {
+      "langs": [
+        "grc",
+        "lzh",
+        "oty",
+        "xpr",
+        "xna",
+        "xsa",
+        "gmq-pro"
+      ],
+      "note": "Mirrors retrieval_probes.json. Used so an English query cannot be satisfied by an English translation, which would make a cross-lingual pair a same-language pair wearing a cross-lingual label."
+    }
+  },
+  "excluded": {
+    "antikythera": "'When was the Antikythera mechanism built?' is 15 of the 77 archived runs and has no known-good passage - it is the correctly-refused off-corpus question. recall@6, MRR@10 and score gap are all undefined without a known-good, so it is not a ranking pair. It belongs to the W4 answer gold set, where refusal is the assertion."
+  },
+  "pairs": [
+    {
+      "id": "muziris-cargo-periplus",
+      "unit_id": "muziris-cargo",
+      "query": "What did ships carry from Muziris?",
+      "query_lang": "en",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "expect_text_contains": "Πλεῖ δὲ εἰς τὰ ἐμπόρια ταῦτα μεγάλα πλοῖα",
+      "expect_lang": "grc",
+      "region": "south_asia",
+      "provenance": "archived_answer",
+      "source_ref": "eval/answer_runs/ (15 runs, question 'What did ships carry from Muziris?')",
+      "observed_chunk_id": "southasia-02-periplus-muziris::original::003",
+      "note": "Periplus §56, the pepper cargo manifest. PHASE2.md names this chunk explicitly as one of the three the ranking set must contain."
+    },
+    {
+      "id": "muziris-cargo-papyrus",
+      "unit_id": "muziris-cargo",
+      "query": "What did ships carry from Muziris?",
+      "query_lang": "en",
+      "expect_doc": "southasia-03-muziris-papyrus",
+      "expect_text_contains": "εἰς τὰς ἐπὶ Κόπτου δημοσίας παραλημπτικὰς ἀποθήκας",
+      "expect_lang": "grc",
+      "region": "south_asia",
+      "provenance": "archived_answer",
+      "source_ref": "eval/answer_runs/ (question 'What did ships carry from Muziris?')",
+      "observed_chunk_id": "southasia-03-muziris-papyrus::original::000",
+      "note": "Second known-good for the same query. One query with three acceptable passages is three pairs, each scored on its own account, because a ranking that finds one of the three is not the same result as one that finds all three."
+    },
+    {
+      "id": "muziris-cargo-akananuru",
+      "unit_id": "muziris-cargo",
+      "query": "What did ships carry from Muziris?",
+      "query_lang": "en",
+      "expect_doc": "southasia-01-akananuru-149",
+      "expect_text_contains": "யவனர் தந்த வினைமாண் நன்கலம்",
+      "expect_lang": "oty",
+      "region": "south_asia",
+      "provenance": "archived_answer",
+      "source_ref": "eval/answer_runs/ (question 'What did ships carry from Muziris?')",
+      "observed_chunk_id": "southasia-01-akananuru-149::original::000",
+      "note": "The hardest of the three: Old Tamil verse reached from an English prose question. Part 4 scored Old Tamil 0.368 against 0.6-0.7 for other scripts."
+    },
+    {
+      "id": "china-describes-rome-weilue",
+      "unit_id": "china-describes-rome",
+      "query": "How did Chinese sources describe the Roman empire?",
+      "query_lang": "en",
+      "expect_doc": "eastasia-01-weilue",
+      "expect_text_contains": "大秦國一號犂靬",
+      "expect_lang": "lzh",
+      "region": "east_asia",
+      "provenance": "archived_answer",
+      "source_ref": "eval/answer_runs/ (15 runs)",
+      "observed_chunk_id": "eastasia-01-weilue::original::000",
+      "note": "The hero demo for Classical Chinese retrieval. Held back from being more than this: the record's original_text_excerpt is known corrupt against Chen Shou 1975 (PROGRESS.md, Da Qin block §4), so this pair asserts the characters that are on disk, not the characters that ought to be."
+    },
+    {
+      "id": "china-describes-rome-houhanshu",
+      "unit_id": "china-describes-rome",
+      "query": "How did Chinese sources describe the Roman empire?",
+      "query_lang": "en",
+      "expect_doc": "eastasia-02-hou-hanshu",
+      "expect_text_contains": "大秦王安敦遣使自日南徼外",
+      "expect_lang": "lzh",
+      "region": "east_asia",
+      "provenance": "archived_answer",
+      "source_ref": "eval/answer_runs/ (15 runs)",
+      "observed_chunk_id": "eastasia-02-hou-hanshu::original::000",
+      "note": "36 characters. The shortest non-English chunk in the corpus, and therefore the one whose retrieval is most sensitive to index size - watch it hardest on the W2b curve."
+    },
+    {
+      "id": "vimose-runes",
+      "query": "What do the Vimose runes say?",
+      "query_lang": "en",
+      "expect_doc": "scandinavia-03-vimose",
+      "expect_text_contains": "harja\naadagasu",
+      "expect_lang": "gmq-pro",
+      "region": "scandinavia",
+      "provenance": "archived_answer",
+      "source_ref": "eval/answer_runs/ (15 runs)",
+      "observed_chunk_id": "scandinavia-03-vimose::original::000",
+      "note": "PHASE2.md names the Vimose transliteration chunk explicitly. Proto-Norse in romanised transliteration, 110 characters."
+    },
+    {
+      "id": "aksum-trade-adulis",
+      "query": "What did Rome trade with the Kingdom of Aksum?",
+      "query_lang": "en",
+      "expect_doc": "africa-03-periplus-adulis",
+      "expect_text_contains": "Κολόην μεσόγειον πόλιν καὶ πρῶτον ἐμπόριον τοῦ ἐλέφαντος",
+      "expect_lang": "grc",
+      "region": "subsaharan_africa",
+      "provenance": "archived_answer",
+      "source_ref": "eval/answer_runs/ (16 runs)",
+      "observed_chunk_id": "africa-03-periplus-adulis::original::000",
+      "note": "The question that was correctly REFUSED at the Phase 1 exit gate while the system held the evidence. Its ranking is the thing to watch: if the passage ranks well here, the exit-gate failure was in answering and not in retrieval, which is the persevere verdict's central claim."
+    },
+    {
+      "id": "adulis-exports",
+      "query": "What was exported from Adulis?",
+      "query_lang": "en",
+      "expect_doc": "africa-03-periplus-adulis",
+      "expect_text_contains": "Φέρεται δὲ ἀπὸ τῶν τόπων ἐλέφας καὶ χελώνη καὶ ῥινόκερως",
+      "expect_lang": "grc",
+      "region": "subsaharan_africa",
+      "provenance": "archived_answer",
+      "source_ref": "eval/answer_runs/20260812T133627+0000-53afe41c.json",
+      "observed_chunk_id": "africa-03-periplus-adulis::original::002",
+      "note": "The other half of the discriminator: the rewording that WORKED against byte-identical evidence. PHASE2.md names the Adulis export chunk explicitly. observed_chunk_id is original::002 and this sentence now lives in original::005 - the drift that made chunk-id keying unusable is on this pair."
+    },
+    {
+      "id": "probe-greek-muziris",
+      "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
+      "query_lang": "grc",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "expect_text_contains": "Σήμυλλα καὶ Μανδαγόρα",
+      "expect_lang": "grc",
+      "region": "south_asia",
+      "roles": [
+        "original"
+      ],
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: greek query -> greek Periplus (Muziris)",
+      "note": "same_language. Can the model see Greek script at all."
+    },
+    {
+      "id": "probe-chinese-weilue",
+      "query": "大秦國在安息西，海西之地",
+      "query_lang": "lzh",
+      "expect_doc": "eastasia-01-weilue",
+      "expect_text_contains": "大秦國一號犂靬",
+      "expect_lang": "lzh",
+      "region": "east_asia",
+      "roles": [
+        "original"
+      ],
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: chinese query -> weilue Da Qin",
+      "note": "same_language. Literary Chinese, no word spaces."
+    },
+    {
+      "id": "probe-tamil-akananuru",
+      "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+      "query_lang": "oty",
+      "expect_doc": "southasia-01-akananuru-149",
+      "expect_text_contains": "யவனர் தந்த வினைமாண் நன்கலம்",
+      "expect_lang": "oty",
+      "region": "south_asia",
+      "roles": [
+        "original"
+      ],
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: tamil query -> Akananuru 149",
+      "note": "same_language. One Tamil chunk in the corpus, so a pass here is thin evidence and a fail is strong evidence."
+    },
+    {
+      "id": "probe-parthian-skz",
+      "query": "šāhān šāh Ērān ud Anēran Šābuhr",
+      "query_lang": "xpr",
+      "expect_doc": "persia-01-skz",
+      "expect_text_contains": "šāhān šāh Ērān ud Anēran",
+      "expect_lang": "xpr",
+      "region": "persia",
+      "roles": [
+        "original"
+      ],
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: parthian query -> SKZ",
+      "note": "same_language. Romanised Parthian, not its own script: tests whether scholarly transliteration survives the tokenizer."
+    },
+    {
+      "id": "probe-frankincense-kane",
+      "query": "the frankincense-bearing country and the port of Kane in Arabia",
+      "query_lang": "en",
+      "expect_doc": "arabia-01-periplus",
+      "expect_text_contains": "χώρας λιβανωτοφόρου",
+      "expect_lang": "grc",
+      "region": "arabia",
+      "lang_pool": "non_english",
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: english query -> greek source (frankincense at Kane)",
+      "note": "cross_lingual. The claim the project rests on: an English question reaching a Greek source with no English in the pool."
+    },
+    {
+      "id": "probe-adulis-ivory",
+      "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+      "query_lang": "en",
+      "expect_doc": "africa-03-periplus-adulis",
+      "expect_text_contains": "Κολόην μεσόγειον πόλιν καὶ πρῶτον ἐμπόριον τοῦ ἐλέφαντος",
+      "expect_lang": "grc",
+      "region": "subsaharan_africa",
+      "lang_pool": "non_english",
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: english query -> greek source (Adulis ivory)",
+      "note": "cross_lingual."
+    },
+    {
+      "id": "probe-roman-embassy",
+      "query": "an envoy sent by the king of Da Qin, the Roman empire",
+      "query_lang": "en",
+      "expect_doc": "eastasia-02-hou-hanshu",
+      "expect_text_contains": "大秦王安敦遣使自日南徼外",
+      "expect_lang": "lzh",
+      "region": "east_asia",
+      "lang_pool": "non_english",
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: english query -> chinese source (Roman embassy)",
+      "note": "cross_lingual. English to Literary Chinese, two writing systems apart."
+    },
+    {
+      "id": "probe-roman-provinces",
+      "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+      "query_lang": "en",
+      "expect_doc": "persia-01-skz",
+      "expect_text_contains": "šāhān šāh Ērān ud Anēran",
+      "expect_lang": "xpr",
+      "region": "persia",
+      "lang_pool": "non_english",
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: english query -> parthian source (Roman provinces)",
+      "note": "cross_lingual. The hardest case in the corpus."
+    },
+    {
+      "id": "probe-muziris-ports-en",
+      "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+      "query_lang": "en",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "expect_text_contains": "Βασιλείας δ᾽ ἐστὶν ἡ μὲν Τύνδις Κηπροβότρου",
+      "expect_lang": "grc",
+      "region": "south_asia",
+      "roles": [
+        "original"
+      ],
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: paired EN (pair muziris-ports)",
+      "pair": "muziris-ports",
+      "note": "The same-query-two-languages test from the Phase 1 plan. A pair is meaningful only against its partner: if the two members rank the same passage differently, the shared embedding space is doing less work than claimed."
+    },
+    {
+      "id": "probe-muziris-ports-grc",
+      "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
+      "query_lang": "grc",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "expect_text_contains": "Βασιλείας δ᾽ ἐστὶν ἡ μὲν Τύνδις Κηπροβότρου",
+      "expect_lang": "grc",
+      "region": "south_asia",
+      "roles": [
+        "original"
+      ],
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: paired GRC (pair muziris-ports)",
+      "pair": "muziris-ports",
+      "note": "Partner of probe-muziris-ports-en."
+    },
+    {
+      "id": "probe-pepper-cargo",
+      "query": "large ships loading pepper and malabathrum from Kottanarike",
+      "query_lang": "en",
+      "expect_doc": "southasia-02-periplus-muziris",
+      "expect_text_contains": "πέπερι",
+      "expect_lang": "grc",
+      "region": "south_asia",
+      "lang_pool": "non_english",
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: english query -> greek source (pepper cargo at Muziris)",
+      "note": "The only Part 6 probe that already carried expect_text_contains, and the reason this file asserts on characters rather than on ids."
+    },
+    {
+      "id": "tc-frankincense-harvest",
+      "query": "How was frankincense gathered and stored in southern Arabia?",
+      "query_lang": "en",
+      "expect_doc": "arabia-01-periplus",
+      "expect_text_contains": "τὰ δένδρα τὰ λιβανοφόρα",
+      "expect_lang": "grc",
+      "accept_aligned_translation": true,
+      "region": "arabia",
+      "provenance": "translation_case",
+      "source_ref": "translation_cases.json: frankincense-28-grc",
+      "note": "The passage was already chosen in Part 6; the query is written here to reach it. Targets §29, not the §27-28 chunks, so a pair that lands on the neighbouring section of the same document is a miss and says so."
+    },
+    {
+      "id": "tc-nabataean-epitaph",
+      "query": "a Nabataean tomb inscription cursing anyone who disturbs the grave",
+      "query_lang": "en",
+      "expect_doc": "arabia-03-jsnab17",
+      "expect_text_contains": "dnh qbrʾ dy ʿbd",
+      "expect_lang": "xna",
+      "accept_aligned_translation": true,
+      "region": "arabia",
+      "provenance": "translation_case",
+      "source_ref": "translation_cases.json: raqosh-xna",
+      "note": "Nabataean Aramaic in transliteration. 206 characters, and the chunk is mostly editorial framing - a hard retrieval target for an honest reason."
+    },
+    {
+      "id": "tc-jabal-dabub",
+      "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+      "query_lang": "en",
+      "expect_doc": "arabia-04-jabal-dabub",
+      "expect_text_contains": "rḥmn | rb | s¹mwt",
+      "expect_lang": "xsa",
+      "accept_aligned_translation": true,
+      "region": "arabia",
+      "provenance": "translation_case",
+      "source_ref": "translation_cases.json: jabal-dabub-xsa",
+      "note": "79 characters of Sabaic in transliteration - the shortest chunk in the corpus. If the W2b curve has a cliff, this is where it should appear first."
+    },
+    {
+      "id": "tc-muziris-papyrus-valuation",
+      "query": "the valuation of a cargo of nard and ivory shipped on the Hermapollon",
+      "query_lang": "en",
+      "expect_doc": "southasia-03-muziris-papyrus",
+      "expect_text_contains": "εἰς τὰς ἐπὶ Κόπτου δημοσίας παραλημπτικὰς ἀποθήκας",
+      "expect_lang": "grc",
+      "accept_aligned_translation": true,
+      "region": "south_asia",
+      "provenance": "translation_case",
+      "source_ref": "translation_cases.json: muziris-papyrus-grc",
+      "note": "Documentary Greek, the profile that stands at n=1 in the Phase 1 confidence set."
+    },
+    {
+      "id": "au-hoby-silver",
+      "query": "Roman silver drinking cups found in a Danish chieftain's grave",
+      "query_lang": "en",
+      "expect_doc": "scandinavia-01-hoby-treasure",
+      "expect_text_contains": "Roman silver table service",
+      "expect_lang": "en",
+      "region": "scandinavia",
+      "provenance": "authored",
+      "note": "Written in Block B; no Phase 1 query reaches this document. Re-anchored 2026-08-13 from the catalogue-legend chunk to the description chunk, which is the passage that answers the query; ruled on by the project owner."
+    },
+    {
+      "id": "au-illerup-deposit",
+      "query": "Roman weapons and equipment deposited in a Danish bog",
+      "query_lang": "en",
+      "expect_doc": "scandinavia-04-illerup-adal",
+      "expect_text_contains": "spear shafts",
+      "expect_lang": "en",
+      "region": "scandinavia",
+      "provenance": "authored",
+      "note": "Written in Block B. Ruled on by the project owner 2026-08-13."
+    },
+    {
+      "id": "au-silla-glass",
+      "query": "How did Mediterranean glassware reach Korea?",
+      "query_lang": "en",
+      "expect_doc": "eastasia-03-hwangnam-glass",
+      "expect_text_contains": "Syrian workshop origin",
+      "expect_lang": "en",
+      "region": "east_asia",
+      "provenance": "authored",
+      "note": "Written in Block B. Query rewritten 2026-08-13 after measurement showed it reused its own target's wording; ruled on by the project owner."
+    },
+    {
+      "id": "au-oc-eo-medallion",
+      "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+      "query_lang": "en",
+      "expect_doc": "seasia-01-oc-eo-medallion",
+      "expect_text_contains": "imitating a Roman aureus of Antoninus Pius",
+      "expect_lang": "en",
+      "region": "southeast_asia",
+      "provenance": "authored",
+      "note": "Written in Block B. Re-anchored 2026-08-13 from the catalogue-legend chunk to the description chunk, which is the passage that answers the query; ruled on by the project owner."
+    },
+    {
+      "id": "au-khao-sam-kaeo",
+      "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+      "query_lang": "en",
+      "expect_doc": "seasia-03-khao-sam-kaeo",
+      "expect_text_contains": "yellow carnelian",
+      "expect_lang": "en",
+      "region": "southeast_asia",
+      "provenance": "authored",
+      "note": "Written in Block B. Query rewritten 2026-08-13 after measurement showed it reused its own target's wording; ruled on by the project owner."
+    },
+    {
+      "id": "au-pattanam-finds",
+      "query": "Mediterranean amphora sherds excavated on the Kerala coast",
+      "query_lang": "en",
+      "expect_doc": "southasia-04-pattanam",
+      "expect_text_contains": "Amphora",
+      "expect_lang": "en",
+      "region": "south_asia",
+      "provenance": "authored",
+      "note": "Written in Block B. The Pattanam record is the corpus's one contested identification (Muziris), so its retrieval behaviour is worth a pair of its own. Kept at its original wording 2026-08-13. The lower-overlap rewrite ('Roman-period imports at Indian west-coast excavations') is answerable by the Periplus Muziris import list, so it traded 0.33 for an ambiguity."
+    },
+    {
+      "id": "au-ezana-titles",
+      "query": "the royal titles claimed by the king of Aksum",
+      "query_lang": "en",
+      "expect_doc": "africa-01-ezana-stone",
+      "expect_text_contains": "king of the Aksumites, Himyarites and Raeidan",
+      "expect_lang": "en",
+      "region": "subsaharan_africa",
+      "provenance": "authored",
+      "note": "Written in Block B. Ruled on by the project owner 2026-08-13."
+    },
+    {
+      "id": "au-shapur-plate",
+      "query": "a royal hunt scene on Sasanian metalwork",
+      "query_lang": "en",
+      "expect_doc": "persia-02-silver-plate",
+      "expect_text_contains": "Gilded silver plate",
+      "expect_lang": "en",
+      "region": "persia",
+      "provenance": "authored",
+      "note": "Written in Block B. Query rewritten 2026-08-13: the original reused the chunk's own opening clause (0.86 overlap). A first rewrite reached 0.00 by asking about Sasanian royal self-presentation generally, which persia-03-coin answers equally well — an ambiguous pair scores correct retrieval as failure, so unambiguity wins over overlap. The hunt scene is unique to this record."
+    },
+    {
+      "id": "au-gudme-hoard",
+      "query": "What accompanied the bracteate treasure found on Funen?",
+      "query_lang": "en",
+      "expect_doc": "scandinavia-02-gudme-hoard",
+      "expect_text_contains": "siliquae",
+      "expect_lang": "en",
+      "region": "scandinavia",
+      "provenance": "authored",
+      "note": "Written in Block B. Query rewritten 2026-08-13 for the same reason. 'How much Roman coinage ended up in southern Scandinavia?' is answered as well by illerup-adal's 194 denarii; the bracteates are Gudme's alone."
+    },
+    {
+      "id": "probe-tamil-akananuru-en",
+      "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+      "query_lang": "en",
+      "expect_doc": "southasia-01-akananuru-149",
+      "expect_text_contains": "யவனர் தந்த வினைமாண் நன்கலம்",
+      "expect_lang": "oty",
+      "region": "south_asia",
+      "lang_pool": "non_english",
+      "provenance": "retrieval_probe",
+      "source_ref": "retrieval_probes.json: english query -> old tamil source (Akananuru 149)",
+      "note": "The English->Tamil probe ruling 1 requires. Its partner probe-tamil-akananuru asks the same record in its own language and ranks 1; this one asks in English against a pool with no English in it. UNMEASURED as of 2026-08-14 - it was added after the last run, so no rank exists for it yet, and the gate's arithmetic must be restated once it has one."
+    }
+  ],
+  "on_units": "Block C ruling 1 (BLOCK_C_RULINGS.md): a query with several acceptable targets is ONE scored unit, scored on its best acceptable target, with per-unit COVERAGE - how many of its targets reached the top 6 - reported beside it and never gated. Two units are multi-target: `muziris-cargo` (3 pairs) and `china-describes-rome` (2). The unit is declared, not inferred from identical query strings, because a denominator inferred from text nobody declared changes the moment a query is edited by a character; the loader asserts both directions - one unit means one query text, and pairs sharing a query text must share a unit. Cost of the ruling, to be printed beside any G2 number: `muziris-cargo-akananuru` at rank 309 is the corpus's one genuinely broken cross-lingual link and no longer counts toward the gate.",
+  "on_aligned_alternates": "Block C ruling 2: a pair carrying `accept_aligned_translation` also accepts its document's own published translation of the SAME section - a correct answer to an English query, and not what the pair was written to refuse. Landing on a NEIGHBOURING section is still a miss, which is the discrimination tc-frankincense-harvest was authored to make. The alternate is computed at scoring time by answer.align.pair_chunks and is never written down here: a hand-copied alternate is a second copy that drifts from the record it came from, which is the same failure as keying on a chunk id. Accepted only where that module reports the alignment ground as 'section'; the ground is recorded per pair in every run. Cross-lingual reach is measured instead by the `lang_pool: non_english` probes, where an English translation cannot satisfy the pair by construction."
+}

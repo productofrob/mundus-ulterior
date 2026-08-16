@@ -472,6 +472,230 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
 
 
 # --------------------------------------------------------------------------
+# Ranking pairs (W2a)
+# --------------------------------------------------------------------------
+
+@dataclass
+class RankingPair:
+    id: str
+    query: str
+    query_lang: str
+    expect_doc: str
+    # The assertion is the characters, not the id. Chunk ids move under a
+    # re-ingest: africa-03-periplus-adulis was re-chunked on 2026-08-13 and the
+    # Greek exports sentence the archived answers name as `original::002` now
+    # lives in `original::005`. A pair keyed on the id would keep passing while
+    # measuring ranking against the wrong passage — which is the doc-id-proxy
+    # failure eval/gold/retrieval_probes.json was created in response to.
+    expect_text_contains: str
+    provenance: str
+    region: str
+    # Block C ruling 1 (BLOCK_C_RULINGS.md): a query with several acceptable
+    # targets is ONE scored unit, not N. The unit is DECLARED here rather than
+    # inferred by grouping identical query strings, because a unit inferred from
+    # text nobody declared changes the gate's denominator the moment somebody
+    # edits a query by a character. Absent, a pair is its own unit.
+    unit_id: str | None = None
+    # Block C ruling 2: this pair also accepts its document's own published
+    # translation of the SAME section — computed at scoring time by
+    # answer.align.pair_chunks, never hand-copied here, and only where that
+    # module reports the alignment ground as "section". Declared per pair, so
+    # extending the ruling beyond the four `translation_case` pairs it was made
+    # for is a deliberate edit to this file and not a silent consequence.
+    accept_aligned_translation: bool = False
+    expect_lang: str | None = None
+    langs: list[str] | None = None
+    roles: list[str] | None = None
+    pair: str | None = None
+    source_ref: str = ""
+    # Provenance only. Never asserted on, and never used to select a chunk. The
+    # ranking check reports how many of these still name a chunk that exists, so
+    # that re-chunking drift is a printed number rather than a silent pass.
+    observed_chunk_id: str | None = None
+    note: str = ""
+
+    @property
+    def unit(self) -> str:
+        """The scored unit this pair belongs to. Its own id, if it declares none."""
+        return self.unit_id or self.id
+
+
+PROVENANCES = {"archived_answer", "retrieval_probe", "translation_case", "authored"}
+
+_PAIR_REQUIRED = {"id", "query", "query_lang", "expect_doc",
+                  "expect_text_contains", "provenance", "region"}
+_PAIR_OPTIONAL = {"expect_lang", "langs", "lang_pool", "roles", "pair",
+                  "source_ref", "observed_chunk_id", "note",
+                  "unit_id", "accept_aligned_translation"}
+
+
+def load_ranking_pairs(path: Path | None = None) -> list[RankingPair]:
+    """The W2a ranking gold set.
+
+    Same strictness as every other loader here, and one rule of its own: a pair
+    must carry `expect_text_contains`. It is required rather than optional
+    because the whole file exists to measure ranking, and a pair that asserts
+    only `expect_doc` passes when the retriever returns the wrong passage of the
+    right document — which for a five-chunk document is most of the ways it can
+    be wrong.
+    """
+    path = path or GOLD_DIR / "ranking_pairs.json"
+    data = _read(path)
+    pools = data.get("pools", {})
+    pairs: list[RankingPair] = []
+    seen: set[str] = set()
+
+    for i, raw in enumerate(data.get("pairs", [])):
+        where = f"{path.name} pair[{i}]"
+        _check_keys(raw, _PAIR_REQUIRED, _PAIR_OPTIONAL, where)
+
+        if raw["id"] in seen:
+            raise GoldSetError(f"{where}: duplicate pair id {raw['id']!r}")
+        seen.add(raw["id"])
+
+        if raw["provenance"] not in PROVENANCES:
+            raise GoldSetError(
+                f"{where}: provenance '{raw['provenance']}' is not one of "
+                f"{sorted(PROVENANCES)}. The cohort is reported separately in "
+                f"every ranking run, so an unrecognised one would drop a pair "
+                f"out of the per-cohort table while leaving it in the total."
+            )
+        if not str(raw["expect_text_contains"]).strip():
+            raise GoldSetError(
+                f"{where}: expect_text_contains is empty. An empty substring is "
+                f"in every chunk, so the pair would assert only expect_doc "
+                f"while looking like it asserted more."
+            )
+        if "langs" in raw and "lang_pool" in raw:
+            raise GoldSetError(
+                f"{where}: set either 'langs' or 'lang_pool', not both — two "
+                f"candidate pools for one pair is ambiguous."
+            )
+        langs = raw.get("langs")
+        if "lang_pool" in raw:
+            pool = pools.get(raw["lang_pool"])
+            if pool is None:
+                raise GoldSetError(
+                    f"{where}: lang_pool '{raw['lang_pool']}' is not defined in "
+                    f"'pools' ({sorted(pools)})"
+                )
+            langs = list(pool["langs"])
+
+        if langs is not None and raw.get("expect_lang") and raw["expect_lang"] not in langs:
+            raise GoldSetError(
+                f"{where}: expect_lang '{raw['expect_lang']}' is excluded by "
+                f"this pair's own candidate pool {sorted(langs)}, so the pair "
+                f"can never be satisfied. This is how a cross-lingual pair gets "
+                f"written against an English translation and then filtered out "
+                f"of its own answer."
+            )
+
+        if "accept_aligned_translation" in raw:
+            if not isinstance(raw["accept_aligned_translation"], bool):
+                raise GoldSetError(
+                    f"{where}: accept_aligned_translation must be true or false, "
+                    f"not {raw['accept_aligned_translation']!r}. A truthy string "
+                    f"would turn the ruling on for a pair that never declared it."
+                )
+            if raw["accept_aligned_translation"] and raw.get("expect_lang") == "en":
+                raise GoldSetError(
+                    f"{where}: accept_aligned_translation on an English target. "
+                    f"The alternate this admits is the document's own English "
+                    f"translation, so on an English target it either accepts the "
+                    f"target twice or accepts an unrelated chunk. Ruling 2 is "
+                    f"about reaching the right SECTION across a language "
+                    f"boundary; there is no boundary here."
+                )
+
+        pairs.append(
+            RankingPair(
+                id=raw["id"],
+                query=raw["query"],
+                query_lang=raw["query_lang"],
+                expect_doc=raw["expect_doc"],
+                expect_text_contains=raw["expect_text_contains"],
+                provenance=raw["provenance"],
+                region=raw["region"],
+                unit_id=raw.get("unit_id"),
+                accept_aligned_translation=raw.get(
+                    "accept_aligned_translation", False),
+                expect_lang=raw.get("expect_lang"),
+                langs=langs,
+                roles=raw.get("roles"),
+                pair=raw.get("pair"),
+                source_ref=raw.get("source_ref", ""),
+                observed_chunk_id=raw.get("observed_chunk_id"),
+                note=raw.get("note", ""),
+            )
+        )
+
+    if not pairs:
+        raise GoldSetError(f"{path}: no ranking pairs defined")
+
+    # PHASE2_PLAN.md B1: "Aim for >=20, spread across regions and languages — a
+    # gold set that is 15 Greek pairs measures Greek." Both halves are enforced,
+    # because the count alone is the easier half to satisfy dishonestly.
+    if len(pairs) < 20:
+        raise GoldSetError(
+            f"{path.name}: {len(pairs)} pairs; W2a's floor is 20 (PHASE2_PLAN.md B1)."
+        )
+    regions = {p.region for p in pairs}
+    if len(regions) < 7:
+        raise GoldSetError(
+            f"{path.name}: pairs cover {len(regions)} region(s) {sorted(regions)}; "
+            f"the corpus spans 7 and a baseline over a subset is not a baseline "
+            f"for the corpus."
+        )
+
+    # ----------------------------------------------------------------------
+    # Block C ruling 1: the declared unit and the actual query text must agree,
+    # in BOTH directions. Either direction failing silently moves the gate's
+    # denominator, and 29 units against 32 pairs is the difference between a
+    # G2 that needs three fixes and one that cannot pass at all.
+    # ----------------------------------------------------------------------
+    by_unit: dict[str, list[RankingPair]] = {}
+    for p in pairs:
+        by_unit.setdefault(p.unit, []).append(p)
+
+    for unit, members in by_unit.items():
+        queries = {m.query for m in members}
+        if len(queries) > 1:
+            raise GoldSetError(
+                f"{path.name}: unit {unit!r} groups pairs with different query "
+                f"text: {sorted(queries)}. A unit is one asking of one question "
+                f"scored once; grouping two questions under it would score the "
+                f"harder one away."
+            )
+
+    by_query: dict[str, list[RankingPair]] = {}
+    for p in pairs:
+        by_query.setdefault(p.query, []).append(p)
+    for query, members in by_query.items():
+        units = {m.unit for m in members}
+        if len(members) > 1 and len(units) > 1:
+            raise GoldSetError(
+                f"{path.name}: {len(members)} pairs share the query {query!r} "
+                f"but declare {len(units)} units {sorted(units)}. Under Block C "
+                f"ruling 1 one query is one scored unit; leaving a new pair "
+                f"undeclared would add a unit to the denominator without anyone "
+                f"deciding to. Give them all the same unit_id."
+            )
+
+    # A paired pair is only meaningful against its partner — same rule as probes.
+    partners: dict[str, int] = {}
+    for p in pairs:
+        if p.pair:
+            partners[p.pair] = partners.get(p.pair, 0) + 1
+    for name, count in partners.items():
+        if count != 2:
+            raise GoldSetError(
+                f"{path.name}: pair group {name!r} has {count} member(s); a "
+                f"paired pair compares exactly two askings of the same question"
+            )
+    return pairs
+
+
+# --------------------------------------------------------------------------
 # The Part 8 floor
 # --------------------------------------------------------------------------
 

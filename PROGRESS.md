@@ -4375,3 +4375,5544 @@ it" is invisible otherwise, and three separate questions would have been
 reopened from scratch.
 
 **81 assertions, 21/21 mutations.**
+
+---
+
+# A4 — starting point (for the next thread)
+
+**State at commit `013ae4a`, 2026-08-13.** Block A is roughly half done.
+
+```
+W1 placements: 11 placed + 1 declared unplaceable = 12/24 considered
+               10/17 with a named place, 1 contested
+placements: 13   locatable: 11   cached ids: 10
+entries: 10  (with point: 10, with a bbox: 10, of which non-degenerate: 6)
+Every placement resolves to a cached, dated gazetteer entry.
+81 assertions, 21/21 mutations, ingest.verify and gazetteer --check both at 0.
+```
+
+13 placements across 11 documents; 11 are locatable and they resolve to **10**
+distinct ids, because **Aksum (39303) is used twice** — as `africa-01`'s findspot
+and as the Aksumite coin's `origin`. That is the two-block design working, and it
+is the first edge on the map.
+
+## What A4 is
+
+`subject_places` for the **7 literary records**: Periplus ×3
+(`arabia-01`, `southasia-02`, `africa-03`), `eastasia-01-weilue`,
+`eastasia-02-hou-hanshu`, `southasia-01-akananuru-149`,
+`southasia-03-muziris-papyrus`.
+
+This is where the dot map becomes the network. The Periplus records will each
+carry **many** places; that is the point, and it is why `subject_places` exists.
+
+## The one design question A1 deliberately left open
+
+**`subject_places` has no `role` or direction key.** A5 renders trade texts as
+*edges between subject places*, and an edge needs to know origin from
+destination. Adding a vocabulary at A1 would have been guessing; adding one at
+A4, with the seven records in front of you, is a decision with evidence.
+
+Decide it **before** editing the seven, not after. Candidate axis: whether the
+text describes a place as a source of goods, a destination, a waypoint, or
+merely mentions it. `origin_places` already establishes the precedent that a
+distinct relation earns a distinct block rather than a free-text note.
+
+## The method, which is now proven and should not be re-derived
+
+1. **Search the snapshot, never the website.** `--find` and `--survey` read the
+   dated dump the cache is built from.
+2. **A name match is not an identification. The coordinate decides.** Every id
+   so far was accepted on its coordinate and feature types.
+3. **Title search alone is unreliable.** Pleiades titles Adulis **"Adouli"** and
+   Aksum **"A(u)xoume"**; three searches on the corpus's own vocabulary missed
+   both. Pass `--names-dump` and search ancient forms.
+4. **A bare number searches the id column** in both commands.
+5. **Deprecated records resolve.** `--check` fails on them and `--survey` prefixes
+   them `!DEPRECATED!`.
+6. **Every placement carries a note** recording what it was confirmed against —
+   standing decision of 2026-08-12.
+7. **Record the rejections too.** Three ids were examined and refused (Aden for
+   the coin, 837 for the plate, 427224440 for Hegra); each refusal is written
+   into a note so the question is not reopened from scratch.
+
+## The trap A4 will meet immediately
+
+**Pleiades has already adopted contested identifications.** `50146 Muziris` sits
+at 10.154/76.213 — Pattanam — and is marked `precise`, with a *degenerate* bbox.
+Its `subject_places` entry in `southasia-02-periplus-muziris` will therefore
+assert a place whose location the corpus itself treats as open. Read
+`southasia-04-pattanam`'s `findspot_places` note before writing it; the two must
+not contradict each other.
+
+## Commands
+
+```powershell
+cd "C:\Users\chemi\Documents\Claude\Museums Project Number 1\mundus-ulterior"
+$d = "$env:USERPROFILE\Downloads\pleiades-places-20260810.csv.gz"
+$n = "$env:USERPROFILE\Downloads\pleiades-names-20260810.csv.gz"
+
+python -m ingest.gazetteer --survey data\place_survey_a4.txt --dump $d --names-dump $n
+python -m ingest.verify
+python -m ingest.gazetteer --refresh --dump $d
+python -m ingest.gazetteer --check
+```
+
+No venv, no `.env`, no Docker, no gateway. Block A spends nothing.
+
+## Still outstanding elsewhere in Block A
+
+| item | note |
+| --- | --- |
+| GeoNames reader | blocks Gyeongju, Óc Eo ×2, Khao Sam Kaeo. **Start with `--inspect` on one country file** — they are tab-separated with no header row, so header discovery does not transfer |
+| Pattanam's sceptical citation | currently provisional and says so in its own text; needs a published source |
+| ŠKZ ground_citation | expand with the full title of Huyse 1999, which names the Ka'ba-ye Zartosht |
+| A5 | region view becomes place view; `has_area` vs `has_extent` already distinguishes a point place from a real extent |
+| A6 | date-overlap check. Motivating case on disk: the Ka'ba's `timePeriodsKeys` skip the Roman era while the ŠKZ is 3rd-century |
+| `PHASE2_PLAN.md` | its worked example still carries the wrong Adulis id (`39274195`); worth correcting at source |
+
+---
+
+# A4 — the role vocabulary, and two findings from reading the sources (2026-08-13)
+
+The open design question is closed and the survey is built. **No record is
+edited yet**, because no id has been resolved yet and none may be written from
+memory. The survey run is the next thing, and it is yours.
+
+```
+95 assertions (was 81), 26/26 mutations (was 21), ingest.verify clean.
+Corpus unchanged: 24 documents, 56 chunks, 13 placements across 11 documents.
+```
+
+## The decision: `role`, a closed vocabulary on `subject_places`
+
+`source → focus → destination`, from which A5 derives every edge. Five values:
+`focus`, `source`, `destination`, `waypoint`, `mentioned`. Full reasoning in
+`data/seed_corpus/PLACES.md`; the three rules worth repeating here:
+
+- **Required on `subject_places`, forbidden on the other two blocks.** Forbidden
+  because `findspot_places` and `origin_places` already name their relation, and
+  a role beside them is a second name for one fact — free to disagree with the
+  first. Required with **no default**, for the reason `expect_untranslatable`
+  has none: `mentioned` is the positive claim that the text names a place and
+  describes nothing moving through it, and a claim may not arrive by omission.
+  A default of `mentioned` is precisely how a half-edited record would silently
+  lose its edges, so that is the mutation that verifies the guard.
+- **At most one `focus` per block**, or `source → focus` does not say which focus.
+- **A directional role requires a `focus`**, or it names one end of an edge and
+  no other. A block of nothing but `mentioned` needs none and must not be made
+  to invent one.
+
+Named `focus` and not `anchor`: this corpus is largely sailing manuals and
+Periplus §4 discusses where ships anchor. That is the *two questions under one
+name* defect, which this repository has now paid for four times, seen coming a
+fifth.
+
+**Known limit, accepted deliberately:** roles carry no ordering, so a multi-leg
+route flattens. The alternative considered was a separate `subject_routes` block
+of explicit `{from, to, what_moved}` relations — more expressive, and the right
+answer if ordering ever has to be drawn. Recorded in `PLACES.md` rather than
+left to be rediscovered.
+
+**Inclusion rule: every named place is placed, each carrying its role**, not the
+trade-bearing ones only. `mentioned` is what makes that affordable, and it keeps
+the weak entries visible instead of turning them into invisible omissions —
+the same argument as `no_places_reason` and the three recorded id rejections.
+
+## Two findings, both from reading the sources rather than the titles
+
+### 1. Schoff's English and the Greek name different places
+
+§54 Greek reads `τοῖς ἀπὸ τῆς Ἀριακῆς … πλοίοις` — ships coming from **Ariake**,
+the northern Konkan coast. Schoff 1912 prints "cargoes from **Arabia**". Two
+more in the same sections: Greek `Λιμυρική` against Schoff's "Damirica", and
+`Τοπαρόν / Τυραννοσβόας` against "Togarum / Aurannohoas".
+
+Ariake and Arabia are a thousand miles apart and draw a different trade network.
+**The placement follows the original, not the reference translation**, and the
+divergence goes in the entry's note so the next reader does not correct it back.
+
+This is a Part 6 lesson arriving in W1. `chrf_ref` treats a published
+translation as ground truth; a published translation is itself an edition with
+readings in it. Worth carrying to W2.
+
+### 2. The Muziris papyrus does not name Muziris
+
+The excerpted text (recto col. ii 2-8, verso col. ii) names **Koptos** twice,
+**Alexandria** once, and the Ganges adjectivally. Muziris appears in our title,
+our `notes`, and the papyrus's conventional name — that is, in editorial prose.
+
+Placing Muziris as this record's focus would be the **Vimose defect exactly**: a
+claim carried by our own scaffolding rather than by the text, arriving
+downstream attached to a citation. Two honest options, and the choice is
+curatorial:
+
+- **(a)** focus `Koptos`, destination `Alexandria`, source `Ganges`. Correct
+  today; the record contributes the Egyptian leg and no Indian endpoint.
+- **(b)** extend the excerpt to a passage of SB 18 13167 that does name the
+  Indian port, then place it. Better record; costs a source-recovery pass
+  against papyri.info, the same shape as the Part 3b recoveries.
+
+Written for (a) in the survey file, so nothing blocks. (b) supersedes it cleanly.
+
+## What is on disk
+
+| file | change |
+| --- | --- |
+| `ingest/places.py` | `ROLES`, `DIRECTIONAL_ROLES`, `Place.role`, `Place.draws_edge`, `_parse_role`, `_check_block_roles` |
+| `ingest/test_places.py` | `test_roles` — 15 assertions; the shared fixture now defaults to a block that takes no role |
+| `scripts/mutate_places.py` | 5 new mutations, each verified to fail the guard it targets |
+| `data/seed_corpus/PLACES.md` | the `role` section, the naming argument, the ordering limit, the inclusion rule |
+| `data/place_survey_a4.txt` | 238 terms in 7 groups, ancient and Greek forms first, each with its proposed role and both findings at the foot |
+
+## Next, in order
+
+1. Run the survey (below). It is 238 terms in one pass over the dump — slower
+   than A2's 16, so expect a minute or two rather than seconds.
+2. Settle Finding 2 — option (a) or (b) — before `southasia-03` is written.
+3. Write the seven records from the survey output. Accept every id on its
+   **coordinate and feature types**, never its name; record in each note what it
+   was confirmed against, and record the rejections too.
+4. `--refresh`, then `--check`, then `verify`.
+
+Expect a large `regional` share among the results. `Da Qin`, the Chera and
+Pandya kingdoms, Limyrike, Barbaria and the Yavanas are polities and peoples
+rather than settlements, and several of the §53 market-towns have never been
+located. A sparser map is the correct answer, and G1 criterion 1 counts records
+considered, not pins drawn.
+
+```powershell
+cd "C:\Users\chemi\Documents\Claude\Museums Project Number 1\mundus-ulterior"
+$d = "$env:USERPROFILE\Downloads\pleiades-places-20260810.csv.gz"
+$n = "$env:USERPROFILE\Downloads\pleiades-names-20260810.csv.gz"
+
+python -m ingest.test_places            # 95 assertions
+python scripts\mutate_places.py         # 26 mutations
+python -m ingest.gazetteer --survey data\place_survey_a4.txt --dump $d --names-dump $n
+```
+
+## A4 — the survey ran, and the corpus was the thing that was wrong (2026-08-13)
+
+238 terms, 7,300 place hits, **no id written**. The survey did its job, but what
+it mostly established is that three of the seven records did not contain the
+text they claimed to.
+
+### FINDING 3 — 20% of the Periplus Greek was missing, silently
+
+Four places named in Schoff's English had no counterpart in the Greek. That was
+not an edition difference. Measured against the same Greek Wikisource text of
+Müller, *GGM* I (1855) that all three records name in `citation_original`:
+
+| | §4 | §5 | §6 | §27 | §28 | §29 | §53 | §54 | §55 | §56 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| present | **58.9%** | 100% | **70.5%** | **84.5%** | **86.0%** | **75.1%** | 100% | 100% | **59.1%** | 100%* |
+
+**1,479 characters of Koine Greek absent from the corpus**, in six sections,
+four of them truncated at the end and two with internal sentences dropped.
+(\*§56 is complete but had two characters altered — `πολύς` for Müller's
+`πολὺς` — so "verbatim" was not quite true there either.)
+
+Recovered by `scripts/recover_periplus_a4.py`, which rebuilds each excerpt from
+the cited source and is idempotent. Greek retrieval-eligible chunks **11 → 14**.
+
+**Why it stayed invisible for four days of work on these very records.** Three
+things at once, and no one of them is the culprit:
+
+1. `original_text_note` said "wording is otherwise unaltered" — true of every
+   word present, and silent about the ones that were not. A note about
+   *fidelity* was read as a note about *completeness*.
+2. Part 6 replaced the reference translations with **complete** Schoff, so the
+   two sides of each record drifted further apart at the exact moment they were
+   being reconciled.
+3. **Nothing in the pipeline compares an excerpt against its own cited source.**
+   `ingest/verify` checks internal consistency, and internal consistency is
+   precisely what a uniformly short excerpt has. This is the standing lesson
+   about proxies, one level up: every check was on the record, none on the
+   record's relationship to the thing it cites.
+
+The rules that would have caught it were all there and all pointed inward. The
+normalisation used to rebuild was validated by reproducing §5, §53 and §54 —
+which survived intact — character for character; a rule set that cannot
+reproduce the text already on disk is not safe to rebuild the rest with.
+
+**Three consequences beyond A4**, worst first:
+
+- **`align.py` reported `ground="section"` on these pairs.** A §4 Greek chunk
+  58.9% the length of its §4 English is the *strong* pairing claim, made over
+  materially different text. The ground was honest about its evidence; the
+  evidence was wrong.
+- **`chrf_ref` is confounded for exactly these records** — a machine translation
+  of a short Greek chunk scored against a full published English section — and
+  PROGRESS.md calls `chrf_ref` the only accuracy signal the project has. It does
+  **not** explain the Part 6 numbers on its own (§28 was 86% present and scored
+  0.275; §4 was 58.9% present and scored 0.427), but it is an uncontrolled
+  variable that nobody knew was in the measurement. **Re-run Part 6 on the three
+  Periplus records after re-ingest and compare.**
+- A Part 7 citation of Schoff's Alalaei or Diodorus sentence had **no Greek to
+  resolve to**. The two `pointer` records are unreachable by construction; this
+  was reachable and wrong.
+
+### FINDING 2, resolved — the Muziris papyrus now names Muziris
+
+The excerpt ran to recto col. ii line 8. **Μουζεῖριν** is at line 12 — *"the
+loan contracts made at Muziris"*. Extended to line 14 from the DDbDP
+transcription already cited. Two lacunae of unstated length at line 12 are
+marked `...` rather than closed up silently, and the note says so.
+
+Until today this record named its port in its title, its `notes` and the
+papyrus's conventional name, and **nowhere in its own text** — the Vimose defect
+exactly, and it would have arrived attached to a citation.
+
+Outstanding: `reference_translation` still covers the old excerpt only.
+
+### FINDING 1, confirmed against the source
+
+§54's Greek reads `ἀπὸ τῆς Ἀριακῆς` where Schoff prints "from Arabia". Also
+`Λιμυρική` for "Damirica" and `Τοπαρόν / Τυραννοσβόας` for "Togarum /
+Aurannohoas". Placements follow the original; Ariake has two candidate ids and
+the choice is in the second survey.
+
+### What the survey did settle
+
+Confident, coordinate-checked, not yet written: Adulis 39271, Ptolemais Theron
+39409, Oreine 39404, Koloe 39363, Aksum 39303 · Kane 39355, Eudaimon Arabia
+39269, Orneon 39405, Mouza 39390, Sachalites 39419 · Muziris 50146, Kalliena
+50023, Semylla 50261, Palaipatmai 50196, Byzantion 49929, Toparon 50308,
+Tyrannosboas 50315, Sesekreienai 50264, Aigidion 49842, Kaineiton 50015, Naoura
+50160, Tyndis 50312, Nelkynda 50165, Bakare 49890, Limyrike 50092, Cottonara
+49953, Barygaza 59737 · Periyar 50234 (as `Pseudostomos`) · Coptos 786010.
+
+**Five decoys a name match would have taken**, each to be recorded as a
+rejection in the note that displaces it:
+
+| decoy | what it actually is |
+| --- | --- |
+| 746710 "Arabia Eudaemon" | a peninsula label at 28.96/35.35 — north-west Arabia, not Aden |
+| 471890 "Barbaria" | Barbagia, in **Sardinia** |
+| 39295 "Arsinoe" | a Red Sea station at 12.71/43.25 — right region, wrong Arsinoe |
+| 785982 "Bakare" | an Egyptian **mine** at 25.21/34.27 |
+| 246333 "Chera" | a settlement in **Spain** |
+
+And `49929 Byzantion` at 16.503/73.340 is a Konkan market-town, not
+Constantinople — the case where the coordinate rule pays for itself outright.
+
+**A class the schema cannot currently express.** `Kyeneion` (40186) and
+`Sabbatha` (906027) both resolve in Pleiades and are marked **UNLOCATED**, so
+they carry no coordinate and `--check` would fail on them. There is no way to
+say *"the gazetteer holds this place and does not know where it is"* — it is
+`regional` with no id and a note naming the id, which is honest but throws away
+the fact that the gazetteer has an entry. **A6 should decide whether that
+deserves a state.**
+
+### Next
+
+1. `python -m ingest.run_ingest` then `run_embed` — the recovery changed six
+   chunks, so they come back pending. Then `retrieve.crosslingual_check`.
+2. `--survey data\place_survey_a4b.txt` — the second round, covering the ids
+   seen only as names, the five places the recovery just brought into scope,
+   and the Ariake choice.
+3. Re-run `eval.run_translation_check` on the three Periplus records and compare
+   `chrf_ref` against the Part 6 table. This is the measurement Finding 3 makes
+   available and it was not previously possible.
+4. Then write the seven records.
+
+## A4 — the re-ingest, and the bug the recovery exposed (2026-08-13)
+
+Re-ingest and re-embed clean: **24 documents → 59 chunks → 57 embedded**, 12 chunks
+re-embedded in one batched request, **11/11 retrieval probes still at rank 1**.
+Greek eligible chunks 11 → 14. The Adulis cross-lingual probe now lands on the
+recovered §4 sentence (`Καὶ κατ᾽ αὐτὴν τὴν ἐν τῇ Ὀρεινῇ ἤπειρον…`, sim 0.524),
+which is text that was not in the corpus this morning.
+
+### `align._merge` had never run, and was written for the wrong type
+
+Step 2 crashed:
+
+```
+AttributeError: 'ChunkRow' object has no attribute 'char_end'
+  answer/align.py:94 in _merge
+```
+
+`align.py` is imported by **both** Part 6 and Part 7, and they pass different
+row types:
+
+| caller | type | offsets |
+| --- | --- | --- |
+| `answer/answer_store.py` (Part 7) | has `char_start`/`char_end` — `cite.py` resolves quotations to characters on disk | yes |
+| `answer/store.py` (Part 6) | `ChunkRow` | **no** |
+
+`_merge` was written on 2026-08-10 against the first. It survived three months
+because **no translation section had ever split into two chunks**; the A4
+recovery lengthened §4 and §6 enough that one did, and Part 6 died on the first
+live call.
+
+**The coverage was real and one-sided.** `mutate_part7b.py` already carries
+*"a merged section keeps exact offsets for its later chunks"*, which exercises
+`_merge` thoroughly — with a dataclass that has offsets. And
+`answer/test_translate.py`'s alignment fixture is a plain class, not a
+dataclass, so `is_dataclass(first)` sent every Part 6 test call down the
+single-chunk early return. One module, two callers, and every test on the side
+that worked.
+
+**The defensive defaults were the defect, not the crash.**
+
+```python
+gap = getattr(following, "char_start", 0) - getattr(previous, "char_end", 0)
+```
+
+turns *"this type has no offsets"* into `gap = 0` — a silently wrong merge, with
+no error anywhere. The one line that had no default is the only reason this was
+ever found. A default that makes a missing field look like a legitimate value is
+worse than no handling at all; the crash was the lucky case.
+
+Fixed by branching on `has_offsets()` explicitly: with offsets, the exact
+space-for-space arithmetic as before; without, the pieces join with a single
+space and the result **does not acquire a `char_end`**. chrF is
+whitespace-insensitive by deliberate design, so the separator cannot move a Part
+6 score, and nothing that needs to locate a quotation on disk uses the
+offset-less type. If that changes, the type gains the columns — not this
+function another default.
+
+`mutate_part7b.py` now runs **both** suites and pools their failures, because
+verifying a shared module against one of its two callers is the bug written
+down. 14/14 mutations, `test_translate` 104 → 110 assertions.
+
+**Standing lesson, fourth occurrence and sharpest yet.** The family is
+"two things answering one question, and nothing checks they agree" —
+`--find`/`--survey`, `has_extent`/`has_area`, `translation_chunk`/
+`translation_chunk_id`. This is its inverse: **one implementation, two data
+shapes, and a test suite for each shape that only ever met one of them.**
+
+### Two suites fail on their own account — neither is A4's
+
+- `eval.test_answer_eval`: *"every archived question has a gold case"* fails on
+  `20260812T133627+0000-53afe41c` / *"What was exported from Adulis?"*. This is
+  the **known open Block 0 item**, already recorded in `PHASE2_PLAN.md` as
+  Block D work. 76 of 77 runs scored.
+- `scripts/test_recover_baseline.py`: `ModuleNotFoundError: psycopg` in the dev
+  sandbox only. It has the module on the host.
+
+### Round-two ids — resolved, and the decoys refused
+
+| place | id | coordinate | note |
+| --- | --- | --- | --- |
+| Alalaiou islands | 39281 | 15.729/40.003 | archipelago; §4, recovered today |
+| Nilus (river) | 727172 | 9.904/30.657 | |
+| Diospolis Magna/Thebai | **786017** | 25.665/32.632 | §6's murrine. Decoys: 727111/730107 Diospolis Kato in the Delta, and 216859 — which is **Kabyle, in Bulgaria** |
+| Laodicea | **668290** | 35.519/35.777 | settlement + **port** = ad Mare, Latakia. Decoy 668291 "ad Libanum", inland |
+| Italia | **1052** | 43.694/11.095 | `related`, **−30..300**. Decoy 452346 is `precise` and dated −750..−330 — the archaic Italia of the toe, four centuries too early |
+| Arsinoite nome | 736893 | 29.286/30.735 | Ἀρσινοητικαί is the nome adjective. Decoy 39295, a Red Sea station |
+| Libanophoros Chora | 39370 | 17.411/53.407 | region; Pleiades titles it *Libano-*, not *Libanoto-* |
+| Mandagara | 50116 | 17.951/73.039 | |
+| Leuke (island) | **50091** | 14.019/74.325 | Konkan. Found only on a description match; decoy 226677 is Leuke in the **Black Sea** |
+| Pandion | 50201 | 9.654/78.194 | label, −330..640 |
+| Ganges (river) | **59822** | 25.932/83.780 | decoy 49984 is *"Ganges (river in **Sri Lanka**)"* |
+| Indoskythia | **59850** | 26.366/67.811 | §27's Σκυθία is Indo-Scythia (Sindh), not 1001892 Scythia Minor on the Black Sea |
+| Mesene/Characene | 912905 | 31.468/47.344 | Tiaozhi |
+| Parthyene/Parthia | **952097** | 38.500/57.500 | −900..300. Decoy 590282460 "Parthian empire" is `related` and dated **2000..2099** — a modern label |
+| Roma | 423025 | 41.890/12.491 | |
+| Alexandria | 727070 | 31.201/29.910 | settlement + port |
+| Barygaza | 59737 | 21.701/72.983 | |
+
+**Still unresolvable, and each is a `regional` with no id and a note saying so:**
+Diodorou (759556, UNLOCATED), Kyeneion (40186, UNLOCATED), Sabbatha (906027,
+UNLOCATED), Chryse (60485 and 50630, both UNLOCATED), Ommana, Chersonesos —
+nothing Indian in 23 hits — Melizeigara, Moschophagoi, Barbaria (471890 is in
+**Sardinia**), Trullas, Keprobotros/Chera (246333 is in **Spain**), the Yavanas,
+Da Qin, Rinan, Angu, Haixi.
+
+**Ariake is still yours.** 59700 *Ariake/Larike* 22.304/71.976 (Saurashtra,
+`label`) against 49874 *Ariake Sadenon* 18.143/74.499 (inland Maharashtra,
+`region, label`). §54 says ships come to Muziris **from** Ariake, so the coastal
+region is wanted — and this is the edge Schoff prints as "Arabia".
+
+## A4 — the seven records written (2026-08-13)
+
+Decision taken: **stay regional** — the Weilüe's glosses (Da Qin ≈ Rome, Anxi ≈
+Parthia, Tiaozhi ≈ Characene, Angu ≈ Gerrha, Haixi ≈ Egypt) are the translator's
+identifications, the records carry no citation for any of them, and
+`identified` without its `ground_citation` is an assertion wearing the word.
+Read as covering Ariake too, where two ids resolve and neither covers §54's
+usage; both are named in the note as examined and refused.
+
+Written by `scripts/write_a4_places.py` — generated rather than hand-edited,
+because seventy placements done by hand would differ from themselves. Idempotent.
+
+```
+W1 placements: 18 placed + 1 declared unplaceable = 19/24 considered
+               50 distinct gazetteer ids (was 10), 1 contested
+Grounds: {stated: 49, regional: 33, identified: 2}
+95 assertions, 26/26 + 14/14 mutations, ingest.verify clean.
+```
+
+| record | places | with an id | roles |
+| --- | --- | --- | --- |
+| `africa-03-periplus-adulis` | 16 | 12 | focus 1, source 8, mentioned 6, waypoint 1 |
+| `arabia-01-periplus` | 13 | 9 | focus 1, destination 4, source 3, mentioned 5 |
+| `southasia-02-periplus-muziris` | 27 | 22 | focus 1, mentioned 18, source 5, waypoint 3 |
+| `eastasia-01-weilue` | 5 | **0** | focus 1, mentioned 2, waypoint 1, destination 1 |
+| `eastasia-02-hou-hanshu` | 2 | **0** | focus 1, source 1 |
+| `southasia-01-akananuru-149` | 4 | 1 | focus 1, mentioned 2, source 1 |
+| `southasia-03-muziris-papyrus` | 4 | 4 | focus 1, waypoint 1, destination 1, source 1 |
+
+**33 of 84 placements are `regional`**, and that is the honest shape of the
+result rather than a shortfall. Six places resolve in Pleiades and are UNLOCATED
+(Diodorou, Kyeneion, Sabbatha, Chryse ×2, and Skythias); the rest are polities,
+peoples and never-located market-towns. `eastasia-01` and `eastasia-02` carry no
+id at all — a Greco-Roman gazetteer indexing a Chinese account of Rome, which is
+the project's premise appearing in its own gate for the second time in Block A.
+
+Nine ids were **examined and refused**, each named in the note that displaces
+it, so none is re-found and silently accepted later: 746710 (Arabia Eudaemon in
+north-west Arabia), 471890 (Barbaria in Sardinia), 39295 (a Red Sea Arsinoe),
+785982 (a Bakare that is an Egyptian mine), 246333 (a Chera in Spain), 226677
+(Leuke in the Black Sea), 49984 (a Ganges in Sri Lanka), 1001892 (Scythia Minor
+on the Black Sea), 452346 (the archaic Italia, four centuries early). Plus
+216859, which a Diospolis search returns and which is Kabyle, in Bulgaria.
+
+The entry worth reading is `southasia-02`'s **Byzantion**: 49929, a market-town
+at 16.503/73.340 on the Konkan, listed in §53 between Melizeigara and Toparon.
+Accepting an id on its name would have put Constantinople in a coastal Indian
+trade network.
+
+### Still to do in Block A
+
+1. `--refresh` then `--check` on the host — **40 new ids to cache**, and the one
+   thing that turns an id into a coordinate. Watch for `has_area` on the three
+   region-scale placements (766 Aegyptus, 1052 Italia, 39370 Libanophoros): each
+   must render as an extent, and 766's representative point *is* Alexandria's
+   coordinate, so a pin there would be actively misleading.
+2. The five records still unconsidered — `arabia-04`, `eastasia-03`, `seasia-01`
+   ×2 and `-03` — are all **blocked on the GeoNames reader**, which remains the
+   largest open item in Block A. `eastasia-02`'s Rinan now joins them.
+3. `southasia-01`'s Culli is `regional` for want of a citation, not for want of
+   a place: Pleiades 50234 `Pseudostomos (river)` at 9.848/76.819 is the Periyar
+   under its Greek name and is almost certainly the referent. One published
+   source for Culli ≈ Periyar promotes it to `identified`.
+4. `southasia-03`'s `reference_translation` still covers the pre-recovery
+   excerpt and does not include the Muziris clause.
+
+## A4 — RESULT ✅ (2026-08-13), and the placement that resolves to nothing
+
+```
+50 of 50 ids looked up from pleiades-places-20260810.csv.gz
+placements: 84   locatable: 59   cached ids: 50
+documents with a placement: 18 of 24
+Every placement resolves to a cached, dated gazetteer entry.
+27/27 + 14/14 mutations, ingest.verify clean.
+```
+
+**The subject-place network, which is what A4 was for:**
+
+| record | focus | places | edges |
+| --- | --- | --- | --- |
+| `africa-03-periplus-adulis` | Adulis | 16 | 9 |
+| `southasia-02-periplus-muziris` | Muziris | 27 | 8 |
+| `arabia-01-periplus` | Cana | 13 | 7 |
+| `southasia-03-muziris-papyrus` | Muziris | 4 | 3 |
+| `eastasia-01-weilue` | Da Qin | 5 | 2 |
+| `southasia-01-akananuru-149` | Muciri | 4 | 1 |
+| `eastasia-02-hou-hanshu` | Rinan | 2 | 1 |
+
+**31 edges over 71 subject places.** The dot map is a network. Forty of those
+places are `mentioned` and draw nothing, which is the vocabulary earning its
+keep: a text that names Laodicean wine is not a text about a route to Laodicea.
+
+### `pleiades:766 Aegyptus` resolves, caches, passes — and draws nothing
+
+The `has_area` watch item fired on the first real run. Of the six `regional`
+placements carrying an id, five have a genuine extent — Indoskythia, Limyrike,
+Pandion, Italia, Libanophoros Chora. **766 Aegyptus has a degenerate bbox**: its
+representative point is Alexandria's own coordinate and its bounding box has
+zero area.
+
+`PLACES.md` says a regional placement renders as an extent and **never** as a
+pin. So Egypt draws nothing at all — while resolving, caching, and passing every
+check in `cmd_check`. Egypt is the `source` in **three of the seven** literary
+records; it is the most connected node in the corpus, and it would have been
+blank space on the first map that drew it, with nothing anywhere saying so.
+
+This is exactly what the `has_extent` / `has_area` split was built for on
+2026-08-12, arriving on real data ten days later. The split was made on the
+argument that they are *two different questions under one name*; the value of
+having asked the second one is that this was a line of output rather than a
+silent hole.
+
+`--check` now **reports** unrenderable regional placements — named, counted, and
+explicitly not a failure:
+
+```
+note: 3 regional placement(s) resolve but cannot be drawn as an extent.
+  ~ arabia-01-periplus::subject_places[9]: 'pleiades:766' (Aegyptus …)
+  ~ southasia-02-periplus-muziris::subject_places[26]: 'pleiades:766' …
+  ~ africa-03-periplus-adulis::subject_places[9]: 'pleiades:766' …
+```
+
+A report and not a failure because the entry is honest and the id is right. What
+to do is **A5's decision, and it is a real one**: draw the extent of something
+else, accept the gap, or drop the id and say so in a note. A failure here would
+demand a fix before the decision could be taken. Mutation-verified, with a
+control that a regional placement carrying a real extent is not reported.
+
+### Block A after A4
+
+| item | state |
+| --- | --- |
+| **GeoNames reader** | the largest open item. Blocks `arabia-04`, `eastasia-03`, `seasia-01/02/03` and now `eastasia-02`'s Rinan — 5 records unconsidered. Start with `--inspect` on one country file |
+| A5 | region view → place view, **plus the 31 edges**, plus the Egypt decision above |
+| A6 | date-overlap check; and whether "the gazetteer holds this place and does not know where it is" deserves a state — six UNLOCATED ids are currently indistinguishable from no entry at all |
+| Pattanam's sceptical citation | still provisional |
+| Culli ≈ Periyar | one published source promotes 50234 from `regional` to `identified` |
+| `southasia-03` reference translation | pre-recovery, missing the Muziris clause |
+
+---
+
+# A5 — starting point (for the next thread)
+
+**State: A4 complete, 2026-08-13.** Block A is roughly three-quarters done.
+
+```
+24 documents -> 59 chunks -> 57 embedded (voyage/voyage-3.5)
+Retrieval 11/11 at rank 1.  Translation gold set 12 cases.
+W1: 84 placements across 18 documents + 1 declared unplaceable = 19/24 considered
+    59 locatable, 50 distinct cached ids, 1 contested
+    Grounds: {stated 49, regional 33, identified 2}
+    31 edges over 71 subject places
+Suites: ingest.test_places 95 · answer.test_translate 110 · verify clean
+Mutations: places 27/27 · part7b 14/14
+```
+
+## What A5 is
+
+`PHASE2_PLAN.md`: region view becomes place view. Five requirements, and the
+fourth is the new one:
+
+- points render **from cached gazetteer coordinates only**;
+- `ground` is **shown** — a `regional` placement must not look like a `stated` one;
+- a contested identification renders as contested, not as a pin;
+- **trade texts render as edges between subject places** — the ORBIS-shaped
+  thing, and now buildable: `source → focus → destination`, with `mentioned`
+  drawing nothing. `Place.draws_edge` is the predicate;
+- every point clicks through: map point → record → quotation → characters on disk.
+
+## The three decisions A5 has to make before it draws anything
+
+1. **What to do about Egypt.** `pleiades:766 Aegyptus` resolves, caches, passes
+   `--check`, and has a **zero-area bbox**. A regional placement renders as an
+   extent and never as a pin, so Egypt draws nothing — and it is the `source` in
+   three of the seven literary records, the most connected node in the corpus.
+   `--check` reports it by name. Three options and none is obviously right:
+   draw the extent of some other feature, accept the gap and show it as a gap,
+   or drop the id and say so in a note. **Do not resolve this by letting a
+   regional placement fall back to its representative point** — that is the pin
+   the whole `ground` vocabulary exists to prevent.
+
+2. **How an edge with an unlocatable end is drawn.** Several are: Ariake is
+   `source` for Muziris with **no id at all**; Sabbatha is `source` for Cana and
+   is UNLOCATED in Pleiades; all of `eastasia-01`'s and `eastasia-02`'s edges
+   have no coordinate on either end. A line needs two points and these have one
+   or none. Dropping them silently would delete the Weilüe and the Hou Hanshu
+   from the network entirely — the two records that are most the point of the
+   project. Whatever is chosen, the absence has to be visible.
+
+3. **Bands and grounds are not comparable across profiles, and the UI must not
+   imply they are.** Standing from Part 6: a `high` on verse (cos 0.70) and a
+   `high` on prose (cos 0.96) are not the same evidence. The same now holds for
+   `ground`: `stated` on a Greek port and `regional` on a Chinese polity are
+   different kinds of claim, not different strengths of one.
+
+## What A5 can rely on
+
+- `Place.draws_edge` — true for `source`/`destination`/`waypoint`, false for
+  `focus` and `mentioned`. The edge derivation is `source → focus → destination`
+  and there is exactly one focus per block, enforced at load.
+- `has_point` / `has_extent` / **`has_area`** — three questions, three answers.
+  `has_extent` is "any bbox"; `has_area` is "a bbox that is not degenerate", and
+  a Pleiades *point* place has a degenerate bbox. Use `has_area` for anything
+  that draws a region.
+- `locationPrecision` on every cached entry — Pleiades' own statement of how well
+  **it** knows the point, which is a different axis from our `ground`. A5 needs
+  both to render honestly, and several placements are `precise` on a coordinate
+  our own corpus treats as contested (Muziris/Pattanam).
+- `min_date` / `max_date` / `time_period_keys` — cached but **unused**. A6 owns
+  the overlap check; A5 may want them for a time slider.
+- Every placement carries a `note` saying what its id was confirmed against and,
+  where one exists, which id was examined and refused. Ten refusals are on the
+  record.
+
+## Traps, in the order they will be met
+
+- **Muziris is one id used by three records** (`southasia-01`, `-02`, `-03`) and
+  a fourth as a findspot (`southasia-04`, `identified` + `contested`). Pleiades
+  marks 10.154/76.213 `precise`; our own corpus treats that identification as
+  open. The map must not render three confident pins and one contested one at
+  the same coordinate.
+- **Aksum 39303 is used three ways** — `africa-01` findspot, `africa-02` origin,
+  `africa-03` subject `source`. That is the block design working and it is the
+  first place a naive renderer will draw three overlapping markers.
+- `arabia-02-palmyrene-tariff` and `africa-01-ezana-stone` are still `pointer`
+  chunks, held out of retrieval by construction. They **do** carry findspots, so
+  they appear on the map and have no quotable text behind them. The click-through
+  has to survive that.
+
+## Standing lessons this block added
+
+- *One implementation, two data shapes, and a test suite for each that only ever
+  met one of them.* `align._merge` was fully covered — against one of its two
+  callers. Verify a shared module against **every** caller.
+- *A defensive default that makes a missing field look like a legitimate value is
+  worse than no handling at all.* `getattr(x, "char_end", 0)` turned a type error
+  into silently wrong arithmetic; the one line without a default is why it was
+  found.
+- *Nothing in the pipeline compares an excerpt against its own cited source.* Every
+  check pointed inward, and a uniformly short excerpt is internally consistent.
+  20% of the Periplus Greek was missing for four days of work on those records.
+- *A resolving id at the wrong place is worse than no id* — now with ten worked
+  examples, of which Byzantion on the Konkan is the one to show people.
+
+## To run
+
+```powershell
+cd "C:\Users\chemi\Documents\Claude\Museums Project Number 1\mundus-ulterior"
+$d = "$env:USERPROFILE\Downloads\pleiades-places-20260810.csv.gz"
+
+python -m ingest.test_places            # 95
+python -m answer.test_translate         # 110
+python scripts\mutate_places.py         # 27
+python scripts\mutate_part7b.py         # 14
+python -m ingest.verify
+python -m ingest.gazetteer --check --dump $d
+python ui\build_ui_data.py --verify
+node ui\check_ui.mjs
+```
+
+Block A has spent one batched embedding request in total — for the twelve chunks
+the Greek recovery invalidated. Everything else is offline.
+
+---
+
+# A5 — RESULT ✅ (2026-08-13): the join, the map, and the three decisions
+
+```
+places (A5): 51 pin(s), 5 extent(s), 28 gap(s) across 18 placed document(s);
+18/31 subject-place edges drawable; 5 document(s) not yet considered,
+1 declared unplaceable
+27/27 + 14/14 mutations, ingest.verify clean, ingest.gazetteer --check clean.
+check_ui.mjs: 18/18 checks passed, including 4 new to A5.
+```
+
+## What was built
+
+`ui/build_ui_data.py` gained `build_places()` — the join `PHASE2_PLAN.md` A5
+specifies: `ingest/places.py`'s validated placements against
+`ingest/gazetteer.py`'s cached coordinates, classified into exactly three
+outcomes (`_place_geometry`): **pin** (`stated`/`identified`, a cached
+representative point), **extent** (`regional` with a real bbox), or **gap**
+(everything else — named, reasoned, never dropped). Placements sharing a
+cached id are merged into one `groups` entry rather than drawn as separate
+overlapping markers; `subject_places` blocks are walked a second time to
+derive the `source → focus → destination` / `waypoint → focus` edges, each
+tagged `drawable` only when both ends resolved to a pin or an extent.
+
+`ui/index.html`'s "Regions & sources" tab is now **Places**: a hand-rolled
+equirectangular SVG projection (`buildMap()`), fit to whatever the corpus
+actually cached — no basemap, no coastline, no CDN, consistent with the rest
+of this build. Pins, shaded extents and edges are clickable through to a
+`place`/`group`/`edge` provenance panel, and `renderRecordProvenance` now
+lists every place a record carries, drawn or not, closing the loop the old
+tab's record cards started. Coordinates are never authored here; they are
+read from the same `data/gazetteer.json` `ingest.gazetteer --check` already
+verifies, so the map cannot know something the CLI check does not.
+
+**Click-through, honestly labelled.** `subject_places` and `findspot_places`
+carry no character span the way Part 7's answer citations do — nothing in
+Block A wrote an `abs_start`. `bestEffortLocate()` searches the record's own
+fields for the place's name and shows what it finds, captioned as a text
+search rather than a recorded citation — the same caution this page already
+applies to `case_only` spans elsewhere, extended to a case where no span was
+ever claimed in the first place.
+
+## The three decisions
+
+**1. Egypt.** `pleiades:766` resolves, is cached, and has a degenerate bbox —
+a `regional` placement that can never be drawn as an extent, and the `source`
+in three of the seven literary records. Resolved by treating it as one
+instance of a general rule rather than a special case: **a gap is reported,
+never guessed at.** Egypt does not draw a pin (that is the one thing `ground`
+exists to prevent) and does not draw an extent (there is none to draw). It
+appears instead in its three records' place lists and in the "considered —
+nothing resolves to a drawable point" cards where it is the sole cause, each
+clickable through to the full record. The absence is visible; nothing is
+invented to hide it.
+
+**2. An edge with an unlocatable end.** Ariake (no id at all), Sabbatha
+(resolves, UNLOCATED), and every one of the Weilüe's and Hou Hanshu's edges
+(no coordinate on either end) all use the same mechanism as Egypt: `drawable`
+is computed per edge from both ends' geometry, and a non-drawable edge is
+listed — with the reason, per end — in "edges named in the text, not drawn on
+the map," never silently dropped from `P.edges`. The Weilüe and the Hou
+Hanshu, whose every place is a gap, get their own cards ("considered —
+nothing resolves to a drawable point here") so the two records most the point
+of the project are not simply absent from the tab that is supposed to be
+about geography.
+
+**3. Grounds are not comparable across profiles.** The map tells `ground`
+apart by **shape**, not colour: a pin (`stated`/`identified`) is a filled
+circle, a `regional` extent is a dashed, translucent rectangle, and a
+`contested` identification is a dashed, hollow ring — three categories, not a
+gradient. None of `--good`/`--warn`/`--bad`, already used elsewhere on this
+page for grounded/refused/ungrounded, is reused for `ground`: doing so would
+assert an ordering PROGRESS.md explicitly refused ("stated on a Greek port
+and regional on a Chinese polity are different kinds of claim, not different
+strengths of one"). `location_precision` — Pleiades' own confidence, a
+different axis — is carried into every place and group panel alongside
+`ground` rather than folded into it.
+
+## The Muziris trap, handled
+
+`pleiades:50146` is claimed `stated` by three records and `identified` +
+`contested` by a fourth (`southasia-04-pattanam`, Pattanam). `build_places()`
+groups all four under one `cache_key`; the map draws **one** marker, styled
+contested because at least one member is, with a member list in its panel
+naming each record and its own ground rather than flattening four claims into
+one pin. Aksum (`pleiades:39303`, used three ways — findspot, origin, subject
+`source`) merges the same way and draws once.
+
+## Verified
+
+```
+python -m ingest.test_places        95 assertions, ok
+python -m answer.test_translate     110 assertions, ok
+python scripts/mutate_places.py     27/27
+python scripts/mutate_part7b.py     14/14
+python -m ingest.verify             clean (pre-existing warning: arabia-02 empty reference_translation)
+python -m ingest.gazetteer --check  clean (the 3 Aegyptus notes are expected, not failures)
+python ui/build_ui_data.py          places (A5) line above; 980 KB
+node ui/check_ui.mjs                18/18, including the 4 new checks below
+```
+
+`check_ui.mjs` gained four A5 assertions, each checking the data rather than
+reading the HTML: every placement (84) is listed on its own record's panel,
+so "not drawable" can never collapse into "not reachable"; every cached
+point/extent (49) and every drawable edge (18) the data claims to plot
+actually appears in the SVG `buildMap()` returns; and all 24 records are
+clickable from the Places tab regardless of whether they carry a single
+placement. A hand-rolled tag-balance check over `viewPlaces()`,
+`viewQuestions()`, `viewAbout()` and a record panel found no unclosed
+`<div>`/`<svg>`/`<g>`/`<rect>`/`<line>`/`<circle>`/`<span>`/`<button>`.
+
+`build_ui_data.py --verify` exits 1 on one pre-existing `moved` and one
+pre-existing `absent` span in `eastasia-02-hou-hanshu`/`africa-03` answer
+archives — unrelated to A5, predating this session, and the exact
+already-documented Part 9 phenomenon the About tab explains ("an archived
+citation is only valid against the corpus version that produced it").
+
+## Carried into A6
+
+- The mutation-verified guards `PHASE2_PLAN.md` assigns to A6 ("a hand-authored
+  coordinate with no `pleiades_id`", "an `identified` placement with no
+  citation", "a `pleiades_id` at a non-resolving id") are `ingest`-side and
+  distinct from what A5 built — `build_places()` reports an uncached id as a
+  build failure (exit 2) but does not yet have a mutation test proving that
+  failure path fires.
+- `location_precision` and `min_date`/`max_date`/`time_period_keys` are now
+  carried into every place/group panel but nothing renders a time slider —
+  A6's stated option, still open.
+- The "gazetteer holds this place and does not know where it is" state
+  (UNLOCATED — Cyeneum, Sabbatha, Chryse) is still indistinguishable, at the
+  data layer, from "no entry at all"; both surface identically as a gap with
+  a `note`-derived reason on this page. A6 owns giving them separate states.
+
+---
+
+# A5 addendum — the basemap I argued my way out of, and the world drawn inside out (2026-08-13)
+
+**Raised by the curator, immediately on opening the page: "there's no actual
+map, it's just dots and lines."** Correct, and the reason it was correct is
+worth more than the fix.
+
+## The reasoning error
+
+A5 shipped with no coastline, and the argument was written into `buildMap()`:
+
+> This project cites gazetteer ids for every point it draws; a traced coastline
+> would be the one shape on the page that came from nowhere citable, so the
+> grid is the only backdrop.
+
+That conflates two different rules. *Coordinates are never authored* governs
+**placements** — claims about where a record's place is — and `ingest/places.py`
+enforces it absolutely. A coastline is **not a claim about the corpus**; it is
+the reference frame the claims are read against, and it can carry provenance
+exactly like any other source here. Natural Earth is public domain, versioned
+and datable, and sits under precisely the discipline `data/gazetteer.json`
+already uses.
+
+The failure mode is the interesting part: **a correct principle, applied one
+category too wide, produced a worse artefact than having no principle.** The
+map spanned 10–84°E and 9–56°N with no way to tell the Red Sea from the Bay of
+Bengal, on a project whose reference model is ORBIS and whose own `PHASE2.md`
+rates the ORBIS parallel "High". Rigour that removes the thing it was meant to
+protect is not rigour.
+
+Also worth recording: **nothing in `PHASE2_PLAN.md` deferred this.** W2 is
+retrieval, W3 corpus scaling, W4 the gold set — there is no later block where a
+basemap arrives. "It gets added later" would have been false; it would simply
+never have been added.
+
+## What was built
+
+`scripts/build_coastline.py` → `data/coastline-ne110m-20260813.json` (33 KB,
+46 polygons, 2,060 points). Natural Earth 1:110m Admin 0, dissolved with
+`unary_union` so the boundary is **coast and not a political map** — drawing
+21st-century borders under a first-century Indian Ocean is a claim this project
+should not make by accident. Clipped to −25..150°E / −40..75°N, deliberately
+wider than today's cached points so the five GeoNames-backlog records (Óc Eo,
+Khao Sam Kaeo, Gyeongju) will not need a re-clip the day they are placed.
+Simplified at 0.05° — under one pixel at this scale — and rounded to 3 dp.
+
+The snapshot records its own source, scale, terms, retrieval date, clip window
+and simplification tolerance, and the page prints the attribution in the map
+legend. A missing snapshot is a **note, not a build failure**: the map still
+draws every point, extent and edge, each still tracing to a cached gazetteer
+id. An absent placement would be a false claim; an absent backdrop is only
+harder to read. Different severities for different kinds of wrong.
+
+## The defect that every passing check missed
+
+The first snapshot emitted `.boundary` — every ring, with no record of which is
+an outer coast and which is an inland sea. Drawn as one filled SVG path, the
+winding rule guessed: **the Mediterranean and Black Sea rendered as water, and
+the Indian Ocean and Atlantic rendered as land.** Open ocean is not a ring at
+all; it is simply *outside* every ring, and a fill cannot represent "outside"
+without knowing which side is which.
+
+`check_ui.mjs` passed. All of it. Its A5 assertions check that each cached
+point and each drawable edge is **present** in the SVG — and all 49 points and
+18 edges were present, sitting on top of an inside-out world. The bug was found
+by rendering the map to a PNG and looking at it.
+
+> **Standing lesson added: an assertion about presence says nothing about
+> correctness.** This repository has now paid for that four times — the Part 4
+> probe that passed on `doc_id` while pointing at the wrong passage, the
+> `--survey` that reported hits on substrings of unrelated descriptions, the
+> stale `data.js` that certified 61 runs while the archive held 77, and now a
+> map that plotted every point correctly onto an inverted planet.
+
+Fixed by emitting real polygons as `[exterior, hole, ...]` and rendering with
+`fill-rule="evenodd"`, which is what makes the Caspian and the Black Sea water.
+
+**And then a second, opposite bug:** with marker positions seeded as label
+obstacles, every label collided with *its own* marker and the map rendered with
+no names whatsoever. Also invisible to every assertion, also caught by looking.
+Obstacles now carry their owning `cache_key` and are skipped for their own
+label.
+
+## The guard, mutation-verified
+
+`check_ui.mjs` gained a check that asserts a **property** rather than presence:
+nine control points — Aksum, the Sahara, central Arabia, the Deccan; the
+Mediterranean, Black Sea, Arabian Sea, Bay of Bengal, Red Sea — evaluated with
+the same even-odd rule the SVG uses over the same rings. Land must be land and
+sea must be sea.
+
+Verified to fail against the defect it guards, per this repository's standing
+rule. Injecting a world-spanning ring into the bundle (the parity flip the
+boundary-rings bug caused) makes it fail and name all nine points; restoring
+the bundle makes it pass. A second check asserts the snapshot carries the
+provenance the legend prints.
+
+## Labels
+
+29 of 49 places are labelled. Placement order is deliberate and stated —
+busiest nodes first, then extents, then alphabetical — so that when the Konkan
+coast runs out of room it is Muziris and Barygaza that keep their names rather
+than whichever market-town sorted last. Colliding labels are dropped, not
+overlapped; the legend says so, and every point remains clickable with its full
+Pleiades title in the panel. Pleiades' scholarly apparatus is trimmed for the
+map only (`Mandagara?` → `Mandagara`, `Adane/Athenae/Eudaimon Arabia` → `Adane`).
+
+## Verified
+
+```
+python scripts/build_coastline.py   46 polygons, 2060 points, 33 KB
+python ui/build_ui_data.py          1016 KB, coastline attributed
+node ui/check_ui.mjs                20/20, incl. the land/sea property check
+  └─ mutation-verified: world-spanning ring injected -> FAILS, naming 9 points
+python -m ingest.verify             clean
+python -m ingest.gazetteer --check  clean
+python -m ingest.test_places        ok    python -m answer.test_translate  ok
+python scripts/mutate_places.py     27/27  python scripts/mutate_part7b.py  14/14
+```
+
+`scripts/build_coastline.py` needs `geopandas<1.0` and is a **one-off
+generator**, not on the build or test path. Nothing in the normal build imports
+it; `ui/build_ui_data.py` reads only the committed JSON snapshot.
+
+---
+
+# A5 addendum 2 — pan and zoom, and why East and Southeast Asia are not on the map (2026-08-13)
+
+## Why the Chinese and Southeast Asian sources are absent
+
+Asked by the curator on reading the map. It is **not a rendering gap** — it is
+two different states, and the distinction is the one `no_places_reason` and the
+gap lists were built to preserve.
+
+**Curated, and nothing resolves (2 records, 7 placements).**
+
+| record | places | drawable |
+| --- | --- | --- |
+| `eastasia-01-weilue` | Da Qin, Anxi, Tiaozhi, Angu, Haixi | 0 of 5 |
+| `eastasia-02-hou-hanshu` | Rinan, Da Qin | 0 of 2 |
+
+Every one is `regional` with no id, because **Pleiades is a Greco-Roman
+gazetteer and holds no entry for any of them**. A4 went further and refused the
+available shortcut: the translator's glosses (Da Qin ≈ Rome, Haixi ≈ Egypt) are
+uncited identifications, so `pleiades:766` was deliberately **not** reused for
+Haixi even though it is used for Egypt in three other records, and
+`pleiades:423025 Roma` was examined and refused for Da Qin on the grounds that
+the city is not the empire. Those refusals are why the two records that are
+most the point of the project draw nothing — and they were the right calls.
+
+**Not yet placed at all (4 records).** `eastasia-03-hwangnam-glass` (Gyeongju),
+`seasia-01-oc-eo-medallion`, `seasia-02-oc-eo-site` (Óc Eo),
+`seasia-03-khao-sam-kaeo` — plus `arabia-04-jabal-dabub`. These are the
+**GeoNames backlog**, blocked on a reader that does not exist. `PLACES.md`
+predicted exactly this set on 2026-08-12: "no Pleiades entry for Gyeongju, Óc
+Eo, Khao Sam Kaeo or Jabal Ḏabūb — roughly half the findspot records … the
+premise of Mundus Ulterior showing up in its own gate."
+
+So the map is empty east of the Ganges because the gazetteer is, not because
+the renderer dropped anything: all 7 curated placements appear in the "considered
+— nothing resolves to a drawable point here" cards, and all 5 unplaced records
+in "not yet placed". **The GeoNames reader remains the single highest-value
+open item in Block A** — it alone would put Korea, Vietnam and Thailand on the
+map, and it is what turns "Rome and the wider world" from a claim into a
+picture. It is not scheduled in `PHASE2_PLAN.md` and needs an owner.
+
+## Pan and zoom
+
+Held as a **centre plus a zoom factor**, with the visible window derived on
+every draw — not as an SVG transform on a group. A transform is cheaper per
+frame but scales everything inside it: marker radii, stroke widths and type
+size would all grow with the zoom, and the label collision solver, which works
+in pixel space, would be solving against geometry that no longer matches what
+is drawn.
+
+Recomputing the window keeps `buildMap()` a pure function of (data, window) —
+the thing `check_ui.mjs` already calls with no arguments — and buys a real
+feature rather than only avoiding a problem: **label collisions are re-solved
+at every zoom level**, so the Konkan market-towns that have no room at full
+extent get their names back as you zoom into them. At the default view 29 of 49
+places are labelled; at ×14 over Malabar, Tyndis, Bakare, Nelkynda and
+Cottonara appear, with Limyrike and Pandion as shaded extents around them.
+
+Wheel zooms about the cursor (the lon/lat under the pointer stays pinned),
+drag pans, `+`/`−`/`Reset` for people who would rather click, and a live `N×`
+readout. A drag that moved more than 3 px swallows the click that follows it,
+so panning across the map cannot also select whatever marker the pointer was
+released over. Only the SVG is rebuilt, inside `requestAnimationFrame` — never
+the whole view, which would rebuild the record grid and destroy the provenance
+panel's scroll position while the reader is using it.
+
+### The bug zoom introduced, and the reason it was found
+
+Coastline culling skipped any landmass with **no vertex inside the window**.
+Correct at full extent, and wrong the instant zoom existed: zoomed into the
+middle of the Sahara, every vertex of Africa is off-screen while Africa covers
+the entire view, so **the map lost its land exactly when land was all there
+was**. Replaced with a bounding-box overlap test.
+
+This is the *same shape* as the inverted-world bug in the previous addendum,
+and it is worth naming as a pattern rather than two incidents: **both were
+correct-looking code whose assumption held only for the one view every test
+exercised.** `check_ui.mjs` called `buildMap()` at the default window and
+nowhere else.
+
+## The guards, both mutation-verified
+
+`check_ui.mjs` is now 20 checks. Three are new here, and they assert
+**properties across views** rather than presence in one:
+
+- the coastline still draws at four zoomed windows, including mid-ocean and
+  inside a continent;
+- zooming never distorts the aspect ratio (lon-span : lat-span must always
+  match W : H, to 1e-9);
+- reset returns *exactly* to the full extent, not merely near it.
+
+Verified to fail against the defect they guard, per standing rule: restoring
+the vertex-inside culling makes the first check fail and name the two views
+that lose their land ("mid-ocean, x8", "inside the Sahara, x40"); restoring the
+bbox test makes it pass.
+
+## Verified
+
+```
+python ui/build_ui_data.py          1016 KB
+node ui/check_ui.mjs                20/20
+  └─ mutation-verified: vertex culling restored -> FAILS, naming 2 zoom views
+python -m ingest.verify             clean    python -m ingest.gazetteer --check  clean
+python -m ingest.test_places        ok       python -m answer.test_translate     ok
+python scripts/mutate_places.py     27/27    python scripts/mutate_part7b.py     14/14
+```
+
+## Standing lesson added
+
+> *A test that exercises one view of a rendered artefact tests the view, not
+> the renderer.* Two bugs in one block — an inside-out world and a vanishing
+> continent — were both invisible to a full suite that only ever drew the
+> default window. Presence assertions compounded it: every point and edge was
+> correctly present in both broken maps.
+
+---
+
+# A5 addendum 3 — the GeoNames reader (2026-08-13)
+
+**Built to close the five unplaced records** — Gyeongju, Óc Eo ×2, Khao Sam
+Kaeo and Jabal Ḏabūb — which is the whole of Southeast Asia and half of East
+Asia. Taken before A6 deliberately: G1 criterion 1 asks for 24/24 considered,
+and 19/24 cannot be argued up.
+
+**Status: the code is complete and verified; the ids are not yet resolved.**
+GeoNames distributes country data only as zip, and a binary fetch does not
+survive this environment's web tooling, so the dumps have to be downloaded on
+the host — exactly as the Pleiades dump already is. That is the established
+pattern here, not a workaround: `--dump` has always pointed at a file the
+curator downloaded.
+
+## What was built
+
+- **`--geonames-dump`, `--geonames-find`, `--refresh-geonames`** in
+  `ingest/gazetteer.py`. A separate reader from the Pleiades one, because the
+  two agree on almost nothing: Pleiades is a headed CSV of ancient places with
+  bboxes and attested date ranges; GeoNames is headerless TSV of modern
+  features with none of those. Threading both through `read_dump` would have
+  produced a function whose every line asked which gazetteer it was serving.
+- **Shape verification in place of column discovery.** The Pleiades reader
+  discovers columns from a header row because that README was wrong three
+  times. GeoNames has no header and documented positional columns, so there is
+  nothing to discover — and the obligation behind the rule still holds. The
+  first data row is instead checked for field count, a numeric id, parseable
+  coordinates and a documented feature class, and a file that fails is
+  reported with the row that failed.
+- **Snapshot dating from the publisher's own timestamp.** GeoNames filenames
+  carry no date — `KR.zip` is always "current" — so `dump_date_from_name`'s
+  rule cannot apply and its reason still does. The zip's internal member
+  timestamp is GeoNames' build time and is used; a bare `.txt` has only an
+  mtime recording when the *curator* unzipped it, and is refused unless
+  `--geonames-date` is stated. Sixth time this repository has refused an
+  undated snapshot.
+
+## The schema defect this uncovered
+
+`data/gazetteer.json` held **one flat `licence` block**, written when there was
+one gazetteer. Pleiades is CC BY 3.0 US; GeoNames is CC BY 4.0. Recording the
+second would have overwritten the first, leaving every Pleiades point on the
+map attributed to terms its publisher never chose — and nothing anywhere would
+have noticed.
+
+This is the *same shape* as the defect the file's own comment records for
+`sources`: "a single `source` block was correct while there was one gazetteer
+and would have become a lie the moment there were two." It was fixed for
+`sources` and missed for `licence`, in the same file, by the same author.
+
+> **Standing lesson added:** *when a container is split because a second case
+> arrived, every sibling container holding the same assumption must be split
+> with it.* `sources` was made per-gazetteer at A2 and `licence` beside it was
+> not; the second gazetteer was six days away and already named in `GAZETTEERS`.
+
+Migrated to `licences` keyed by gazetteer, on read rather than by a one-off
+script, so a cache written before today still loads. A cache holding **both**
+shapes is refused outright rather than one being guessed as current. `--check`
+now demands a licence and a publisher declaration **per gazetteer the corpus
+actually cites** — so declaring a gazetteer obliges nothing until a placement
+uses it, and obliges it the moment one does.
+
+Both GeoNames licence documents are already recorded verbatim: CC BY 4.0 from
+creativecommons.org, and GeoNames' own declaration from the dump readme
+("This work is licensed under a Creative Commons Attribution 4.0 License").
+
+## Verified
+
+```
+python -m ingest.test_places        16 new GeoNames assertions, all pass
+python scripts/mutate_places.py     34/34  (27 before, 7 new)
+python -m ingest.verify             clean    ingest.gazetteer --check   clean
+python -m answer.test_translate     ok       scripts/mutate_part7b.py   14/14
+node ui/check_ui.mjs                20/20
+```
+
+The seven new mutations restore, in turn: an unchecked field count, an accepted
+header row, an undocumented feature class, a guessed snapshot date, one licence
+covering every gazetteer, a legacy flat licence read as covering all of them,
+and a cache with both shapes picking one silently.
+
+**Two of them had to be re-aimed, and the reason is worth keeping.** Disabling
+the field-count guard makes the *reader* crash three lines later on a truncated
+row, and this harness counts a crash as a MISS — correctly, since a crash is
+not a guard firing. Re-aimed at `verify_geonames_shape` as a pure function and
+at an **over-long** row rather than a short one, which exercises the identical
+check and, with the guard removed, silently truncates to 19 columns instead of
+crashing. That is the real defect anyway: a stray tab inside a place name
+misaligns every column after it. Fifth occurrence of the over-determination
+shape in this repository.
+
+## The four searches, and the two that were refused
+
+Dumps downloaded and searched on the host, 2026-08-13. Written by
+`scripts/write_a5_geonames_places.py`.
+
+| site | id | code | outcome |
+| --- | --- | --- | --- |
+| Gyeongju | `1841603` | `P.PPL` | **accepted** — 0.6 km from the Daereungwon tumuli |
+| Óc Eo | `13405688` | `P.PPLA2` | **accepted** — the modern town, used by both Óc Eo records |
+| Khao Sam Kaeo | `8242723` | `T.HLL` | **REFUSED** — 297 km from Chumphon |
+| Jabal Ḏabūb | `7365997` | `P.PPL` | **REFUSED** — 286 km from Ad Dali', and a settlement not a mountain |
+| Jabal Ḏabūb | `12118329` | `P.PPL` | **REFUSED** — 152 km from Ad Dali', same reason |
+
+**Khao Sam Kaeo is Byzantion-on-the-Konkan again.** GeoNames holds a hill of
+exactly that name, and it is 297 km south of Chumphon in a different province.
+*Khao Sam Kaeo* is a generic Thai toponym — roughly "three-crystal hill" — so
+the name matches a hill that is not this one. Accepting it would have drawn the
+peninsular trade site 300 km down the coast, on a resolving id with a plausible
+coordinate. Caught the same way as every other: **on the coordinate, not the
+name.**
+
+**Jabal Ḏabūb failed on feature code first.** Both candidates are `P.PPL`,
+populated places called *Ad Dabūb*, where the record names a mountain — Arabic
+*jabal*, which GeoNames classes `T.MT`. A settlement called Ad Dabūb is not
+Mount Ḏabūb, and neither sits in the Dhale region the record gives. The feature
+code did the work the coordinate then confirmed; this is the first refusal in
+the corpus where the *type* was the discriminator.
+
+Both refused sites are now `regional` with the refusal on the record. Two of
+the five stay off the map, and that is the correct result rather than a
+shortfall.
+
+**Ground is `stated`, not `identified`, for the three accepted placements.**
+`PLACES.md` says a GeoNames placement "will usually be `identified`", and that
+guidance is written for Adulis ≈ Zula, where a scholar maps an ancient name to
+a modern location. Nothing of the kind happens here: the records name Gyeongju
+and Óc Eo themselves, as modern places, and GeoNames holds those same modern
+places. `identified` would demand a `ground_citation` for the proposition that
+Gyeongju is Gyeongju. What the coordinate **denotes** is the real exposure, and
+it is carried in every note: a city centre is not a tomb, a town is not an
+excavation trench.
+
+## G1 criteria 1 and 3, now met
+
+```
+W1 placements: 23 placed + 1 declared unplaceable = 24/24 considered,
+18/17 with a named place, 52 distinct gazetteer ids, 1 contested
+Grounds: {identified 2, regional 35, stated 52}
+```
+
+Up from 19/24 and 15/17. Criterion 1 ("24/24 carry at least regional") and
+criterion 3 (≥17 named, ≥1 contested rendering as contested) are satisfied;
+criterion 2 (zero authored coordinates, mutation-verified) has held since A1
+and is now 34 mutations. A6 owns the remaining two.
+
+## Outstanding — one command
+
+The two accepted ids are cited but **not yet cached**, so
+`ingest.gazetteer --check` currently fails, naming all three placements that
+use them. That is the guard working: an id in a record with nothing behind it
+is precisely what it exists to catch.
+
+```powershell
+python -m ingest.gazetteer --geonames-dump "$env:USERPROFILE\Downloads\KR.zip" --refresh-geonames
+python -m ingest.gazetteer --geonames-dump "$env:USERPROFILE\Downloads\VN.zip" --refresh-geonames
+python -m ingest.gazetteer --check
+python ui\build_ui_data.py
+node ui\check_ui.mjs
+```
+
+After which Korea and Vietnam appear on the map for the first time, and the
+default view's bounding box widens from 84°E to about 129°E — the first time
+the map's extent has matched the project's stated scope.
+
+## Done (2026-08-13). Two defects the refresh exposed, both mine
+
+The dumps were downloaded and both ids cached. Final state:
+
+```
+placements: 89   locatable: 62   cached ids: 52  {geonames 2, pleiades 50}
+documents with a placement: 23 of 24  (+1 declared unplaceable = 24/24)
+Every placement resolves to a cached, dated gazetteer entry.
+places (A5): 54 pins, 5 extents, 30 gaps; 0 documents not yet considered
+```
+
+### 1. A check that named the wrong cause, written after the lesson was written down
+
+`--refresh-geonames` reported the ids it did not find as `UNRESOLVED`, told the
+curator to "check you have the right country file", and exited non-zero. But a
+GeoNames country file holds **one country** and this corpus spans four, so
+`KR.zip` will *always* lack the Vietnamese id and `VN.zip` will *always* lack
+the Korean one. Both runs printed a false alarm to a curator holding exactly
+the right file, and both exited 1 on a successful refresh.
+
+*A check that matches too broadly names the wrong cause* — fifth recorded
+instance, and the first written **after** the lesson was recorded in this very
+file. Knowing the rule did not prevent it; the rule was applied to the Pleiades
+path, where it is correct (one global dump, so a missing id does not exist)
+and carried unchanged to a path where the premise is false.
+
+Now: not-in-this-file is a note, still-uncached-anywhere is the actionable
+line, and completeness is left to `--check`, which is the only command with
+the whole picture. Four new assertions, mutation-verified.
+
+### 2. `sources.geonames` named whichever file was refreshed last
+
+After `KR.zip` then `VN.zip`, the cache claimed the GeoNames source was
+`VN.zip` — so the provenance of Gyeongju's coordinate, which came from
+`KR.zip`, was recorded as a file that does not contain it.
+
+**Third instance in this repository of one container holding what is really N
+things**: `sources` was flat and became per-gazetteer at A2; `licence` was flat
+and became per-gazetteer earlier today; and `sources.geonames` was one file and
+is really one per country. Each was found only when the second case arrived.
+
+Fixed by recording `source_file` on every cached GeoNames entry and
+accumulating `sources.geonames.files` rather than replacing it. `--stats` now
+prints one line per country file.
+
+> **Standing lesson, restated with a third worked example:** *when a container
+> is split because a second case arrived, check every sibling AND every child
+> holding the same assumption.* Splitting `sources` per gazetteer at A2 did not
+> prompt splitting `licence` beside it, and splitting `licence` today did not
+> prompt splitting `sources.geonames` below it. The shape recurs downward as
+> well as sideways.
+
+**Re-run the two refresh commands** to pick up `source_file` on the two cached
+entries; nothing else changes and `--check` passes either way.
+
+### Verified
+
+```
+python -m ingest.verify             clean    ingest.gazetteer --check   clean
+python -m ingest.test_places        ok       answer.test_translate      ok
+python scripts/mutate_places.py     35/35    scripts/mutate_part7b.py   14/14
+node ui/check_ui.mjs                20/20
+```
+
+Block A is complete. A6 inherits: the two mutation-verified guards
+`PHASE2_PLAN.md` assigns it, the date-overlap check, and the UNLOCATED-versus-
+no-entry distinction — Cyeneum, Sabbatha and Chryse still surface identically
+to places no gazetteer has heard of.
+
+## Why there is nothing from China on the map, and why that is correct
+
+Asked on reading the finished map, 2026-08-13. The answer is **not** a
+gazetteer gap: **no place in China is named anywhere in the corpus.**
+
+| record | places named | where they are |
+| --- | --- | --- |
+| `eastasia-01-weilue` | Da Qin, Anxi, Tiaozhi, Angu, Haixi | all **west** of China — the section is titled "Peoples of the West" |
+| `eastasia-02-hou-hanshu` | Da Qin, Rinan | Rinan is a Han commandery on the **central Vietnamese** coast |
+| `eastasia-03-hwangnam-glass` | Gyeongju | Korea — now placed |
+
+No record in the corpus has a Chinese findspot either. The two Chinese sources
+are Chinese *texts about the west*, which is precisely why they are in this
+corpus, and the map showing no point in China is the corpus being represented
+accurately. A4 already refused the obvious way to manufacture one: *"Luoyang,
+the court the tribute was offered to, is NOT named in this passage and is
+deliberately not placed."*
+
+Two genuine follow-ups are recorded here rather than done, by decision of
+2026-08-13 — neither belongs to A6's actual job (the G1 gate and verification),
+and both need judgement better taken deliberately than appended to a finished
+block.
+
+**1. Rinan — a TODO the record wrote for itself.** Its note reads: "this is
+GeoNames territory, and the GeoNames reader is the outstanding Block A item.
+Promote to a named place when it exists." It now exists. The complication is
+that Rinan is an **ancient commandery**, not a modern place, so GeoNames may
+hold nothing under that name and any placement is an ancient-to-modern claim
+requiring `identified` + `ground_citation`, not `stated`. It would put a pin in
+Vietnam, not China.
+
+**2. The Da Qin identifications — the highest-value geography item left.**
+`Da Qin ≈ Rome`, `Haixi ≈ Egypt`, `Anxi ≈ Parthia`, `Tiaozhi ≈ Characene`,
+`Angu ≈ Gerrha` are all *the translator's glosses*, and A4 refused every one of
+them for want of a citation — including declining `pleiades:766` for Haixi
+while using it for Egypt three records away, because there the Greek names
+Αἴγυπτος outright and here the Chinese names 海西. Those refusals are correct
+and they are also why the Weilüe and the Hou Hanshu draw nothing.
+
+Cite a scholar for them (Hill; Leslie & Gardiner) and both records join the
+network with edges to Rome and Egypt — **the two records most the point of this
+project, currently invisible on its map.** That is worth doing properly, with
+sources, and it is corpus curation rather than verification. It is the first
+thing to consider after G1.
+
+---
+
+# A6 — the build-layer mutation guards (2026-08-13)
+
+**One of three items `PHASE2_PLAN.md` assigns A6**, chosen first because it was
+the smallest and best-specified: extend `ui/build_ui_data.py --verify` to audit
+placements the way it already audits quote spans, then mutation-verify it.
+
+## What the gap actually was
+
+All three guards `PHASE2_PLAN.md` names — an authored coordinate, an
+`identified` placement with no citation, a `pleiades_id` that never resolves —
+were already true of the corpus, because `ingest/places.py` and
+`ingest/gazetteer.py` already refuse all three at load time, and
+`scripts/mutate_places.py` has mutation-verified those refusals since A1. The
+gap was narrower than the checklist reads: **the build had never been shown, on
+its own account, to refuse them too.**
+
+Two of the three turned out to be free rides that had never been exercised:
+`build_places()` calls `ingest.places.load_places()`, which already raises on
+an authored coordinate and on an uncited `identified` placement — but nothing
+caught that exception, so a bad record would have **crashed** the build with a
+traceback rather than failing it cleanly. A crash is not a guard firing, by this
+repository's own standing rule (`mutate_places.py`'s docstring, and the
+`test_embed.py` incident it exists to prevent). The third — an id that never
+resolves — was already a clean, reported failure (`places["uncached"]`, exit 2,
+present since A4) but had genuinely never been mutation-tested.
+
+## What was built
+
+- **`check_placement_shape(p: Place) -> str | None`** and
+  **`verify_placement_shape(by_doc) -> list[str]`** in `ui/build_ui_data.py`.
+  Deliberately redundant with `ingest/places.py::parse_place` — re-checking the
+  same two shape rules on the `Place` objects the build already has, rather
+  than trusting that `parse_place` validated them. The reasoning is the same
+  one `verify_spans` is built on: a rule enforced in exactly one place is a
+  rule one edit away from being silently weakened, and until today only
+  `ingest/places.py`'s copy of these two rules had ever been shown to fail.
+  Wired into `build_places()`'s return as `shape_problems` and into `main()` as
+  a third failure path, alongside `uncached`, both exiting 2 with the specific
+  placements named.
+- **`ui/test_build_ui_data.py`** — fixture tests in the exact `expect`/`ok`/
+  `FAIL` idiom `ingest/test_places.py` and `scripts/test_recover_baseline.py`
+  use, so `scripts/mutate_ui_places.py` can parse its FAIL lines the same way
+  `mutate_places.py` parses `ingest.test_places`'s. Fixtures build `Place`
+  objects directly rather than through `parse_place`, for the same reason
+  `ingest/test_places.py` does when it needs to exercise a shape `parse_place`
+  would never let through: these two defects cannot arrive any other way.
+- **`scripts/mutate_ui_places.py`** — same structure as `mutate_places.py`
+  (patch source, run the test module as a subprocess, confirm the named FAIL
+  line, restore, confirm restoration), sized to the three guards this block
+  owns rather than folded into the existing script, because `ui/build_ui_data.py`
+  is not one of `mutate_places.py`'s two `SOURCES`.
+
+## Verified
+
+```
+python ui/test_build_ui_data.py     all build-layer placement-shape assertions passed
+python scripts/mutate_ui_places.py  3/3, sources restored
+python -m ingest.verify             clean    ingest.gazetteer --check   clean
+python -m ingest.test_places        ok       answer.test_translate     ok
+python scripts/mutate_places.py     35/35    scripts/mutate_part7b.py  14/14
+node ui/check_ui.mjs                20/20
+python ui/build_ui_data.py          wrote ui/data.js (1025 KB), 0 shape_problems, 0 uncached
+```
+
+`ui/data.js` was rebuilt against these changes; nothing in it moved except its
+`generated` timestamp — the new checks pass silently against a corpus that was
+already clean, which is what they are supposed to do.
+
+## Left for A6
+
+The other two items `PHASE2_PLAN.md`'s Block A closing notes and the two A5
+watch items assign here, neither touched by this session:
+
+- **the date-overlap check** — motivating case on disk: the Ka'ba-ye Zartosht's
+  `timePeriodsKeys` (`achaemenid-central-asia, modern`) omit the Roman era
+  while the ŠKZ inscription it is tied to is 3rd-century;
+- **the UNLOCATED-versus-no-entry distinction** — six UNLOCATED gazetteer ids
+  (Cyeneum, Sabbatha, Chryse among them) currently surface identically to a
+  place no gazetteer has heard of.
+
+Also still explicitly not A6's job, per the note at the end of the previous
+entry: Rinan's placement and the Da Qin/Haixi/Anxi identifications — corpus
+curation, first thing to consider after G1 closes, not part of it.
+
+---
+
+# A6 — the date-overlap check, and UNLOCATED given its own state (2026-08-13)
+
+Both remaining A6 items, in one session, and **the dump refresh found a defect
+in the first of them** — see "The refresh ran" below, which is the part of this
+entry worth reading.
+
+```
+python -m ingest.test_places        all pass (+44 assertions)
+python scripts/mutate_places.py     43/43  (35 before, 8 new)
+python ui/test_build_ui_data.py     ok     scripts/mutate_ui_places.py  3/3
+python -m ingest.verify             clean  ingest.gazetteer --check     clean
+node ui/check_ui.mjs                23/23  scripts/mutate_part7b.py     14/14
+```
+
+## Part 1 — the date-overlap check
+
+### The comparison the check could NOT be
+
+`PROGRESS.md` framed this as the record's date against the gazetteer entry's
+attested range. That is not available: the seed records' `date` fields are
+free prose written for a reader — *"compiled 5th century CE; records an event
+of 166 CE"*, *"deposited soon after 205 CE (dendrochronology of shield
+boards)"*. Parsing those into numeric ranges is guessing with a check's face
+on, and **a check that matches too broadly names the wrong cause** is the
+defect this repository has paid for five times.
+
+`gazetteer.py` had already written down the right comparison, in the
+`COLUMN_CANDIDATES` comment that asked for this guard in the first place: the
+**project's own window, 27 BC to AD 1204**, which is a constant and needs no
+parsing.
+
+### The comment that asked for the guard was itself wrong
+
+That same comment offered its motivating case: *"Mundus Ulterior covers 27 BC
+to AD 1204; a findspot whose gazetteer entry is mediaeval-only is a
+misidentification that resolves cleanly."* Written as a test, **Borgo
+Medievale passes** — 640..1453 against −27..1204 overlaps by 564 years,
+because this project runs to the Fourth Crusade. The example chosen to justify
+the check would not have tripped it.
+
+Found by using those exact numbers as the out-of-era fixture and watching the
+assertion fail. The comment is corrected in place, and
+`ingest/test_places.py::test_dates` now asserts **both** directions: a
+post-mediaeval entry is refused, and a mediaeval one is explicitly in era.
+
+> **Standing lesson added:** *an example written to motivate a guard is not
+> the same as a case the guard catches, and only writing it as a test tells
+> them apart.* The comment had sat in the file since A1, read several times,
+> and its worked example was wrong about the project's own dates.
+
+### `minDate`/`maxDate` are a hull, not an attestation — which is the real defect
+
+The sharper finding, and it makes the ŠKZ case a different shape from the one
+recorded at A2. Pleiades **derives** an entry's `minDate`/`maxDate` from the
+periods it attests, so for an entry attested in disjoint periods the pair
+spans the gaps too. The Ka'ba-ye Zartosht attests `achaemenid-central-asia`
+and `modern`; the hull is −540..2100 and there is a **2,240-year hole** in the
+middle, with the 3rd-century ŠKZ sitting squarely in it. The entry looks in
+scope and attests nothing there.
+
+So the hull answers only *could this be in scope*. Answering *is it* needs each
+period's own range — which the cache did not hold, and which is where the one
+design decision of this block sat. **Deriving it from the dump**, rather than
+hand-listing the in-scope period keys: a row attesting **exactly one** period
+states that period's range outright (`Adouli`, periods `roman`, −30..300, says
+`roman = −30..300`). Thousands of such rows give the vocabulary with no
+documentation involved — the same discipline as `map_columns`, *the parser is
+written against data, not against documentation*. The alternative was a
+vocabulary written from memory against a publisher's open-ended list, which is
+what this module refuses for place ids one level up.
+
+`--refresh-periods` caches it with full provenance. **Disagreement is never
+resolved by picking a winner**: if two single-period rows give different ranges
+for one key, the key is recorded as `ambiguous` with **no** range, and every
+entry using it audits as `unknown`. A most-common-value rule was easy here and
+would have made the check assert what the dump does not say.
+
+### Three severities, because there are three different wrongs
+
+| verdict | meaning | severity |
+| --- | --- | --- |
+| `outside` | the hull itself misses −27..1204 | **failure** — nothing it attests can be what is cited |
+| `hole` | hull covers, every attested period falls outside | **note** — the Ka'ba case |
+| `unknown` | vocabulary not derived, or the key was ambiguous | **note**, never folded into `ok` |
+
+`hole` is a note and not a failure because the placement can be perfectly
+correct: the ŠKZ really is carved on that monument, and what the finding means
+is that Pleiades attests the building narrowly. Same reasoning as the
+unrenderable-regional report. `unknown` is kept distinct on the rule that made
+`resolve()` raise: **a check that cannot tell must say so.**
+
+## Part 2 — UNLOCATED given its own state
+
+### Why the id was in a note instead of the record
+
+The state was invisible for a mechanical reason worth recording. `--check`
+fails an entry resolving to neither point nor extent, so citing Pleiades 40186
+Kyeneion — which resolves and carries **no coordinate** — would have failed the
+build. The curator's only option was to drop the id and write it in prose. The
+id therefore survived somewhere no check can read, and at the data layer
+Kyeneion was indistinguishable from Ariake, which no gazetteer has ever heard
+of.
+
+**The third state again, one level below `no_places_reason`**, and it arrived
+the same way: written in prose because the schema had nowhere to put it.
+
+### `unlocated: true`
+
+Written as `true` or omitted, on the same rule as `contested`. It **requires an
+id**, because "the gazetteer holds this and cannot place it" is a claim about
+an entry and without an id there is no entry to make it about.
+
+And it is **verified, not trusted** — the cached entry must really carry
+neither point nor extent. That is the whole value of moving it out of a note:
+the day Pleiades locates Kyeneion, a stale `unlocated` fails loudly instead of
+quietly continuing to draw nothing. Mutation-verified.
+
+`Place` also gained **`drawable`** beside `locatable`, because those had become
+two questions under one name: an `unlocated` placement has an id, must resolve,
+must cache — and can never yield a coordinate. Collapsing them is exactly how
+the two states came to look alike.
+
+### Two records updated, one deliberately not
+
+Cyeneum (`pleiades:40186`) and Sabbatha (`pleiades:906027`) each had a single
+candidate id already determined and recorded in prose by the curator; both now
+cite it. **Chryse does not**, and that is a decision rather than an omission:
+its note names *two* unlocated candidates, `60485 Chryse/Aurea` and `50630
+Chrysei`, and which one this is has never been settled. `unlocated` takes one
+id, and recording either would settle by keystroke a question nobody has
+settled by argument. Its note now says so.
+
+## The refresh ran, and the check was wrong on the case it was built for
+
+```
+derived 99 period range(s) from pleiades-places-20260810.csv.gz (2026-08-10)
+  42389 rows read, 14861 attesting exactly one period
+  36 of 99 overlap this project's -27..1204
+  0 ambiguous
+placements: 89   locatable: 64   cached ids: 54
+gazetteer holds the place but not its location: 2 (Cyeneum, Sabbatha)
+Every placement resolves to a cached, dated gazetteer entry.
+```
+
+**The derivation method is sound, and the dump says so.** 14,861 single-period
+rows produced 99 ranges and **zero** disagreements — the ambiguity guard, built
+because a majority rule would have been a guess, turns out to have nothing to
+guard against in this snapshot. That is the right order: the guard exists
+because the method could have been unsound, and the run is what established
+that it is not.
+
+### The defect: a `hole` claimed on a vocabulary gap
+
+The first real run reported the ŠKZ as a `hole` — and the note gave it away:
+
+> every period it actually attests falls outside it: modern (1700..2100);
+> **1 further period(s) have no derived range**
+
+`achaemenid-central-asia` appears in **no single-period row of 42,389**, so it
+has no derived range. Some Pleiades periods only ever co-occur, and that is a
+**third cause** of "no range" beside "not derived yet" and "ambiguous" — one I
+had not anticipated.
+
+A `hole` is the positive claim that *nothing this entry attests is in era*, and
+it cannot be made while a period is unaccounted for: **the missing period could
+be the one in era.** The first version claimed it as soon as no *known* period
+matched, which reported a gap in the derived vocabulary as a finding about the
+gazetteer.
+
+> **The over-broad check again, and this time I wrote it after writing the
+> lesson down twice in this same file.** Sixth instance. It is worth naming
+> what made it slip through: every one of the fixture tests passed, because
+> each supplied a *complete* vocabulary. The partial-vocabulary case — the one
+> the real dump actually produces — was not among them. **A fixture that is
+> always complete cannot test what happens when the data is not.**
+
+Now `unknown`, naming both halves: what is known to be out of era, and what
+could not be checked. Mutation-verified (43 mutations, up from 42), with the
+mutation restoring precisely the version that shipped.
+
+The corpus is down from 59 `unknown` verdicts to **1** — the ŠKZ — and it is
+the honest one. Resolving it needs a range for `achaemenid-central-asia`, which
+this method cannot supply from a dump where it never appears alone. Bounding it
+from multi-period rows was considered and does not work either: the Ka'ba row
+constrains it to start at −540 and says nothing about where it ends, which is
+exactly the fact in question.
+
+## Verified, everything green
+
+```
+python -m ingest.verify              clean    ingest.gazetteer --check    clean
+python -m ingest.test_places         ok       answer.test_translate       ok
+python ui/test_build_ui_data.py      ok       scripts/mutate_ui_places.py 3/3
+python scripts/mutate_places.py      43/43    scripts/mutate_part7b.py    14/14
+python ui/build_ui_data.py           wrote ui/data.js (1027 KB)
+node ui/check_ui.mjs                 23/23
+```
+
+The two `unlocated` ids are cached and Cyeneum and Sabbatha now render with
+their own gap reason — *the gazetteer holds this place and does not record
+where it is* — distinct from Ariake's *no gazetteer entry at all*, which was
+the point of the block.
+
+## What A6 has left
+
+- **G1 criterion 4** — the only checklist item never asserted end to end. Its
+  own starting-point section follows.
+- The `hole` and `unknown` verdicts are computed and reported by `--check` but
+  are **not carried into `ui/data.js`**, so the page cannot yet show that a
+  point's dates do not corroborate the record citing it.
+
+---
+
+# G1 criterion 4 — starting point (for the next thread)
+
+**Everything else on the G1 checklist is met.** This is the last item, and the
+gate closes when it is done.
+
+| criterion | state |
+| --- | --- |
+| 1. 24/24 considered, ≥17 with a named resolving id | ✅ 24/24, 18 named |
+| 2. zero authored coordinates, mutation-verified | ✅ 43 mutations |
+| 3. every `identified` cited; ≥1 contested renders as contested | ✅ Pattanam |
+| 4. **map point → record → quotation → characters on disk, no dead link** | ✅ 6/24 chains, 8 mutations |
+| 5. `check_ui.mjs` clean over all archived runs | ✅ 23/23 |
+
+## What criterion 4 is, and why the existing checks do not cover it
+
+`check_ui.mjs` already asserts every hop **separately**: 51 cached points are
+drawn, 24 record panels build, 89 placements appear on their own record's
+panel, every quotation in an answer is highlighted, and all 157 `resolved`
+spans hold their quoted characters. All of it passes.
+
+None of it asserts the hops **connect**. This repository has paid for that
+distinction four times (`PROGRESS.md`'s standing lesson: *an assertion about
+presence says nothing about correctness*), and most expensively when a map
+plotted all 49 points correctly onto an inverted planet with 20/20 green.
+
+So the work is one traversal that starts at a map marker and ends at characters
+in a seed file on disk, asserting at each hop that the next one is reachable —
+not that it exists somewhere.
+
+## The finding that shapes the whole block
+
+**The chain is complete for 6 of 24 documents.** Measured against the current
+`ui/data.js`:
+
+```
+docs with a drawable map point : 18
+docs with a resolved quotation :  8
+docs with BOTH (full chain)    :  6
+```
+
+`drawn but never quoted` (12): africa-01-ezana-stone, africa-02-aksumite-coin,
+arabia-01-periplus, arabia-02-palmyrene-tariff, arabia-03-jsnab17,
+eastasia-03-hwangnam-glass, persia-01-skz, scandinavia-01-hoby-treasure,
+scandinavia-02-gudme-hoard, scandinavia-04-illerup-adal,
+seasia-01-oc-eo-medallion, seasia-02-oc-eo-site.
+
+`quoted but not drawn` (2): **eastasia-01-weilue, eastasia-02-hou-hanshu** —
+the Da Qin records, which draw nothing because A4 refused the translator's
+uncited glosses. The two records most the point of this project are, again,
+the two that cannot complete the chain.
+
+**Decide what the criterion asserts before writing it.** Two readings:
+
+1. *every chain that exists is unbroken* — 6 documents, and the count is
+   reported so a shrinking number is visible;
+2. *every record completes the chain* — unreachable, and would be satisfiable
+   only by weakening what "quotation" means.
+
+Reading 1 is the honest one and is what the wording ("no dead link") says. But
+**6/24 must be printed, not hidden inside a pass**: a green check over six
+records reads exactly like a green check over twenty-four, and that is the
+`--survey`-on-substrings failure again. The `unrenderable` and `date_holes`
+reports are the house pattern for this — count it, name it, do not fail on it.
+
+## What it can rely on
+
+- `ui/check_ui.mjs` already loads `data.js` into a sandbox and holds the
+  render API: `renderPlaceProvenance`, `renderGroupProvenance`,
+  `renderRecordProvenance`, `renderQuoteProvenance`, `buildMap`, `viewPlaces`.
+  Nothing new needs building to reach any hop.
+- The join between the two graphs is **`doc_id`**: `places.groups[].members[]`
+  carries it on the map side, `runs[].grounding.quote_spans[]` on the answer
+  side, and `corpus[doc_id].fields[source_field]` holds the characters.
+- `span.resolution.state` is already computed (`resolved` / `case_only` /
+  `moved` / `absent`). Only `resolved` and `case_only` are live links; `moved`
+  and `absent` are the two known-broken archived citations and must be
+  **excluded by name, with the reason**, not filtered silently.
+
+## Traps, in the order they will be met
+
+1. **`moved` and `absent` are real and pre-existing.** One of each, both in
+   `africa-03-periplus-adulis`, both predating A5 and explained on the About
+   tab. A chain check that counts them as dead links fails on a phenomenon the
+   page already documents; one that drops them without saying so hides the
+   only two genuinely broken citations in the archive.
+2. **A group panel is not a record panel.** A marker resolves to a
+   `places.groups[]` entry with N members; the chain passes through a *chosen*
+   member. Assert every member is reachable, or the check passes on the first
+   one and says nothing about the other three.
+3. **`unlocated` and gap placements have no marker at all.** Cyeneum, Sabbatha
+   and the 30 gaps are reachable from the record panel but never from the map.
+   They are not dead links; they are places with no point, and the chain does
+   not start there.
+4. **Do not assert on presence in HTML strings.** `renderRecordProvenance`
+   returns markup; checking that it *contains* a doc_id is the presence
+   assertion this whole block exists to stop trusting. Assert reachability
+   through the data the renderer was given.
+
+## To run
+
+```powershell
+cd "C:\Users\chemi\Documents\Claude\Museums Project Number 1\mundus-ulterior"
+python ui\build_ui_data.py
+node ui\check_ui.mjs
+python -m ingest.gazetteer --check
+```
+
+Everything is green at the start of this block. No dump is needed: the
+gazetteer cache, the period vocabulary and `data.js` are all current as of
+2026-08-13.
+
+## And when the gate closes
+
+The queue from Block A's closing notes, in the order those notes put it:
+
+1. **The Da Qin identifications** — cite Hill, or Leslie & Gardiner, for
+   `Da Qin ≈ Rome` and `Haixi ≈ Egypt`. The Weilüe and the Hou Hanshu join the
+   network, and the two records that cannot complete criterion 4's chain today
+   would be the ones it most rewards.
+2. **Rinan** — needs `identified` + a `ground_citation`; puts a pin in Vietnam.
+3. Carry the `hole` / `unknown` date verdicts into `data.js`, so the page can
+   show what `--check` already knows.
+
+Then **Block B**, which is a different kind of work: the W2a retrieval
+baseline, and the first thing in Phase 2 that spends money.
+
+---
+
+# G1 criterion 4 — done, and the gate closes
+
+`ui/check_chain.mjs` and `scripts/mutate_chain.mjs` are new. One traversal from
+a drawn map marker to characters in a seed file on disk, and eight mutations
+proving it can fail on the right hop.
+
+```
+node ui/check_chain.mjs        chain intact — no dead link   (8 assertions)
+node scripts/mutate_chain.mjs  8/8 mutations caught by the assertion that owns the hop
+```
+
+The chain is complete for **6 of 24** records, exactly the count the starting
+notes predicted, and the traversal makes **956 marker-to-disk paths** over
+**104 distinct quotations** — a record reachable from three markers has three
+chains through it, and each is walked on its own account.
+
+## Two tautologies, one of them caught only by mutation
+
+**This block's real finding is that I wrote two assertions that could not fail,
+inside the file whose entire purpose is to stop trusting assertions that cannot
+fail.** Seventh and eighth instances of the standing lesson, and the first time
+one was caught by machinery rather than by re-reading.
+
+The first I caught by inspection. It asserted that the four cohorts sum to 24 —
+but `fullChain`, `drawnNotQuoted`, `quotedNotDrawn` and `neither` are
+*constructed* as a partition of the same array, so the sum is 24 by
+construction. It now asserts that every record counted as a complete chain was
+actually walked end to end, which is computed two independent ways: cohort
+membership from set intersection, `traversed` from the walk arriving at disk.
+
+**The second I did not catch, and would not have.** Hop 3 asserted that a
+quotation's run is "reachable from a run the page can open" —
+`byQuestion.get(run.question).includes(run)`. The mutation that was supposed to
+break it moved a run to an unlisted question, and `check_chain.mjs` passed.
+`byQuestion` is built from `D.runs` and `QUESTIONS` from `byQuestion`, so every
+run is reachable by construction and no mutation could ever have failed it. It
+read like a real check and asserted nothing.
+
+> **Within one self-consistent bundle, most "reachability" is derived and
+> therefore tautological.** This is the sharpest form the standing lesson has
+> taken. `data.js` is generated from a single build; asking whether one part of
+> it can reach another usually asks whether the builder ran, which it did. The
+> only genuinely falsifiable links are the ones that cross between structures
+> the builder wrote *independently*, or that leave the bundle altogether.
+
+## What replaced it, and why it is the better hop anyway
+
+Reading `renderQuoteProvenance` to design the replacement turned up something
+the starting notes had missed. The panel prints `rec.file` on screen under a
+heading that reads **"the characters on disk"** — the page tells the user which
+file the quotation came from.
+
+My first draft found the seed file by scanning `data/seed_corpus` for a
+matching `id`. So the page could have named one file while the check validated
+another, and both would have been green. The traversal now travels *through*
+`D.corpus[doc_id].file`: it opens the path the page displays, checks that file
+holds the record it claims, and indexes the characters there. That is what makes
+this one chain rather than two true facts side by side.
+
+Three of the eight mutations exercise it: point the record at a different seed
+file, point it at a path that is not on disk, and — the load-bearing pair —
+edit the characters in the seed file itself while leaving `data.js` internally
+consistent. If the last hop had quietly read the bundle, those two would have
+stayed green.
+
+## The `case_only` trap, found before it cost anything
+
+All 166 live spans land on their characters on disk. The 9 `case_only` spans
+match only case-insensitively, which is precisely what `case_only` names — a
+hop-4 check comparing case-sensitively would have reported nine dead links that
+are not dead. The leniency is scoped to that state alone, and mutation 7 proves
+it: upper-casing a **`resolved`** span's characters on disk still fails.
+
+## What is counted, not hidden
+
+`moved` and `absent` are excluded **by name with the reason** — one of each,
+both in `africa-03-periplus-adulis`, which is also one of the six complete
+chains, so trap 1 landed on a chain member rather than off to the side.
+
+The shortfall prints as four named cohorts, in the `unrenderable` / `date_holes`
+house pattern:
+
+- **6 full chain** — africa-03-periplus-adulis, scandinavia-03-vimose,
+  southasia-01-akananuru-149, southasia-02-periplus-muziris,
+  southasia-03-muziris-papyrus, southasia-04-pattanam
+- **12 drawn, never quoted** — chain ends at the record
+- **2 quoted, never drawn** — eastasia-01-weilue, eastasia-02-hou-hanshu
+- **4 neither** — arabia-04-jabal-dabub, persia-02-silver-plate, persia-03-coin,
+  seasia-03-khao-sam-kaeo
+
+**That last cohort was not in the starting notes.** Those notes accounted for
+6 + 12 + 2 = 20 of 24 and never named the remaining four. The accounting is now
+exhaustive on screen, because a cohort nobody lists is a cohort nobody checks.
+
+The check hard-fails on exactly one thing beside a broken link: a chain count of
+zero. A traversal with nothing to traverse prints green while asserting nothing,
+which is the failure the file exists to rule out.
+
+It lives in its own file rather than inside `check_ui.mjs` for the reason the
+starting notes gave — a green check over six records reads exactly like a green
+check over twenty-four, and as line 24 of a 23-line report that is what it would
+read like. Here the 6/24 is the only number on the page.
+
+## Everything green
+
+```
+python -m ingest.verify          clean   ingest.gazetteer --check     clean
+python -m ingest.test_places     ok      answer.test_translate        ok
+python ui/test_build_ui_data.py  ok      scripts/mutate_ui_places.py  3/3
+python scripts/mutate_places.py  43/43   scripts/mutate_part7b.py     14/14
+python ui/build_ui_data.py       wrote ui/data.js (1027 KB)
+node ui/check_ui.mjs             23/23
+node ui/check_chain.mjs          chain intact — no dead link
+node scripts/mutate_chain.mjs    8/8
+```
+
+**G1 is closed.** All five criteria met.
+
+## Next, in the order Block A's closing notes put it
+
+1. **The Da Qin identifications** — cite Hill, or Leslie & Gardiner, for
+   `Da Qin ≈ Rome` and `Haixi ≈ Egypt`. This is now worth more than it was this
+   morning: the Weilüe and the Hou Hanshu are the whole of the `quoted, never
+   drawn` cohort, so giving them a marker moves the chain count from 6 to 8 and
+   empties a cohort.
+2. **Rinan** — needs `identified` + a `ground_citation`; puts a pin in Vietnam.
+3. Carry the `hole` / `unknown` date verdicts into `data.js`, so the page can
+   show what `--check` already knows.
+
+Then **Block B**: the W2a retrieval baseline, and the first thing in Phase 2
+that spends money.
+
+---
+
+# The Da Qin block — what the sources actually support
+
+Started as queue item 1 ("cite Hill, or Leslie & Gardiner, for `Da Qin ≈ Rome`
+and `Haixi ≈ Egypt`"). **Both halves of that sentence turned out to be wrong,
+and finding out why is the whole value of the block so far.** No placement has
+been written yet; what follows is the reasoning that has to be settled first,
+recorded now because it took three passes to reach and should not be re-derived.
+
+## 1. The schema cannot express a disputed *referent*
+
+`contested` is legal only on `ground: identified`; `identified` requires exactly
+one `gazetteer_id`. So `contested: true` means **"this place is at THAT
+location, and scholars dispute it"** — Pattanam's shape, where the coordinate is
+certain (it is the excavation site) and only the label *Muziris* is argued over.
+
+Da Qin, Haixi and Angu are the other kind. There is no certain coordinate, and
+the dispute is over **which region the name denotes**. Any single id we wrote
+would take a side in the very dispute the flag exists to declare:
+
+| name | competing referents in the literature |
+| --- | --- |
+| Da Qin 大秦 | the whole Roman Empire / the Roman East / Syria specifically |
+| Haixi 海西 | Egypt (Hirth 1885; Hill 2004, 2015; Paolillo 2024) vs the Italic peninsula or Rome itself (Leslie & Gardiner 1996, 263–4; Yu Taishan 2013, 40 n.68) |
+| Angu 安穀 | Orchoë (Hirth 1885, 187) / Gerrha (Hill 2004) / Antioch-Charax (Leslie & Gardiner 1996, 67) |
+
+> **This is the third state again, at the identification layer.** `unlocated`
+> and `no_places_reason` were each split out because a real state had nowhere
+> to live in the schema and survived only in free-text `note`. That is exactly
+> where these three candidate-sets live today. **Open question, deliberately not
+> answered in this block:** whether to add a shape that holds N candidate
+> identifications, each with its own id and citation, none asserted as the
+> answer. It would touch `places.py`, the build, the UI and the mutation suite,
+> and it would probably retire four of the five Weilüe notes.
+
+## 2. Haixi does not survive contact with the primary text
+
+The plan after finding (1) was to sidestep Da Qin and place Haixi instead —
+`pleiades:766 Aegyptus` is already cached, so it needed no dump. Reading
+Paolillo 2024 in full killed it.
+
+**In the Weilüe, 海西 is an epithet of Da Qin, not a separate country:**
+其國在海西。故俗謂之海西 — "This kingdom is located west of the sea: for this
+reason, it is popularly called Haixi." The Hou Hanshu says it twice more:
+海西即大秦也 (juan 86) and 大秦國一名犁鞬，以在海西，亦云海西國 (juan 88).
+Paolillo reads the Weilüe as indicating "that Haixi is a part of Da Qin".
+
+Pinning Haixi to Egypt while leaving Da Qin regional would assert a separation
+the text collapses — and would put a pin in Egypt for a name the record uses to
+mean the Roman Empire. Paolillo's own support is explicitly tentative ("it is
+not far-fetched to identify…", "a place that we may – tentatively – identify
+with Egypt").
+
+**And the two translators disagree about the structure of the passage itself.**
+Hill separates them — you cross the Mediterranean from Haixi "to reach that
+country (Da Qin = Rome)" — while Paolillo has Haixi inside Da Qin. That is not
+a dispute a `gazetteer_id` can hold.
+
+> The lesson generalises past this record: **an identification can be
+> well-cited and still unplaceable, because the citation settles the gloss and
+> not the referent.** Queue item 1 was written as a citation-hunting task. It
+> was never one.
+
+## 3. What Paolillo 2024 *does* license
+
+The same paper answers A4's stated objection to a different placement. On p. 30:
+
+> "Tiaozhi, on the other hand, appears to correspond with the territory of
+> Characene/Mesene in southern Mesopotamia or its political centre Charax
+> Spasinou"
+
+A4's note on Tiaozhi already names the id and the reason for refusing it:
+*"Pleiades 912905 'Mesene/Characene' 31.468/47.344 was examined and is not used
+… it is the gloss's identification and no citation supports it here."* **That
+objection is now met, and only that one.** Territory-to-territory, no
+city-standing-for-empire problem, no epithet problem.
+
+Anxi ≈ Parthia is citable from the same paper but is NOT the same case: A4
+refused `pleiades:952097` for a second reason — it is *Parthyene*, a region
+rather than the empire — which is the Da Qin objection wearing a different hat,
+and a citation for "Anxi = Parthia" does not answer it.
+
+**Chosen: Tiaozhi alone.** It takes the chain from 6/24 to 7/24 and is the only
+one of the five whose sole stated objection has actually been removed.
+
+The citation is good in the way this project cares about: Maurizio Paolillo,
+"Following a Mediterranean Clue. A Reconsideration of the Sources About the
+Country of Haixi 海西國 (2nd–3rd Cent. CE)", in R. Vinci (ed.), *Navigating the
+Mediterranean Through the Chinese Lens*, Firenze University Press 2024, 25–37 —
+peer-reviewed, open access under CC BY 4.0, DOI 10.36253/979-12-215-0598-6.04.
+
+## 4. A corpus-integrity finding, unrelated to placement
+
+`eastasia-01-weilue`'s `original_text_excerpt` does not match the published
+text. Ours reads:
+
+    從安谷城乘船直渡海，海西人名之海西
+
+Paolillo, quoting the Sanguozhi (Chen Shou 1975), has:
+
+    從安息界安穀城乘船。直截海西。… 其國在海西。故俗謂之海西。
+
+Beyond the marked elisions and the 谷/穀 variant: `直渡海` where the source has
+`直截海西`, and **`海西人名之海西` corresponds to nothing in the source** — it
+looks like a corruption of 其國在海西故俗謂之海西.
+
+**No chain is broken today** — all 62 spans on the two Da Qin records target
+`reference_translation`, and the English matches Hill verbatim. But this is the
+record the AI Technology Showcase brief names as the hero demo *for Classical
+Chinese retrieval*, and the field is the one criterion 4's chain indexes
+characters into. A cross-lingual demo standing on a corrupted source text is the
+same class of defect as a stale bundle: everything downstream is green and the
+thing itself is wrong.
+
+**Deliberately not fixed here.** Correcting a primary-source transcription from
+a secondary work's quotation would itself be an unsourced edit — the exact move
+A4 refused when it declined the translator's glosses. It needs a print edition
+(Chen Shou 1975, *Sanguozhi*, Beijing: Zhonghua shuju) or a stable digital
+facsimile. zh.wikisource, which the record cites as `citation_original`,
+returned nothing fetchable.
+
+## 5. Blocked on
+
+`pleiades:912905` is **not cached**, and neither is `952097` or `423025`. The
+Pleiades dump is gitignored and absent, and pleiades.stoa.org now sits behind an
+anti-bot challenge, so the id cannot be resolved from the web either. Needs
+`pleiades-places-<date>.csv.gz` on disk, then the project's own
+`--refresh` / `--find` route as in A5 and A6.
+
+Rinan is blocked the same way, and may not be in Pleiades at all — a Han
+commandery in central Vietnam is outside a Greco-Roman gazetteer's scope, which
+would put it with Gyeongju and Óc Eo in the GeoNames backlog rather than in this
+block.
+
+## The dump arrived, and Tiaozhi is placed — 7/24
+
+The 2026-08-10 CSVs are the right ones and were verified before use: places
+**42,389 rows** over 26 columns, which is the identical count A6 recorded when
+it derived the period vocabulary, so the cache stays single-dated. A third file,
+`pleiades-places-20260813.json.gz`, was the JSON-LD export at 135 MB — the wrong
+format, and mixing its newer snapshot in would have produced a cache whose
+entries came from two different days. Not used.
+
+### The lookup found a near miss worth recording
+
+```
+912905  Mesene/Characene/Shad Bahman/Maisan   31.468,47.344  precise -30..640
+897810  Mesene                                            —  unlocated -30..300
+```
+
+**Two entries titled Mesene.** 897810 is a settlement near Ctesiphon whose
+"location has not been determined" and which carries no coordinate at all. A4's
+note recorded 31.468/47.344, which is 912905 — so the right one was already
+identified — but nothing in the corpus would have caught the substitution if the
+id had been transcribed wrong, because both resolve and only one has a point.
+`--find` printing both, with its own standing warning that *a name match is not
+an identification*, is what made the distinction visible.
+
+### Written as `identified`, deliberately NOT `contested`
+
+`ground_citation` is Paolillo 2024, p. 30, quoted verbatim in the field. The
+scholarship varies over the **extent** rather than the **referent** — Hill
+glosses "Characene and Susiana", Paolillo has Characene/Mesene "or its political
+centre Charax Spasinou" — and marking that contested would dilute a flag that
+currently means a genuine two-sided dispute about *which place is meant*.
+Criterion 3 depends on that flag meaning something.
+
+### Rinan: nothing, which is a result
+
+```
+searching pleiades-places-20260810.csv.gz for 'Rinan'  -> no match
+searching for 'Nhat Nam'                               -> no match
+```
+
+`--find`'s own message is the correct reading: *"That is a RESULT, not a
+failure… Do not reach for a nearby place."* Rinan stays `regional` — a Han
+commandery in central Vietnam is outside a Greco-Roman gazetteer's scope, which
+is the project's premise appearing in its own gate for the sixth time.
+
+It does **not** join "the GeoNames backlog" as that list stood in Block A: A5's
+GeoNames reader was built and Gyeongju (`geonames:1841603`) and Óc Eo
+(`geonames:13405688`) are cached and drawn. What is still unplaced is
+`seasia-03-khao-sam-kaeo` and `arabia-04-jabal-dabub`, plus `persia-02-silver-plate`;
+`persia-03-coin` carries an honest `no_places_reason` and is not a gap.
+Rinan is a harder case than any of them, because it is an **ancient
+administrative region** with no single modern settlement standing for it — the
+gazetteer that would hold it is neither Pleiades nor GeoNames.
+
+Cattigara *does* resolve, at 10.255/105.152 in the Mekong delta near Óc Eo — and
+is dated **1700..2100 modern**, the same shape as the "Parthian empire" entry A4
+refused. A modern scholarly label is not an ancient place. Not used, and not
+Rinan in any case.
+
+### Result
+
+```
+python -m ingest.gazetteer --refresh   53 of 53 ids looked up
+python -m ingest.gazetteer --check     Every placement resolves to a cached, dated entry
+python ui/build_ui_data.py             wrote ui/data.js (1030 KB)
+node ui/check_ui.mjs                   all checks passed
+node ui/check_chain.mjs                chain intact — no dead link
+node scripts/mutate_chain.mjs          8/8
+python scripts/mutate_places.py        43/43   mutate_ui_places.py  3/3
+python scripts/mutate_part7b.py        14/14   ingest.verify        clean
+```
+
+**The chain is 6/24 → 7/24.** `eastasia-01-weilue` joins africa-03-periplus-adulis,
+scandinavia-03-vimose, southasia-01-akananuru-149, southasia-02-periplus-muziris,
+southasia-03-muziris-papyrus and southasia-04-pattanam. 52 markers now, 60
+members, 996 marker-to-disk paths over 144 distinct quotations.
+
+`quoted, never drawn` is down from 2 to **1** — eastasia-02-hou-hanshu, held
+there by Rinan alone. **Both Da Qin records were supposed to be the payoff of
+this block; one of them was, and the other is blocked on the gazetteer rather
+than on the argument.** That is a better place for it to be stuck.
+
+### Still open, in order
+
+1. **The Weilüe's `original_text_excerpt` is corrupt** (§4 above) — needs a
+   print edition or stable facsimile, not a fix derived from a secondary
+   quotation.
+2. **The candidate-identification schema gap** (§1 above) — would retire four of
+   the five Weilüe notes and is the only route by which Da Qin, Haixi and Angu
+   ever become placeable.
+3. **Rinan**, with the GeoNames backlog it now belongs to.
+4. Carry the `hole` / `unknown` date verdicts into `data.js`.
+
+---
+
+# The date verdicts reach the screen — A6's last leftover, closed
+
+`--check` has computed `hole` and `unknown` since A6 and the bundle never
+carried them, so **for one release the page could not say that a point's dates
+fail to corroborate the record citing it.** On screen, a marker whose gazetteer
+entry attests nothing in this era looked exactly like one attesting the right
+century. Three layers changed:
+
+| layer | change |
+| --- | --- |
+| `ui/build_ui_data.py` | `_resolved_geometry` now carries `date_verdict` + `date_detail`, computed by calling `gz.date_audit` — not reimplemented |
+| `ui/index.html` | `dateVerdictBox()`, rendered on both the placement and the group panel |
+| `ui/check_ui.mjs` | two new assertions, and `scripts/mutate_ui_dates.mjs` proving both can fail |
+
+```
+verdict tally across all 89 placements: {"ok":60,"(not resolved)":24,"no_dates":4,"unknown":1}
+```
+
+The one `unknown` is the ŠKZ, and it is the honest one A6 identified: its
+`achaemenid-central-asia` period appears in no single-period row of the
+2026-08-10 dump, so it has no derived range, and a period with no range could be
+the one in era.
+
+## Calling `date_audit` rather than porting it
+
+The verdict is computed in the builder by importing the function `--check`
+uses, against ranges read from the same cache. **Two implementations of one rule
+is the defect this repository keeps paying for** — `--find` vs `--survey`
+disagreeing on numeric ids, `translation_chunk` vs `translation_chunk_id` — and
+a JS port in `index.html` would have been a third instance, with the added
+charm that it would drift silently because nothing compares them.
+
+Where `ranges` is unavailable the verdict is `None`, never a silent `ok`: the
+same rule `date_audit` already applies one level down.
+
+## Scoping the mutations, and one thing not guarded
+
+`scripts/mutate_ui_dates.mjs` is deliberately three cases, not thirteen.
+`date_audit` — which decides the verdict, and where the hole/unknown boundary
+sits — is **already** mutation-verified by `mutate_places.py`, three of whose 43
+cases target that function directly. Repeating them would have proved nothing
+twice. What was new is the two hops after the verdict is decided: the builder
+carrying it, and the renderer surfacing it. Both are now covered, including the
+regression of suppressing the box entirely, which is precisely the state the
+page was in before this block.
+
+> **Named honestly: a builder that wrote `ok` everywhere would pass both new
+> checks.** Neither assertion can tell a correct verdict from a uniformly
+> optimistic one, because the only way to check that in `check_ui.mjs` would be
+> to reimplement `date_audit` in JS — the very thing rejected above, and it
+> would be tautological against itself anyway. What actually guards it is that
+> the builder calls the audited function, and that function is mutation-verified
+> where it lives. Worth stating plainly rather than leaving the coverage story
+> to look better than it is.
+
+The assertion matches on `data-date-verdict`, an attribute the renderer emits
+for the purpose, rather than on the prose beside it — the sentence will be
+reworded and the claim will not.
+
+## Everything green
+
+```
+ingest.verify            clean    ingest.gazetteer --check   clean
+ingest.test_places       ok       answer.test_translate      ok
+ui/test_build_ui_data.py ok       ui/build_ui_data.py        wrote ui/data.js (1035 KB)
+mutate_places.py         43/43    mutate_ui_places.py        3/3
+mutate_part7b.py         14/14    mutate_chain.mjs           8/8
+check_ui.mjs             all passed (25 assertions)
+check_chain.mjs          chain intact — 7/24
+mutate_ui_dates.mjs      3/3
+```
+
+**Block A's queue is now empty.** What remains is the two items that need
+something outside the repository — a print Sanguozhi for the Weilüe excerpt, a
+GeoNames dump for Khao Sam Kaeo and Jabal Ḏabūb — and the candidate-identification
+schema, which is a design block of its own. Next substantive work is **Block B**:
+the W2a retrieval baseline, and the first thing in Phase 2 that spends money.
+
+---
+
+# Phase 2 — Block B1: the ranking gold set, and the denominator that moved
+
+**B1 is done and B2's code is written; neither has spent anything.** 32 pairs in
+`eval/gold/ranking_pairs.json`, `eval/run_ranking_check.py` ready to run, 30
+offline assertions and 13 mutations green. What follows is mostly what the block
+found on the way, because two of the findings change what B2 measures.
+
+## 1. The runbook's "richest seam" is the thinnest one
+
+`PHASE2_PLAN.md` B1 names `eval/answer_runs/` — "61 archived answers, 139
+citations" — as the richest source of ranking pairs. The archive is now 77 runs,
+and it holds **six distinct questions**:
+
+```
+16  What did Rome trade with the Kingdom of Aksum?
+15  What did ships carry from Muziris?
+15  How did Chinese sources describe the Roman empire?
+15  What do the Vimose runes say?
+15  When was the Antikythera mechanism built?
+ 1  What was exported from Adulis?
+```
+
+One of those six is the off-corpus refusal case and has no known-good passage at
+all. The other five yield **8 distinct (question, quoted-chunk) pairs** between
+them. Against a floor of 20, the seam the plan calls richest supplies a quarter
+of the set.
+
+That is not a defect in the archive — 77 runs of six questions is exactly what a
+sweep of six questions repeated for stability produces, and Part 8 was right to
+repeat them. It is a defect in the plan's estimate, and it inverts the block's
+shape: the composition is now 8 archived, 11 from `retrieval_probes.json`, 4
+from `translation_cases.json`, and **9 written here** for documents no Phase 1
+query reaches at all.
+
+> **Those 9 are mine, not yours.** They carry `provenance: "authored"` and each
+> note says so. Action #5's principle — *a gold set someone else's judgement
+> wrote is not a gold set you can be surprised by* — is about the W4 cases, but
+> it applies here the moment a query decides what counts as correct retrieval.
+> Read them before B2 records anything; rewriting one is a one-line diff, and
+> rewriting one after the baseline is recorded costs the baseline.
+
+## 2. The corpus is 57 chunks and the index is 54 — HALF WRONG, see the correction below
+
+Action #1 — reconcile the corpus counts — was completed on 2026-08-12 and
+recorded **24 docs / 56 chunks / 54 eligible / 54 embedded**. That reconciliation
+was correct, and it was invalidated the next day by this project's own work.
+
+Loading `data/seed_corpus/` as it stands today gives **24 docs / 59 chunks / 57
+eligible**. Loading it at commit `9470506` gives 56 / 54 exactly — so the
+chunker is faithful and the corpus genuinely moved. One document accounts for
+all of it:
+
+```
+africa-03-periplus-adulis    9 chunks -> 12
+```
+
+A4's Wikisource recovery of Periplus §4–6 replaced the Greek with the fuller
+published text; §6 alone now splits into three chunks where it was one. The
+English translations are byte-identical, and every `original::` chunk of that
+document has different text under the same id.
+
+**Nothing downstream noticed, because nothing downstream compares them.**
+`--check`, `check_ui.mjs` and `check_chain.mjs` are all green: they assert the
+bundle is internally consistent, and it is. The bundle was built from disk. The
+*index* is what stayed at 54, and no check in the repository looks at both.
+
+> This is *a result is comparable only within the thing that produced it*, sixth
+> appearance, and the first time it has bitten the denominator the whole of W2b
+> is denominated in. **The W2b curve is 54 → 150 → 450. The 54 does not exist.**
+
+`run_ranking_check.py` therefore refuses to run against an index that does not
+match the corpus on disk, and says which command fixes it. The reconciliation is
+machinery now rather than something remembered once a phase.
+
+## 3. Chunk ids are not a stable name for a passage — proven twice
+
+The plan's B1 wording is "question → the chunk a citation *resolved to on disk*",
+which reads as: key the pair on `chunk_id`. Two independent findings say it
+cannot be.
+
+**First, ids move.** The Greek sentence the Adulis answer quotes —
+`Φέρεται δὲ ἀπὸ τῶν τόπων ἐλέφας καὶ χελώνη καὶ ῥινόκερως` — is recorded in the
+archived run at `africa-03-periplus-adulis::original::002`. It now lives in
+`::original::005`. Both ids exist. A pair keyed on `::002` would resolve, rank,
+and report a number about §5's obsidian.
+
+**Second, the ids in the archive already do not name the chunk holding the
+characters.** Two archived Adulis spans name `translation::000` and
+`translation::004` for text that lives in `translation::002` and
+`translation::005` — the *first member of the merged section*, not the member
+holding the quotation. That is the carried W2 debt (`translation_chunk_id` names
+the retrieved member, `translation_chunk` the merged section) showing up in the
+data, and it is visible only on Adulis because Adulis is the one document whose
+translation sections split across several chunks.
+
+So a pair asserts `expect_doc` **and** `expect_text_contains`, never an id. The
+precedent is in this repository already: `expect_text_contains` was added to
+`retrieval_probes.json` in Part 6 for the same reason — *a probe that asserts
+only the document id can pass against the wrong passage*.
+
+`observed_chunk_id` is recorded on the 8 archived pairs as provenance. It is
+never asserted on and never used to select a chunk; the run reports how many
+have drifted, in the `unrenderable` / `date_holes` house pattern — count it,
+name it, do not fail on it. One has drifted today.
+
+## 4. Where the known-good passage is resolved from, and why it matters
+
+`run_ranking_check.py` resolves each pair's target **by searching the index**,
+not the seed files. The metric is a claim about what retrieval can reach; if the
+target were resolved from disk, the check would happily rank a passage the index
+does not hold, or hold differently. Zero matches and more-than-one matches are
+both reported as unmeasurable rather than guessed at — a recall over an
+ambiguous target is a number about nothing.
+
+`eval/test_ranking_check.py` runs the same resolution rule against disk, offline,
+so a pair that has rotted is caught in a session that costs nothing rather than
+in the session that spends the batched request. That check caught **7 of the 32
+pairs** on first write: four whose characters appeared in two chunks at once,
+three whose snippet was off by a word.
+
+## 5. Two gaps, because one number cannot say which failure happened
+
+B2 asks for "known-good chunk minus *highest-ranked irrelevant* chunk". The word
+irrelevant hides a choice, so both readings are computed and printed:
+
+- `gapDoc` — against the best hit from **any other document**
+- `gapAny` — against the best other hit of **any kind**, siblings included
+
+A sibling section of the right document outranking the target is a chunking
+result. A Scandinavian find outranking it is a retrieval result. They need
+different responses in W2c and one number cannot tell them apart.
+
+`top1_to_rank6` is reported alongside, because it is the **only** quantity here
+with a Phase 1 prior to be compared against (mean spread 0.105 overall;
+0.045–0.094 on the questions that matter). Everything else is new, which is what
+makes it a baseline rather than a comparison.
+
+## 6. Two tautologies, both caught by the mutation harness
+
+`scripts/mutate_ranking.py` was written after `eval/test_ranking_check.py` and
+immediately found two assertions that could not fail — the eighth and ninth
+instances of the standing lesson, and the second time in three blocks that
+machinery caught it rather than re-reading.
+
+1. **"gap vs other DOC skips same-document siblings"** was checked against a
+   stub ranking in which no sibling outranked the target. With that data the two
+   gaps take the same value by construction, so collapsing them in the source
+   changed nothing the assertion could see. The stub now puts a sibling on top.
+2. **"a gold set below twenty pairs is rejected"** was checked by trimming the
+   file to its first ten pairs — which also drops three regions, so the variant
+   kept failing on the *region* rule with the twenty-pair floor removed. It now
+   trims to one pair per region, seven pairs spanning all seven regions, so the
+   floor is the only rule that can reject it.
+
+Both are the same shape: **a negative test must fail for the reason it names, and
+the only way to know it does is to remove that reason and watch it pass.**
+
+## What is green
+
+```
+python -m eval.test_ranking_check     30 assertions, 0 failed
+python scripts/mutate_ranking.py      13/13 mutations, sources restored
+python -m ingest.test_chunker         ok
+python -m ingest.test_places          ok
+python ui/test_build_ui_data.py       ok
+eval/goldset.py                       11 probes, 12 translation cases,
+                                      5 answer cases, 32 ranking pairs
+```
+
+The gold set: **32 pairs, 7 regions, 8 target languages** (grc 12, en 9, lzh 4,
+oty 2, xpr 2, gmq-pro 1, xna 1, xsa 1), **20 of 24 documents**. The four not
+covered are `arabia-02-palmyrene-tariff` and the other held-back record, plus
+`persia-03-coin` and `seasia-02-oc-eo-site`.
+
+## To run B2 — on the host, in this order
+
+```powershell
+cd "C:\Users\chemi\Documents\Claude\Museums Project Number 1\mundus-ulterior"
+.venv\Scripts\Activate.ps1
+docker compose up -d db
+
+python -m eval.test_ranking_check     # free; do this first
+python scripts\mutate_ranking.py      # free
+
+python -m ingest.run_ingest           # 24 docs / 59 chunks / 57 eligible
+python -m ingest.run_embed            # already current; expect "nothing to embed"
+python -m ingest.run_embed --stats    # eligible 57, embedded 57, pending 0
+
+python -m eval.run_ranking_check      # ONE batched embedding request
+```
+
+`run_ranking_check` will refuse to start until the ingest and embed steps have
+run, and the refusal names them. Paste the cohort table into this file **this
+session**, before any hardening idea is tried — `PHASE2.md` names the temptation
+to skip backwards and `PHASE2_PLAN.md` B2 makes it your action.
+
+## Open, in order
+
+1. **Rule on the 9 `authored` pairs** before B2 spends. Finding 1.
+2. **Re-ingest and re-embed.** Finding 2. Until then no ranking number means
+   anything, and the W2b denominator is 57, not 54.
+3. **B3 distractors** — the shortlist is a separate document and needs your
+   ruling on each seam before anything is fetched.
+4. Carried: `cite.py`'s `case_folded` state and the `translation_chunk_id`
+   rename are Block C's C1, and finding 3 is the second piece of evidence for
+   the second of them.
+
+---
+
+# Correction to Block B1 finding 2 — the index was never stale
+
+Ran on the host, 2026-08-13, immediately after the Block B1 notes above:
+
+```
+python -m ingest.run_ingest    documents 24 / chunks 59 / pruned 0
+                               awaiting_embedding: 0
+python -m ingest.run_embed     nothing to embed — every eligible chunk
+                               already has a vector
+                               eligible 57, embedded 57, pending 0,
+                               by_model {voyage/voyage-3.5: 57}
+```
+
+**Predicted six chunks pending. Got zero.** The prediction was not off by a
+count; it was about a state that did not exist.
+
+## What was right and what was wrong
+
+**Right:** the corpus is 57 eligible chunks, not 54. `PHASE2_PLAN.md` Action #1
+records "the W2b denominator of 54 stands" and `PROGRESS.md`'s Block 0 entry
+records 54 embedded, and **both of those numbers are stale on the page**. The
+W2b rungs are 57 → 150 → 450. A baseline recorded against a denominator read out
+of either document would have been denominated wrongly.
+
+**Wrong:** the claim that the *index* had diverged from the corpus. It had not.
+A4 re-ingested and re-embedded when it recovered the Greek, and said so —
+`PROGRESS.md`, A4's closing lines:
+
+> Block A has spent one batched embedding request in total — for the twelve
+> chunks the Greek recovery invalidated.
+
+Twelve is exactly right, and I can now reproduce it: nine chunks whose text
+changed under an existing id (three each in `africa-03-periplus-adulis`,
+`arabia-01-periplus`, and two in `southasia-02-periplus-muziris` plus one in
+`southasia-03-muziris-papyrus`) and three new Adulis ids. `UPSERT_CHUNK` nulls
+all four embedding columns on a text change, `run_embed` picked up all twelve,
+and the index has been current since.
+
+## How the error was made, which is the part worth keeping
+
+I never had database access — this session ran in the cloud, and the host's
+Postgres is not reachable from it. So the index state was not measured. It was
+**inferred from a line in `PROGRESS.md` dated 2026-08-12**, compared against a
+corpus loaded from disk today, and the difference was reported as a divergence
+between two live things.
+
+> **That is the standing lesson, committed by the session that was writing the
+> standing lesson down.** Finding 2 above argues that *a result is comparable
+> only within the thing that produced it* — and reaches that conclusion by
+> comparing a number recorded on one date against a state observed on another,
+> which is the same move. Seventh appearance, and the first one that is mine.
+
+Two specific mistakes underneath it, both of the same shape — measuring the
+easy thing and reporting it as the thing that mattered:
+
+1. **Chunk *count* was used as a proxy for chunk *text*.** The diff against
+   commit `9470506` was computed on counts per document, so only Adulis showed —
+   it was the only document whose chunk count moved. The other three Periplus
+   records had text replaced under unchanged ids and were invisible to that
+   diff. Hence "six" instead of twelve. A count is a proxy; the characters are
+   the thing, which is the same argument this block makes for the gold pairs and
+   I failed to apply to my own measurement one screen earlier.
+2. **`PROGRESS.md` was searched, not read.** It was grepped for `W2a`,
+   `Block B` and `Phase 2`, and the A4 line naming the embedding spend was three
+   hundred lines from any of those terms. A grep answers the question asked; it
+   does not tell you the question was wrong.
+
+## What this does and does not change
+
+- **`eval/gold/ranking_pairs.json` is unaffected.** The pairs were resolved
+  against the corpus on disk, which was and is correct, and all 32 resolve.
+- **`check_index_is_current` is unaffected and worth keeping.** It did not fire
+  because there was nothing to fire on. A guard that stays quiet on a healthy
+  system is doing its job; the reason to keep it is that A4's re-embed was a
+  thing someone remembered to do, and this makes it a thing that cannot be
+  forgotten.
+- **B2 is unblocked and was never blocked by this.** The only remaining
+  precondition is the ruling on the nine `authored` pairs.
+- **`PHASE2_PLAN.md` Action #1 should be amended at source** to read 57, in the
+  same way its worked example's wrong Adulis id was flagged for correction at
+  source in Block A. A completed action whose recorded result has since moved is
+  worse than an open one, because nothing prompts anyone to re-read it.
+
+---
+
+# Block B1 addendum — the nine authored queries, ruled on
+
+The nine `authored` pairs went to the project owner, and measuring them first
+turned up something the walkthrough was not looking for.
+
+## The measurement
+
+Share of a query's content words appearing verbatim in its own target chunk:
+
+```
+archived_answer    n= 8   0.00
+retrieval_probe    n=11   0.09
+translation_case   n= 4   0.04
+authored           n= 9   0.38   <- written by reading the target
+```
+
+Four scored 0.50–0.86. `au-shapur-plate` was the target's opening clause
+reworded — *"a Sasanian gilded silver plate showing a king hunting"* against
+*"Gilded silver plate showing a king hunting"*. That is a keyword match wearing
+a retrieval test's clothes.
+
+**One caveat in my favour, stated anyway:** the other cohorts mostly target
+non-English chunks, where overlap with an English query is zero by construction
+rather than by discipline. All nine English-target pairs are mine, so the
+cross-cohort comparison is partly an artefact. The absolute figures stand alone.
+
+## A second defect the first one hid
+
+Two pairs pointed at the wrong chunk. For records holding both an `original::`
+catalogue legend and a `translation::` description, I had anchored on a
+distinctive string that happened to sit in the legend:
+
+- `au-hoby-silver` asked about cups in a chieftain's grave but targeted the
+  signature line alone; the chieftain and Cheirisophos are in the description.
+- `au-oc-eo-medallion` asked about a gold imitation of a coin of Antoninus Pius
+  but targeted the legend, millimetres and inventory number.
+
+Retrieval returning the passage that answers would have been scored a miss. Both
+re-anchored to `translation::000`.
+
+## Where it went wrong, and the rule that came out of it
+
+Re-anchoring **raised** those two pairs' overlap — 0.25 → 0.62 and 0.11 → 0.56 —
+because the passage that answers a question is the passage sharing its
+vocabulary. Chasing the number further produced worse pairs, not better ones:
+
+- *"How did Sasanian rulers present themselves in art?"* scores 0.00 and is
+  answered just as well by `persia-03-coin`, a bust of Shapur I.
+- *"How much Roman coinage ended up in southern Scandinavia?"* scores 0.00 and
+  is answered just as well by `illerup-adal`'s 194 denarii.
+- *"What Roman-period imports turn up at Indian west-coast excavations?"* scores
+  0.13 and is answered by the Periplus §56 import list.
+
+All three traded a real defect for a worse one. **An ambiguous pair scores
+CORRECT retrieval as a failure**, and no later run can tell that apart from a
+ranking problem.
+
+> **Unambiguity beats overlap, and overlap is a property to record rather than a
+> target to minimise.** For a 300-character English object description, a
+> faithful and unambiguous question necessarily shares vocabulary with it. This
+> is the optimise-the-proxy failure — the same shape as `expect_cited_docs`
+> proving a source was *named* rather than *used* — committed while fixing an
+> instance of it, and caught only because the rival documents were checked
+> before the rewrite was committed.
+
+## What was actually changed
+
+| pair | change | overlap |
+| --- | --- | --- |
+| `au-shapur-plate` | → "a royal hunt scene on Sasanian metalwork" | 0.86 → 0.00 |
+| `au-silla-glass` | → "How did Mediterranean glassware reach Korea?" | 0.50 → 0.00 |
+| `au-khao-sam-kaeo` | → "engraved gemstones of Mediterranean workmanship found in Southeast Asia" | 0.50 → 0.00 |
+| `au-gudme-hoard` | → "What accompanied the bracteate treasure found on Funen?" | 0.50 → 0.20 |
+| `au-pattanam-finds` | kept — the lower-overlap rewrite was ambiguous against the Periplus | 0.33 |
+| `au-hoby-silver` | re-anchored to the description | 0.25 → 0.62 |
+| `au-oc-eo-medallion` | re-anchored to the description | 0.11 → 0.56 |
+
+`query_target_overlap` is now computed per pair and carried into every archived
+run and the printed table (`lexOv`), so the authored cohort's recall is read next
+to the reason it may be high. It is **not** a gate: gating on it would be the
+same mistake one layer up.
+
+Final: **32 pairs, all resolving to exactly one chunk of the expected document.**
+Cohort overlap 0.00 / 0.14 / 0.04 / 0.23 (four probe queries are n/a, being
+non-Latin). 30 offline assertions and 13 mutations green.
+
+**Every precondition for B2 is now met.**
+
+---
+
+# Phase 2 — Block B2: the W2a baseline, recorded 2026-08-14
+
+```
+ranking check  20260814T074614+0000  view=retrievable_chunks  index=57 chunks
+               models=['voyage/voyage-3.5']   32 queries embedded in 1 request
+
+cohort              pairs  recall@6   MRR@10  gapDoc  gapAny  spread  lexOv
+archived_answer          8  0.500 ( 4)  0.123  -0.075  -0.086   0.091   0.00
+authored                 9  0.889 ( 8)  0.844   0.057   0.047   0.136   0.23
+retrieval_probe         11  1.000 (11)  1.000   0.114   0.090   0.178   0.14
+translation_case         4  0.750 ( 3)  0.312   0.022  -0.142   0.190   0.04
+ALL                     32  0.812 (26)  0.651   0.051   0.014   0.146   0.12
+```
+
+Archived at `eval/ranking_runs/20260814T074614+0000-retrievable_chunks.json`.
+Nothing has been tuned. **This is the number the hardening is measured against.**
+
+## The prediction was backwards, and that is the finding
+
+The B1 notes warned that the `archived_answer` cohort's recall would be "partly
+true by construction" because those pairs name chunks retrieval itself returned,
+and that the probe and translation cohorts were "the ones that can actually
+surprise". The cohort predicted to be inflated came in **worst at 0.500**; the
+cohorts predicted to be honest came in at **1.000** and **0.750**.
+
+The construction argument was not wrong — it is still true that those pairs
+cannot contain a passage retrieval never found. It was **irrelevant**, because it
+was an argument about the *targets* and the variance turned out to live in the
+*queries*.
+
+## The evidence: one chunk, two queries, sixteen ranks apart
+
+Eight target chunks in this gold set are reached by more than one query. The
+spread within a single chunk dwarfs the spread between cohorts:
+
+```
+southasia-03-muziris-papyrus::original::000
+   rank  4   sim 0.449   no filter   "the valuation of a cargo of nard and ivory
+                                      shipped on the Hermapollon"
+   rank >20      —       no filter   "What did ships carry from Muziris?"
+
+southasia-01-akananuru-149::original::000
+   rank  1   sim 0.371   no filter   "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்"
+   rank >20      —       no filter   "What did ships carry from Muziris?"
+
+africa-03-periplus-adulis::original::001
+   rank  1   sim 0.524   filtered    "the port of Adulis and the ivory brought to
+                                      the Aksumite capital"
+   rank >20      —       no filter   "What did Rome trade with the Kingdom of Aksum?"
+```
+
+**Same chunk. Same index. Same embedding model. Same run.**
+
+> **Only one of the eight is a clean single-variable comparison**, and it must be
+> named as such rather than allowed to borrow strength from the others. The
+> Muziris papyrus pair differs in wording alone — both queries are English, both
+> unfiltered, both resolve to the identical chunk. n=1, and a swing of at least
+> sixteen ranks. The akananuru and weilue contrasts change the query *language*
+> as well; the adulis, hou-hanshu and pepper-cargo contrasts change the *language
+> filter* as well. All seven confounded cases point the same way, which is
+> suggestive and is not the same as evidence.
+
+## What actually sank the archived cohort
+
+**One question, asked three times.** "What did ships carry from Muziris?" is 3 of
+the 8 archived pairs and misses 2 of its 3 targets. "What did Rome trade with the
+Kingdom of Aksum?" misses its one. Four of the cohort's eight pairs come from two
+broad questions, and those two questions account for **three of the four misses**.
+
+That is not a corpus property or a language property. It is a **query
+specificity** property, and it is measurable per pair.
+
+## This puts a number on the Phase 1 exit-gate verdict
+
+The persevere verdict rests on the Adulis discriminator: *the system refused a
+question whose answer it was holding, and answered correctly when the question
+was reworded against byte-identical evidence.* Until today that was an anecdote
+about answering. It is now a measured retrieval fact:
+
+| question | evidence chunk | rank |
+| --- | --- | --- |
+| "What did Rome trade with the Kingdom of Aksum?" (refused at the gate) | `adulis::original::001` | **>20** |
+| "the port of Adulis and the ivory brought to the Aksumite capital" | the same chunk | **1** |
+| "What was exported from Adulis?" (the rewording that worked) | `adulis::original::005` | 15 |
+
+The closing summary attributed the failure to "ranking, question handling and
+scoring". **It was ranking, and the refusal was correct** — the answerer was not
+holding the evidence at all, because retrieval never surfaced it. That is a
+better result for the verdict than the verdict claimed: the refusal path worked
+on genuinely absent evidence rather than mis-handling present evidence.
+
+## The one number with a Phase 1 prior lands inside it
+
+`spread` (mean top-1 to rank-6) is the only quantity here that can be compared
+backwards. Phase 1: **0.105** overall, **0.045–0.094** on the questions that
+matter. Today: **0.146** overall, and the `archived_answer` cohort — which *is*
+the Phase 1 questions — sits at **0.091**, inside the old band.
+
+So the index has not drifted. The corpus grew by three chunks and the discriminating
+power on the original questions is where it was. Everything else in the table is
+new and has nothing to be compared against, which is what makes it a baseline.
+
+## Two gaps earned their keep on the first run
+
+`translation_case` is the cohort that proves the split was worth building:
+`gapDoc +0.022` against `gapAny -0.142`. Retrieval finds the **right document**
+and the **wrong chunk inside it** — and the chunk beating the target is, in every
+case, that document's own English translation answering an English query.
+
+```
+tc-muziris-papyrus-valuation   gapDoc -0.017   gapAny -0.224
+tc-frankincense-harvest        gapDoc -0.053   gapAny -0.178
+tc-nabataean-epitaph           gapDoc +0.146   gapAny -0.048
+```
+
+One number could not have told those apart, and they need different responses:
+the first is a hardening problem for W2c, the second is a question about whether
+an English query should be reaching a non-English original at all when a
+published translation of the same passage exists.
+
+**The four `lang_pool: non_english` probes score 1.000 partly because that filter
+removes exactly this competition.** They are not cheating — the filter is what
+makes them a cross-lingual test — but it means the 1.000 and the 0.500 answer
+different questions, and the ALL row averages three incomparable things. Read the
+cohort table; the total is close to meaningless.
+
+## recall@6 is stricter than the pipeline, deliberately
+
+The answer path retrieves at **k=12** (`retrieval_k` in every archived run). Of
+the six recall@6 misses, two are inside the pipeline's reach and four are not:
+
+```
+within k=12   au-khao-sam-kaeo 10,  tc-frankincense-harvest 11
+outside       adulis-exports 15,  aksum-trade-adulis >20,
+              muziris-cargo-papyrus >20,  muziris-cargo-akananuru >20
+```
+
+Kept at 6. A metric loosened to match the current pipeline stops being able to
+say the pipeline should change — and W2c may well move k. But the k=12 line is
+recorded here so the distinction is not lost.
+
+## An improvement to the corpus demoted the evidence it improved
+
+`adulis-exports` was rank 3 at similarity 0.401 in the archived run of
+2026-08-12, when the Greek exports sentence sat inside a 919-character chunk. A4
+replaced that Greek with the fuller Wikisource text; the sentence now sits in a
+477-character chunk of its own and ranks **15 at 0.339**.
+
+Not strictly like-for-like — different chunk boundaries are the whole point — but
+the direction is unambiguous. **A more accurate corpus made its most load-bearing
+passage harder to retrieve.** Worth carrying into W3: tranche work that improves
+source fidelity can cost retrieval, and nothing in the repository would have
+reported that before today.
+
+## lexOv's limit, found immediately
+
+`probe-parthian-skz` scores **1.00**. The query is romanised Parthian
+(`šāhān šāh Ērān ud Anēran Šābuhr`) and every Latin-alphabet token in it appears
+in the transliterated target — so the measure reads a *same-language* query as
+maximal reuse. It cannot tell transliteration from English. Four other probes
+score blank, their queries carrying no Latin tokens at all.
+
+The field is doing its job for the nine English-target pairs it was added for.
+It is noise everywhere else, and this is written down so nobody later reads that
+1.00 as a defect in the probe.
+
+## The queue
+
+1. **B3 distractors** — `BLOCK_B3_DISTRACTORS.md`, three decisions outstanding.
+2. **Add a `specificity` label to the gold set** (broad / specific), so the B5
+   curve can be read by it. On today's evidence that is the largest single
+   source of variance in the whole table, and W2b will otherwise measure it as
+   noise.
+3. **Query rewriting is now a candidate for W2c**, on evidence rather than on
+   the general principle. It was not in `PHASE2_PLAN.md`'s C-list.
+4. Carried: `cite.py`'s `case_folded` state and the `translation_chunk_id`
+   rename (Block C, C1).
+
+---
+
+# Correction to Block B2 — the specificity claim does not survive its own re-cut
+
+The B2 notes above end by calling query specificity "the largest single source of
+variance in the whole table" and scheduling a broad/specific label for the gold
+set. **The re-cut was run before the label was written, cost nothing because the
+per-pair results were already archived, and does not support the claim.**
+
+## What the re-cut actually shows
+
+Five rank-blind cuts over the 32 archived pair results:
+
+```
+cut                                          yes            no
+query's rarest token points at expect_doc    19/21 = 0.90   7/11 = 0.64
+query has any token unique to one document   24/30 = 0.80   2/ 2 = 1.00
+query is shared with another pair             3/ 5 = 0.60  23/27 = 0.85
+pair carries a language filter                5/ 5 = 1.00  21/27 = 0.78
+target chunk is English                       8/ 9 = 0.89  18/23 = 0.78
+```
+
+The strongest is lexical anchoring at 0.90 / 0.64. **Three cuts separate, in
+different directions, and with six misses in thirty-two pairs no cut has the
+sample to be told apart from the others.** The language-filter cut is a perfect
+5/5, which on n=5 means nothing at all.
+
+Two of the six misses — `adulis-exports` at 15 and `tc-frankincense-harvest` at
+11 — have their rarest token pointing squarely at the expected document and miss
+anyway. Lexical anchoring is not sufficient, so it is not the mechanism even
+where it correlates.
+
+## What survives, stated at the size the evidence supports
+
+The one-chunk-two-queries table stands: `muziris-papyrus::original::000` at rank
+4 for one English unfiltered query and >20 for another is a fact about the query,
+and it isolates the query because everything else is held constant. **What does
+not follow is that query specificity is the dominant term across the table.** I
+generalised one clean n=1 contrast into a claim about thirty-two pairs, and the
+free re-cut is what caught it.
+
+> **Second overclaim of this block, same shape as the first.** Finding 2 of B1
+> asserted the index had diverged from the corpus on a dated line rather than a
+> measurement. This asserted a dominant cause from a single contrast. Both were
+> reaching for one clean causal story from a small sample, and both were caught
+> by doing the cheap check rather than by thinking harder — which is the Phase 1
+> lesson (*two hypotheses stated confidently and refuted by one cheap check
+> each*) recurring at the same rate in Phase 2.
+
+## What was built instead of the label
+
+**No broad/specific label was added.** A label assigned after seeing the ranks it
+is meant to predict cannot be evidence for anything, and hand-labelling 32 pairs
+against a hypothesis I already favour is how the doc-id-proxy probe passed for
+the wrong reason.
+
+`run_ranking_check.py` now records two **mechanical, rank-blind** fields per pair:
+
+| field | meaning |
+| --- | --- |
+| `anchor_doc` / `anchor_points_home` | the document a query's rarest vocabulary points at — a token occurring in exactly one document of the index — and whether it is the expected one |
+| `shared_query` | whether another pair uses the same query string |
+
+Both are computed from the index and the gold set, never assigned. The printed
+report carries a three-line diagnostics block ending in the sentence *"Do not
+read a cause out of them without a run designed to test one."*
+
+## A design question the re-cut did raise, and it is yours
+
+`muziris-cargo` is **one query with three targets**, made three pairs on the B1
+reasoning that "a ranking that finds one of the three is not the same result as
+one that finds all three". Its only discriminating token — *muziris* — occurs in
+one document, the Periplus. The Periplus target ranks 5; the papyrus and
+Akananuru targets rank >20.
+
+So the design choice, not the retriever, may be producing two of the six misses:
+a multi-target query is scored once per target, and the targets sharing no
+vocabulary with it are close to unreachable by construction.
+
+**The alternative** is one pair per query with a set of acceptable targets, where
+recall@6 asks whether *any* acceptable target is in the top 6. That would move
+`archived_answer` from 0.500 (4/8) to roughly 0.667 (4/6) and change what the
+metric means. It is a judgement about what retrieval owes a broad question, and
+it should be made deliberately rather than inherited from B1's first instinct.
+**Not changed. Flagged.**
+
+## SEARCH_K raised 20 → 50
+
+`recall@6`, `MRR@10` and `top1_to_rank6` are invariant to k — verified against a
+constructed ranking. **The score gaps are not**, because a pair with no rank has
+no similarity and contributes no gap: at k=20 the 2026-08-14 baseline computed
+its gap means over 26 of 32 pairs, silently dropping the three that failed
+hardest. On a two-pair worked example the same bias moves a mean gap from 0.40 to
+0.05.
+
+That makes the recorded `gapDoc +0.051` / `gapAny +0.014` **survivorship-biased
+in the one number `PHASE2.md` says predicts survival at scale.** k is now fixed
+at 50 with the reason in a comment, because changing it between rungs would move
+the gap means for that reason alone and make the curve incomparable with itself.
+
+The 2026-08-14 run stays in `eval/ranking_runs/`. Its recall, MRR and spread
+remain valid and comparable; **its two gap means are superseded** by the re-record.
+
+---
+
+# Block B2, re-recorded at k=50 — the gap is zero
+
+```
+ranking check  20260814T082748+0000  index=57 chunks  k=50  voyage/voyage-3.5
+
+cohort              pairs  recall@6   MRR@10  gapDoc  gapAny  spread  lexOv
+archived_answer          8  0.500 ( 4)  0.123  -0.111  -0.119   0.091   0.00
+authored                 9  0.889 ( 8)  0.844   0.057   0.047   0.136   0.23
+retrieval_probe         11  1.000 (11)  1.000   0.114   0.090   0.178   0.14
+translation_case         4  0.750 ( 3)  0.312   0.022  -0.142   0.190   0.04
+ALL                     32  0.812 (26)  0.651   0.035   0.000   0.146   0.12
+```
+
+recall@6, MRR@10 and spread are **identical** to the k=20 run, as predicted. The
+gaps moved, and by more than expected.
+
+## The headline number is zero
+
+`gapAny` across the whole gold set is **0.000** — it read **+0.014** at k=20.
+`gapDoc` fell from +0.051 to +0.035. `archived_answer`'s gapDoc went from -0.075
+to -0.111.
+
+> **Averaged over 32 pairs, the known-good passage scores no better than the best
+> competing passage in the index.** `PHASE2.md` names the gap, not the raw
+> similarity, as the thing that predicts survival at scale — and the true value
+> of it at 57 chunks is zero. The +0.014 was survivorship: three pairs with no
+> rank contributed no gap, and they were the three worst.
+
+This is what the k change was for, and it is a materially different starting
+point for W2b than the run recorded ninety minutes earlier.
+
+## Two pairs now have a rank, and one still does not
+
+```
+aksum-trade-adulis        >20  ->  29   sim 0.373  gapDoc -0.185
+muziris-cargo-papyrus     >20  ->  41   sim 0.285  gapDoc -0.218
+muziris-cargo-akananuru   >20  ->  >50
+```
+
+`muziris-cargo-akananuru` is not in the top **50 of 57**. The Old Tamil chunk sits
+in the bottom seven of the index for the English question whose evidence it is —
+while ranking **1st** for the Tamil query in `probe-tamil-akananuru`.
+
+**Old Tamil is the corpus's broken cross-lingual link, and it is the only one.**
+The other three minority scripts are reached from English without a filter and
+rank well: `tc-nabataean-epitaph` (xna) 2, `tc-jabal-dabub` (xsa) 2,
+`vimose-runes` (gmq-pro) 3. Part 4 recorded Old Tamil at 0.368 against 0.6–0.7
+for other scripts and noted "with one Tamil chunk in the corpus that number means
+little". It means something now: the passage is reachable in its own language and
+unreachable in English.
+
+**And the gold set has no English→Tamil cross-lingual probe.** The four
+`lang_pool: non_english` probes cover grc, lzh and xpr only. The single piece of
+evidence for the worst cross-lingual result in the corpus is an archived_answer
+pair that was never designed to test it. That is a gap in the gold set, not in
+the retriever, and it should be filled before W3 decides how much Tamil to add.
+
+This is the Phase 1 gate's own pivot language arriving with a number:
+*"Pivot if cross-lingual retrieval is weak for the sparse-evidence regions."*
+
+## A metric whose name was wrong
+
+`not_in_top_20` was hardcoded and **survived SEARCH_K moving to 50**, so the k=50
+run reported its unranked count under a name asserting k=20. The printed `>20`
+column marker had the same defect. Both now derive from `SEARCH_K`, the archived
+run records `search_k`, and the header prints it.
+
+Cheapest possible instance of the standing lesson, and now impossible: a new
+assertion checks the key is named for `SEARCH_K`, and mutation 9 of 14 restores
+the hardcoded name to prove it fails.
+
+**Writing that guard exposed a second one.** The mutation initially reported "no
+failures" — because the *earlier* aggregate assertion indexed the key with `[]`
+and raised `KeyError`, aborting the suite before the guard that owns the defect
+ever ran. A crash in an unrelated assertion had hidden it. Changed to `.get()`,
+and it is the same shape as Block 0's truncated test run: **a suite that stops
+early reports a green-looking absence of failures.**
+
+## State
+
+```
+python -m eval.test_ranking_check    32 assertions, 0 failed
+python scripts/mutate_ranking.py     14/14, sources restored
+```
+
+Baselines archived at k=20 (`20260814T074614`) and k=50 (`20260814T082748`).
+**The k=50 run is the baseline.** The k=20 run's recall, MRR and spread stand;
+its two gap means are superseded and it records no `search_k` field, which is
+why the field now exists.
+
+## Queue
+
+1. **B3 distractors** — three decisions, `BLOCK_B3_DISTRACTORS.md`. Blocks B4.
+2. **An English→Tamil cross-lingual probe**, and a ruling on whether a
+   multi-target query is N pairs or one pair with N acceptable answers.
+3. W2c candidates now carrying evidence: query handling, and whatever addresses
+   a mean gap of zero.
+
+---
+
+# Ranking depth settled before B4 — there is no fixed k
+
+`SEARCH_K` is gone. Every pair is ranked against the **whole view**, at every rung.
+
+## Why a constant was the wrong shape
+
+k was 20, then 50, and both were defensible at the index they were chosen for.
+That is the problem: **a fixed depth cannot be right at more than one rung of a
+curve whose whole subject is index size.**
+
+- At 57 chunks, k=20 left three pairs unranked and biased the gap means over 26
+  of 32 pairs.
+- k=50 fixed that at 57 — and would have broken at 450. The three deepest targets
+  sit at ranks 29, 41 and >50 of 57; at the same relative depth in a 450-chunk
+  index they land near **229, 324 and 395**. All three would fall outside k=50,
+  contributing no gap.
+
+So the 450 rung would have been survivorship-biased in exactly the way the 57
+rung had just been fixed, and **the curve would have compared an unbiased
+endpoint against a biased one** — which is the failure the curve exists to avoid,
+smuggled into its own instrument.
+
+Ranking everything removes the choice rather than tuning it. `recall@6`,
+`MRR@10` and `top1_to_rank6` were always invariant to depth; the gaps now are
+too, because no pair can be out of reach. 450 ordered rows per pair is nothing to
+Postgres.
+
+## Two names corrected on the way
+
+`not_in_top_20` was hardcoded and survived k moving to 50, so the k=50 run
+reported its count under a name asserting k=20. It is now simply `unranked`,
+which carries no threshold to go stale. The `>20` column marker had the same
+defect and now prints `none`.
+
+**Writing the guard for that exposed a second defect.** The mutation restoring
+the hardcoded name reported "no failures" — because an *earlier* assertion
+indexed the key with `[]` and raised `KeyError`, aborting the suite before the
+guard that owns the defect ever ran. Changed to `.get()`. Same shape as Block 0's
+truncated test run: **a suite that stops early reports a green-looking absence of
+failures**, and this time the thing doing the truncating was one of my own
+assertions.
+
+## State
+
+```
+python -m eval.test_ranking_check    35 assertions, 0 failed
+python scripts/mutate_ranking.py     14/14, sources restored
+```
+
+Mutation 9 now compiles a fixed depth back in and proves the suite catches it.
+
+## The baseline needs one more re-record
+
+The archived 57-chunk runs were taken at k=20 and k=50. Neither ranked the whole
+view, so `muziris-cargo-akananuru` has never contributed a gap. One batched
+request at full depth gives the first baseline with **all 32 pairs contributing
+to every aggregate** — and it will almost certainly push `gapAny` below zero,
+because the pair that has never counted is the worst in the set.
+
+Do this **before** B4 loads anything: the 57-chunk rung has to be measured the
+same way as the 150 and 450 rungs, or the curve's first point is not on the same
+axis as the other two.
+
+## B3 shortlist updated against the baseline
+
+`BLOCK_B3_DISTRACTORS.md` now opens with what B2 changed. The three decisions are
+unchanged; what is at stake in each is now evidenced rather than argued:
+
+- the mean gap is **already zero** at 57 chunks, so the curve measures how far
+  below zero it goes, not whether erosion begins;
+- `archived_answer`'s `gapDoc -0.111` means competing documents already outrank
+  the right ones — seam 2's risk is measured, not hypothetical;
+- **seam 3 is the highest-value seam, not the safest.** The `authored` cohort
+  (0.889, all nine targets English object descriptions) is the strongest in the
+  table, and museum catalogue prose is the only candidate that competes with it.
+  It is the only seam that can tell whether that result is real or an artefact of
+  having no English competition. The reverse of how it was originally framed;
+- `muziris-cargo-akananuru` is already unreachable and will read flat across all
+  three rungs. **Flat is not robust.**
+
+---
+
+# Block B2 — FINAL baseline, 2026-08-14, full-depth
+
+```
+ranking check  20260814T084042+0000  index=57 chunks  depth=57  voyage/voyage-3.5
+
+cohort              pairs  recall@6   MRR@10  gapDoc  gapAny  spread  lexOv
+archived_answer          8  0.500 ( 4)  0.123  -0.132  -0.139   0.091   0.00
+authored                 9  0.889 ( 8)  0.844   0.057   0.047   0.136   0.23
+retrieval_probe         11  1.000 (11)  1.000   0.114   0.090   0.178   0.14
+translation_case         4  0.750 ( 3)  0.312   0.022  -0.142   0.190   0.04
+ALL                     32  0.812 (26)  0.651   0.025  -0.008   0.146   0.12
+```
+
+**This is the W2a baseline.** All 32 pairs contribute to every aggregate for the
+first time. The k=20 (`074614`) and k=50 (`082748`) runs stay archived; their
+recall, MRR and spread are valid, their gap means are superseded.
+
+## The gap is negative
+
+```
+depth   gapDoc   gapAny   pairs contributing a gap
+   20   +0.051   +0.014   26 of 32
+   50   +0.035    0.000   31 of 32
+   57   +0.025   -0.008   32 of 32
+```
+
+> **Averaged over the gold set, the known-good passage scores slightly WORSE than
+> the best competing passage in the index — at fifty-seven chunks, before a
+> single distractor exists.**
+
+The progression is the bias draining out, not the retriever changing: each step
+admits pairs that were previously out of reach, and every one of them was worse
+than the pairs already counted. The +0.014 first recorded was an artefact of the
+three worst pairs having no rank to be measured at.
+
+`PHASE2.md` names the gap, not the raw similarity, as what predicts survival at
+scale. **The quantity W2b is designed to watch erode has no positive value to
+erode from.**
+
+## The invariance claim held empirically
+
+`recall@6 = 0.812`, `MRR@10 = 0.651` and `spread = 0.146` are **identical across
+all three runs** at depths 20, 50 and 57. That was asserted from a constructed
+stub ranking before the first re-record; it is now confirmed against three real
+runs. Only the gaps moved, exactly as the stub predicted and only in the
+direction the bias predicted.
+
+Worth stating because the reverse is the usual outcome: a property proved on a
+fixture and quietly false in production.
+
+## Old Tamil, measured at last
+
+```
+muziris-cargo-akananuru   rank 51 of 57   sim 0.224   gapDoc -0.278
+probe-tamil-akananuru     rank  1 of 57   sim 0.371   gapDoc +0.054
+```
+
+Same chunk. **From English it is 51st of 57 with the lowest similarity in the
+entire table** (next lowest 0.285); from Tamil it is first — but at 0.371, which
+is also **the lowest rank-1 similarity in the table**, every other winner scoring
+0.42–0.75.
+
+So there are two distinct results, and they should not be merged:
+
+1. **English → Old Tamil is broken**, not weak. 0.224 and rank 51 is not a
+   ranking that hardening moves.
+2. **Old Tamil is weakly embedded even in its own language.** Winning at 0.371
+   in a 57-chunk index is winning by default. Part 4 recorded 0.368 for this
+   script and hedged that "with one Tamil chunk in the corpus that number means
+   little". Two independent measurements, fourteen days apart, agreeing to three
+   decimal places — it is a property of the model on this script, not noise.
+
+This is the Phase 1 gate's pivot language with a number attached: *"Pivot if
+cross-lingual retrieval is weak for the sparse-evidence regions."* It is weak for
+exactly one language, and that language has **no English→Tamil probe in the gold
+set** — the four `lang_pool: non_english` probes cover grc, lzh and xpr only. The
+worst cross-lingual result in the corpus rests on a single archived_answer pair
+that was never designed to test it.
+
+## Block B2 is closed
+
+```
+python -m eval.test_ranking_check    35 assertions, 0 failed
+python scripts/mutate_ranking.py     14/14, sources restored
+```
+
+Three baselines archived, the third definitive. Total spend across B1 and B2:
+**four batched embedding requests.**
+
+## Open, in order
+
+1. **B3 — yours.** Three decisions in `BLOCK_B3_DISTRACTORS.md`. Blocks B4.
+2. **An English→Tamil cross-lingual probe**, and a ruling on whether a
+   multi-target query is N pairs or one pair with N acceptable answers. Both
+   change what the B5 curve measures; both are free.
+3. **W2c now has an evidenced target list**: a mean gap of zero-to-negative,
+   `archived_answer` at -0.132, and query handling. None of these were on
+   `PHASE2_PLAN.md`'s C-list, which was written before any of them was measured.
+4. Carried: `cite.py`'s `case_folded` state, the `translation_chunk_id` rename.
+
+---
+
+# Block B3 — the distractor seams are ruled (2026-08-14)
+
+`PHASE2_PLAN.md` action #3, the one the plan reserves for the project owner.
+Full record in `BLOCK_B3_DISTRACTORS.md`.
+
+| # | decision | outcome |
+| --- | --- | --- |
+| 1 | Periplus scope | **§1–3 and §7–13 only** (~25 chunks) |
+| 2 | Indian Ocean / Arabian classical geography | **Admitted freely** |
+| 3 | Museum collection | **The Met Open Access**, single collection |
+
+Decision 1 took the strict reading. That included excluding **§57–66**, a range
+the shortlist had originally proposed as safe — "the far side past Limyrike" —
+before it was noticed that §57–66 is the Ganges, Chryse and Thina, which is
+exactly where `seasia-01`, `seasia-03` and `eastasia-03` sit. **The same error as
+§7–26, made in the same document, and caught only on a second pass: treating
+distance from a gold pair's *document* as distance from its *subject*.**
+
+## Decision 2 went against the recommendation, and changes what the curve means
+
+Recorded as a ruling, not re-argued. What matters is the consequence, which is
+not "the shortlist was right":
+
+Admitting Strabo XV and Pliny *NH* VI means some distractors **can genuinely
+answer a gold-set question**. When one outranks a gold target that is not
+self-evidently an error — a user asking what ships carried from Muziris is
+arguably well served by Strabo. So the curve stops measuring *does the right
+passage survive noise* and starts measuring *does the designated passage survive
+competition*.
+
+That is a defensible question, and arguably the more realistic one. **It is not
+the question B5's decision point was written against.** The plan says:
+
+> degradation milder than predicted → W3 can move faster
+> degradation as or worse than predicted → W2c is load-bearing and W3 stays shut
+
+Against a curve containing semantically relevant competitors, "worse than
+predicted" no longer implies W2c is load-bearing. It may mean the corpus is small
+and the world is large — which no reranker fixes, and which is a W3 finding
+wearing a W2c costume. **The decision point must be restated before B5 runs.**
+
+> This is the sixth appearance of *a result is comparable only within the thing
+> that produced it*, and the first at the level of a research question rather
+> than a number: the metric is unchanged, the data under it now answers something
+> else, and only the written decision rule would have carried the difference.
+
+## What is being built instead of the objection
+
+B5 will report, for every pair whose rank worsens between rungs, **the text of
+whatever outranked it** and whether that thing is a distractor. Twenty-odd lines
+of adjudication per rung. Without it a distractor-driven collapse and a
+noise-driven collapse are the same number; with it, decision 2's cost is visible
+and case-by-case rather than assumed either way.
+
+## Budget under the rulings
+
+```
+seam 1  Periplus §1–3, §7–13                                    ~25
+seam 2  Strabo IV–VII + XV, Pliny III–IV + VI, Ptolemy VII     ~225
+seam 3  The Met, non-Roman-contact material                    ~150
+                                                       total   ~400   (+57 = 457)
+```
+
+Decision 2 makes seam 2 both the largest and the loosest, which is why the
+adjudication step is not optional.
+
+## Before B4 fetches anything
+
+1. **Verify the Met's licence and write `data/met-licence-declaration.txt`**,
+   matching `data/pleiades-licence.txt` and `data/geonames-licence.txt`. My
+   recollection is CC0 for Open Access object data. **Recollection is not a
+   licence check** — this project has already recorded that a remembered
+   gazetteer id is an authored coordinate wearing a citation, and a remembered
+   licence is the same move.
+2. Restate the B5 decision point per above.
+3. B4 containment, unchanged: `is_distractor` column, `retrievable_chunks` stays
+   distractor-free, separate `retrievable_chunks_with_distractors` view, and a
+   mutation-verified test that a distractor is unreachable from the answer path.
+
+---
+
+# Block B4 — containment, built before any distractor exists (2026-08-14)
+
+Nothing has been fetched. The order is deliberate: **a containment test written
+after the data can pass because the data happens to sit somewhere harmless.**
+
+## The Met licence, checked rather than recalled
+
+`data/met-licence-declaration.txt`, alongside the Pleiades and GeoNames
+declarations. CC0, fetched from https://www.metmuseum.org/hubs/open-access on
+2026-08-14 and quoted verbatim.
+
+**One condition that constrains the fetch, and it was not in my recollection:**
+the CC0 grant applies to **public-domain artworks only**, and the API serves
+non-Open-Access objects too. CC0 is a property of the individual object record,
+not of the API. So every ingested record must be filtered on the API's own
+`isPublicDomain` field, that field must be **recorded on the row rather than
+assumed at fetch time**, and a record failing it is dropped with a counted, named
+reason. This is why the licence is checked instead of remembered — the check
+produced a constraint the recollection did not have.
+
+## Two hazards found by auditing every reader first
+
+`PHASE2_PLAN.md` B4 names `ingest/verify`, `answer/run_answer` and
+`ui/build_ui_data.py` as the readers to make blind. Grepping every `FROM chunks`
+and `FROM documents` in the repository found two that are on none of those lists.
+
+### (a) One routine command would have destroyed the whole distractor corpus
+
+`chunks.doc_id REFERENCES documents(doc_id) ON DELETE CASCADE`, and
+`ingest/db.py`'s prune runs:
+
+```sql
+DELETE FROM documents WHERE NOT (doc_id = ANY(seed_doc_ids));
+```
+
+Every distractor document is absent from the seed list by definition. So
+`python -m ingest.run_ingest` — **the command at the top of the standing session
+ritual** — would have cascade-deleted 400 distractor chunks and the two to three
+batched embedding requests behind them. Silently, with a success report.
+
+Both DELETEs now carry `AND NOT is_distractor`, with the reason written beside
+them rather than left as a defensive-looking clause someone later tidies away.
+
+### (b) The one reader that spends money
+
+`answer/store.py` reads `FROM chunks` directly in three places, filtering only on
+`eligible_for_retrieval` — which a distractor must be, or it cannot be retrieved
+at elevated N. The expensive one is `SELECT_TRANSLATABLE`: it would have fed
+non-English distractors to the translation pipeline and **spent money translating
+Strabo**. `TRANSLATION_STATS` would have reported an inflated `translatable`
+count from the same defect.
+
+It reads `chunks` directly for a good reason — the translator needs chunks that
+have no vector yet, which the retrieval view excludes by definition. That makes
+it the one place where containment cannot be inherited from a view, and the only
+place where the guard has to be written out three times.
+
+> **The plan's list of consumers was a list of the ones that read; the one it
+> missed was the one that writes an invoice.**
+
+## The schema
+
+`scripts/schema-b4-distractors.sql`, idempotent:
+
+- `is_distractor` on **both** `chunks` and `documents`;
+- `distractor_source` and `met_is_public_domain` on `documents`, with a CHECK
+  tying them to the flag;
+- a **trigger** asserting a chunk agrees with its document about being a
+  distractor — without it a distractor document could hold a citable chunk,
+  which is this file's whole failure mode arriving through the back door;
+- `retrievable_chunks` gains `AND NOT is_distractor`. Every column is unchanged,
+  so `citable_passages` and the entire answer path become distractor-free
+  **without being edited** — the same inheritance that carried Part 3's
+  `pointer` exclusion;
+- `retrievable_chunks_with_distractors`, the only surface from which a distractor
+  is visible, carrying `is_distractor` so B5's adjudication can say whether the
+  thing that outranked a gold target was padding or corpus.
+
+## The canary, and the tautology it was about to become
+
+The schema loads a permanent synthetic distractor so the containment assertions
+can run and fail on a database holding no real distractors at all.
+
+**It carries no embedding — and both views require `embedding IS NOT NULL`.** So
+the obvious assertion, "the canary is absent from `retrievable_chunks`", passes
+*because the vector is missing*, and would keep passing with `AND NOT
+is_distractor` deleted from the view. A containment test that cannot fail, in the
+file whose entire job is proving containment. Tenth instance of the standing
+lesson, caught while writing it rather than by mutation.
+
+Every view assertion therefore runs inside a savepoint that first gives the
+canary a vector and then rolls back. Nothing fabricated survives, and the
+exclusion being asserted is caused by the distractor flag alone.
+
+The suite also asserts the canary **is** visible to
+`retrievable_chunks_with_distractors`. Without that inverse, "invisible to
+`retrievable_chunks`" could be passing because nothing is visible anywhere.
+
+## Mutations against a live schema object
+
+`scripts/mutate_distractors.py`. Two of the five guards live in a **view**, and
+rewriting the `.sql` file on disk changes nothing about the running database — a
+text mutation would have "passed" against an unmodified database and proved
+nothing. So the harness replaces the live view with a version missing its guard,
+runs the suite, and restores from the schema file.
+
+Five mutations: the baseline view loses its guard; the curve view gains one it
+must not have; the trigger is dropped; the translator's guard is removed; the
+translatable count's guard is removed. Plus a drift check that the suite's copy
+of the prune DELETEs still matches `ingest/db.py`'s — otherwise the suite would
+be proving containment for a statement nobody runs.
+
+## To run, on the host
+
+```powershell
+python scripts\schema-b4-distractors.sql   # via psql, or apply through ingest.db
+python -m ingest.test_distractors          # 10 assertions, no spend
+python scripts\mutate_distractors.py       # 5 mutations + drift check, no spend
+```
+
+**Then, and only then, the fetch.** `python -m eval.test_ranking_check` and
+`scripts/mutate_ranking.py` are unaffected — 35 and 14, still green.
+
+## Still to build in B4
+
+1. The fetcher itself: Periplus §1–3 and §7–13 from the Wikisource route A4
+   already built; Strabo, Pliny and Ptolemy; the Met API filtered on
+   `isPublicDomain`. ~400 chunks, two or three batched embedding requests.
+2. A `--distractors` mode for the ingest path that cannot write a row with
+   `is_distractor = false`.
+3. The B5 adjudication report — for every pair whose rank worsens between rungs,
+   the text of whatever outranked it and whether it was padding. Required by
+   Block B3's decision 2.
+
+---
+
+# Block B4 — the containment layer failed on first run, three ways
+
+All three are mine, and one of them is the error class this session has spent the
+whole day naming.
+
+## 1. The run instruction was wrong
+
+`python scripts\schema-b4-distractors.sql` hands a SQL file to the Python
+interpreter, which dies on the first em-dash. The comment beside the block said
+"via psql, or apply through ingest.db" and the block itself said `python`.
+
+Fixed by writing the applier the instruction implied: `scripts/apply_sql.py`.
+It resolves the DSN the same way as everything else and sends the file as **one
+statement**, so a schema migration is one implicit transaction — which is why
+the failed attempt left the database untouched rather than half-migrated.
+
+## 2. The canary INSERT was written against a table whose DDL I had not read
+
+`parallel_group text NOT NULL` exists on `chunks`. The INSERT omitted it and
+failed on the constraint.
+
+> **Same error class as B1 finding 2 and the B2 specificity claim: asserting
+> something about the repository without measuring it.** Third instance today.
+> The first two were caught by cheap checks; this one was caught by the host,
+> after I had shipped it, which is the expensive way.
+
+Fixed, and then made impossible: `ingest/test_distractors.py` gained an
+**offline pre-flight** that parses `schema-part3.sql`, derives the NOT NULL set
+for `documents` and `chunks`, and asserts the canary INSERT covers it. It runs
+before any connection is opened, so the next omission fails for free instead of
+on the host. Verified it can fail: removing `parallel_group` from the INSERT
+reports `missing: ['parallel_group']`; misspelling `text_fidelity` reports both
+the missing column and the unknown one.
+
+**The pre-flight's first draft was itself wrong.** It filtered lines by prefix
+and so read `OR` — a continuation line of the multi-line
+`chunks_embedding_provenance` CHECK, containing the words "NOT NULL" — as a
+required column, and reported a missing column that does not exist. A false
+alarm in a pre-flight is worse than no pre-flight, because the whole value is
+being trusted. Now it tracks parenthesis depth. Caught by running it.
+
+**And the first attempt to prove the pre-flight could fail was also wrong.**
+Deleting `parallel_group` from the file with a plain string replace hit the
+`retrievable_chunks` view definition instead — the view's SELECT list begins
+with the same four column names as the INSERT — so the check appeared unable to
+fail when it was the test of the test that was broken. Third layer of the same
+morning, and the reason to state which specific text a negative test edits.
+
+## 3. A restore failure could have left a mutated view live
+
+`scripts/mutate_distractors.py` called `restore_schema()` inside `finally`;
+restore raised on the broken canary INSERT and killed the harness mid-recovery.
+In this instance nothing was lost — the mutation applied at the time was
+byte-identical to the pre-B4 view definition, and the schema had never applied,
+so the database was in its original state. **That was luck, not design.**
+
+The failure that was one step away: a harness that dies after applying
+`VIEW_WITHOUT_GUARD` leaves the live `retrievable_chunks` with **no distractor
+guard**, and the next ranking run reads it and reports a clean number over an
+index full of padding.
+
+`restore_schema()` now returns a reason instead of raising, the loop breaks on
+the first restore failure, and the message names the recovery command. Same
+lesson as Block 0's three mutation scripts — a restore failure and a suite
+failure are different findings — one layer out, where the thing being restored
+is a schema object rather than a file.
+
+## Order corrected
+
+```powershell
+python scripts\apply_sql.py scripts\schema-b4-distractors.sql
+python -m ingest.test_distractors      # 4 offline pre-flight + 10 DB assertions
+python scripts\mutate_distractors.py   # 5 mutations + a drift check
+```
+
+`eval.test_ranking_check` (35) and `mutate_ranking.py` (14) are untouched.
+
+---
+
+# Block B4 — containment green (2026-08-14)
+
+```
+python scripts\apply_sql.py scripts\schema-b4-distractors.sql   applied
+python -m ingest.test_distractors                               15 passed, 0 failed
+python scripts\mutate_distractors.py                            5/5, schema restored
+```
+
+Every guard is falsifiable and was seen to fail:
+
+| mutation | caught by |
+| --- | --- |
+| `retrievable_chunks` loses its distractor guard | a vectorised distractor is INVISIBLE to retrievable_chunks |
+| `retrievable_chunks_with_distractors` **gains** a guard it must not have | a vectorised distractor is VISIBLE to it |
+| the chunk/document agreement trigger dropped | a chunk cannot disagree with its document |
+| the translator's guard removed | a non-English distractor is NOT offered to the translator |
+| the translatable count's guard removed | a distractor does not inflate the translatable count |
+
+The second is the one that matters most. Without it, "invisible to
+`retrievable_chunks`" could have been passing because the row was invisible
+everywhere — which is precisely how the canary would have behaved without the
+vectorise-and-roll-back savepoint.
+
+**Containment exists before any distractor does.** That ordering was the point.
+
+## A consequence worth stating before the loader is written
+
+`UPSERT_CHUNK` in `ingest/db.py` does not set `is_distractor`, so it inserts the
+column's default of `false`. Pointed at a distractor document, the new trigger
+will therefore **raise** rather than quietly write a citable chunk into a
+distractor document.
+
+That is the containment working, not a bug to route around. The distractor
+loader must set the flag explicitly; it cannot inherit the seed corpus's upsert
+and hope.
+
+## Two design points the numbers force, before anything is fetched
+
+### 1. The rungs are index sizes, so the load is two tranches, not one
+
+The curve is **57 → 150 → 450**. Those are total index sizes, so the first
+tranche is roughly **93** distractors and the second roughly **300** — not one
+load of 400. `BLOCK_B3_DISTRACTORS.md`'s budget table gives the total and does
+not say this; it is easy to read as a single load and then discover the middle
+rung has been skipped.
+
+### 2. Each tranche must be a proportional sample of all three seams
+
+If tranche 1 were all Met catalogue prose and tranche 2 all classical geography,
+the 150 and 450 rungs would differ in **composition as well as size**, and the
+curve would confound the two — reporting as degradation-with-scale something
+that is really a change of what the padding is made of.
+
+> **The curve must vary one thing.** Each tranche is therefore stratified: the
+> same seam proportions (~6% Periplus, ~56% classical geography, ~38% Met) at
+> both rungs, sampled deterministically so the composition is reproducible and
+> recorded in the archived run.
+
+Neither point is in `PHASE2_PLAN.md`, which specifies the rungs and the seams but
+not the relationship between them.
+
+## Still to build
+
+1. `ingest/fetch_distractors.py` — three seams to `data/distractors/*.json`, Met
+   filtered on `isPublicDomain` with rejects counted and named.
+2. `ingest/load_distractors.py` — sets `is_distractor` explicitly, stratified
+   tranches, cannot write a distractor row with the flag false.
+3. The B5 adjudication report, required by B3's decision 2.
+
+---
+
+# Block B4 seam 3 — the probe earned its keep before a single record was fetched
+
+`ingest/fetch_met_distractors.py --probe` records the live API shape to
+`data/distractors/met-api-shape.json` and selects nothing. It found two things.
+
+## 1. A department exclusion that matched nothing
+
+The first draft used a **denylist** of six departments, one of which was
+`"Ancient Near Eastern Art"`. The Met's live list has no such department — it has
+**`Ancient West Asian Art`** (id 3). The name was renamed at some point and my
+list was written from recollection, so the exclusion silently matched nothing.
+
+**That is the department holding Sasanian silver, which is in the seed corpus.**
+A denylist that fails open admits exactly the material the ruling excluded, and
+reports nothing at all.
+
+Fixed by inverting the structure. A denylist over nineteen departments requires
+being right about nineteen names; an **allowlist requires being right about the
+six you name**, and `assert_departments()` now refuses to run if any of the six
+is absent from the live list, printing the live names. A rename can no longer
+quietly widen or empty the selection.
+
+> **Fourth instance this week of asserting something about a system without
+> measuring it** — a gazetteer id from memory, an index state from a dated line,
+> an INSERT against unread DDL, and now a remote department name. This is the
+> first one caught *before* it cost anything, and the only reason is that the
+> probe was written to print the live names beside the exclusion marks.
+
+## 2. The material would have been too dissimilar
+
+The probe's two sample records were an **1843 cut-paper silhouette** and a
+**1940s photograph of a New York living room**. Both clear the era rule trivially
+and both are useless as distractors: `BLOCK_B3_DISTRACTORS.md`'s own warning is
+that material too dissimilar makes the curve flat for a reason that has nothing
+to do with the corpus, and W2c then looks unnecessary.
+
+The allowlist is therefore chosen for **material culture comparable to the
+corpus's find records** — metalwork, ceramics, glass, arms, instruments:
+
+```
+American Decorative Arts · Arms and Armor
+Arts of Africa, Oceania, and the Americas · Asian Art
+European Sculpture and Decorative Arts · Musical Instruments
+```
+
+Photographs, Modern Art, Drawings and Prints, European Paintings, The Costume
+Institute, The Libraries and the Lehman Collection are all out — not because
+they could answer a gold-set question, but because they could not plausibly
+compete with one.
+
+## The selection, in the order it applies
+
+| filter | rule |
+| --- | --- |
+| period | reject if `[objectBeginDate, objectEndDate]` overlaps **27 BC – 1204 AD**. Unknown dates count as overlapping — an unproven negative is not a negative. |
+| licence | reject unless `isPublicDomain` is true, per `data/met-licence-declaration.txt`. CC0 is a property of the record, not of the API. |
+| department | must be one of the six, re-checked **on the record** rather than trusted from the query |
+| text | reject under 120 characters |
+
+Every rejection is counted under a named reason and printed. 502,238 object ids
+exist and both probe samples were `isPublicDomain: false`, so the reject counts
+are the number to read, not the keeps.
+
+## The text is a rendered catalogue record, stated plainly
+
+The API returns structured metadata, not narrative prose. The distractor text is
+assembled from title, objectName, culture, period, dynasty, medium, dimensions,
+classification, provenance and credit line. A test render came to 201 characters
+against the corpus's `object_description` chunks at 110–409, so the register
+matches — and the corpus's own descriptions ("Gold coin. Half-length bust of
+Ezanas right, crowned, holding spear...") are themselves rendered catalogue
+records. It is not scraped prose and does not pretend to be.
+
+## Next
+
+```powershell
+python -m ingest.fetch_met_distractors --preview 8    # read the padding, free
+python -m ingest.fetch_met_distractors --fetch --limit 160
+```
+
+`--preview` renders eight allowlisted, public-domain, out-of-era records and
+stops. **Look at them before committing an embedding request to four hundred.**
+
+---
+
+# Block B4 seam 3 — the preview caught what the probe could not
+
+`--preview 8` rendered eight records. Two defects, one of which would have made
+the fetch return almost nothing while blaming the wrong filter.
+
+## The two endpoints do not share a vocabulary
+
+`/departments` calls id 1 **"American Decorative Arts"**. Every object record
+returned for id 1 reports `department: "The American Wing"`.
+
+`--fetch` re-checked the record's own `department` against the allowlist, so
+**every one of those records would have been rejected** — and counted under
+`wrong_department`, a reason that reads like the API returning ids from other
+departments rather than like a naming mismatch. The fetch would have come back
+near-empty and the era filter would have taken the blame.
+
+`--preview` does not apply that check, which is exactly why it surfaced: the
+preview and the fetch disagreed, and the fetch was the one that was wrong.
+
+> **Two names for one thing, in two places, and only one of them checked.**
+> This is the `translation_chunk_id` / `translation_chunk` trap in a remote API
+> — and the second naming defect in this seam after `Ancient Near Eastern Art`
+> / `Ancient West Asian Art`. A display name is not an identifier.
+
+Selection is now keyed on **departmentId**, which is stable across both
+endpoints. The record's own name is recorded, its id→name mapping is written
+into the output as an artefact, and it is tested against a **denylist** —
+correct here because this is a safety net on the record rather than the
+selection, and a safety net must fail closed on a name it does not recognise.
+The denylist keeps both the current and former names of the West Asian
+department, so a revert cannot slip through either.
+
+## The preview showed one sixth of the seam and read like the whole seam
+
+All eight records came from department 1, because the loop filled from the first
+department and broke once it had enough. Now round-robin: `preview // 6` from
+each, and it prints the listed name beside the reported name with a `DIFFERENT`
+flag, so the vocabulary mismatch is visible rather than inferred.
+
+## The material itself looks right
+
+Samplers, candlesticks, a whale oil lamp, pressed glass salts, a hall lantern, a
+Bohemian bottle. 150–264 characters against the corpus's 110–409. The register
+matches, and the vocabulary genuinely competes: several are **glass** objects,
+and the corpus holds Late Roman glass at Hwangnam with an authored pair asking
+how Mediterranean glassware reached Korea. An 1815 American "Hall Lantern.
+Blown and cut glass" cannot answer that question and will compete for its terms,
+which is precisely what a distractor is for.
+
+**One thing to watch rather than fix:** the rendered skeleton is uniform —
+*Title. Culture. Dated X. Medium. Dimensions. Credit line.* Four hundred chunks
+of near-identical structure may cluster in embedding space and either all
+compete or none do. If the 450 rung shows the Met chunks behaving as one block
+rather than as individuals, that is the cause, and B5's adjudication report will
+show it because it names what outranked each target.
+
+## Re-run before the fetch
+
+```powershell
+python -m ingest.fetch_met_distractors --preview 12
+```
+
+Twelve, so two from each of the six. Confirm every department returns material
+of the right kind — and read the name mapping it now prints.
+
+---
+
+# Block B3 decision 3, amended — a second collection for seam 3 (2026-08-14)
+
+Ruled 2026-08-14: **the Met plus the Cleveland Museum of Art.** The original
+ruling was "one collection only — mixing three makes 'where did this come from'
+a per-chunk question".
+
+## The reason is not volume, and that matters for the record
+
+The question that prompted this was whether the Met has enough material to cover
+the period. **It has the opposite problem.** 502,238 objects, and the era rule
+*excludes* anything overlapping 27 BC – 1204 AD — a distractor must not be in
+the window. There was never a shortage and there is no coverage gap.
+
+The reason is **skeleton uniformity**. A rendered catalogue record has one shape,
+*Title. Culture. Dated X. Medium. Dimensions. Credit line.*, and all eight
+preview records had it. Several hundred chunks sharing one skeleton may cluster
+in embedding space and either all compete with a gold target or none do — which
+would make the W2b curve a measurement of my renderer rather than of the index.
+
+> Recorded plainly because a decision filed under the wrong reason gets revisited
+> for the wrong reason. If the curve later looks odd, "we added Cleveland because
+> the Met was too small" would send someone hunting a coverage problem that never
+> existed.
+
+The original objection is answered by the schema rather than by the ruling:
+`distractor_source` is NOT NULL on every distractor row, so "where did this come
+from" is a column, not a question.
+
+## Why Cleveland
+
+No API key. The Rijksmuseum and Smithsonian both require one — a credential to
+store, rotate and keep out of git, for padding. And its records carry free-text
+`description` and `tombstone` fields, so its rendering can differ in *shape*
+rather than being the same skeleton with a different accession number.
+
+**That last point is an expectation, not a measurement.** `--probe` reports
+`records_with_nonempty_description` out of the sample, and the file says outright
+that if the number is near zero, Cleveland renders Met-shaped, the amendment
+bought nothing, and that should be said rather than proceeded past.
+
+Licence **not yet verified**. `--fetch` refuses to run until
+`data/cma-licence-declaration.txt` exists, the same rule the Met material
+followed.
+
+## One era rule, not two
+
+`ingest/distractors_common.py` now holds the era window, the seed, the fetch, the
+minimum length and the output shape. Both fetchers import them.
+
+Copying the era rule into a second file would have been **two implementations of
+one rule** — the defect this repository has already paid for three times
+(`--find` vs `--survey` on numeric ids, `translation_chunk` vs
+`translation_chunk_id`, and the JS port of `date_audit` that was rejected on
+exactly this argument). A drifted era rule would put in-period material into the
+padding on one side only, and nothing downstream would report it.
+
+What is deliberately *not* shared is the field names and the rendering. Those are
+genuinely per-API — the Met has `objectBeginDate`, Cleveland has
+`creation_date_earliest` — and unifying them would be the opposite error.
+
+`distractors_common.skeleton_report()` profiles how many distinct leading shapes
+the padding has and what share the commonest holds. Not a gate; a number to look
+at before spending an embedding request on 400 chunks.
+
+## Budget under the amendment
+
+```
+seam 1  Periplus §1–3, §7–13                              ~25
+seam 2  Strabo, Pliny, Ptolemy (Indian Ocean admitted)   ~225
+seam 3a The Met                                          ~100
+seam 3b Cleveland                                         ~50
+                                                  total  ~400
+```
+
+## Next, in order
+
+```powershell
+python -m ingest.fetch_cma_distractors --probe      # is `description` populated?
+python -m ingest.fetch_met_distractors --preview 12 # 2 per department, and the
+                                                    # listed-vs-reported name map
+```
+
+Then the Cleveland licence declaration, then both fetches, then the loader.
+
+---
+
+# Block B4 seam 3 — both probes read, and a third naming defect (2026-08-14)
+
+## Cleveland buys what it was added for
+
+```
+sampled 40 records · 62 fields
+records with a non-empty `description`: 40/40
+```
+
+**Every record carries free text.** The fields go well beyond the Met's
+structured metadata — `description`, `did_you_know`, `find_spot`, `inscriptions`,
+`provenance`, `tombstone`, `artlens_description`. The amendment was made to break
+skeleton uniformity and the number says it will: Cleveland chunks lead with prose
+rather than with *Title. Culture. Dated X.*
+
+Licence CC0, recorded in `data/cma-licence-declaration.txt`. That file states
+plainly that, unlike the Met's, the terms were **not fetched and quoted
+in-session** — the fetch needed an approval that was not given, so the claim
+rests on the project owner's own reading of the page. A human reading a licence
+is a legitimate source; it is recorded as what it is rather than dressed up as a
+quotation. CC0 is still checked per record on `share_license_status`, because it
+is a property of the record and not of the API.
+
+## The Cleveland allowlist was six guessed names, and the probe could not confirm five
+
+The 40-record sample showed **three** departments, only one of them on the
+allowlist. Cleveland has no `/departments` endpoint, so unlike the Met there is
+no authoritative list to check against — and **the name is the identifier**,
+which is precisely the condition that produced the Met's renamed-department
+defect.
+
+Two changes. `--probe` now samples ~1200 records across twelve pages and reports
+every department by frequency. And `--fetch` **refuses to run** if any allowlist
+entry was never observed, printing the live frequency table. *"Not seen in this
+sample"* reads dangerously like *"does not exist"*, and a name that matches
+nothing selects nothing and reports nothing.
+
+Expect the six current names to be wrong. They are a guess and the file says so.
+
+## The Met preview found a third naming defect — in the guard written for the first
+
+Two of six departments report a different name on their records:
+
+```
+'American Decorative Arts'                  -> 'The American Wing'
+'Arts of Africa, Oceania, and the Americas' -> 'The Michael C. Rockefeller Wing'
+```
+
+That was the known mismatch, now recorded. **What it exposed is worse.** The
+record-level `FORBIDDEN_DEPARTMENT_NAMES` denylist is written in the
+`/departments` vocabulary — "Greek and Roman Art", "Ancient West Asian Art" —
+but records report *wing* names. A record from a forbidden department, arriving
+under a stray id, would report a wing name that is **not in the denylist**, and
+the denylist would fail open.
+
+> Same failure as the original `Ancient Near Eastern Art` entry, in the guard
+> written to prevent it, one week later. **A denylist of names cannot be
+> completed against a vocabulary you do not hold** — and I did not hold it, twice,
+> while writing a check that depended on holding it.
+
+Replaced with a vocabulary-agnostic guard that fails **closed** on novelty: the
+first record seen for a departmentId establishes the name that id reports, and
+any later record reporting a different name is rejected as
+`unexpected_department_name`. A stray record cannot pass whatever either endpoint
+calls it. Verified: seeding, matching, a forbidden name and an unknown wing name
+all behave correctly.
+
+## The Met material is right
+
+Close-helmet, Ancestral Puebloan olla, Chimú silver-and-gold vessel, Meissen wall
+bracket, silver candlestick, Solomon Islands panpipe, Chinese dizi. 164–326
+characters against the corpus's 110–409, and the vocabulary genuinely competes —
+silver, gold, ceramics, textiles, metalwork, bronze — without any of it being
+able to answer a gold-set question.
+
+One record drifted: a *drawing* of a firearm decoration, sitting in Arms and
+Armor and classified "Works on Paper-Drawings". Harmless, and worth watching only
+if drawings come to dominate that department's share.
+
+## Next
+
+```powershell
+python -m ingest.fetch_cma_distractors --probe      # ~1200 records, real vocabulary
+```
+
+Reconcile `INCLUDED_DEPARTMENTS` against what it prints, then `--preview 12` on
+Cleveland to see the prose renderings, then both fetches.
+
+---
+
+# Block B4 seam 3b — Cleveland's real vocabulary (2026-08-14)
+
+The widened probe ran: **1200 records sampled**, written to
+`data/distractors/cma-api-shape.json`. (The console output pasted back was stale
+scrollback from the earlier 40-record version — the file on disk is the new one,
+which is why the file was read rather than the terminal.)
+
+## The allowlist was six guesses and all six exist
+
+```
+allowlist_unconfirmed: []
+
+  101  American Painting and Sculpture      74  Decorative Art and Design
+   79  Chinese Art                          37  Japanese Art
+   15  Korean Art                           14  Textiles
+```
+
+`records_with_nonempty_description: 1195/1200`. The second collection does what
+it was added for.
+
+**One swap made on the evidence:** `American Painting and Sculpture` (101, and
+paintings) out, `Art of the Americas` (46, pre-Columbian material culture) in.
+Closer register to the corpus's find records, and geographically disjoint from
+all seven regions rather than merely out of era. Flagged for veto; the principle
+was already ruled, only the instance changed.
+
+Allowlisted material is **265 of 1200 sampled**, so roughly a fifth before the
+era and CC0 filters. Fifty records will need a few thousand scanned. Korean Art
+(15) and Textiles (14) are thin and may contribute little.
+
+## The third naming defect of this seam
+
+The denylist listed **"Egyptian Art"** and **"Ancient Near Eastern Art"** as
+separate entries, copied straight from the Met's vocabulary. Cleveland combines
+them: **"Egyptian and Ancient Near Eastern Art"** (30 in sample). Both entries
+matched nothing.
+
+```
+Met    Ancient Near Eastern Art   -> renamed to Ancient West Asian Art
+Met    /departments names         -> records report wing names
+CMA    Egyptian Art               -> Egyptian and Ancient Near Eastern Art
+CMA    Ancient Near Eastern Art   -> same
+```
+
+> **Three museums, three vocabularies, four silent no-ops.** Each time the
+> failure mode is identical: a hardcoded name that matches nothing looks exactly
+> like a name that matches and finds nothing to exclude. There is no observable
+> difference at the point of use, which is why all four survived review and only
+> the probes found them.
+
+Two things changed as a result:
+
+1. `"African Art"` added to the denylist — 44 in sample, and Sub-Saharan Africa
+   is a corpus region. It was already excluded by the allowlist; now it is
+   excluded twice, deliberately.
+2. `--probe` reports **`forbidden_never_observed`** — which forbidden names
+   matched nothing. Reported, not gated, because a museum may legitimately have
+   no department by a given name. But a no-op now announces itself instead of
+   reading like protection. It currently prints `['Ancient Near Eastern Art',
+   'Egyptian Art']`, which are the two kept deliberately in case a future rename
+   splits the combined department back apart.
+
+**Cleveland's exposure to this was always lower than the Met's**, because its
+selection is a strict allowlist — anything not on it is rejected as
+`not_in_allowlist` regardless of the denylist. The denylist only matters if a
+forbidden department is ever added to the allowlist by mistake. That is exactly
+the case it now covers, and the Met's design — select by id, guard by name — was
+the one where a wrong name could fail open.
+
+Every rejection path verified: `Art of the Americas` admissible,
+`Egyptian and Ancient Near Eastern Art` and `African Art` forbidden,
+`Photography` not in the allowlist.
+
+## Next
+
+```powershell
+python -m ingest.fetch_cma_distractors --probe        # confirms the swap, ~2 min
+python -m ingest.fetch_cma_distractors --preview 12   # the prose renderings
+```
+
+The preview is the one that matters now: it is the first sight of a Cleveland
+chunk rendered from `description` rather than from the structured fields, and
+whether it reads like a different shape from the Met's is the whole case for the
+amendment.
+
+---
+
+# Block B4 — the loader, and seams 1 and 2 stopped on the time-box (2026-08-14)
+
+## The loader
+
+`ingest/load_distractors.py`. Two design points, both forced by numbers rather
+than preference:
+
+**It takes `--target-index`, not `--limit`.** The W2b rungs 57 → 150 → 450 are
+INDEX SIZES. `BLOCK_B3_DISTRACTORS.md` gives a ~400 total and the plan gives the
+rungs, and the pair reads as one load of 400 — which skips the middle rung
+entirely. The loader is told the index size to reach and works the rest out
+against the live count.
+
+**Tranches are stratified.** Verified on a 300-Met / 80-Cleveland simulation:
+
+```
+tranche 1  (57 -> 150)   cma  20   met  73    shortfall 0
+tranche 2  (150 -> 450)  cma  60   met 227    shortfall 13
+composition               cma 22% / 21%   met 78% / 79%
+```
+
+The proportions hold across both rungs, no record loads twice, and the shortfall
+is **printed with its consequence named** — "the rung will be 437, not 450" —
+because a curve whose rungs are not where they claim to be is not a curve.
+
+One chunk per record, deliberately: these texts are 120–400 characters, under
+the chunker's ~1200 threshold, so routing them through it would produce exactly
+this and add a dependency for nothing.
+
+The loader also refuses to write a row with `is_distractor` false. The trigger
+would stop it anyway — but a loader that depends on a trigger to be correct is a
+loader that is wrong and lucky.
+
+## Seams 1 and 2 are stopped, and this is the time-box working
+
+The plan for seam 1 was "the Wikisource route A4 already built". **There is no
+such route.** `data/a4_ws_sections.py` is a file of Periplus sections
+**hand-transcribed** on 2026-08-13, with its own header saying so:
+*"Transcribed 2026-08-13 from el.wikisource.org … Working file for the A4
+recovery. Not part of the pipeline."* `scripts/recover_periplus_a4.py` compares
+that file against the corpus; it fetches nothing.
+
+So seam 1 needs a Wikisource fetcher that does not exist, and seam 2 needs
+Strabo, Pliny and Ptolemy from a source that must be found, licence-checked and
+parsed. That is three new acquisition paths, and on this seam's record — four
+silent naming no-ops across two museums — it is several more rounds.
+
+**Stopped, per the standing instruction: if a source fights back, drop it and
+record the shortfall rather than fixing it.**
+
+### What that costs, stated rather than glossed
+
+The padding is now **English catalogue prose only**. The consequence lands on one
+cohort in particular: **12 of the 32 gold pairs target Greek chunks**, and they
+will face no competing Greek at any rung. Their ranks may hold up across the
+curve for a reason that has nothing to do with robustness — nothing in the index
+speaks their language.
+
+So the curve measures **degradation under English competition**. That is a real
+result and it attacks the right cohort — `authored` is the strongest at 0.889
+and all nine of its targets are English — but it is not the general claim
+"retrieval degrades with index size", and B5 must not be read as making it.
+
+### The route back, if it is ever wanted
+
+Not scraping. **Perseus publishes canonical Greek and Latin texts as TEI XML in
+public git repositories**, which is a clone rather than a crawl and carries a
+stated licence. Strabo, Pliny's *Natural History* and Ptolemy's *Geography* are
+all there. That is one acquisition path instead of three, and it would give the
+Greek-target pairs something to compete against.
+
+Recorded as the option, not taken now.
+
+## Where Block B stands
+
+```
+B1  ranking gold set          done, 32 pairs
+B2  baseline                  done, three runs, final at full depth
+B3  distractor seams          ruled, decision 3 amended for a second museum
+B4  containment               done, 15 assertions / 5 mutations
+    fetchers                  Met and Cleveland built; seams 1-2 dropped
+    loader                    built and verified offline
+B5  the curve                 not started
+```
+
+## To run
+
+```powershell
+python -m ingest.fetch_cma_distractors --preview 12   # the prose renderings
+python -m ingest.fetch_met_distractors --fetch --limit 300
+python -m ingest.fetch_cma_distractors --fetch --limit 120
+python -m ingest.load_distractors --plan
+```
+
+`--plan` writes nothing and prints the tranche composition and any shortfall.
+Read it before loading.
+
+---
+
+# Block B4 — the first real fetches, and four defects (2026-08-14)
+
+## Cleveland is what the amendment was for
+
+120 records kept, **all 120 rendered from free-text `description`** — narrative
+art-historical prose, not a catalogue skeleton:
+
+> *"The figure watching the stars is believed to be the messenger Zhang Qian
+> (died 114 BCE). Legend says he lost his way in the Milky Way, where he met the
+> Weaving Maid who gave him a stone from her loom…"*
+
+Nothing like *Title. Culture. Dated X. Medium.* The second collection bought
+exactly the shape diversity it was added for. Rejections all named: 407
+`not_in_allowlist`, 239 `forbidden_department`, 73 `overlaps_era`, 2 `not_cc0`.
+
+## Four defects, in the order they matter
+
+### 1. The Met fetch died on HTTP 403 and discarded everything it had
+
+`get()` raised on any non-404, so a 403 partway through a 300-record run
+escaped to the top and **every record gathered was lost**. The traceback gave no
+way to tell "this API is refusing" from "this code is broken".
+
+A 403 from a public open-access API at eight requests a second is throttling or
+a bot rule, not a permission problem. `get()` now retries 403/429/5xx with
+exponential backoff and then raises `Throttled`, which the fetcher catches to
+**write what it has** and report `STOPPED EARLY` with the reason. A refused API
+is a reason to stop, not a reason to discard work.
+
+### 2. The padding carried HTML
+
+`<br><br>` and `<em>loom stone</em>` came through into the rendered text. Left
+in, the distractors would be the **only material in the index containing
+markup** — a signal about provenance rather than content, and precisely the kind
+of artefact that makes padding distinguishable for the wrong reason. Stripped,
+with entities unescaped.
+
+### 3. The padding was longer than the corpus
+
+```
+Cleveland as fetched : min 124  median 619  max 1422
+corpus chunks        : min  36  median 416  max 1158
+```
+
+Uncapped, the padding would differ from the corpus in **length as well as
+content**, and a curve that moved could be reporting either. Capped at
+`MAX_CHARS = 1200` — the chunker's own splitting threshold, so no distractor is
+longer than the longest chunk the project would ever emit for itself — trimmed at
+a sentence boundary, never mid-word.
+
+### 4. A justification in the loader was false, and had been from the start
+
+`load_distractors.py` said: *"These texts are 120-400 characters — under the
+chunker's ~1200 threshold — so running them through the chunker would produce
+exactly this."* Written from the Met preview, never rechecked, and **false the
+moment Cleveland arrived at 1422**.
+
+> The same error as everything else in this block — a claim about a system,
+> asserted rather than measured — but this time in a *justification* rather than
+> in a guard. Nothing enforced it, so nothing caught it. It is the quietest
+> version of the failure: a comment explaining why a check is unnecessary is
+> itself an unchecked claim.
+
+The loader now **raises** on any record over `MAX_CHARS` rather than explaining
+why that cannot happen. The comment is true by construction instead of by
+assertion.
+
+## To re-run
+
+The 120 Cleveland records on disk were written by the old code — they carry HTML
+and 18 of them exceed the cap. Re-fetch rather than patch, so the file on disk
+is what the current code produces:
+
+```powershell
+python -m ingest.fetch_cma_distractors --fetch --limit 120
+python -m ingest.fetch_met_distractors --fetch --limit 300
+python -m ingest.load_distractors --plan
+```
+
+If the Met throttles again it will now keep what it got and say so. Two partial
+runs are fine — the loader skips ids already loaded.
+
+---
+
+# Block B4 — both fetches ran; the 450 rung is not reachable (2026-08-14)
+
+```
+cma  120 records   len 124-1166 (median 605)   over-cap 0   html 0
+met   47 records   len 122-1190 (median 193)   over-cap 0   html 0
+                   total 167
+```
+
+The cap and the markup strip both hold. Every rejection is named. Cleveland
+renders 120/120 from free text; the Met's 47 are catalogue skeletons, so the
+padding has two registers as intended.
+
+## The arithmetic
+
+```
+rung 150  needs  93 distractors   -> available
+rung 450  needs 393 distractors   -> SHORT by 226
+max index reachable today: 224
+```
+
+**The Met stopped at 47.** It threw HTTP 403 at object 71242 after five backed-off
+attempts, having examined roughly seventy objects. The new `Throttled` handling
+worked exactly as intended — the 47 were written and reported rather than lost —
+but the Met is rate-limiting hard enough that a 300-record run is not going to
+complete at the default pace.
+
+**This is not a code defect and not a corpus problem.** Cleveland stopped at 120
+only because `--limit 120` said so: it rejected 721 and kept 120 from roughly 840
+scanned, a ~14% yield against a collection with tens of thousands of open-access
+records. Cleveland can supply as much as the curve needs.
+
+## Two changes, both about not losing work
+
+**`write_records` now MERGES rather than overwrites.** A re-run of a throttling
+fetcher previously overwrote its own output, so a second run that died *earlier*
+would have silently destroyed the first run's records — the same discard-the-work
+defect the `Throttled` handling was added to fix, one level up, and worse because
+it would have looked like success. Verified: a deliberately worse third run
+cannot shrink the file.
+
+**`--pause` added.** The Met returned 403 at the default 0.12s. `--pause 1.0`
+asks more slowly, which is the polite response to a rate limit and costs only
+wall-clock.
+
+## The decision this forces
+
+The 450 rung needs 393 distractors and 167 exist. Either:
+
+1. **Top up.** `--limit 400` on Cleveland — it has the material and does not
+   throttle — plus a slower Met retry to keep both registers present. Ten to
+   twenty minutes of wall-clock, no API spend, and the curve is 57 → 150 → 450
+   as planned.
+2. **Run the curve at 57 → 150 → 224.** Still three points and a 4x growth from
+   the baseline, which can still show shape — linear, cliff or flat — but on
+   weaker evidence than 8x, and the rungs must be reported as what they are.
+
+**Not a blocker by the bar set before the run** — the fetch behaved correctly and
+nothing about the measurement is corrupted. But the fix is one flag, so the
+shortfall is a choice rather than a constraint.
+
+## Also worth noting
+
+Composition after a top-up would be roughly 80% Cleveland. That is fine for the
+curve — stratification holds the proportions equal *across rungs*, which is what
+the comparison needs — and it means the padding is mostly narrative prose rather
+than catalogue skeletons. Given the amendment was made to escape skeleton
+uniformity, that is the better way round.
+
+---
+
+# Block B4 — fetching complete (2026-08-14)
+
+```
+cma  400 records   median 595   398/400 from free-text description
+met  200 records   median 196   no throttling at --pause 1.0
+     600 total     450 rung needs 393
+```
+
+The Met's second run completed cleanly at the slower pace — 153 added to the 47
+carried, no 403. The merge behaved: neither run overwrote the other.
+
+Composition lands at **67/33 Cleveland/Met**, and the length question the mix
+raised answers itself at that ratio:
+
+```
+corpus            median 433   mean 454
+padding at 67/33  median ~450  mean ~470
+```
+
+Within a few percent of the corpus on both. At 80/20 it was 22% long. No
+engineering was needed — the Met simply had to be asked more slowly.
+
+## Three fixes that came out of the fetching, none of them about distractors
+
+1. **`Throttled`** — a 403 stops the fetch and keeps what it gathered, instead of
+   raising to the top and discarding it.
+2. **`write_records` merges** — a re-run tops up rather than overwriting, so a
+   second run that dies earlier cannot destroy the first.
+3. **Progress output, capped backoff, interrupt checkpointing** — a `--pause 1.0`
+   run went silent for minutes and had to be asked whether it had frozen. Part 4
+   recorded the same lesson on 2026-08-09 ("the backfill prints a line per batch,
+   so a slow gateway reports instead of looking dead") and it was not applied
+   here until it cost a round trip.
+
+## Closing note on this block
+
+Seam 3 took far more rounds than its value warrants, and the reason is worth
+recording without dressing it up: **four separate silent no-ops from hardcoded
+remote names** — a renamed Met department, two vocabularies for the same Met
+department, a combined Cleveland department, and an unverified Cleveland
+allowlist. Each fix was a line. The sequence was not.
+
+The generalisable part: **a name that matches nothing is indistinguishable at the
+point of use from a name that matches and finds nothing.** Every one of these was
+caught by a probe printing the live vocabulary beside the configured one, and
+none would have been caught by review.
+
+The padding itself is the least valuable artefact in Block B. The containment
+around it is not — the prune cascade and the translator guard would each have
+cost real money or real data — and that part was built first, deliberately.
+
+## The remaining B4/B5 sequence, no further tuning
+
+```powershell
+python -m ingest.load_distractors --plan
+python -m ingest.load_distractors --target-index 150
+python -m ingest.run_embed
+python -m ingest.test_distractors
+python -m eval.run_ranking_check --with-distractors     # rung 2
+
+python -m ingest.load_distractors --target-index 450
+python -m ingest.run_embed
+python -m eval.run_ranking_check --with-distractors     # rung 3
+```
+
+Four batched embedding requests in total. `test_distractors` now runs with real
+distractor rows present, so containment stops being a claim about one synthetic
+canary and becomes a claim about live padding.
+
+---
+
+# Block B5 — the curve, and a containment failure that was live for the whole run
+
+## The containment failure, first, because it is the serious one
+
+`ingest/test_distractors.py` went from 15/15 to three failures. Cause:
+
+> **`ingest/run_embed.py` re-applied `scripts/schema-part4.sql` on every run**,
+> and that file contains `CREATE OR REPLACE VIEW retrievable_chunks` **without**
+> Block B4's `AND NOT is_distractor`. `ingest/run_ingest.py` does the same via
+> `db.apply_schema`. Two commands in the standing session ritual silently
+> reverted distractor containment.
+
+It fired between the containment suite passing 15/15 and the first embed. From
+that moment the **answer path could have cited a distractor**. Nothing ran the
+answer path in the window, so no answer was contaminated — but the exposure was
+real and lasted hours.
+
+### Nothing detected it, including the check written to detect it
+
+`load_distractors` printed **`corpus chunks unchanged: 151 -> 151  OK`** while
+reading the reverted view. Both views returned 151 where they should have
+returned 57 and 151. The containment check was reading contaminated data and
+reporting success — the `--survey`-on-substrings failure in a new costume, and
+the eleventh instance of the standing lesson.
+
+### Three fixes
+
+1. **`db.MIGRATIONS`** — part3, part4, then b4, applied in order, absent files
+   skipped. `run_embed` now calls `db.apply_schema` instead of executing part4
+   directly. A later migration can no longer be undone by an earlier one.
+2. **The guard is asserted directly**, by reading `pg_get_viewdef` and looking
+   for `is_distractor`, rather than inferred from row counts. A count assertion
+   is satisfied by an empty table; a definition assertion is not.
+3. **The canary stops pretending it is outside the pipeline.** It was designed
+   vectorless so the test could vectorise it in a rolled-back savepoint —
+   and then `run_embed` embedded it for real (`chunks to embed: 94` for 93
+   loaded records), which is correct behaviour for an eligible chunk and broke
+   the fixture. It is now embedded like any other distractor, and the exclusion
+   assertion no longer depends on the absence of a vector.
+
+A sixth mutation proves the definition assertion can fail.
+
+### What this does NOT invalidate
+
+**The curve data stands.** Both ranking runs read
+`retrievable_chunks_with_distractors`, which `schema-part4.sql` does not define
+and therefore never reverted. The contaminated view was the *baseline* one, and
+no ranking run at any rung used it.
+
+The canary is one synthetic chunk inside both elevated rungs — 151 and 450
+include it. Recorded, negligible.
+
+## The curve
+
+```
+index          57        151       450
+recall@6      0.812     0.812     0.812
+MRR@10        0.651     0.648     0.648
+gapDoc       +0.025    +0.023    +0.020
+gapAny       -0.008    -0.009    -0.012
+spread        0.146     0.141     0.136
+```
+
+**Flat.** Recall does not move at all across an eightfold index. MRR moves by
+0.003. The gaps drift by three thousandths. Nothing that would be called
+degradation happened.
+
+### Where movement did occur
+
+```
+muziris-cargo-akananuru    51 -> 112 -> 309      (of 57 / 151 / 450)
+muziris-cargo-papyrus      41 -> 109 -> 109  ... 41 -> 53 -> 109
+aksum-trade-adulis         29 ->  29 ->  35
+au-khao-sam-kaeo           10 ->  12 ->  17
+au-silla-glass         gap .112 -> .097 -> .036
+au-shapur-plate        gap .106 -> .106 -> .076
+```
+
+Every pair that moved was **already failing at 57 chunks**, or is one of the
+English-target `authored` pairs whose gap narrowed. Nothing that was passing
+started failing. `muziris-cargo-akananuru` fell from 51 to 309 — it holds its
+*relative* depth almost exactly (89% → 74% → 69% down the index), which is what
+a chunk with no real signal does as the index grows around it.
+
+### The reading, stated at the size the evidence supports
+
+**Retrieval did not degrade with index size over this range.** But the padding is
+**English catalogue prose only** — seams 1 and 2 were dropped — so the twelve
+Greek-target pairs faced no competing Greek at any rung, and their flatness is
+not evidence of robustness.
+
+What the curve does support: **English-target retrieval survives an eightfold
+index of plausibly-similar English competition**, with the `authored` cohort's
+gap eroding from +0.055 to +0.045. That is a real result, and it is the cohort
+the padding was aimed at.
+
+What it cannot support: any claim about non-English retrieval at scale.
+
+### Against the plan's decision point
+
+> degradation milder than predicted → W3 can move faster, and say so
+
+Degradation is **milder than predicted — it is absent**. On the plan's own rule
+that is a green light for W3 to move faster. **It should not be taken at face
+value**, for the reason above: the curve tested one language.
+
+---
+
+# Block B closed — starting point for Block C (2026-08-14)
+
+Containment re-verified after the reversion was fixed at source:
+
+```
+python -m ingest.test_distractors     16 passed, 0 failed
+python scripts\mutate_distractors.py   6/6, schema and sources restored
+```
+
+The new mutation — *"retrievable_chunks loses its guard (definition assertion)"*
+— proves the direct `pg_get_viewdef` check can fail. Both it and the count-based
+assertion are kept: a count assertion is satisfied by an empty table, and a
+definition assertion is satisfied by a guard that is present but wrong.
+
+## Block B, complete
+
+```
+B1  32 ranking pairs, 7 regions, 8 target languages
+B2  baseline recorded three times; final at full depth
+B3  three seams ruled; decision 3 amended for a second museum
+B4  containment 16/16 and 6/6; 600 distractors fetched, 393 loaded
+B5  the curve: flat at 57 / 151 / 450
+```
+
+Total spend across the whole block: **eight batched embedding requests.** No chat
+calls.
+
+## The handoff
+
+`BLOCK_C_START.md` is the starting point for the next thread. It carries the
+measured state, the curve with its two caveats, the four blocking rulings, the
+traps this block paid for, and the verification commands.
+
+It exists because `PROGRESS.md` is now ~400 KB and a new thread cannot read it
+whole — and because grepping it is not a substitute for reading it. **This block
+proved that twice**: A4's line recording the twelve chunks it re-embedded sat
+three hundred lines from any term I searched, and the claim that the index had
+diverged from the corpus was made against a document rather than a database.
+
+## The one thing the next thread must not inherit uncritically
+
+The curve is **flat**, and the plan's decision rule reads *"degradation milder
+than predicted → W3 can move faster, and say so"*. Taken at face value that is a
+green light.
+
+It should not be taken at face value. The padding is **English catalogue prose
+only**; seams 1 and 2 were dropped on a time-box, so the twelve Greek-target
+pairs faced no competing Greek at any rung. The curve supports *"English-target
+retrieval survives an eightfold index of similar English competition"* and
+supports nothing about non-English retrieval at scale.
+
+And `gapAny` is negative at every rung, including at 57 chunks before any padding
+existed. **The quantity W2b was built to watch erode had no positive value to
+erode from.** A flat curve over a quantity that started at zero is a weaker
+result than a flat curve over a healthy one, and G2's *"score gap wider than
+baseline"* criterion is measured against that same near-zero number.
+
+---
+
+# Block C session 1 — C1a, C1b, and the four rulings (2026-08-14)
+
+Ran with the repository mounted read/write from a Claude session that could not
+reach the host's venv, Docker or Postgres. So: **every edit below is on disk and
+every suite quoted below was run against a partial copy of the tree in a Linux
+container, not against the host.** The host runs are still owed, and are listed
+at the end. Nothing here was measured against the live index; nothing here needed
+to be.
+
+## What was believed going in, and how it turned out
+
+**Believed:** the ruling on multi-target queries takes recall to 26/30 = 0.867.
+**Found:** the gold set holds *two* shared queries, not one. Besides Muziris
+there is *"How did Chinese sources describe the Roman empire?"* — two pairs, at
+ranks 4 and 5, both hits. `claude/phase2-block-c-plan.md` collapsed Muziris and
+left that one expanded. Applied to both:
+
+```
+per pair, today               26/32 = 0.812
+collapse Muziris only         26/30 = 0.867   <- the planned figure
+collapse both, consistently   25/29 = 0.862   <- the ruling as made
+```
+
+Collapsing the China query removes a unit and a hit, so the consistent ruling is
+*lower* than the planned one. At 29 units ≥0.95 permits **at most one miss**, and
+four units miss: ranks 11, 15, 17 and 35. **Three of those four must be fixed.**
+The ruling makes the gate reachable; it does not reach it, and the two claims
+were being run together.
+
+**Believed:** the chunk beating a `translation_case` target is always that
+document's own English translation.
+**Found:** that is not recoverable from either archived run. `PairResult`
+recorded `sim_best_other_chunk` and never which chunk it was, so the claim
+existed only as a recollection from B5. It is now recorded — see C-extra below —
+and **the effect of ruling 2 on `tc-frankincense-harvest` is therefore unknown
+and must not be assumed**. Its `gapAny −0.178` against `gapDoc −0.053` says the
+chunk beating it is a sibling in its own document; whether that sibling is §29's
+English or §27–28's is exactly what was never written down.
+
+**Believed:** six archived spans are affected by the `cite.py` labelling defect.
+**Found:** "six" is prose hardcoded in `ui/index.html`; Block 0's own audit
+printed nine `case_only`. The sentence was never derived from the audit beside
+it. It is now generated from `span_audit`, and so is the spans total, which was
+a hardcoded sum of four state names and would have silently dropped the fifth.
+
+## C1a — `cite.py`'s third match state
+
+`locate_in_text` now returns `Located(start, end, match)`, a NamedTuple so that
+`span[0]` and `span[1]` keep meaning what they meant. `match` is `exact` or
+`case_folded`; `locate_quote` passes it through instead of hardcoding `"exact"`
+on three branches. `QuoteSpan.match` is now `exact | case_folded | normalised`,
+and `verify()` adds a note when a quote matched only after folding.
+
+The fallback was never wrong. **The label was**, and the span is exact either way
+because `_fold` is length-preserving — which is why this is a naming fix and not
+a correctness fix.
+
+`build_ui_data.classify_span` gained a fifth state. It now reads the span's own
+`match` rather than only the characters:
+
+- `case_folded` — characters differ only in case, and the span says so. Not a
+  defect.
+- `case_only` — characters differ only in case and the span claims `exact`. Still
+  a defect, and **every run archived before today lands here by construction**.
+
+Archived runs are **not** re-labelled. An archive edited to match today's names
+stops being evidence that the defect existed, which is the only thing that
+bucket is for. `ui/index.html` renders the new state with its own wording and
+`check_ui.mjs`'s tally is accumulated rather than declared as a fixed object —
+it was a literal `{resolved, case_only, moved, absent}`, so an unlisted state
+would have incremented `undefined` and every comparison against NaN would have
+been false. The audit would have failed while naming a count and not the missing
+state.
+
+Mutation added to `scripts/mutate_part7b.py`: *"case-folded match recorded as
+exact again"* → `GUARD a case-folded match is not recorded as exact`.
+
+## C1b — the `translation_chunk*` rename
+
+```
+translation_chunk_id  ->  translation_member_chunk_id   the English chunk retrieval
+                                                        returned, or the section's
+                                                        first chunk. A MEMBER.
+translation_chunk     ->  translation_section           every member merged by
+                                                        align._merge. The SECTION.
+```
+
+Also `build_passages(translation_chunk_by_chunk=, translation_record_by_chunk=)`
+→ `(translation_member_by_chunk=, translation_section_by_chunk=)`, and
+`fold_hits`'s `folded` → `members`. The serialised key in new archives changes
+with the field; runs archived before today keep `translation_chunk_id`, which
+held this same value, and are not rewritten.
+
+A merged section carries its **first member's** chunk_id, so the two agree
+whenever the original was the hit and disagree whenever a later member of a split
+section was. **Nothing in the suite had ever seen them differ.** A new assertion
+in `test_section_alignment` builds that case — hits `g4` and `e4b`, section `e4a`
+— and checks that the `Passage` carries both under their own names and that
+`to_dict()` names the member it actually stood on.
+
+## C-extra — the ranking run now names the chunk it lost to
+
+`PairResult` gained `best_other_chunk_id` and `best_other_doc_chunk_id`, with an
+assertion in `eval/test_ranking_check.py` that each gap names the chunk it was
+measured against and that a pair with nothing to compare against names nothing.
+Two strings per pair, and ruling 2's premise becomes checkable offline from the
+next run rather than remembered.
+
+## The rulings
+
+All four are in `BLOCK_C_RULINGS.md`, with the arithmetic and the cost of each.
+In short: (1) a multi-target query is one unit scored on its best acceptable
+target, with per-unit coverage reported and the Old Tamil failure printed beside
+every G2 number; (2) `translation_case` accepts the document's own published
+translation of the *same* section, still a miss on a neighbouring one; (3) gap
+pre-rerank, recall post-rerank, reranker-score gap under its own name and never
+compared to the baseline; (4) "wider than baseline" reads `gapDoc`, which is
+positive at every rung, not `gapAny`, which is negative at every rung.
+
+The fifth item is a task, not a choice: **add an English→Tamil probe with
+`lang_pool: non_english` before C3**, one query in a batched request. After
+ruling 1 the worst cross-lingual result in the corpus rests on a pair that no
+longer counts toward the gate.
+
+## Run on the host before anything else this session says is believed
+
+```powershell
+python -m answer.test_answer            # 145 in the container; was 133 in the plan
+python -m answer.test_translate
+python scripts\mutate_part7b.py         # 15 mutations, was 14
+python ui\test_build_ui_data.py
+python -m eval.test_ranking_check       # 37; the 37th needs the seed corpus
+python scripts\mutate_ranking.py
+python -m ingest.test_distractors
+python scripts\mutate_distractors.py
+python ui\build_ui_data.py --verify     # expect the case_only count UNCHANGED and
+                                        # case_folded 0 — no answer has been re-run
+node ui\check_ui.mjs
+```
+
+In the container all of `answer.test_answer` (145 assertions, 0 fail),
+`answer.test_translate`, and all **15** mutations in `mutate_part7b.py` passed
+with sources restored. `eval.test_ranking_check` reported 36 passed / 1 failed,
+the failure being *"every pair resolves to exactly one chunk of its expected
+document"* — the seed corpus was not staged into the container, so that
+assertion had nothing to resolve against. It is expected to pass on the host and
+its passing is the check that the two new assertions did not disturb the loader.
+
+`case_folded` should be **0** after `--verify`. Anything else means an archived
+run was rewritten, which is the one thing C1a must not do.
+
+## Not done, and next
+
+- The rulings are written down but **not yet implemented in the checker**. Unit
+  scoring, per-unit coverage, and the `translation_case` acceptable-target set
+  are code, tests and a mutation, and they change what the metric means — so
+  they get their own session and their own re-measure.
+- No re-measure was run and no query was embedded. Spend this session: **zero**.
+
+## Host verification of the above, same day
+
+Run on the host in the venv, against the live tree. Everything the container run
+claimed, confirmed — and one number the container could not reach.
+
+```
+answer.test_answer                 all passed
+answer.test_translate              all passed
+scripts\mutate_part7b.py           15/15, sources restored
+ui\test_build_ui_data.py           all passed
+eval.test_ranking_check            37 passed, 0 failed
+scripts\mutate_ranking.py          14/14, sources restored
+node ui\check_ui.mjs               all checks passed
+```
+
+`eval.test_ranking_check` is the one that mattered: the container reported 36/1
+because the seed corpus was not staged into it, so *"every pair resolves to
+exactly one chunk of its expected document"* had nothing to resolve against. On
+the host it passes, which is the check that the two new `best_other_chunk_id`
+assertions did not disturb the loader.
+
+### `build_ui_data.py --verify`, the C1a acceptance test
+
+```
+168 claimed character span(s):
+  resolved     157
+  case_folded    0
+  case_only      9
+  moved          1
+  absent         1
+```
+
+**`case_folded 0` is the result C1a wanted.** No archived run was re-labelled;
+the nine spans that were a labelling defect are still a labelling defect,
+reported as one, with `match='exact'` still on the page beside them. The state
+exists and is empty because no answer has been produced since it existed —
+which is exactly the shape of a correct archive.
+
+`check_ui.mjs` confirms the tally end to end:
+`{"resolved":157,"case_folded":0,"case_only":9,"moved":1,"absent":1}`, and it
+confirms it through the accumulating counter rather than the fixed object it
+used to be — the old literal would have dropped `case_folded` silently and then
+compared a count against NaN.
+
+### The nine are one quotation
+
+Worth writing down, because it explains how "six" ever got into `index.html`:
+all nine `case_only` spans are the **same quotation in the same field of the
+same record** —
+
+```
+eastasia-02-hou-hanshu.reference_translation[391:516]
+"the tribute brought was neither precious nor rare, raising suspicion t…"
+```
+
+— repeated across nine archived runs of the same question. Nine spans, one
+defect, one record, and a prose sentence counting something else again. The
+sentence is now generated from `span_audit` and cannot drift from it.
+
+`--verify` still exits non-zero on `moved 1` + `absent 1`. Both are the known
+Adulis case: A4's Wikisource recovery replaced the record after those runs were
+archived. Unchanged by anything in this session, and the standing argument for
+D1's corpus version in every answer.
+
+**All seven G2 checklist items that are code are now landed or measured. The
+three that remain are the ruling-dependent ones: recall at 450, the gap, and two
+sessions on different days.**
+
+---
+
+# Block C session 2 — the rulings become code (2026-08-14)
+
+Offline only. No query embedded, no re-measure, spend **zero**. The rulings from
+this morning were written down; this session makes them executable, which is the
+only form in which a ruling can be wrong in a way anybody notices.
+
+## Ruling 1 — the unit is DECLARED, not inferred
+
+Each pair may carry `unit_id`; absent, a pair is its own unit. Two units are
+multi-target: `muziris-cargo` (3 pairs) and `china-describes-rome` (2).
+
+The alternative was to group by identical query text, which the checker already
+does to set `shared_query`. It was rejected: a denominator inferred from text
+nobody declared changes the moment somebody edits a query by a character, and
+nothing in the run would look wrong. The loader now asserts **both** directions:
+
+- a unit whose members carry different query text is a load error;
+- two pairs sharing query text but declaring different units is a load error.
+
+The second is the silent one. Without it, adding a third pair to an existing
+question and forgetting `unit_id` adds a unit to the gate's denominator, and the
+only symptom is a slightly different number.
+
+`run_ranking_check.py` now reports at two depths and never one in place of the
+other. Per pair, everything means what it meant when B2 was recorded — `rank`,
+both gaps, the cohort table — so every run since Block B stays comparable. Per
+unit, ruling 1: best acceptable target, plus **coverage**, which is how many of
+the unit's targets reached the top 6. Coverage is printed and never gated, with
+the reason printed under it.
+
+## Ruling 2 — the alternate is COMPUTED, not copied
+
+A pair carrying `accept_aligned_translation` gets its accepted alternate from
+`answer.align.pair_chunks` at scoring time. Nothing is written into the gold
+file: a hand-copied alternate is a second copy of a passage that drifts from the
+record it came from, which is the chunk-id failure in a new hat.
+
+Admitted **only** where align reports the ground as `section`. On `index` —
+both sides merely split into the same number of pieces — nothing is admitted,
+because that pairing is a coincidence of counting and accepting on it would
+admit a *neighbouring* section, which the ruling says is still a miss. The
+ground is recorded per pair either way: "none admitted" and "none asked for"
+are different facts about a run.
+
+Scoped as ruled — the four `translation_case` pairs and nothing else, asserted.
+And `rank_accepted` sits beside `rank` rather than replacing it. Rewriting
+`rank` would have restated every number Block B recorded as though the ruling
+had always been in force.
+
+`resolve_alternates` is tested offline against a stub connection. The rule that
+decides whether four gold pairs become reachable was otherwise only exercisable
+in the session that spends.
+
+## The English→Tamil probe, and the arithmetic getting harder
+
+Added as `probe-tamil-akananuru-en` to both `retrieval_probes.json` and
+`ranking_pairs.json` — the second so it is actually measured. Query: *"a Tamil
+poem describing Yavana ships arriving at Muciri with gold and departing with
+pepper"*, `lang_pool: non_english`, so no English can satisfy it.
+
+```
+33 pairs / 30 units.  >=0.95 still permits at most ONE miss (29/30 = 0.967).
+```
+
+The probe is **unmeasured** — written after the last run. If it misses, which
+its own note expects, G2 needs **four of five** in-window misses fixed rather
+than three of four. That is the ruling's arithmetic getting harder because of
+an instrument added to watch the thing the ruling stopped counting, and it is
+the correct direction.
+
+## Verified in the container
+
+```
+eval.test_ranking_check      59 passed, 1 failed (the seed-corpus one; see below)
+scripts\mutate_ranking.py    21/21 mutations, sources restored
+answer.test_answer           all passed  (align.py is shared and unchanged)
+answer.test_translate        all passed  (12 probes load; the pool rule holds)
+```
+
+Mutations went 14 -> 21. Three of the seven break the gate's **denominator**
+specifically — unit scoring collapsed, a unit scored on its worst target,
+coverage counting every target as reached — because that is the one quantity in
+this check that decides whether W3 starts, and the plan already got it wrong
+once.
+
+## A defect found by the write-back guard, not by a test
+
+Committing `eval/goldset.py` was refused: the file on disk had changed since it
+was read. It had — `scripts/mutate_ranking.py` ran on the host in between, and
+its restore step rewrote the file with **CRLF** line endings. 29144 bytes on
+disk against 28463 read; the difference is exactly one byte per line.
+
+The content is identical. The bytes are not. And the harness's own check —
+
+```python
+unrestored = [f.name for f in SOURCES
+              if f.read_text(encoding="utf-8") != originals[f]]
+```
+
+— cannot see it, because `read_text` translates CRLF back to `\n` on the way in.
+**"Sources restored cleanly" is a claim about text, and it reads like a claim
+about the file.** All five `mutate_*.py` share the pattern.
+
+Not urgent: `.gitattributes` normalises, and nothing is semantically wrong. But
+it is the exact shape of defect this repository keeps finding — a check that
+passes because it is measuring a projection of the thing it names. The fix is to
+keep the original **bytes** and restore those, comparing bytes at the end;
+mutation-time writes can stay as they are, since they are transient.
+
+## To run on the host
+
+```powershell
+python -m eval.test_ranking_check       # expect 60 passed, 0 failed
+python scripts\mutate_ranking.py        # expect 21/21
+python -m answer.test_answer
+python -m answer.test_translate
+```
+
+`eval.test_ranking_check` reports 59/1 in the container because the seed corpus
+was not staged into it and *"every pair resolves to exactly one chunk of its
+expected document"* had nothing to resolve against. On the host it should pass
+— **and it is now also the check that the new English→Tamil pair resolves**, so
+a failure there is a real finding about the probe rather than an artefact.
+
+## Next
+
+C3, the cross-encoder rerank — hosted through the gateway or local, established
+before anything is designed around it. The re-measure that gives the new pair
+its first rank should be its own session, on its own day, because G2 wants two
+measurements on different days and a run made in the same session as the code
+that changed the metric is a weak first day.
+
+## Host verification, session 2
+
+```
+eval.test_ranking_check      60 passed, 0 failed
+scripts\mutate_ranking.py    21/21, sources restored
+answer.test_answer           all passed
+answer.test_translate        all passed  (12 probes; the pool rule holds)
+```
+
+Predicted 60/0 and got it. The assertion that matters most in that run is
+*"every pair resolves to exactly one chunk of its expected document"*, now over
+**33** pairs: the English→Tamil pair added this session resolves against the seed
+corpus, so its eventual rank will be a fact about retrieval and not about a
+broken pair.
+
+**Block C is not finished, and the three G2 criteria that remain are the three
+that need a measurement to exist.** Nothing in either session today improved
+recall or the gap; it made both of them mean something specific, and made the
+rulings falsifiable. G2 stands at four of seven:
+
+```
+[x] ranking metric over >=20 pairs, baseline recorded before any change   B2
+[x] distractor curve to >=450, shape stated                               B5
+[ ] known-good in top 6 for >=95% at 450                 25/29 pre-probe; UNMEASURED since
+[ ] score gap wider than baseline (gapDoc, ruling 4)     no intervention has run
+[ ] measured across >=2 sessions on different days       zero days so far under this metric
+[x] cite.py third match state, mutation-verified                          C1a
+[x] translation_chunk* rename                                             C1b
+```
+
+C3 is the decisive one and the only remaining item with a mechanism: five of the
+six original misses are English queries against non-English targets, where there
+is no shared vocabulary for a lexical index to recover, and a multilingual
+cross-encoder scores query and passage jointly. If C3 plus the rulings does not
+clear the gate, C2 is the fallback and after that the honest move is kill
+trigger 1 — polish the sourcebook at 24-60 records rather than chase 200.
+
+---
+
+# STOP — the 450-chunk rung has not been measured since containment was fixed (2026-08-14)
+
+The post-ruling re-measure was run at both rungs. **The two runs are identical,
+pair for pair, digit for digit.**
+
+```
+                              57-chunk run    "450-chunk" run   B5's 450 run
+muziris-cargo-akananuru            51               51               309
+muziris-cargo-papyrus              41               41               109
+aksum-trade-adulis                 29               29                35
+au-khao-sam-kaeo                   10               10                17
+au-silla-glass  gapDoc          +0.112           +0.112            +0.036
+```
+
+The header of the second run says `view=retrievable_chunks_with_distractors
+index=450 chunks depth=450`. It ranked against 57.
+
+## The mechanism, read off the source and not inferred
+
+`retrieve/search.py` hardcodes the view:
+
+```sql
+FROM retrievable_chunks
+```
+
+`search()` takes no view parameter and never has — the file has not been touched
+since 2026-08-09, before B4 existed. `run_ranking_check.run()` calls it as
+
+```python
+hits = search(conn, vector, k=_search_depth(n_index), langs=p.langs, roles=p.roles)
+```
+
+So the run counts one view and ranks another. `index_state()` reads
+`retrievable_chunks_with_distractors` and truthfully reports 450; every rank in
+the table comes from `retrievable_chunks`, which since the B4 guard was restored
+truthfully holds 57. **Both numbers are correct and they are about different
+things.** The header is not lying about the view; it is silent about the fact
+that the view was never searched.
+
+`scripts/schema-b4-distractors.sql` states the intent in writing:
+
+> The ONLY surface from which a distractor is visible. Read by
+> `eval/run_ranking_check.py --with-distractors` and by nothing else, ever.
+
+Nothing has ever read it. The comment describes a design that was never wired.
+
+## What this does to Block B's headline
+
+B5's 450 run produced ranks of 109 and 309. Today's produces 51 and 41 through
+the same code path. The code did not change; the CONTENTS of
+`retrievable_chunks` did. So B5's curve was measured while
+`retrievable_chunks` itself held all 450 rows — that is, **during the
+containment reversion**, the `CREATE OR REPLACE VIEW` trap this block already
+paid for and recorded.
+
+Stated carefully, because the distinction matters:
+
+- The curve's numbers are **real measurements against 450 chunks**. They were
+  not fabricated and the pairs did rank against the padding.
+- They were producible **only while containment was broken**. Fixing containment
+  at the close of Block B silently removed the ability to measure the rung, and
+  nothing said so, because the report prints its denominator from a different
+  query than its numerator.
+- So the W2b curve cannot be reproduced today, and *"flat over an eightfold
+  index"* now rests on runs that cannot be repeated until this is fixed.
+
+**G2's third criterion — "top 6 for >=95% at 450 chunks including distractors" —
+is currently unmeasurable.** So is the gap criterion at that rung. C3 is blocked
+behind this: a reranker cannot be evaluated at 450 while nothing can rank at 450.
+
+## The guard that was missing, and would have caught it in B4
+
+An unfiltered pair ranked to depth N against a view of N rows must come back
+with exactly N hits. At the 450 rung it came back with 57. One assertion:
+
+```python
+if p.langs is None and p.roles is None and len(hits) != _search_depth(n_index):
+    ...fail loudly, naming both numbers...
+```
+
+This is the same defect the block has now found three times in three disguises:
+a count-based check reading a contaminated view and reporting OK; a metric named
+`not_in_top_20` measured at k=50; and now a report whose denominator and
+numerator come from different sources. **The pattern is a label that asserts
+something nobody measured.**
+
+## Everything else in the run, which is real
+
+At 57 chunks, and only at 57:
+
+- **Ruling 2 is confirmed, and B5's recollection was right.**
+  `tc-frankincense-harvest` went rank **11 -> 1**, and the chunk that had been
+  beating it is named for the first time: `arabia-01-periplus::translation::002`
+  — the document's own English of §29. The claim that had to be remembered is
+  now printed by the run that makes it.
+- The other three `translation_case` pairs got `ground=index` and no alternate,
+  exactly as the rule requires: single short inscriptions, no section markers,
+  and admitting an alternate on positional alignment would accept a neighbour.
+- **The English->Tamil probe HIT, at rank 4.** Predicted to miss; it did not.
+  But read it with its instrument: `lang_pool: non_english` restricts the
+  candidate set to the ~21 non-English chunks, so the probe asks "can an English
+  query pick the right non-English chunk out of 21", while
+  `muziris-cargo-akananuru` — the failure it was added to watch — competes
+  against everything. All five non-English-pool probes rank 1 or 4. **The probe
+  is easier than the failure**, and it should not be read as evidence that
+  English->Tamil retrieval works.
+- Unit recall **27/30 = 0.900** at 57 chunks, three misses: `aksum-trade-adulis`
+  (29), `adulis-exports` (15), `au-khao-sam-kaeo` (10). The gate needs 29/30, so
+  two of those three. At 450 the number is unknown.
+
+## Two further defects found by this run
+
+1. **`--dry-run` crashes when it prints.** `run()` returns before setting
+   `report.aggregate`, and `print_report` reads `report.aggregate["pairs"]` for
+   the ALL row: `KeyError: 'pairs'`. Pre-existing — the dry run has presumably
+   never been used without `--json`. It printed its one useful line first, so
+   nothing was lost, but the free pre-flight check is unusable as documented.
+2. **The gap criterion has lost "same pairs".** G2 says *"score gap wider than
+   baseline, same pairs"*. The set is now 33 pairs; B2's baseline is 32, and the
+   new pair carries `gapDoc -0.098`, which moves the aggregate on its own. Any
+   G2 gap comparison must be computed over the 32 pairs that existed at B2, or
+   it is comparing two different sets and calling the difference an improvement.
+
+## Next, in order
+
+1. Give `search()` an explicit view, default `retrievable_chunks` so Part 7's
+   containment stays true by construction; pass it from `run_ranking_check`.
+2. Add the hit-count invariant above, and mutation-verify it.
+3. Re-run both rungs. **Only then** is there a post-ruling baseline.
+4. Re-state the W2b curve with what is now known about how it was produced.
+5. C3 after that, not before.
+
+## The fix (2026-08-14, same day)
+
+Four changes, all offline, no spend.
+
+**1. `search()` takes the view.** `retrieve/search.py` now has an allowlist —
+`retrievable_chunks` (the default) and `retrievable_chunks_with_distractors` —
+and builds its statement from a template. The name is interpolated rather than
+bound, so it is checked against the allowlist rather than trusted: it is a
+constant at every call site today and stops being one the moment somebody adds a
+flag. `SEARCH_SQL` survives as the default-view statement because
+`ingest/test_embed.py` asserts against it (cosine operator matches the HNSW
+index, every nullable filter cast at every use, query vector cast twice) — all
+four still hold.
+
+**The default matters.** The answer path calls `search()` with no view and
+therefore still gets containment for free. Containment is what you get by saying
+nothing; the distractor view has to be asked for by name.
+
+**2. `run_ranking_check` passes the view it says it is measuring.**
+
+**3. The invariant, split so it can be watched fail.** `reachability_problems()`
+is pure — view, rows, hits in; complaint out — and
+`check_search_reaches_the_view()` does the database half by borrowing a vector
+the view already holds and ranking it to full depth. One row, no API call, and
+it runs **before** the batch: a run that cannot measure what it claims should
+fail while it is still free.
+
+It is deliberately NOT behind `--skip-check`. That flag covers "the index does
+not match the seed corpus", which a person can knowingly override. This covers
+"the numbers would be about a different index than the one they name", which
+nobody can knowingly want.
+
+**4. `--dry-run` no longer crashes when it prints.** The cohort loop skipped an
+aggregate with no pairs rather than faking one.
+
+```
+eval.test_ranking_check      66 passed, 1 failed (the container's seed corpus)
+scripts\mutate_ranking.py    23/23 — retrieve/search.py added to SOURCES, since
+                             a mutation target the harness cannot reach is a
+                             guard nobody has watched fail
+answer.test_answer           all passed — the answer path is unchanged
+```
+
+The two new mutations are the ones that matter: *"a run no longer checks that it
+can reach the index it names"* and *"the searchable-view allowlist accepts
+anything"*.
+
+### A prediction for the re-run, recorded before it happens
+
+At a working 450 the three misses should deepen roughly as B5 showed (29 -> 35,
+10 -> 17, 15 -> ~20), and the pairs at risk of newly falling out are
+`muziris-cargo-periplus` and `china-describes-rome-weilue`, both at rank 5.
+Expect unit recall **26/30 or 27/30**, not better.
+
+If it comes back at 27/30 with nothing moved, that is not a relief — it would
+mean 393 distractors changed nothing, which is B5's claim arriving a second time
+from a run that can now actually be repeated, and the English-only padding
+caveat still applies to it.
+
+### To run on the host
+
+```powershell
+python -m eval.test_ranking_check              # expect 67 passed, 0 failed
+python scripts\mutate_ranking.py               # expect 23/23
+python -m ingest.test_embed                    # the SEARCH_SQL assertions
+python -m answer.test_answer
+
+python -m eval.run_ranking_check --dry-run     # should print and not crash
+python -m eval.run_ranking_check
+python -m eval.run_ranking_check --with-distractors
+```
+
+The distractor run either produces genuinely new numbers or refuses to start.
+Both are acceptable outcomes; the previous behaviour — printing 57-chunk ranks
+under a 450-chunk header — is not.
+
+# The 450 rung, measured for real (2026-08-16)
+
+`67 passed, 0 failed`; `23/23` mutations; `ingest.test_embed` and
+`answer.test_answer` clean; `--dry-run` prints and exits. The distractor run
+did not refuse to start, which means the reachability probe found 450 rows
+through the same path the ranking uses.
+
+## The fix reproduces B5 exactly, which settles how B5 was produced
+
+```
+                          B5 (2026-08-14)   today   verdict
+muziris-cargo-akananuru         309          309    identical
+muziris-cargo-papyrus           109          109    identical
+aksum-trade-adulis               35           35    identical
+au-khao-sam-kaeo                 17           17    identical
+```
+
+Four ranks, four exact matches, through a code path that now names its view
+explicitly. That confirms the inference recorded above: B5's curve was measured
+while `retrievable_chunks` itself held the padding, and it is a real measurement
+of 450 chunks. **The curve is restored, not lost** — and for the first time it
+is reproducible on demand rather than by accident.
+
+## Recall at 450: 27/30 = 0.900, and NOT ONE PAIR crossed the boundary
+
+```
+57  chunks   27/30 = 0.900
+450 chunks   27/30 = 0.900
+pairs changing recall@6 status between the two rungs:  NONE
+```
+
+The three misses deepen — `aksum-trade-adulis` 29 -> 35, `au-khao-sam-kaeo`
+10 -> 17, `adulis-exports` 15 -> 15 (unmoved) — and the two Muziris targets fall
+to 109 and 309. Nothing in the top 6 moves at all.
+
+The prediction recorded before the run was 26/30 or 27/30: right on the number,
+**wrong on the mechanism.** `muziris-cargo-periplus` and
+`china-describes-rome-weilue`, both at rank 5, were named as at risk of falling
+out. Neither moved by a single place. An eightfold index did not perturb the top
+of any ranking; it only pushed the already-failing further away.
+
+## Only four pairs saw any gap change, and every one lost to a distractor
+
+```
+probe-tamil-akananuru    +0.054 -> +0.026   best other doc: distractor-cma-149943
+tc-nabataean-epitaph     +0.146 -> +0.107   best other doc: __canary__
+au-silla-glass           +0.112 -> +0.036   best other doc: distractor-cma-98798
+au-shapur-plate          +0.106 -> +0.076   best other doc: distractor-cma-112307
+```
+
+29 of 33 pairs are numerically untouched by 393 new chunks. `best_other_chunk_id`
+— added two days ago because B5's central claim was unrecoverable from its own
+archive — is what makes this readable at all.
+
+## The gap, on the same 32 pairs, measured rather than estimated
+
+G2 says *"score gap wider than baseline, **same pairs**"*, and the set is now 33.
+Computed over the 32 that existed at B2:
+
+```
+B2 baseline, 57 chunks     gapDoc  +0.0249
+today,       57 chunks     gapDoc  +0.0249     identical, two days later
+today,      450 chunks     gapDoc  +0.0196
+```
+
+Two things follow.
+
+**The measurement is stable.** The same 32 pairs, two days apart, across a
+rewrite of the metric that scores them, give a byte-identical aggregate. That is
+the strongest evidence so far for the C5-C6 criterion — repeatability is not
+being assumed.
+
+**The gap criterion is currently FAILING, and by more than it looks.** 0.0196
+against a baseline of 0.0249: the gap at 450 is *narrower*. The criterion is not
+merely unmet, it is pointing the wrong way.
+
+## The consequence nobody spotted when ruling 3 was made
+
+Ruling 3 fixed the gap to **pre-rerank embedding similarities**, so that it stays
+comparable to the recorded baseline. That was right for comparability, and it has
+a consequence that was not stated at the time:
+
+> **A cross-encoder cannot move this number.** Reranking reorders candidates; it
+> does not alter cosine similarities. Under ruling 3 as made, C3 can satisfy
+> G2's recall criterion and cannot touch its gap criterion, ever.
+
+The only planned intervention that can move a pre-rerank gap is **C2**, hybrid
+lexical+dense, because it changes what produces the score. C2 was demoted to
+"optional, behind C3, only if still short" in `claude/phase2-block-c-plan.md` and
+that demotion was ratified. It now has to be revisited, or the criterion does.
+
+## A second finding: the canary is in the ranked index
+
+`scripts/schema-b4-distractors.sql` says of the containment canary:
+
+> It carries NO embedding, which means it is invisible to both views (they
+> require `embedding IS NOT NULL`) and cannot perturb a ranking run. It is a
+> containment fixture, not a distractor.
+
+It is inserted with `eligible_for_retrieval = true`, so the next
+`python -m ingest.run_embed` embedded it along with everything else. It is one of
+the 450 — `BLOCK_C_START.md` even says so, *"393 distractors (one of which is the
+canary)"*, and the two documents have contradicted each other since B4 with
+nobody noticing. Today it turned up as the **best competing document for
+`tc-nabataean-epitaph`**, moving that pair's gapDoc from +0.146 to +0.107.
+
+The claim was true at the instant of the INSERT and false after the next
+backfill, and nothing tested it. Same shape as everything else this block has
+found: a written claim about behaviour that nobody measured.
+
+**It does not change today's verdict** — removing its effect entirely moves the
+32-pair gapDoc from +0.0196 to about +0.0208, still short of +0.0249, and
+`tc-nabataean-epitaph` is a hit at rank 2 either way. `retrievable_chunks`
+excludes it correctly, so the answer path was never exposed. But a synthetic
+sentinel string should not be allowed to define a gold pair's gap before the
+gate is assessed, or it becomes something to argue about afterwards.
+
+## G2, as it actually stands
+
+```
+[x] ranking metric over >=20 pairs, baseline recorded before any change
+[x] distractor curve to >=450, shape stated — and now REPRODUCIBLE
+[ ] top 6 for >=95% at 450          27/30 = 0.900; needs 2 of 3 misses fixed
+[ ] score gap wider than baseline   +0.0196 vs +0.0249 — narrower, and C3
+                                    cannot move it under ruling 3
+[ ] measured across >=2 days        one clean day today; stability evidenced
+[x] cite.py third match state, mutation-verified
+[x] translation_chunk* rename
+```
+
+All three remaining misses — 35, 17, 15 — sit inside a top-50 rerank window.
+Two of the three are English->Greek, which is the case a multilingual
+cross-encoder has a mechanism for; `au-khao-sam-kaeo` is English->English and is
+an ordinary relevance failure. **The recall criterion is reachable by C3. The
+gap criterion is not.**
+
+## Rulings 5 and 6, both forced by the first working 450 run
+
+**Ruling 5 — C2 returns to the critical path.** Ruling 3 fixed the gap to
+pre-rerank embedding similarities, which was right for comparability and means a
+cross-encoder can never move it. C2 is the only planned intervention that changes
+what produces the score, so it is the only one that can widen a pre-rerank gap.
+The plan's demotion of C2 to "optional, behind C3" is withdrawn.
+
+Its cost is stated with it: `tsvector` will not tokenise Literary Chinese, and
+five of the six original misses were English queries against non-English targets
+where there is no shared vocabulary to recover. **C2 may widen the gap while
+doing nothing for recall** — a G2 criterion met, and it must be reported as that
+rather than as evidence retrieval improved.
+
+**Ruling 6 — the canary stays a distractor.** It is `is_distractor = true` and
+`eligible_for_retrieval = true` by design; a canary held back by eligibility
+would prove nothing about the distractor flag, which is the reason it exists. The
+false comment is struck from `scripts/schema-b4-distractors.sql` and from
+`ingest/test_distractors.py`'s docstring — which asserted the canary carried no
+embedding while its own body, forty lines lower, recorded `run_embed` embedding
+it for real and the fixture being redesigned around that.
+
+No new assertion: the ones needed were already there and already passing.
+Containment held throughout. **Only the prose failed**, and it failed in both
+directions on the same day — `BLOCK_C_START.md` counted the canary among the 450
+while the schema said it could not be there.
+
+Both rulings are in `BLOCK_C_RULINGS.md`, which is now six rulings, not four.
+
+## Where Block C stands
+
+```
+C1a  cite.py third match state                     done, mutation-verified
+C1b  translation_chunk* rename                     done
+C1c  multi-target ruling + English->Tamil probe    done, implemented, measured
+C1d  translation_case ruling                       done, implemented, measured
+     -- plus: the view defect, and rulings 5 and 6
+C3   cross-encoder rerank                          NEXT. Recall only.
+C2   hybrid lexical+dense                          REQUIRED, not optional (ruling 5)
+C4   the fold                                      not started
+C5-6 two measured days                             one clean day banked (2026-08-16)
+```
+
+Next action is the C3 path decision — hosted rerank through the gateway versus a
+local cross-encoder on cp314 — which costs reading and no spend, and which the
+plan says to settle before anything is designed around it.
+
+# C3 path decision — hosted, through the existing gateway (2026-08-16)
+
+Settled by reading, before anything is designed around it, as PHASE2_PLAN.md C3
+requires. No spend.
+
+## Hosted: available, multilingual, and effectively free at this scale
+
+LiteLLM supports Voyage rerank directly. The proxy config is the shape the
+gateway already uses:
+
+```yaml
+model_list:
+  - model_name: rerank-2.5
+    litellm_params:
+      model: voyage/rerank-2.5
+      api_key: os.environ/VOYAGE_API_KEY
+```
+
+and the SDK call is `litellm.rerank(model=..., query=..., documents=[...],
+top_n=...)`. Four Voyage rerankers are exposed: `rerank-2.5` and
+`rerank-2.5-lite` (32K context), `rerank-2` (16K) and `rerank-2-lite` (8K).
+
+**All of them are documented as multilingual**, including 2.5 — "our generalist
+reranker optimized for quality with instruction-following and multilingual
+support". That matters, because the free allowance is not evenly spread:
+
+```
+rerank-2.5, rerank-2.5-lite    200,000,000 free tokens
+rerank-2,   rerank-2-lite      no free tokens
+```
+
+Had multilingual support been confined to the legacy pair — which the model
+table alone suggests, since it names multilingual only for `rerank-2*` — the
+free tier and the requirement would have pointed at different models. They do
+not. `rerank-2.5` is both.
+
+**Cost arithmetic for this gold set.** A full run is 33 queries against a top-50
+candidate window; corpus and catalogue chunks are short, so on the order of
+330K tokens per run. Against 200M free that is ~0.17% of the allowance, or
+roughly six hundred full runs before a bill. Beyond it, $0.05/M. **C3 costs
+nothing at this scale**, which matches the plan's expectation that reranking
+adds no chat calls.
+
+It also reuses the key, the gateway and the rate-limit family already in place
+for `voyage-3.5` embeddings. One vendor, one budget, one failure mode.
+
+## Local: possible, and not worth it
+
+CPU-only `torch` wheels DO exist for cp314 — 2.9.1+cpu installs on Windows via
+plain pip. No CUDA wheels for 3.14 yet, which is irrelevant here: 33 queries by
+50 documents is a CPU workload.
+
+So the Part 4 dependency trap is NOT fatal on the torch layer. But a local
+cross-encoder needs `sentence-transformers`, `transformers` and `tokenizers` on
+cp314 as well, plus a ~600MB multilingual model, and none of that chain is
+verified. Against a hosted path that is free at this volume and one config
+block away, that is dependency archaeology bought with no gain.
+
+**Ruled: hosted, `voyage/rerank-2.5`, through the existing gateway.**
+
+## Two things to design around, both known now rather than found later
+
+1. **Single-vendor blind spot.** Embeddings and reranking would both be Voyage.
+   If `voyage-3.5`'s cross-lingual weakness is what puts `aksum-trade-adulis` at
+   35 and `adulis-exports` at 15, a Voyage reranker may share it. A cross-encoder
+   scores query and passage jointly rather than comparing two independent
+   vectors, so it CAN differ — but shared training data is a real unknown and the
+   result must be read with it. **If C3 moves nothing, that is the first
+   hypothesis, not a mystery.**
+2. **The reranker must respect `lang_pool`.** Five pairs filter candidates to
+   non-English before ranking, and that filter is what makes them cross-lingual
+   tests rather than same-language tests wearing the label. C3 reranks the
+   FILTERED candidate set. Reranking a raw top-50 would quietly restore English
+   translations to pools built to exclude them.
+
+## What C3 has to clear, and what it cannot
+
+Three misses, all inside a top-50 window: `aksum-trade-adulis` 35,
+`au-khao-sam-kaeo` 17, `adulis-exports` 15. The gate needs **two of the three**.
+Two are English->Greek, which is the case a multilingual cross-encoder has a
+mechanism for; `au-khao-sam-kaeo` is English->English and is an ordinary
+relevance failure.
+
+Under ruling 3 C3 cannot touch the gap criterion. That is C2's, per ruling 5.
+
+Sources: docs.litellm.ai/docs/providers/voyage, docs.voyageai.com/docs/reranker,
+mongodb.com/docs/voyageai/models, github.com/pytorch/pytorch issue 169929.
+
+## Handoff
+
+`C3_START.md` is the starting point for the next thread, and is also written to
+the project as `claude/c3-start.md` so a new session sees it without being told.
+It carries the measured state, the six rulings in one line each, the C3 path
+decision with its arithmetic, the three design constraints, the traps this block
+paid for, and the verification commands with their expected numbers.
+
+`BLOCK_C_START.md` is superseded and says so in `C3_START.md`: its four rulings
+are settled and its claim that the canary "cannot perturb a ranking run" was
+wrong. It is kept for its traps, not its state.
+
+**Known debt left behind, deliberately and in one place:** all five
+`scripts/mutate_*.py` restore sources with `write_text()`, which on Windows
+rewrites LF as CRLF, while the harness's own restore check uses `read_text()`,
+which translates it back. "Sources restored cleanly" is a claim about text that
+reads like a claim about the file. Harmless under `.gitattributes`; the fix is to
+keep the original bytes and compare bytes. Recorded rather than done, because it
+is not on C3's path.
+
+## What the C1 sessions cost and produced
+
+Six batched embedding requests. No chat calls. Two G2 checklist items landed and
+mutation-verified, four rulings made and implemented, two more forced by the
+first working measurement, one defect found that had made the 450-chunk rung
+unmeasurable since Block B closed, and three false statements in prose corrected
+against the behaviour they described.
+
+The gate did not move: 27/30 before, 27/30 after. **What moved is that the
+number now means something specific, and can be reproduced.**
+
+# C3 measured: the reranker fixed one miss and broke two (2026-08-16)
+
+Run: `eval/ranking_runs/20260816T091153+0000-retrievable_chunks_with_distractors-reranked50.json`
+`rerank-2.5`, window 50, route `/v1/rerank`, 30 requests, 281,722 tokens,
+1,554s of it spent waiting on a rate limit. Every number below is from that
+file.
+
+## The number
+
+```
+                        pre-rerank        post-rerank
+unit recall@6           27/30 = 0.900     26/30 = 0.867
+unit MRR@10             0.726             0.778
+coverage                28/33 targets     26/33 targets
+```
+
+**G2 needs 29/30. C3 moves the gate's number the wrong way.** It is not a
+near miss to be tuned; it is a negative result, and it is the honest outcome of
+the block's most-expected intervention.
+
+## The three units that changed status
+
+```
+au-khao-sam-kaeo       MISS -> hit    17 -> 1
+muziris-cargo          hit -> MISS     5 -> 7
+china-describes-rome   hit -> MISS     4 -> 7
+```
+
+`au-khao-sam-kaeo` was the one **English→English** miss, described in
+`C3_START.md` as "an ordinary relevance failure". The cross-encoder fixed it
+outright, from 17 to 1. That is the mechanism doing exactly what it was bought
+to do.
+
+The two it broke are both **cross-lingual and both `archived_answer`** — an
+English query against Greek (Periplus) and against Literary Chinese (Weilue,
+Hou Hanshu). Every pair that moved DOWN in this run is in that cohort:
+`muziris-cargo-periplus` 5→7, `china-describes-rome-houhanshu` 4→7,
+`china-describes-rome-weilue` 5→11, `vimose-runes` 3→6 (still a hit).
+
+## The two cross-lingual misses C3 was bought for
+
+```
+aksum-trade-adulis     35 -> 8     twenty-seven places, and not enough
+adulis-exports         15 -> 16    nothing
+```
+
+Both are English→Greek, and **both targets are in the same document**,
+`africa-03-periplus-adulis`. One moved twenty-seven places and the other did
+not move at all. That is not a mechanism failing; it is a mechanism working
+unevenly within one document, which is a more specific finding and a harder one.
+
+## The single-vendor hypothesis is refuted, not confirmed
+
+`C3_START.md`: *"If C3 moves nothing, that is the first hypothesis, not a
+mystery."* C3 moved **11 of 33 pairs**, including one by twenty-seven places and
+one by sixteen. The cross-encoder is not echoing the bi-encoder. Whatever is
+wrong, shared training data between `voyage-3.5` and `rerank-2.5` is not the
+available explanation.
+
+## It separates BETTER and ranks WORSE
+
+```
+rerank-score gap, 31 scored pairs     gapDoc +0.1500    gapAny +0.0615
+embedding gap,    33 pairs            gapDoc +0.016     gapAny -0.015
+```
+
+Ruling 3 forbids comparing these two rows — they are different quantities, and
+the second is the only one comparable to B2. **The sign is still worth writing
+down.** The cross-encoder is far more decisive about which passage it prefers,
+and on three units it decisively prefers the wrong one. Confidence is not
+correctness, and a metric that rewarded separation would have called this run a
+success.
+
+## What the run could not say, and now can
+
+It recorded that three units fell out of the top 6 and **not what displaced
+them** — so "the reranker preferred a different passage" and "the reranker
+preferred a wrong passage" were indistinguishable without another twenty-six
+minutes of paced calls.
+
+**This is the second time in Block C that a run recorded a number and not the
+thing it was measured against.** Ruling 2 was the first, and its fix was
+`best_other_chunk_id`. Fixed the same day, the same way: `rerank_top_chunk_ids`
+and `rerank_beaten_by` are on every reranked pair, computed from an ordering the
+run already holds, at no API cost. The next run answers the question offline.
+
+## G2, as it stands
+
+```
+[x] ranking metric over >=20 pairs, baseline recorded before any change
+[x] distractor curve to >=450, shape stated — and reproducible
+[ ] top 6 for >=95% at 450        27/30 unreranked, 26/30 RERANKED. C3 does not close it
+[ ] score gap wider than baseline unchanged, and unchangeable by C3 (rulings 3 and 5)
+[ ] measured across >=2 days      one clean day banked, 2026-08-16
+[x] cite.py third match state, mutation-verified
+[x] translation_chunk* rename
+```
+
+**C3 is implemented, measured, and NOT ADOPTED.** `--rerank` is opt-in and `rank`
+is untouched, so the 27/30 baseline is undisturbed and every run since B2 is
+still comparable. That was the whole point of recording beside rather than over,
+and it is the reason a negative result costs nothing to absorb.
+
+## What C3 cost
+
+33 queries in 2 batched embedding requests; 30 rerank calls; 281,722 rerank
+tokens, or **0.14% of the 200M free allowance**. No chat calls. The expensive
+part was time: 26 minutes, all of it waiting on a 10K TPM ceiling.
+
+## Three claims asserted from documents, all wrong, all corrected by measurement
+
+| claimed | from | true |
+| --- | --- | --- |
+| rerank is 2000 RPM | Voyage's published table | 3 RPM — that table is for accounts with a payment method |
+| a 50-document window is ~4.7K tokens | the seed corpus JSON on disk | ~6.1K, from the index, where 393 of 450 chunks are museum catalogue prose |
+| the window is too big for 10K TPM | inference from one failure | it fits; the SPACING was too tight, and the failure could not tell the two apart |
+
+The third was diagnosable only because the failure named a pair and not a call
+number. `probe-greek-muziris` is the ninth pair, so seven calls had already
+succeeded — a fact that took a gold-file lookup to recover. The run now prints
+a line per call and the failure says which call it was.
+
+Pacing is no longer an estimate at all: `--rerank-tpm` spaces each call by what
+the provider said the PREVIOUS one cost.
+
+## Traps this session paid for, all four in the tooling and not the measurement
+
+- **The repository has not been committed since Block A2, and
+  `eval/run_ranking_check.py` is UNTRACKED.** The file every Block B and C
+  number is computed by cannot be restored from version control, and
+  `mutate_ranking.py`'s own error message advises exactly that.
+- **A mutation harness killed mid-iteration leaves a silent one-word edit.**
+  `all(` became `any(` in `build_units` and stayed there; the next harness run
+  captured it as *originals* and faithfully restored it. Twice in one day.
+- **Never run two mutation harnesses over one working tree.** Both capture
+  originals at start and restore at exit, so the second adopts the first's
+  mutation as ground truth.
+- **A crashed suite reads as "no failures".** The harness reads FAIL lines from
+  stdout, so an uncaught exception in any check reports the mutation as
+  unwatched AND silently skips every check after it. `run_suite()` now returns
+  `SUITE_CRASHED` on a non-zero exit with no FAIL lines, and prints
+  *"the suite must FAIL on this mutation, not die on it"*.
+
+## Suites, after C3
+
+```
+python -m eval.test_ranking_check      105 assertions   (was 67 at the start of the day)
+python scripts\mutate_ranking.py        39 mutations    (was 23)
+```
+
+## Next, in order
+
+1. **Re-run `--rerank` once** to collect `rerank_beaten_by` for the two lost
+   units. Twenty-six minutes, no code change, and it converts the central
+   finding from "C3 lost two units" into "C3 lost two units to these chunks".
+2. **C2, hybrid lexical+dense.** Per ruling 5 it is the only planned
+   intervention that can move the gap criterion, and C3 has now demonstrated it
+   is also needed for recall. Its own gotcha is unchanged: `tsvector` will not
+   tokenise Literary Chinese, and five of the six original misses were English
+   queries against non-English targets.
+3. **Rank fusion is available and must be named as what it is.** Combining the
+   embedding rank with the rerank rank (RRF or similar) would plausibly keep
+   4→~5 while lifting 35→~12, which is worth more than either alone. **But
+   choosing fusion AFTER seeing that replacement scored worse is fitting to the
+   gold set**, and if it is done it is declared in advance, with the reason, and
+   reported as a tuned result rather than a measured one.

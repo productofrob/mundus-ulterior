@@ -1,10 +1,18 @@
 {
   "schema": "mundus-ulterior/retrieval-probes/v1",
-  "updated": "2026-08-10",
+  "updated": "2026-08-14",
   "about": "Cross-lingual retrieval probes. Moved out of retrieve/crosslingual_check.py in Part 6 so that expectations are reviewable data rather than code. Every probe states what it asserts and why; `expect_text_contains` exists because a probe that asserts only expect_doc can pass against the wrong passage of the right document.",
   "pools": {
     "non_english": {
-      "langs": ["grc", "lzh", "oty", "xpr", "xna", "xsa", "gmq-pro"],
+      "langs": [
+        "grc",
+        "lzh",
+        "oty",
+        "xpr",
+        "xna",
+        "xsa",
+        "gmq-pro"
+      ],
       "note": "Every non-English language in the corpus. Used as the candidate pool for cross-lingual probes so an English query cannot be satisfied by an English translation — which would make the probe a same-language test wearing a cross-lingual label."
     }
   },
@@ -15,7 +23,9 @@
       "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
       "query_lang": "grc",
       "expect_doc": "southasia-02-periplus-muziris",
-      "roles": ["original"],
+      "roles": [
+        "original"
+      ],
       "note": "Can the model see Greek script at all? Failure here means nothing downstream is interpretable."
     },
     {
@@ -24,7 +34,9 @@
       "query": "大秦國在安息西，海西之地",
       "query_lang": "lzh",
       "expect_doc": "eastasia-01-weilue",
-      "roles": ["original"],
+      "roles": [
+        "original"
+      ],
       "note": "Literary Chinese, no word spaces. The corpus holds only two Chinese chunks, so this is a thin measurement."
     },
     {
@@ -33,7 +45,9 @@
       "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
       "query_lang": "oty",
       "expect_doc": "southasia-01-akananuru-149",
-      "roles": ["original"],
+      "roles": [
+        "original"
+      ],
       "note": "Old Tamil scored 0.368 in Part 4 against 0.6-0.7 for other scripts. It still ranked first, but with one Tamil chunk in the corpus that number means little. Recheck when Tamil coverage grows."
     },
     {
@@ -42,7 +56,9 @@
       "query": "šāhān šāh Ērān ud Anēran Šābuhr",
       "query_lang": "xpr",
       "expect_doc": "persia-01-skz",
-      "roles": ["original"],
+      "roles": [
+        "original"
+      ],
       "note": "Romanised Parthian, not its own script. Tests whether scholarly transliteration survives the tokenizer."
     },
     {
@@ -86,7 +102,9 @@
       "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
       "query_lang": "en",
       "expect_doc": "southasia-02-periplus-muziris",
-      "roles": ["original"],
+      "roles": [
+        "original"
+      ],
       "pair": "muziris-ports",
       "note": "Originally asked about pepper and failed — correctly, because pepper is §56 and the record then held only §53-54. The corpus did not contain the answer being asked for. The probe was fixed to ask what §53-54 says; the corpus was separately extended to §56, and the pepper question became its own probe."
     },
@@ -96,7 +114,9 @@
       "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
       "query_lang": "grc",
       "expect_doc": "southasia-02-periplus-muziris",
-      "roles": ["original"],
+      "roles": [
+        "original"
+      ],
       "pair": "muziris-ports",
       "note": "Same question as the probe above, in Greek. Both must rank the expected document first AND agree with each other."
     },
@@ -109,6 +129,16 @@
       "lang_pool": "non_english",
       "expect_text_contains": "πέπερι",
       "note": "The passage-level assertion is the point. Without it this probe reported PASS against §53 while §56 was not in the database."
+    },
+    {
+      "name": "english query -> old tamil source (Akananuru 149)",
+      "kind": "cross_lingual",
+      "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+      "query_lang": "en",
+      "expect_doc": "southasia-01-akananuru-149",
+      "expect_text_contains": "யவனர் தந்த வினைமாண் நன்கலம்",
+      "lang_pool": "non_english",
+      "note": "Added 2026-08-14 with Block C ruling 1, which stopped counting muziris-cargo-akananuru toward the gate. That pair was the only English->Tamil evidence in the set and it was never designed to be: it was mined from an archived answer to a question about Muziris, and it sits at rank 309 of 450. The four existing cross-lingual probes cover Greek, Chinese and Parthian only, so without this one the ruling would have removed the corpus's worst cross-lingual result from the metric and left nothing designed to look for it. Expected to be hard, and a fail here is the finding, not a defect in the probe."
     }
   ]
 }

@@ -3,7 +3,10 @@
   "region": "Southeast Asia",
   "title": "Gold medallion/pendant imitating a Roman coin of Antoninus Pius, from Óc Eo",
   "source_type": "find_record",
-  "language_code": ["en", "la"],
+  "language_code": [
+    "en",
+    "la"
+  ],
   "language_note": "Museum/scholarly catalogue record in English; the object itself carries a (slightly corrupted) Latin coin legend, given in original_text_excerpt.",
   "date": "Roman prototype minted under Antoninus Pius, r. 138-161 CE; deposited/found at Óc Eo (excavated 1944)",
   "findspot": "Óc Eo, Thoại Sơn District, An Giang Province, Mekong Delta, southern Vietnam (Funan-culture port site, possibly Ptolemy's 'Cattigara')",
@@ -13,5 +16,15 @@
   "translation_source": "Brigitte Borell, 'The Movement of Roman Coins into Southeast Asia' and 'The Power of Images — Coin Portraits of Roman Emperors on Jewellery Pendants in Early Southeast Asia'.",
   "citation": "https://en.wikipedia.org/wiki/%C3%93c_Eo",
   "citation_original": "https://www.academia.edu/12682533/The_Power_of_Images_Coin_Portraits_of_Roman_Emperors_on_Jewellery_Pendants_in_Early_Southeast_Asia",
-  "notes": "The named Phase 1 candidate for Southeast Asia ('Óc Eo Roman medallion / Antoninus Pius coin find'). Note the important nuance for groundedness eval: these are imitation pendants, not genuine circulating Roman coinage — an answer that calls them 'Roman coins found in Vietnam' without that caveat would be a groundedness failure worth testing for."
+  "notes": "The named Phase 1 candidate for Southeast Asia ('Óc Eo Roman medallion / Antoninus Pius coin find'). Note the important nuance for groundedness eval: these are imitation pendants, not genuine circulating Roman coinage — an answer that calls them 'Roman coins found in Vietnam' without that caveat would be a groundedness failure worth testing for.",
+  "findspot_places": [
+    {
+      "name": "Óc Eo",
+      "ground": "stated",
+      "gazetteer": "geonames",
+      "gazetteer_id": "13405688",
+      "uri": "https://www.geonames.org/13405688",
+      "note": "Confirmed 2026-08-13 against the GeoNames country dump named below; the snapshot date is recorded in data/gazetteer.json under sources.geonames. VN.zip. 13405688 'Óc Eo' 10.242/105.155, feature code P.PPLA2 (populated place, seat of a second-order division), An Giang. **The coordinate denotes the modern town, not the excavated site**, which lies adjacent to it; GeoNames holds no entry for the excavation itself. Refused on feature type: 8375917 'Thị Trấn Óc Eo' 10.251/105.145, A.ADM3 — the township boundary 1.5 km away, whose representative point is arbitrary within the polygon where the settlement's is not. The record's own note flags the identification of Óc Eo with Ptolemy's Cattigara as debated; that is an ancient-name question and is deliberately NOT encoded here, since no gazetteer entry for Cattigara was resolved and a contested identification needs both sides on the record."
+    }
+  ]
 }

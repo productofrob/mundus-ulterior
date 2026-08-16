@@ -1,16 +1,611 @@
 {
-  "licence": {
-    "declared_by": {
-      "publisher": "Pleiades",
-      "recorded": "2026-08-12",
-      "source_url": "https://pleiades.stoa.org/credits",
-      "text": "Copyrights on software and content are held by the participating institutions and by the individual contributors listed below. Using, sharing, and remixing of the content is permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).\n\nLinks in the original:\n  \"individual contributors listed below\" -> https://pleiades.stoa.org/credits#credits-list\n  \"Creative Commons Attribution 3.0 License (cc-by)\" -> http://creativecommons.org/licenses/by/3.0/us/"
+  "licences": {
+    "geonames": {
+      "declared_by": {
+        "publisher": "GeoNames",
+        "recorded": "2026-08-13",
+        "source_url": "https://download.geonames.org/export/dump/readme.txt",
+        "text": "Readme for GeoNames Gazetteer extract files\n\n============================================================================================================\n\nThis work is licensed under a Creative Commons Attribution 4.0 License,\nsee https://creativecommons.org/licenses/by/4.0/\nThe Data is provided \"as is\" without warranty or any representation of accuracy, timeliness or completeness.\n\nThe data format is tab-delimited text in utf8 encoding."
+      },
+      "recorded": "2026-08-13",
+      "source_url": "https://creativecommons.org/licenses/by/4.0/",
+      "text": "CC BY 4.0\nAttribution 4.0 International\n\nDeed\n\nCanonical URL\nhttps://creativecommons.org/licenses/by/4.0/\n\nYou are free to:\nShare — copy and redistribute the material in any medium or format for any purpose, even commercially.\nAdapt — remix, transform, and build upon the material for any purpose, even commercially.\nThe licensor cannot revoke these freedoms as long as you follow the license terms.\n\nUnder the following terms:\nAttribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.\nNo additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.\n\nNotices:\nYou do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.\n\nNo warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.\n\nNotice\nThis deed highlights only some of the key features and terms of the actual license. It is not a license and has no legal value. You should carefully review all of the terms and conditions of the actual license before using the licensed material.\n\nFootnotes\nappropriate credit — If supplied, you must provide the name of the creator and attribution parties, a copyright notice, a license notice, a disclaimer notice, and a link to the material. CC licenses prior to Version 4.0 also require you to provide the title of the material if supplied, and may have other slight differences.\nindicate if changes were made — In 4.0, you must indicate if you modified the material and retain an indication of previous modifications. In 3.0 and earlier license versions, the indication of changes is only required if you create a derivative.\ntechnological measures — The license prohibits application of effective technological measures, defined with reference to Article 11 of the WIPO Copyright Treaty.\nexception or limitation — The rights of users under exceptions and limitations, such as fair use and fair dealing, are not affected by the CC licenses.\npublicity, privacy, or moral rights — You may need to get additional permissions before using the material as you intend."
     },
-    "recorded": "2026-08-12",
-    "source_url": "https://creativecommons.org/licenses/by/3.0/us/",
-    "text": "CC BY 3.0 US\nAttribution 3.0 United States\n \nCC BY 3.0 US\nDeed\n\nYou are free to:\nShare — copy and redistribute the material in any medium or format for any purpose, even commercially.\nAdapt — remix, transform, and build upon the material for any purpose, even commercially.\nThe licensor cannot revoke these freedoms as long as you follow the license terms.\nUnder the following terms:\nAttribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.\nNo additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.\nNotices:\nYou do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.\n\nNo warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material."
+    "pleiades": {
+      "declared_by": {
+        "publisher": "Pleiades",
+        "recorded": "2026-08-12",
+        "source_url": "https://pleiades.stoa.org/credits",
+        "text": "Copyrights on software and content are held by the participating institutions and by the individual contributors listed below. Using, sharing, and remixing of the content is permitted under terms of the Creative Commons Attribution 3.0 License (cc-by).\n\nLinks in the original:\n  \"individual contributors listed below\" -> https://pleiades.stoa.org/credits#credits-list\n  \"Creative Commons Attribution 3.0 License (cc-by)\" -> http://creativecommons.org/licenses/by/3.0/us/"
+      },
+      "recorded": "2026-08-12",
+      "source_url": "https://creativecommons.org/licenses/by/3.0/us/",
+      "text": "CC BY 3.0 US\nAttribution 3.0 United States\n \nCC BY 3.0 US\nDeed\n\nYou are free to:\nShare — copy and redistribute the material in any medium or format for any purpose, even commercially.\nAdapt — remix, transform, and build upon the material for any purpose, even commercially.\nThe licensor cannot revoke these freedoms as long as you follow the license terms.\nUnder the following terms:\nAttribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.\nNo additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.\nNotices:\nYou do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation.\n\nNo warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material."
+    }
+  },
+  "periods": {
+    "ambiguous": {},
+    "derived_from": {
+      "dump_date": "2026-08-10",
+      "dump_file": "pleiades-places-20260810.csv.gz",
+      "method": "each period's range is taken from dump rows attesting exactly one period; a key whose rows disagree is recorded as ambiguous and given no range",
+      "retrieved": "2026-08-13",
+      "rows_read": 42389,
+      "single_period_rows": 14861
+    },
+    "ranges": {
+      "1st-millennium-bce": {
+        "max": -1.0,
+        "min": -1000.0,
+        "rows": 29
+      },
+      "2nd-millenium-bce": {
+        "max": -1000.0,
+        "min": -2000.0,
+        "rows": 182
+      },
+      "3rd-millennium-bc": {
+        "max": -2000.0,
+        "min": -3000.0,
+        "rows": 16
+      },
+      "4th-millenium-bce": {
+        "max": -3000.0,
+        "min": -4000.0,
+        "rows": 25
+      },
+      "5th-millennium-bce": {
+        "max": -4000.0,
+        "min": -5000.0,
+        "rows": 4
+      },
+      "6th-millennium-bce": {
+        "max": -5000.0,
+        "min": -6000.0,
+        "rows": 1
+      },
+      "abassid-middle-east": {
+        "max": 940.0,
+        "min": 750.0,
+        "rows": 2
+      },
+      "achaemenid-middle-east": {
+        "max": -330.0,
+        "min": -540.0,
+        "rows": 7
+      },
+      "akkadian-ur-iii-mesopotamia": {
+        "max": -2000.0,
+        "min": -2335.0,
+        "rows": 5
+      },
+      "archaic": {
+        "max": -550.0,
+        "min": -750.0,
+        "rows": 187
+      },
+      "bronze-age-britain": {
+        "max": -800.0,
+        "min": -2500.0,
+        "rows": 7
+      },
+      "castro-culture-iron-age-ca.-900-bc-100-bc": {
+        "max": -100.0,
+        "min": -900.0,
+        "rows": 4
+      },
+      "chalcolithic-mesopotamia": {
+        "max": -3750.0,
+        "min": -6200.0,
+        "rows": 7
+      },
+      "classical": {
+        "max": -330.0,
+        "min": -550.0,
+        "rows": 472
+      },
+      "crusader-seljuq-ayyubid-levant": {
+        "max": 1291.0,
+        "min": 1099.0,
+        "rows": 1
+      },
+      "early-1st-millennium-mesopotamia": {
+        "max": -720.0,
+        "min": -1000.0,
+        "rows": 53
+      },
+      "early-bronze-age-anatolia": {
+        "max": -1750.0,
+        "min": -2000.0,
+        "rows": 2
+      },
+      "early-bronze-age-southern-levant": {
+        "max": -2000.0,
+        "min": -3300.0,
+        "rows": 8
+      },
+      "early-byzantine": {
+        "max": 850.0,
+        "min": 650.0,
+        "rows": 4
+      },
+      "early-dynastic-mesopotamia": {
+        "max": -2350.0,
+        "min": -2950.0,
+        "rows": 3
+      },
+      "early-helladic": {
+        "max": -2000.0,
+        "min": -3000.0,
+        "rows": 1
+      },
+      "early-iron-age-iran": {
+        "max": -650.0,
+        "min": -1000.0,
+        "rows": 3
+      },
+      "early-minoan": {
+        "max": -2000.0,
+        "min": -3100.0,
+        "rows": 2
+      },
+      "egyptian-hittite-levant": {
+        "max": -1212.0,
+        "min": -1344.0,
+        "rows": 1
+      },
+      "eighteenth-ce": {
+        "max": 1799.0,
+        "min": 1700.0,
+        "rows": 2
+      },
+      "eighth-ce": {
+        "max": 799.0,
+        "min": 700.0,
+        "rows": 1
+      },
+      "eleventh-ce": {
+        "max": 1099.0,
+        "min": 1000.0,
+        "rows": 2
+      },
+      "fifteenth-ce": {
+        "max": 1499.0,
+        "min": 1400.0,
+        "rows": 1
+      },
+      "fifth-bce": {
+        "max": -401.0,
+        "min": -500.0,
+        "rows": 3
+      },
+      "fifth-ce": {
+        "max": 499.0,
+        "min": 400.0,
+        "rows": 2
+      },
+      "first-bce": {
+        "max": -1.0,
+        "min": -100.0,
+        "rows": 8
+      },
+      "first-ce": {
+        "max": 99.0,
+        "min": 1.0,
+        "rows": 27
+      },
+      "fourth-bce": {
+        "max": -301.0,
+        "min": -400.0,
+        "rows": 2
+      },
+      "fourth-ce": {
+        "max": 399.0,
+        "min": 300.0,
+        "rows": 4
+      },
+      "hellenistic-central-asia": {
+        "max": -100.0,
+        "min": -330.0,
+        "rows": 1
+      },
+      "hellenistic-middle-east": {
+        "max": -140.0,
+        "min": -330.0,
+        "rows": 1
+      },
+      "hellenistic-parthian-middle-east": {
+        "max": 226.0,
+        "min": -330.0,
+        "rows": 1
+      },
+      "hellenistic-republican": {
+        "max": -30.0,
+        "min": -330.0,
+        "rows": 1306
+      },
+      "hellenistic-roman-early-empire": {
+        "max": 300.0,
+        "min": -330.0,
+        "rows": 54
+      },
+      "iron-age-britain": {
+        "max": 100.0,
+        "min": -800.0,
+        "rows": 64
+      },
+      "iron-age-italy-latial-culture-i-1000-900-bc": {
+        "max": -900.0,
+        "min": -1000.0,
+        "rows": 1
+      },
+      "iron-age-southern-levant": {
+        "max": -550.0,
+        "min": -1200.0,
+        "rows": 5
+      },
+      "late-antique": {
+        "max": 640.0,
+        "min": 300.0,
+        "rows": 2880
+      },
+      "late-antique-late-byzantine": {
+        "max": 1450.0,
+        "min": 300.0,
+        "rows": 1
+      },
+      "late-antiquity-in-central-asia": {
+        "max": 550.0,
+        "min": 250.0,
+        "rows": 3
+      },
+      "late-bronze-age-anatolia": {
+        "max": -1200.0,
+        "min": -1600.0,
+        "rows": 4
+      },
+      "late-bronze-age-southern-levant": {
+        "max": -1200.0,
+        "min": -1400.0,
+        "rows": 1
+      },
+      "late-byzantine": {
+        "max": 1450.0,
+        "min": 1200.0,
+        "rows": 6
+      },
+      "late-helladic": {
+        "max": -1200.0,
+        "min": -1600.0,
+        "rows": 9
+      },
+      "late-minoan": {
+        "max": -1080.0,
+        "min": -1600.0,
+        "rows": 4
+      },
+      "late-period-egypt": {
+        "max": -332.0,
+        "min": -664.0,
+        "rows": 3
+      },
+      "later-2nd-millennium-bc-mesopotamia": {
+        "max": -1000.0,
+        "min": -1600.0,
+        "rows": 6
+      },
+      "mediaeval-byzantine": {
+        "max": 1453.0,
+        "min": 640.0,
+        "rows": 87
+      },
+      "middle-bronze-age-anatolia": {
+        "max": -1450.0,
+        "min": -1750.0,
+        "rows": 1
+      },
+      "middle-bronze-age-southern-levant": {
+        "max": -1400.0,
+        "min": -2000.0,
+        "rows": 2
+      },
+      "middle-byzantine": {
+        "max": 1200.0,
+        "min": 850.0,
+        "rows": 1
+      },
+      "middle-hittite-anatolia": {
+        "max": -1200.0,
+        "min": -1450.0,
+        "rows": 1
+      },
+      "middle-kingdom-egypt": {
+        "max": -1640.0,
+        "min": -2010.0,
+        "rows": 11
+      },
+      "middle-late-iron-age-anatolia": {
+        "max": -500.0,
+        "min": -700.0,
+        "rows": 1
+      },
+      "middleminoan": {
+        "max": -1600.0,
+        "min": -2000.0,
+        "rows": 2
+      },
+      "modern": {
+        "max": 2100.0,
+        "min": 1700.0,
+        "rows": 712
+      },
+      "modern-middle-east": {
+        "max": 2000.0,
+        "min": 1918.0,
+        "rows": 15
+      },
+      "neo-assyrian-babylonian-middle-east": {
+        "max": -540.0,
+        "min": -720.0,
+        "rows": 99
+      },
+      "neolithic-british": {
+        "max": -2500.0,
+        "min": -4000.0,
+        "rows": 4
+      },
+      "neolithic-eastern-med": {
+        "max": -3300.0,
+        "min": -10000.0,
+        "rows": 34
+      },
+      "neolithic-egypt": {
+        "max": -4500.0,
+        "min": -6000.0,
+        "rows": 1
+      },
+      "neolithic-malta": {
+        "max": -2500.0,
+        "min": -5000.0,
+        "rows": 1
+      },
+      "new-kingdom-egypt": {
+        "max": -1086.0,
+        "min": -1548.0,
+        "rows": 24
+      },
+      "ninth-ce": {
+        "max": 899.0,
+        "min": 800.0,
+        "rows": 2
+      },
+      "old-hittite-anatolia": {
+        "max": -1450.0,
+        "min": -1650.0,
+        "rows": 1
+      },
+      "old-kingdom-egypt": {
+        "max": -2168.0,
+        "min": -2670.0,
+        "rows": 16
+      },
+      "ottoman-empire": {
+        "max": 1918.0,
+        "min": 1513.0,
+        "rows": 1
+      },
+      "ottoman-empire-2": {
+        "max": 1923.0,
+        "min": 1300.0,
+        "rows": 3
+      },
+      "pre-islamic-early-middle-ages-central-asia": {
+        "max": 750.0,
+        "min": 550.0,
+        "rows": 1
+      },
+      "ptolemaic-egypt": {
+        "max": -30.0,
+        "min": -304.0,
+        "rows": 3
+      },
+      "ptolemaic-roman-egypt": {
+        "max": 640.0,
+        "min": -304.0,
+        "rows": 2
+      },
+      "raetian": {
+        "max": -1.0,
+        "min": -500.0,
+        "rows": 1
+      },
+      "roman": {
+        "max": 300.0,
+        "min": -30.0,
+        "rows": 7579
+      },
+      "roman-britain": {
+        "max": 410.0,
+        "min": 43.0,
+        "rows": 165
+      },
+      "roman-early-empire-late-antique": {
+        "max": 640.0,
+        "min": -30.0,
+        "rows": 91
+      },
+      "roman-early-empire-parthian-middle-east": {
+        "max": 226.0,
+        "min": -30.0,
+        "rows": 1
+      },
+      "roman-middle-east": {
+        "max": 640.0,
+        "min": -140.0,
+        "rows": 5
+      },
+      "second-bce": {
+        "max": -101.0,
+        "min": -200.0,
+        "rows": 1
+      },
+      "second-ce": {
+        "max": 199.0,
+        "min": 100.0,
+        "rows": 16
+      },
+      "seventh-ce": {
+        "max": 699.0,
+        "min": 600.0,
+        "rows": 2
+      },
+      "sixteenth-ce": {
+        "max": 1599.0,
+        "min": 1500.0,
+        "rows": 8
+      },
+      "sixth-ce": {
+        "max": 599.0,
+        "min": 500.0,
+        "rows": 1
+      },
+      "tenth-bce": {
+        "max": -901.0,
+        "min": -1000.0,
+        "rows": 1
+      },
+      "tenth-ce": {
+        "max": 999.0,
+        "min": 900.0,
+        "rows": 5
+      },
+      "third-bce": {
+        "max": -201.0,
+        "min": -300.0,
+        "rows": 2
+      },
+      "third-ce": {
+        "max": 299.0,
+        "min": 200.0,
+        "rows": 67
+      },
+      "third-intermediate-period-egypt": {
+        "max": -664.0,
+        "min": -1086.0,
+        "rows": 2
+      },
+      "thirteenth-ce": {
+        "max": 1299.0,
+        "min": 1200.0,
+        "rows": 7
+      },
+      "twelfth-ce": {
+        "max": 1199.0,
+        "min": 1100.0,
+        "rows": 4
+      },
+      "twentieth-ce": {
+        "max": 1999.0,
+        "min": 1900.0,
+        "rows": 45
+      },
+      "twenty-first-ce": {
+        "max": 2099.0,
+        "min": 2000.0,
+        "rows": 397
+      },
+      "ubaid": {
+        "max": -3800.0,
+        "min": -6500.0,
+        "rows": 1
+      },
+      "ummayad": {
+        "max": 750.0,
+        "min": 661.0,
+        "rows": 2
+      },
+      "urartian-eastern-anatolia": {
+        "max": -600.0,
+        "min": -900.0,
+        "rows": 5
+      }
+    }
   },
   "places": {
+    "geonames:13405688": {
+      "authors": null,
+      "bbox": null,
+      "country_code": "VN",
+      "creators": null,
+      "description": "P.PPLA2 in VN, admin1 91, population 39481",
+      "dump_date": "2026-08-13",
+      "feature_types": "P.PPLA2",
+      "gazetteer": "geonames",
+      "gazetteer_id": "13405688",
+      "location_precision": null,
+      "max_date": null,
+      "min_date": null,
+      "modification_date": "2025-07-29",
+      "population": "39481",
+      "repr_point": [
+        105.155,
+        10.24212
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": null,
+      "time_periods": null,
+      "title": "Óc Eo"
+    },
+    "geonames:1841603": {
+      "authors": null,
+      "bbox": null,
+      "country_code": "KR",
+      "creators": null,
+      "description": "P.PPL in KR, admin1 14, population 245365",
+      "dump_date": "2026-08-13",
+      "feature_types": "P.PPL",
+      "gazetteer": "geonames",
+      "gazetteer_id": "1841603",
+      "location_precision": null,
+      "max_date": null,
+      "min_date": null,
+      "modification_date": "2025-07-15",
+      "population": "245365",
+      "repr_point": [
+        129.21167,
+        35.84278
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": null,
+      "time_periods": null,
+      "title": "Gyeongju"
+    },
+    "pleiades:1052": {
+      "authors": "Talbert, R., B. Z. Lund, M. E. Downs, M. Joann McDaniel, P. Motylewicz, B. Kiesling, S. Gillies, R. Scott Smith, J. Becker, G. Hawes, T. Elliott",
+      "bbox": [
+        9.73443363219,
+        40.8685441248,
+        15.507460264,
+        44.5207661077
+      ],
+      "creators": "R. Talbert, Brian Z. Lund, Mary E. Downs, M. Joann McDaniel",
+      "description": "The Italian peninsula extending northward to the Alps as recognized by the Romans.",
+      "dump_date": "2026-08-10",
+      "feature_types": "region",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "1052",
+      "location_precision": "related",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        11.0949512,
+        43.6941505
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Italia"
+    },
     "pleiades:20492": {
       "authors": "Warner, R., A. Bursche, DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
       "bbox": [
@@ -36,6 +631,84 @@
       "time_period_keys": "roman,twentieth-ce,twenty-first-ce",
       "time_periods": "RTT",
       "title": "Illerup Ådal"
+    },
+    "pleiades:39269": {
+      "authors": "Potts, D., R. Talbert, J. Becker, W. Röllig, T. Elliott, H. Kopp, DARMC, S. Gillies, B. Siewert-Mayer, E. Yılandiloğlu, F. Deblauwe, E. Kansa",
+      "bbox": [
+        45.038928,
+        12.771651,
+        45.038928,
+        12.771651
+      ],
+      "creators": "D.T. Potts",
+      "description": "An ancient place, cited: BAtlas 4 C3 Adane/Athenae/Eudaimon Arabia",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39269",
+      "location_precision": "precise",
+      "max_date": "2000",
+      "min_date": "-1200",
+      "repr_point": [
+        45.038928,
+        12.771651
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "1200-bc-middle-east,achaemenid-roman-republic-middle-east,roman,transition-roman-early-empire-late-antique,caliphate-umayyad-middle-east,samanid-ghaznavid-iran,early-ottoman-empire,1500-ad-middle-east,sixteenth-ce,ottoman-empire,late-ottoman-empire,khedivate-egypt,colonial-modern-middle-east,ottoman-decline-mandate-middle-east,modern-middle-east",
+      "time_periods": "1ARTCSE1SOLKCOM",
+      "title": "Adane/Athenae/Eudaimon Arabia"
+    },
+    "pleiades:39271": {
+      "authors": "Potts, D., B. Kiesling, R. Talbert, S. Gillies, J. Becker, T. Elliott, DARMC, P. Schneider, R. Horne",
+      "bbox": [
+        39.6591296,
+        15.2616612,
+        39.6591296,
+        15.2616612
+      ],
+      "creators": "D.T. Potts",
+      "description": "An ancient market settlement and port on the west coast of the Red Sea near modern Zula in Eritrea.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement, port",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39271",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        39.6591296,
+        15.2616612
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Adouli"
+    },
+    "pleiades:39281": {
+      "authors": "Potts, D., R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        39.9236687,
+        15.6935024,
+        40.0676066,
+        15.7455016
+      ],
+      "creators": "D.T. Potts",
+      "description": "Alalaiou Inss., the modern Dahlak Archipelago in the Red Sea, which today comprises 126 islands.",
+      "dump_date": "2026-08-10",
+      "feature_types": "archipelago, island",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39281",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-30",
+      "repr_point": [
+        40.0031505062,
+        15.7289257455
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,modern",
+      "time_periods": "RM",
+      "title": "Alalaiou (islands)"
     },
     "pleiades:39303": {
       "authors": "Potts, D., DARMC, R. Talbert, B. Kiesling, S. Gillies, J. Becker, T. Elliott",
@@ -63,6 +736,466 @@
       "time_periods": "RLM",
       "title": "A(u)xoume"
     },
+    "pleiades:39355": {
+      "authors": "Potts, D., R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        48.2359537616,
+        13.992228265,
+        48.2359537616,
+        13.992228265
+      ],
+      "creators": "D.T. Potts",
+      "description": "An ancient place, cited: BAtlas 4 C3 Kane",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39355",
+      "location_precision": "precise",
+      "max_date": "1999",
+      "min_date": "-30",
+      "repr_point": [
+        48.2359537616,
+        13.992228265
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,twentieth-ce",
+      "time_periods": "RT",
+      "title": "Kane"
+    },
+    "pleiades:39363": {
+      "authors": "Potts, D., DARMC, R. Talbert, M. Krier, J. Becker, S. Gillies, T. Elliott",
+      "bbox": [
+        39.552787,
+        14.709112,
+        39.552787,
+        14.709112
+      ],
+      "creators": "D.T. Potts",
+      "description": "An ancient place, cited: BAtlas 4 A3 Koloe",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39363",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-330",
+      "repr_point": [
+        39.552787,
+        14.709112
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "hellenistic-republican,roman",
+      "time_periods": "HR",
+      "title": "Koloe"
+    },
+    "pleiades:39370": {
+      "authors": "Potts, D., R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        52.3835359382,
+        17.1245310915,
+        54.4555972642,
+        17.5906621071
+      ],
+      "creators": "D.T. Potts",
+      "description": "An ancient place, cited: BAtlas 4 D2 Libanophoros Chora",
+      "dump_date": "2026-08-10",
+      "feature_types": "region",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39370",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        53.4073660498,
+        17.4108859516
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Libanophoros Chora"
+    },
+    "pleiades:39390": {
+      "authors": "Potts, D., DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        43.421475,
+        13.261275,
+        43.421475,
+        13.261275
+      ],
+      "creators": "D.T. Potts",
+      "description": "An ancient place, cited: BAtlas 4 B3 Mouza Emporion",
+      "dump_date": "2026-08-10",
+      "feature_types": "station",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39390",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-330",
+      "repr_point": [
+        43.421475,
+        13.261275
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "hellenistic-republican,roman",
+      "time_periods": "HR",
+      "title": "Mouza Emporion"
+    },
+    "pleiades:39404": {
+      "authors": "Potts, D., R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        39.7372605,
+        15.4309186,
+        39.7657891,
+        15.4989047
+      ],
+      "creators": "D.T. Potts",
+      "description": "Oreine Ins. (Dissei) is an island in the Red Sea.",
+      "dump_date": "2026-08-10",
+      "feature_types": "island",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39404",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-30",
+      "repr_point": [
+        39.7513921793,
+        15.4636904394
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,modern",
+      "time_periods": "RM",
+      "title": "Oreine (island)"
+    },
+    "pleiades:39405": {
+      "authors": "Potts, D., R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        48.3870518,
+        13.9317288,
+        48.3870518,
+        13.9317288
+      ],
+      "creators": "D.T. Potts",
+      "description": "An ancient place, cited: BAtlas 4 C3 Orneon Ins.",
+      "dump_date": "2026-08-10",
+      "feature_types": "island",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39405",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-30",
+      "repr_point": [
+        48.3870518,
+        13.9317288
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,modern",
+      "time_periods": "RM",
+      "title": "Orneon Ins."
+    },
+    "pleiades:39409": {
+      "authors": "Potts, D., DARMC, R. Talbert, B. Kiesling, S. Gillies, J. Becker, T. Elliott",
+      "bbox": [
+        37.331236,
+        18.1728,
+        38.4397,
+        19.103071
+      ],
+      "creators": "D.T. Potts",
+      "description": "Ptolemais Theron was an ancient marketplace on the western coast of the Red Sea. Its precise location on the Sudanese Red Sea coast is now unknown, but many scholars view modern Aqiq (Hillat `Agig) as the most likely alternative.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement-modern, island, anchorage, settlement, port",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39409",
+      "location_precision": "precise",
+      "max_date": "2099",
+      "min_date": "-30",
+      "repr_point": [
+        37.8854432,
+        18.5826004
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,twentieth-ce,twenty-first-ce",
+      "time_periods": "RTT",
+      "title": "Ptolemais Theron"
+    },
+    "pleiades:39419": {
+      "authors": "Potts, D., S. Gillies, P. Scalfano, R. Talbert, T. Elliott, J. Becker",
+      "bbox": [
+        52.2093989,
+        15.9270015,
+        52.2093989,
+        15.9270015
+      ],
+      "creators": "D.T. Potts",
+      "description": "An ancient place, cited: BAtlas 4 D2 Sachalites Sinus",
+      "dump_date": "2026-08-10",
+      "feature_types": "water-open, bay",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39419",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-30",
+      "repr_point": [
+        52.2093989,
+        15.9270015
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,modern,twenty-first-ce",
+      "time_periods": "RMT",
+      "title": "Sachalites Sinus"
+    },
+    "pleiades:40186": {
+      "authors": "Potts, D., R. Talbert, T. Elliott, S. Gillies",
+      "bbox": null,
+      "creators": "D.T. Potts",
+      "description": "An ancient place, cited: BAtlas 4 unlocated Kyeneion",
+      "dump_date": "2026-08-10",
+      "feature_types": "unlocated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "40186",
+      "location_precision": "unlocated",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": null,
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Kyeneion"
+    },
+    "pleiades:49842": {
+      "authors": "Erdosy, M., R. Talbert, S. Gillies, M. Heubel, R. Horne, R. Talbert, J. Becker, T. Elliott",
+      "bbox": [
+        72.9366957776,
+        15.4263865466,
+        73.6148421643,
+        15.4430427737
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Aigidion Nesos",
+      "dump_date": "2026-08-10",
+      "feature_types": "label",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "49842",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        73.2758445635,
+        15.4316563299
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Aigidion Nesos"
+    },
+    "pleiades:49890": {
+      "authors": "Erdosy, M., R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        76.36792,
+        9.35099,
+        76.36792,
+        9.35099
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient port settlement on the southwest coast of India, mentioned by the Periplus, Pliny, and Ptolemy. Casson (whence BAtlas) places it at modern Pirakkād/Purakkad in the state of Kerala.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement, settlement-modern",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "49890",
+      "location_precision": "precise",
+      "max_date": "2099",
+      "min_date": "-30",
+      "repr_point": [
+        76.36792,
+        9.35099
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,twentieth-ce,twenty-first-ce",
+      "time_periods": "RTT",
+      "title": "Bakare"
+    },
+    "pleiades:49929": {
+      "authors": "Erdosy, M., DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        73.339812,
+        16.503036,
+        73.339812,
+        16.503036
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Byzantion?",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "49929",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        73.339812,
+        16.503036
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Byzantion?"
+    },
+    "pleiades:49953": {
+      "authors": "Erdosy, M., R. Talbert, S. Gillies, R. Horne, J. Becker, R. Talbert, T. Elliott",
+      "bbox": [
+        76.5586855432,
+        8.78577884004,
+        77.2368319299,
+        9.24977373618
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "Pliny the Elder identifies Cottonara as a district known for pepper, which was conveyed to Becare via dug-out canoes.",
+      "dump_date": "2026-08-10",
+      "feature_types": "district, label",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "49953",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        76.8889421868,
+        9.00419135029
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Cottonara"
+    },
+    "pleiades:50015": {
+      "authors": "Erdosy, M., R. Talbert, S. Gillies, T. Elliott",
+      "bbox": [
+        70.0,
+        10.0,
+        75.0,
+        15.0
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C4 Kaineiton Nesos",
+      "dump_date": "2026-08-10",
+      "feature_types": "island",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50015",
+      "location_precision": "rough",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        72.5,
+        12.5
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Kaineiton Nesos"
+    },
+    "pleiades:50023": {
+      "authors": "Erdosy, M., R. Talbert, T. Elliott, S. Gillies",
+      "bbox": [
+        73.139156,
+        19.272784,
+        73.139156,
+        19.272784
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Kalliena",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50023",
+      "location_precision": "precise",
+      "max_date": "640",
+      "min_date": "-30",
+      "repr_point": [
+        73.139156,
+        19.272784
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,late-antique",
+      "time_periods": "RL",
+      "title": "Kalliena"
+    },
+    "pleiades:50091": {
+      "authors": "Erdosy, M., R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        74.3250429,
+        14.0188543,
+        74.3250429,
+        14.0188543
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C4 Leuke Ins.",
+      "dump_date": "2026-08-10",
+      "feature_types": "island",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50091",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-30",
+      "repr_point": [
+        74.3250429,
+        14.0188543
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,modern",
+      "time_periods": "RM",
+      "title": "Leuke (island)"
+    },
+    "pleiades:50092": {
+      "authors": "Erdosy, M., R. Talbert, R. Talbert, S. Gillies, R. Horne, T. Elliott",
+      "bbox": [
+        75.5593119208,
+        10.3752587919,
+        76.2136636974,
+        11.7315515653
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 D4 Limyrike",
+      "dump_date": "2026-08-10",
+      "feature_types": "label",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50092",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        75.9216471845,
+        11.0716318038
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Limyrike"
+    },
+    "pleiades:50116": {
+      "authors": "Erdosy, M., DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        73.03939,
+        17.951342,
+        73.03939,
+        17.951342
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Mandagara?",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50116",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        73.03939,
+        17.951342
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Mandagara?"
+    },
     "pleiades:50146": {
       "authors": "Erdosy, M., DARMC, R. Talbert, B. Kiesling, S. Gillies, J. Becker, T. Elliott",
       "bbox": [
@@ -88,6 +1221,318 @@
       "time_period_keys": "roman,late-antique",
       "time_periods": "RL",
       "title": "Muziris"
+    },
+    "pleiades:50160": {
+      "authors": "Erdosy, M., DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        74.449703,
+        14.281472,
+        74.449703,
+        14.281472
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C4 Naoura/Nitriae",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50160",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        74.449703,
+        14.281472
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Naoura/Nitriae"
+    },
+    "pleiades:50165": {
+      "authors": "Erdosy, M., DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        76.558846,
+        9.272624,
+        76.558846,
+        9.272624
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "Nelcynda was located some fifty miles from Muziris in the kingdom of the Pandyas.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50165",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        76.558846,
+        9.272624
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Nelkynda"
+    },
+    "pleiades:50196": {
+      "authors": "Erdosy, M., DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        73.302413,
+        17.526305,
+        73.302413,
+        17.526305
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Palaipatmai?",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50196",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        73.302413,
+        17.526305
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Palaipatmai?"
+    },
+    "pleiades:50201": {
+      "authors": "Erdosy, M., R. Talbert, S. Gillies, R. Horne, J. Becker, R. Talbert, T. Elliott",
+      "bbox": [
+        77.3439076751,
+        9.33424460188,
+        78.9619411591,
+        10.1432613439
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 D5 Pandion",
+      "dump_date": "2026-08-10",
+      "feature_types": "label",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50201",
+      "location_precision": "precise",
+      "max_date": "640",
+      "min_date": "-330",
+      "repr_point": [
+        78.1935899466,
+        9.65385878536
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "hellenistic-republican,roman,late-antique",
+      "time_periods": "HRL",
+      "title": "Pandion"
+    },
+    "pleiades:50261": {
+      "authors": "Erdosy, M., R. Talbert, T. Elliott, S. Gillies",
+      "bbox": [
+        72.947229,
+        18.521268,
+        72.947229,
+        18.521268
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Semylla",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50261",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        72.947229,
+        18.521268
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Semylla"
+    },
+    "pleiades:50264": {
+      "authors": "Erdosy, M., R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        70.0,
+        15.0,
+        75.0,
+        20.0
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Sesekreienai? Inss.",
+      "dump_date": "2026-08-10",
+      "feature_types": "archipelago, label",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50264",
+      "location_precision": "rough",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        72.5,
+        17.5
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Sesekreienai? Inss."
+    },
+    "pleiades:50308": {
+      "authors": "Erdosy, M., R. Talbert, T. Elliott, S. Gillies",
+      "bbox": [
+        73.58469,
+        16.220106,
+        73.58469,
+        16.220106
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Toparon?",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50308",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        73.58469,
+        16.220106
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Toparon?"
+    },
+    "pleiades:50312": {
+      "authors": "Erdosy, M., DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
+      "bbox": [
+        75.926477,
+        10.763548,
+        75.926477,
+        10.763548
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 D4 Tyndis",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50312",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        75.926477,
+        10.763548
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Tyndis"
+    },
+    "pleiades:50315": {
+      "authors": "Erdosy, M., R. Talbert, T. Elliott, S. Gillies",
+      "bbox": [
+        73.472008,
+        16.078557,
+        73.472008,
+        16.078557
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 5 C3 Tyrannosboas?",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50315",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        73.472008,
+        16.078557
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Tyrannosboas?"
+    },
+    "pleiades:59737": {
+      "authors": "Erdosy, M., DARMC, R. Talbert, B. Kiesling, S. Gillies, J. Becker, T. Elliott",
+      "bbox": [
+        72.983068,
+        21.70078,
+        72.983068,
+        21.70078
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "Barygaza was an ancient port located on the Gulf of Cambay.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "59737",
+      "location_precision": "precise",
+      "max_date": "2099",
+      "min_date": "-330",
+      "repr_point": [
+        72.983068,
+        21.70078
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "hellenistic-republican,roman,twentieth-ce,twenty-first-ce",
+      "time_periods": "HRTT",
+      "title": "Barygaza"
+    },
+    "pleiades:59822": {
+      "authors": "Erdosy, M., R. Talbert, B. Kiesling, S. Gillies, R. Scott Smith, J. Becker, G. Hawes, T. Elliott, E. Yılandiloğlu",
+      "bbox": [
+        78.0333995,
+        22.3835072,
+        91.2015536,
+        30.1450933
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "The Ganges flows some 2,525 km (1,569 mi) from its sources in the western Himalayas to the Bay of Bengal.",
+      "dump_date": "2026-08-10",
+      "feature_types": "river",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "59822",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-330",
+      "repr_point": [
+        83.7799018947,
+        25.9323267649
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "hellenistic-republican,roman,late-antique,sixteenth-ce,modern,twenty-first-ce",
+      "time_periods": "HRLSMT",
+      "title": "Ganges (river)"
+    },
+    "pleiades:59850": {
+      "authors": "Erdosy, M., R. Talbert, R. Horne, J. Becker, S. Gillies, R. Talbert, T. Elliott",
+      "bbox": [
+        67.4069068778,
+        25.2782461276,
+        68.3206199041,
+        27.4054842668
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "An ancient place, cited: BAtlas 6 B4 Indoskythia",
+      "dump_date": "2026-08-10",
+      "feature_types": "region, label",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "59850",
+      "location_precision": "precise",
+      "max_date": "300",
+      "min_date": "-30",
+      "repr_point": [
+        67.8109456254,
+        26.3655425346
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman",
+      "time_periods": "R",
+      "title": "Indoskythia"
     },
     "pleiades:616346030": {
       "authors": "Becker, J.",
@@ -115,6 +1560,32 @@
       "time_periods": "AM",
       "title": "Ka'ba-ye Zartosht"
     },
+    "pleiades:668290": {
+      "authors": "Brown, J., P. Gatier, B. Kiesling, S. Gillies, J. Becker, T. Elliott, DARMC, R. Talbert, M. Filosa, R. Warner, R. Scott Smith, G. Hawes, R. Horne, E. Yılandiloğlu",
+      "bbox": [
+        35.775155,
+        35.517827,
+        35.7781044,
+        35.5200185
+      ],
+      "creators": "J.P. Brown, P.-L. Gatier",
+      "description": "Laodicea or Laodicea ad Mare (modern Lattakia, Syria) is an ancient city with significant Punic, Greek, and Roman phases.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement, port, settlement-modern",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "668290",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-550",
+      "repr_point": [
+        35.7766297,
+        35.51892275
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "classical,hellenistic-republican,roman,late-antique,sixteenth-ce,modern",
+      "time_periods": "CHRLSM",
+      "title": "Laodicea"
+    },
     "pleiades:668331": {
       "authors": "Brown, J., P. Gatier, B. Kiesling, S. Gillies, J. Becker, H. Kopp, W. Röllig, T. Carlson, B. Siewert-Mayer, G. Bodard, R. Rattenborg, I. Luo, R. Talbert, A. Prins, V. Vitale, C. Johansson, T. Elliott, DARMC, D. Michelson, R. Warner, E. Kansa, F. Deblauwe, E. Yılandiloğlu",
       "bbox": [
@@ -141,6 +1612,162 @@
       "time_periods": "LME1NCAHHRRRTLLCEAMCI1SOLMM",
       "title": "Palmyra"
     },
+    "pleiades:727070": {
+      "authors": "Bernand, A., B. Kiesling, S. Gillies, J. Thum, J. Becker, I. Fernandez, H. Kopp, H. Verreth, E. Platte, A. Meadows, R. Voorburg, P. Buzi, B. Siewert-Mayer, M. Depauw, R. Talbert, A. Prins, E. Gruber, W. Röllig, T. Elliott, DARMC, S. Heath, A. Colonna, R. Rumora, I. Rossetti, E. Kansa, F. Deblauwe, E. Yılandiloğlu",
+      "bbox": [
+        29.909773,
+        31.201435,
+        29.909773,
+        31.201435
+      ],
+      "creators": "A. Bernand",
+      "description": "The ancient port city in Egypt's Nile Delta, founded by Alexander the Great in 332/331 BCE.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement, port",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "727070",
+      "location_precision": "precise",
+      "max_date": "2000",
+      "min_date": "-2010",
+      "repr_point": [
+        29.909773,
+        31.201435
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "middle-kingdom-egypt,new-kingdom-egypt,1200-bc-middle-east,achaemenid-roman-republic-middle-east,hellenistic-republican,hellenistic-middle-east,ptolemaic-roman-egypt,roman-middle-east,roman,roman-early-empire-parthian-middle-east,transition-roman-early-empire-late-antique,late-antique,late-antique-sasanian-middle-east,proto-byzantine,caliphate-umayyad-middle-east,early-byzantine,abassid-middle-east,samanid-ghaznavid-iran,ilkhanate-middle-east,timurid-middle-east,early-ottoman-empire,1500-ad-middle-east,sixteenth-ce,ottoman-empire,late-ottoman-empire,eighteenth-ce,khedivate-egypt,ottoman-decline-mandate-middle-east,modern-middle-east",
+      "time_periods": "MN1AHHPRRRTLLPCEASITE1SOLEKOM",
+      "title": "Alexandria"
+    },
+    "pleiades:727172": {
+      "authors": "Bernand, A., E. Yılandiloğlu, B. Kiesling, R. Talbert, S. Gillies, J. Becker, W. Röllig, T. Elliott, H. Kopp, G. Mckee, R. Scott Smith, B. Siewert-Mayer, G. Hawes, F. Deblauwe, E. Kansa",
+      "bbox": [
+        29.331389,
+        -2.282222,
+        33.9877188,
+        30.1711573
+      ],
+      "creators": "A. Bernand",
+      "description": "The Nile is a major river of northeastern Africa and is generally acknowledged as the longest river in the world, measuring some 6,650 km (4,130 miles) from source to mouth.",
+      "dump_date": "2026-08-10",
+      "feature_types": "river",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "727172",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-6000",
+      "repr_point": [
+        30.6566218531,
+        9.90411310187
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "neolithic-egypt,pottery-neolithic-middle-east,2nd-millennium-bc-egypt,new-kingdom-egypt,1200-bc-middle-east,archaic,classical,achaemenid-middle-east,achaemenid-roman-republic-middle-east,hellenistic-republican,hellenistic-middle-east,ptolemaic-roman-egypt,roman-middle-east,roman,roman-early-empire-parthian-middle-east,transition-roman-early-empire-late-antique,late-antique,late-antique-sasanian-middle-east,caliphate-umayyad-middle-east,abassid-middle-east,samanid-ghaznavid-iran,early-ottoman-empire,1500-ad-middle-east,sixteenth-ce,ottoman-empire,late-ottoman-empire,modern,khedivate-egypt,modern-middle-east,twenty-first-ce",
+      "time_periods": "NP2N1ACAAHHPRRRTLLCASE1SOLMKMT",
+      "title": "Nilus (river)"
+    },
+    "pleiades:736893": {
+      "authors": "Müller Wollermann, R., B. Kiesling, S. Gillies, A. Prins, J. Thum, J. Becker, T. Elliott, R. Horne, H. Verreth, R. Talbert, M. Heubel, R. Talbert, P. Scalfano, M. Depauw",
+      "bbox": [
+        30.481269984,
+        29.2234546486,
+        30.9959473996,
+        29.3091152448
+      ],
+      "creators": "R. Müller Wollermann",
+      "description": "An ancient place, cited: BAtlas 75 D2 Arsinoites/Krokodeilopolites Nomos",
+      "dump_date": "2026-08-10",
+      "feature_types": "nome-gr, label",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "736893",
+      "location_precision": "precise",
+      "max_date": "640",
+      "min_date": "-330",
+      "repr_point": [
+        30.7347325572,
+        29.2863267013
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "hellenistic-republican,roman,late-antique",
+      "time_periods": "HRL",
+      "title": "Arsinoites/Krokodeilopolites Nomos"
+    },
+    "pleiades:766": {
+      "authors": "E. Downs, M., B. Z. Lund, R. Talbert, M. Joann McDaniel, J. Becker, B. Turner, S. Gillies, T. Elliott",
+      "bbox": [
+        29.909773,
+        31.201435,
+        29.909773,
+        31.201435
+      ],
+      "creators": "Mary E. Downs, Brian Z. Lund, R. Talbert, M. Joann McDaniel",
+      "description": "The Roman province of Egypt (Aegyptus) was established in 30 BC after the defeat of Marcus Antonius and Cleopatra VII at the Battle of Actium.",
+      "dump_date": "2026-08-10",
+      "feature_types": "province-2",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "766",
+      "location_precision": "related",
+      "max_date": "2100",
+      "min_date": "-30",
+      "repr_point": [
+        29.909773,
+        31.201435
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,modern",
+      "time_periods": "RM",
+      "title": "Aegyptus (Roman imperial province)"
+    },
+    "pleiades:786010": {
+      "authors": "Wilfong, T., S. Sidebotham, J. Keenan, B. Kiesling, S. Gillies, J. Åhlfeldt, J. Becker, C. Johansson, T. Elliott, DARMC, R. Talbert, R. Rattenborg",
+      "bbox": [
+        32.815787,
+        25.9961949,
+        32.8161441,
+        25.9966
+      ],
+      "creators": "T. Wilfong, S.E. Sidebotham, J. Keenan",
+      "description": "An ancient settlement on the Nile river (modern Quft/Qift in Egypt) that flourished from pre-dynastic times through late antiquity.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement, port, archaeological-site",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "786010",
+      "location_precision": "precise",
+      "max_date": "640",
+      "min_date": "-750",
+      "repr_point": [
+        32.8159103667,
+        25.9963989667
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "archaic,classical,hellenistic-republican,roman,late-antique",
+      "time_periods": "ACHRL",
+      "title": "Coptos"
+    },
+    "pleiades:786017": {
+      "authors": "Wilfong, T., S. Sidebotham, J. Keenan, B. Kiesling, S. Gillies, J. Thum, J. Becker, H. Kopp, H. Verreth, B. Siewert-Mayer, N. Souchon, M. Depauw, R. Talbert, A. Prins, E. Yılandiloğlu, W. Röllig, T. Elliott, DARMC, R. Rumora, R. Scott Smith, G. Hawes, F. Deblauwe, E. Kansa",
+      "bbox": [
+        32.616486,
+        25.634785,
+        32.647282,
+        25.694777
+      ],
+      "creators": "T. Wilfong, S.E. Sidebotham, J. Keenan",
+      "description": "Diospolis Magna/Thebai was known in ancient Egypt as Waset, \"City of the Sceptre\". The site was designated as a UNESCO World Heritage Site in 1979.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "786017",
+      "location_precision": "precise",
+      "max_date": "2100",
+      "min_date": "-2600000",
+      "repr_point": [
+        32.631884,
+        25.664781
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "paleolithic-middle-east,old-kingdom-egypt,first-intermediate-period-egypt,middle-kingdom-egypt,2nd-millennium-bc-egypt,second-intermediate-period-egypt,new-kingdom-egypt,archaic,neo-assyrian-babylonian-middle-east,classical,achaemenid-roman-republic-middle-east,hellenistic-republican,hellenistic-middle-east,ptolemaic-roman-egypt,roman,roman-early-empire-parthian-middle-east,late-antique,late-antique-sasanian-middle-east,abassid-middle-east,fatimid-middle-east,ilkhanate-middle-east,1500-ad-middle-east,sixteenth-ce,modern,modern-middle-east",
+      "time_periods": "POFM2SNANCAHHPRRLLAFI1SMM",
+      "title": "Diospolis Magna/Thebai"
+    },
     "pleiades:814675": {
       "authors": "Graf, D., S. Gillies, V. Vitale, J. Becker, T. Elliott, DARMC, G. Mckee, R. Horne, R. Talbert, G. Bodard",
       "bbox": [
@@ -166,6 +1793,50 @@
       "time_period_keys": "hellenistic-republican,roman,modern",
       "time_periods": "HRM",
       "title": "Egra/Meda'in Salih"
+    },
+    "pleiades:906027": {
+      "authors": "Hausleiter, A., M. Roaf, E. Keall, J. Becker, T. Elliott, S. Gillies, R. Talbert",
+      "bbox": null,
+      "creators": "A. Hausleiter, M. Roaf, E.J. Keall",
+      "description": "An ancient place, cited: BAtlas 92 unlocated Sab(b)atha/Sabdata",
+      "dump_date": "2026-08-10",
+      "feature_types": "unlocated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "906027",
+      "location_precision": "unlocated",
+      "max_date": null,
+      "min_date": null,
+      "repr_point": null,
+      "retrieved": "2026-08-13",
+      "time_period_keys": null,
+      "time_periods": null,
+      "title": "Sabbatha/Sabatha/Sabdata"
+    },
+    "pleiades:912905": {
+      "authors": "Hausleiter, A., M. Roaf, St J. Simpson, R. Wenke, S. Gillies, P. Flensted Jensen, J. Becker, T. Elliott, R. Talbert, M. Heubel, R. Talbert, R. Horne",
+      "bbox": [
+        46.329839976,
+        31.2040868063,
+        48.4088940299,
+        31.8673615617
+      ],
+      "creators": "A. Hausleiter, M. Roaf, St J. Simpson, R. Wenke",
+      "description": "Mesene/Characene/Shad Bahman/Maisan was a kingdom within the Parthian Empire founded ca. 127 BCE under Aspasine. Mesene is subsequently attested as a dependent country of the Sasanian empire.",
+      "dump_date": "2026-08-10",
+      "feature_types": "region, label",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "912905",
+      "location_precision": "precise",
+      "max_date": "640",
+      "min_date": "-30",
+      "repr_point": [
+        47.3444711807,
+        31.4678578238
+      ],
+      "retrieved": "2026-08-13",
+      "time_period_keys": "roman,late-antique",
+      "time_periods": "RL",
+      "title": "Mesene/Characene/Shad Bahman/Maisan"
     },
     "pleiades:922685": {
       "authors": "Hausleiter, A., M. Roaf, R. Wenke, S. Gillies, J. Åhlfeldt, J. Becker, C. Johansson, T. Elliott, DARMC, R. Talbert, P. Flensted Jensen, R. Rattenborg",
@@ -273,6 +1944,54 @@
     }
   },
   "sources": {
+    "geonames": {
+      "column_map": {
+        "admin1": 10,
+        "admin2": 11,
+        "admin3": 12,
+        "admin4": 13,
+        "alternatenames": 3,
+        "asciiname": 2,
+        "cc2": 9,
+        "country_code": 8,
+        "dem": 16,
+        "elevation": 15,
+        "feature_class": 6,
+        "feature_code": 7,
+        "geonameid": 0,
+        "latitude": 4,
+        "longitude": 5,
+        "modification_date": 18,
+        "name": 1,
+        "population": 14,
+        "timezone": 17
+      },
+      "columns_observed": [
+        "geonameid",
+        "name",
+        "asciiname",
+        "alternatenames",
+        "latitude",
+        "longitude",
+        "feature_class",
+        "feature_code",
+        "country_code",
+        "cc2",
+        "admin1",
+        "admin2",
+        "admin3",
+        "admin4",
+        "population",
+        "elevation",
+        "dem",
+        "timezone",
+        "modification_date"
+      ],
+      "dump_date": "2026-08-13",
+      "dump_url": "https://download.geonames.org/export/dump/VN.zip",
+      "name": "GeoNames",
+      "retrieved": "2026-08-13"
+    },
     "pleiades": {
       "column_map": {
         "authors": "authors",

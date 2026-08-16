@@ -27,6 +27,17 @@ Usage
 -----
     python ui/build_ui_data.py
     python ui/build_ui_data.py --verify     # check spans, write nothing
+
+A6 — the build's own placement audit
+-------------------------------------
+`build_places` calls `verify_placement_shape` on every load, in both modes
+above. This is deliberately redundant with `ingest/places.py`'s own load-time
+guards (an authored coordinate, an `identified` placement with no citation) and
+with `ingest/gazetteer.py --check`'s cache lookup (a `pleiades_id` that never
+resolves, surfaced here as `uncached`): PHASE2_PLAN A6 asks for the build to
+refuse these on its own account, not merely inherit a refusal from a tool a
+curator might not have run before bundling. See `check_placement_shape` and
+`scripts/mutate_ui_places.py`, which mutation-verifies all three.
 """
 
 from __future__ import annotations
@@ -36,12 +47,24 @@ import datetime as _dt
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 REPO = Path(__file__).resolve().parent.parent
 RUNS_DIR = REPO / "eval" / "answer_runs"
 CORPUS_DIR = REPO / "data" / "seed_corpus"
 GOLD_DIR = REPO / "eval" / "gold"
+GAZETTEER_PATH = REPO / "data" / "gazetteer.json"
 OUT = Path(__file__).resolve().parent / "data.js"
+
+# `ingest` is a sibling package, not a subpackage of `ui`. This script is run
+# as `python ui/build_ui_data.py`, not `python -m ui.build_ui_data`, so the
+# repo root is not on `sys.path` by default — the same fix already applied in
+# `scripts/write_a4_places.py`.
+sys.path.insert(0, str(REPO))
+from ingest.places import (            # noqa: E402
+    Place, SUBJECT_BLOCK, load_places, read_no_places_reason,
+)
+from ingest import gazetteer as gz     # noqa: E402
 
 # The seed fields a chunk can be cut from. `source_field` in a run payload
 # names one of these; anything else is a shape we have not seen and should be
@@ -114,6 +137,341 @@ def load_runs() -> list[dict]:
     return runs
 
 
+def _resolved_geometry(
+    entry: gz.Entry, ranges: dict[str, dict[str, Any]] | None = None
+) -> dict[str, Any]:
+    """Everything the page needs to draw or attribute one cached gazetteer entry.
+
+    Deliberately a superset of what any one view uses today — `location_precision`
+    is not read yet by any map marker, but PHASE2_PLAN A5 says the page needs it
+    alongside `ground` to render honestly (they are different axes: `ground` is
+    how WE arrived at a placement, `location_precision` is how well PLEIADES
+    knows the point), and re-deriving it from `data/gazetteer.json` a second time
+    later is the `translation_chunk`/`translation_chunk_id` mistake again — the
+    two names that meant the merged section and the retrieved member, renamed at
+    C1b (2026-08-14) to `translation_section` and `translation_member_chunk_id`.
+
+    A6 left `date_verdict` out and PROGRESS.md recorded the consequence: the
+    `hole` and `unknown` verdicts were computed and reported by
+    `ingest.gazetteer --check` and never reached the bundle, so **the page could
+    not show that a point's dates do not corroborate the record citing it**. On
+    screen a marker whose gazetteer entry attests nothing in this era looked
+    exactly like one that attests the right century.
+
+    Computed here from `gz.date_audit` rather than re-implemented, for the same
+    reason the geometry above is copied rather than re-derived: two
+    implementations of one rule is the defect this file keeps paying for. When
+    `ranges` is absent the verdict is `None` — honestly "not checked", never a
+    silent `ok`.
+    """
+    verdict, detail = (gz.date_audit(entry, ranges) if ranges is not None
+                       else (None, None))
+    return {
+        "date_verdict": verdict,
+        "date_detail": detail,
+        "title": entry.title,
+        "point": entry.repr_point,          # [lon, lat] or None
+        "bbox": entry.bbox,                 # [min_lon, min_lat, max_lon, max_lat] or None
+        "has_point": entry.has_point,
+        "has_extent": entry.has_extent,
+        "has_area": entry.has_area,
+        "location_precision": entry.location_precision,
+        "min_date": entry.min_date,
+        "max_date": entry.max_date,
+        "time_period_keys": entry.time_period_keys,
+        "dump_date": entry.dump_date,
+        "authors": entry.authors,
+        "creators": entry.creators,
+    }
+
+
+def _place_geometry(
+    p: Place, known: dict[str, gz.Entry],
+    ranges: dict[str, dict[str, Any]] | None = None,
+) -> tuple[str, dict[str, Any] | None, str | None]:
+    """Classify one placement as `pin`, `extent` or `gap` — never a fourth thing.
+
+    A `stated` or `identified` ground names a specific place, so it renders as a
+    PIN at the gazetteer's cached representative point. `identified` with
+    `contested: true` still returns `"pin"` here — Pleiades has a coordinate for
+    it — but carries `p.contested`, which the page reads to draw it as disputed
+    rather than settled. "Renders as contested, not as a pin" (PHASE2_PLAN A5)
+    is a statement about the marker's *style*, not about whether it has a
+    position.
+
+    A `regional` ground renders as an EXTENT only when its cached bbox has real
+    area (`has_area`). It never falls back to a representative point — that
+    fallback is the one thing this whole `ground` vocabulary exists to prevent
+    (see A5's Egypt decision in PROGRESS.md).
+
+    Everything else is a GAP, with a reason a person can read: no id was ever
+    findable (most `regional` placements), or an id resolves and is cached but
+    has no drawable geometry for its ground (`pleiades:766` Aegyptus — a real
+    id, cached, `has_area` false), or — should `ingest.gazetteer --check` not
+    have been run since the corpus changed — an id this join cannot find in the
+    cache at all. A gap is reported, never silently dropped: for two of the
+    seven literary records (the Weilüe, the Hou Hanshu) *every single place* is
+    a gap, and a renderer that only draws pins and extents would delete Rome's
+    only two Chinese sources from the page without printing a word about it.
+    """
+    if not p.locatable:
+        return "gap", None, (
+            f"no gazetteer entry at all — "
+            f"{p.note or 'the region is known and no more'}"
+        )
+
+    entry = known.get(p.cache_key or "")
+
+    # A6: the gazetteer HOLDS this place and records no location for it. A
+    # different state from the one above, and the page must not render them
+    # with the same sentence: Ariake is a place no gazetteer has heard of,
+    # while Kyeneion is a Pleiades entry with an id, a title, a date range and
+    # no coordinate. Both draw nothing; only one of them is a gap in the
+    # gazetteer's coverage rather than in its geometry.
+    #
+    # `resolved` is returned even though nothing can be drawn from it: the
+    # entry has a title, a date range and provenance, all of which the record
+    # panel should show. Returning None here would also have made this look
+    # like an uncached id to `build_places`, which is a different failure.
+    if p.unlocated and entry is not None:
+        return "gap", _resolved_geometry(entry, ranges), (
+            f"'{p.cache_key}' is in the gazetteer and the gazetteer does not "
+            f"record where it is — it is catalogued as {entry.title!r} with no "
+            f"coordinate. Not an absent entry: the place is known, its "
+            f"location is not."
+        )
+    if entry is None:
+        return "gap", None, (
+            f"'{p.cache_key}' has not been looked up (run "
+            f"`python -m ingest.gazetteer --refresh`) — this should not happen "
+            f"once `--check` passes; treat it as a build defect, not a real gap"
+        )
+
+    resolved = _resolved_geometry(entry, ranges)
+
+    if p.ground == "regional":
+        if entry.has_area:
+            return "extent", resolved, None
+        return "gap", resolved, (
+            f"'{p.cache_key}' ({entry.title}) resolves and is cached, but its "
+            f"bbox has no area — a regional placement never falls back to a "
+            f"representative point, so nothing here can be drawn"
+        )
+
+    if entry.has_point:
+        return "pin", resolved, None
+    return "gap", resolved, (
+        f"'{p.cache_key}' ({entry.title}) is cached but carries no "
+        f"representative point, only an extent — '{p.ground}' names a "
+        f"specific place and requires a point"
+    )
+
+
+def check_placement_shape(p: Place) -> str | None:
+    """One placement against the two G1-criterion-2 shape rules, re-checked.
+
+    `ingest/places.py::parse_place` already refuses both of these at load
+    time, so nothing in today's corpus can trigger this — the same relation
+    `verify_spans` has to `cite.py`'s own span-matching. The point of asking
+    again here, on the `Place` objects `load_places` already returned, is
+    PHASE2_PLAN A6: a rule enforced in exactly one place is a rule one edit
+    away from being silently weakened, and `scripts/mutate_places.py` proves
+    `parse_place` refuses each of these — not that the BUILD does. Without
+    this, disabling the ingest-side guard alone would be enough to ship an
+    authored point; with it, the ingest guard and this one must both fail.
+    """
+    if p.ground != "regional" and p.gazetteer_id is None:
+        return (
+            f"{p.key}: ground '{p.ground}' names a specific place but carries "
+            f"no gazetteer_id — an authored coordinate. ingest/places.py "
+            f"should already refuse this at load time; if you are seeing it "
+            f"here, that guard has been weakened."
+        )
+    if p.ground == "identified" and p.ground_citation is None:
+        return (
+            f"{p.key}: ground 'identified' with no ground_citation — an "
+            f"identification with nobody identifying it. ingest/places.py "
+            f"should already refuse this at load time; if you are seeing it "
+            f"here, that guard has been weakened."
+        )
+    return None
+
+
+def verify_placement_shape(by_doc: dict[str, list[Place]]) -> list[str]:
+    """Every placement in the corpus, against `check_placement_shape`."""
+    return [
+        problem
+        for places in by_doc.values()
+        for p in places
+        if (problem := check_placement_shape(p)) is not None
+    ]
+
+
+def build_places(corpus_dir: Path, gazetteer_path: Path) -> dict[str, Any]:
+    """Join `ingest/places.py` and `ingest/gazetteer.py` into what A5 draws.
+
+    Three things fall out of one pass over the corpus, because they were built
+    in that order and each depends on the one before:
+
+    - `docs`      — every placement, classified pin/extent/gap (see
+                    `_place_geometry`), keyed by the document that carries it.
+    - `groups`    — the same placements re-keyed by cached gazetteer id, so
+                    that four records naming the same coordinate (Muziris,
+                    claimed `stated` three times and `identified` + contested
+                    once) become one map marker carrying four references,
+                    rather than three confident pins and a contested one
+                    stacked on the same point.
+    - `edges`     — `subject_places` blocks only, derived exactly as
+                    `PLACES.md` specifies: `source -> focus`, `focus ->
+                    destination`, `waypoint -> focus` with no ordering claimed
+                    among waypoints (the vocabulary's known limit). An edge is
+                    `drawable` only when BOTH ends resolved to a pin or an
+                    extent; otherwise it is reported with the reason, never
+                    dropped — this is where Ariake (source for Muziris, no id
+                    at all) and Sabbatha (source for Cana, resolves and is
+                    UNLOCATED) show up.
+
+    Records with neither a place block nor `no_places_reason` (still open —
+    the GeoNames backlog PROGRESS.md tracks) and records that declared
+    themselves unplaceable are both counted and named, so "not on the map" is
+    never confused with "not yet considered".
+    """
+    by_doc = load_places(corpus_dir)
+    cache = gz.load_cache(gazetteer_path)
+    known = gz.entries(cache)
+    # The same ranges `--check` audits against, read from the same cache, so
+    # the page and the checker cannot disagree about what is in era.
+    ranges = gz.period_ranges_from_cache(cache)
+
+    docs: dict[str, list[dict[str, Any]]] = {}
+    edges: list[dict[str, Any]] = []
+    groups: dict[str, dict[str, Any]] = {}
+    uncached: list[str] = []
+    unconsidered: list[str] = []
+    declared_unplaceable: dict[str, str] = {}
+    counts = {"pin": 0, "extent": 0, "gap": 0}
+
+    for path in sorted(corpus_dir.glob("*/*.json")):
+        if path.name == "manifest.json":
+            continue
+        record = json.loads(path.read_text(encoding="utf-8"))
+        doc_id = record["id"]
+        reason = read_no_places_reason(record, doc_id)
+        places = by_doc.get(doc_id, [])
+
+        if reason:
+            declared_unplaceable[doc_id] = reason
+            continue
+        if not places:
+            unconsidered.append(doc_id)
+            continue
+
+        entries_out: list[dict[str, Any]] = []
+        for p in places:
+            kind, resolved, gap_reason = _place_geometry(p, known, ranges)
+            counts[kind] += 1
+            if gap_reason and kind == "gap" and resolved is None and p.cache_key and p.locatable:
+                uncached.append(p.cache_key)
+
+            entries_out.append({
+                "key": p.key, "doc_id": doc_id, "block": p.block, "index": p.index,
+                "name": p.name, "ground": p.ground, "role": p.role,
+                "gazetteer": p.gazetteer, "gazetteer_id": p.gazetteer_id,
+                "cache_key": p.cache_key, "uri": p.uri,
+                "ground_citation": p.ground_citation,
+                "contested": p.contested,
+                "contested_citations": list(p.contested_citations),
+                "note": p.note, "draws_edge": p.draws_edge,
+                "kind": kind, "resolved": resolved, "gap_reason": gap_reason,
+            })
+
+            if kind in ("pin", "extent") and p.cache_key:
+                group = groups.setdefault(p.cache_key, {
+                    "cache_key": p.cache_key, "kind": kind,
+                    "resolved": resolved, "members": [],
+                })
+                group["members"].append({
+                    "doc_id": doc_id, "key": p.key, "block": p.block,
+                    "name": p.name, "ground": p.ground, "role": p.role,
+                    "contested": p.contested,
+                })
+
+        docs[doc_id] = entries_out
+
+        subject = [p for p in places if p.block == SUBJECT_BLOCK]
+        focus = next((p for p in subject if p.role == "focus"), None)
+        for p in subject:
+            if not p.draws_edge:
+                continue
+            # source/waypoint reach the focus FROM p; destination leaves the
+            # focus FOR p. Waypoints are drawn like sources (a line to the
+            # focus) but the page must not draw an arrowhead that implies an
+            # order PLACES.md says is not recoverable.
+            a, b = (p, focus) if p.role in ("source", "waypoint") else (focus, p)
+            a_kind, _, a_gap = _place_geometry(a, known)
+            b_kind, _, b_gap = _place_geometry(b, known)
+            drawable = a_kind in ("pin", "extent") and b_kind in ("pin", "extent")
+            reasons = []
+            if a_kind == "gap":
+                reasons.append(f"{a.name}: {a_gap}")
+            if b_kind == "gap" and b is not a:
+                reasons.append(f"{b.name}: {b_gap}")
+            edges.append({
+                "doc_id": doc_id, "role": p.role,
+                "from_key": a.key, "to_key": b.key,
+                "from_name": a.name, "to_name": b.name,
+                "drawable": drawable,
+                "gap_reason": "; ".join(reasons) or None,
+            })
+
+    return {
+        "docs": docs,
+        "edges": edges,
+        "groups": sorted(groups.values(), key=lambda g: g["cache_key"]),
+        "unconsidered": unconsidered,
+        "declared_unplaceable": declared_unplaceable,
+        "uncached": sorted(set(uncached)),
+        # A6: the build-layer re-check of G1 criterion 2, independent of
+        # ingest/places.py's own load-time guards. See `verify_placement_shape`.
+        "shape_problems": verify_placement_shape(by_doc),
+        "stats": {
+            "pins": counts["pin"], "extents": counts["extent"], "gaps": counts["gap"],
+            "documents_placed": len(docs),
+            "documents_unconsidered": len(unconsidered),
+            "documents_declared_unplaceable": len(declared_unplaceable),
+            "edges_total": len(edges),
+            "edges_drawable": sum(1 for e in edges if e["drawable"]),
+        },
+    }
+
+
+def load_coastline(data_dir: Path) -> dict[str, Any] | None:
+    """The dated Natural Earth snapshot the map draws as its backdrop.
+
+    Generated by `scripts/build_coastline.py`; see that file for why a basemap
+    is sourced rather than omitted, and why omitting it was a mistake.
+
+    Missing is a NOTE, not a build failure, and the difference is deliberate.
+    An absent coastline costs legibility — the map still draws every point,
+    extent and edge it would otherwise, and every one of them still traces to a
+    cached gazetteer id. An absent *placement* would be a false claim about the
+    corpus, which is why `build_places` exits non-zero on an uncached id and
+    this does not. Different severities for different kinds of wrong.
+
+    The newest dated file wins, and the date is read from the filename for the
+    same reason `gazetteer.dump_date_from_name` refuses a file called
+    'latest': a snapshot that cannot say when it was taken cannot say what it
+    is comparable with.
+    """
+    candidates = sorted(data_dir.glob("coastline-ne110m-*.json"))
+    if not candidates:
+        return None
+    path = candidates[-1]
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    payload["file"] = str(path.relative_to(REPO)).replace("\\", "/")
+    return payload
+
+
 def _same_characters(found: str, quote: str) -> bool:
     """Is `found` the same run of characters the model quoted?
 
@@ -133,26 +491,33 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
     still hold?* The Part 8 corpus edits happened after most of these runs were
     archived, so some of these offsets now point at text that has moved.
 
-    Four outcomes, and the distinction between the middle two is the reason this
-    function exists rather than a boolean:
+    Five outcomes, and the distinction between the middle three is the reason
+    this function exists rather than a boolean:
 
-    - `resolved`   — the characters at the offset are the quoted characters.
-    - `case_only`  — they differ only in letter case. `cite.py`'s
-      `locate_in_text` falls back to a case-folded search and still labels the
-      result `match="exact"`, so the payload overstates what it found. The span
-      is right; the label is not. Worth showing rather than smoothing over,
-      because a viewer that prints "exact" beside two visibly different strings
-      discredits itself.
-    - `moved`      — the quote is still in the field, at a different offset. The
-      record was edited after this answer was archived. **This is the failure a
-      naive viewer would render silently and convincingly**, showing whatever
+    - `resolved`     — the characters at the offset are the quoted characters.
+    - `case_folded`  — they differ only in letter case, **and the span says so**:
+      `cite.py` recorded `match="case_folded"`. The span is right and its label
+      is right. Not a defect, and reported separately from one.
+    - `case_only`    — they differ only in letter case and the span claims
+      `match="exact"`, so the payload overstates what it found. The span is
+      right; the label is not. Worth showing rather than smoothing over, because
+      a viewer that prints "exact" beside two visibly different strings
+      discredits itself. **Every archived run made before C1a (2026-08-14) lands
+      here by construction** — they were produced by the labeller that had only
+      two states. They are not re-labelled retroactively: the archive records
+      what was claimed at the time, and rewriting it would destroy the only
+      evidence that the defect existed.
+    - `moved`        — the quote is still in the field, at a different offset.
+      The record was edited after this answer was archived. **This is the failure
+      a naive viewer would render silently and convincingly**, showing whatever
       now sits at those coordinates as though the answer had quoted it.
-    - `absent`     — the quote is not in the field at all.
+    - `absent`       — the quote is not in the field at all.
     """
     start, end = span.get("abs_start"), span.get("abs_end")
     quote = (span.get("quote") or "").strip()
     doc = corpus.get(span.get("doc_id"))
     field = span.get("source_field")
+    recorded = span.get("match")
 
     if doc is None:
         return {"state": "absent", "why": "no seed record with this doc_id"}
@@ -164,10 +529,15 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
     if _same_characters(found, quote):
         return {"state": "resolved", "found": found}
     if _same_characters(found.casefold(), quote.casefold()):
+        if recorded == "case_folded":
+            return {"state": "case_folded", "found": found,
+                    "why": "differs from the quotation only in letter case, and "
+                           "the span records match='case_folded' — the offset is "
+                           "right and so is its label"}
         return {"state": "case_only", "found": found,
-                "why": "differs from the quotation only in letter case; "
-                       "cite.py matched case-insensitively but recorded "
-                       "match='exact'"}
+                "why": f"differs from the quotation only in letter case; "
+                       f"cite.py matched case-insensitively but recorded "
+                       f"match={recorded!r}"}
 
     at = text.find(quote)
     if at < 0 and quote:
@@ -188,8 +558,8 @@ def verify_spans(runs: list[dict], corpus: dict[str, dict]) -> dict[str, list]:
     never has to re-derive it and can never disagree with this script about what
     a span holds.
     """
-    buckets: dict[str, list] = {"resolved": [], "case_only": [], "moved": [],
-                                "absent": []}
+    buckets: dict[str, list] = {"resolved": [], "case_folded": [],
+                                "case_only": [], "moved": [], "absent": []}
     for run in runs:
         for span in run.get("grounding", {}).get("quote_spans", []):
             if span.get("abs_start") is None or span.get("abs_end") is None:
@@ -220,11 +590,56 @@ def main(argv: list[str] | None = None) -> int:
     runs = load_runs()
     print(f"{len(runs)} archived run(s), {len(corpus)} seed record(s)")
 
+    places = build_places(CORPUS_DIR, GAZETTEER_PATH)
+    ps = places["stats"]
+    print(
+        f"\nplaces (A5): {ps['pins']} pin(s), {ps['extents']} extent(s), "
+        f"{ps['gaps']} gap(s) across {ps['documents_placed']} placed "
+        f"document(s); {ps['edges_drawable']}/{ps['edges_total']} "
+        f"subject-place edges drawable; {ps['documents_unconsidered']} "
+        f"document(s) not yet considered, "
+        f"{ps['documents_declared_unplaceable']} declared unplaceable"
+    )
+    coastline = load_coastline(REPO / "data")
+    if coastline is None:
+        print(
+            "\nnote: no coastline snapshot in data/ — the Places map will draw "
+            "its graticule, points and edges with no landmass behind them, "
+            "which is legible only if you already know the region. Generate "
+            "one with `python scripts/build_coastline.py`."
+        )
+    else:
+        print(
+            f"coastline: {coastline['file']} — {coastline['source']} "
+            f"{coastline['scale']}, {coastline['point_count']} points, "
+            f"retrieved {coastline['retrieved']} ({coastline['terms']})"
+        )
+
+    if places["shape_problems"]:
+        print(
+            f"\nFAILED: {len(places['shape_problems'])} placement(s) fail the "
+            f"build's own shape audit (PHASE2_PLAN A6) — a rule "
+            f"ingest/places.py should already enforce at load time:"
+        )
+        for problem in places["shape_problems"][:5]:
+            print(f"  x {problem}")
+        return 2
+
+    if places["uncached"]:
+        print(
+            f"\nFAILED: {len(places['uncached'])} placement(s) resolve to an id "
+            f"with no cached gazetteer entry: {places['uncached'][:5]}. Run "
+            f"`python -m ingest.gazetteer --refresh --dump <dump>` — "
+            f"`ingest.gazetteer --check` should have caught this before the UI "
+            f"bundle ever did."
+        )
+        return 2
+
     buckets = verify_spans(runs, corpus)
     total = sum(len(v) for v in buckets.values())
     print(f"\n{total} claimed character span(s) checked against the seed corpus:")
-    for state in ("resolved", "case_only", "moved", "absent"):
-        print(f"  {state:<10} {len(buckets[state])}")
+    for state in ("resolved", "case_folded", "case_only", "moved", "absent"):
+        print(f"  {state:<12} {len(buckets[state])}")
 
     for state in ("moved", "absent", "case_only"):
         for item in buckets[state][:6]:
@@ -237,7 +652,10 @@ def main(argv: list[str] | None = None) -> int:
 
     # `moved` and `absent` mean an archived citation no longer points at what it
     # claimed. `case_only` is a labelling defect in cite.py, not a broken claim,
-    # so it is reported but does not fail the check.
+    # so it is reported but does not fail the check — and since C1a it can only
+    # be produced by a run archived before the third match state existed. A
+    # `case_only` span on a run archived after 2026-08-14 would mean the label
+    # regressed; `case_folded` is the state a new run should reach.
     broken = len(buckets["moved"]) + len(buckets["absent"])
     if args.verify:
         return 1 if broken else 0
@@ -258,6 +676,11 @@ def main(argv: list[str] | None = None) -> int:
         # displaying still matches the corpus on disk.
         "span_audit": {k: len(v) for k, v in buckets.items()},
         "span_problems": buckets["moved"] + buckets["absent"] + buckets["case_only"],
+        # Phase 2 A5: the place/gazetteer join `viewPlaces` draws.
+        "places": places,
+        # A5 addendum: the map's backdrop. None if the snapshot is absent, and
+        # the page degrades to a graticule rather than failing.
+        "coastline": coastline,
     }
 
     OUT.write_text(

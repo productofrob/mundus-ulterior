@@ -14,5 +14,15 @@ model_list:
       model: voyage/voyage-3.5
       api_key: os.environ/VOYAGE_API_KEY
 
+  # reranker — Voyage cross-encoder (Block C3). Multilingual, 32K context, and
+  # carrying 200M free tokens, unlike the legacy rerank-2* pair which carry none.
+  # A full gold-set run at a top-50 window is ~330K tokens, so C3 costs nothing
+  # at this scale. Same key, same vendor and same rate-limit family as
+  # embed-default above — one budget, one failure mode.
+  - model_name: rerank-2.5
+    litellm_params:
+      model: voyage/rerank-2.5
+      api_key: os.environ/VOYAGE_API_KEY
+
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY

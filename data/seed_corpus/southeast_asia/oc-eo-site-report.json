@@ -3,7 +3,11 @@
   "region": "Southeast Asia",
   "title": "Óc Eo archaeological site and culture — excavation summary (Funan port, possible Cattigara)",
   "source_type": "find_record",
-  "language_code": ["en", "vi", "fr"],
+  "language_code": [
+    "en",
+    "vi",
+    "fr"
+  ],
   "language_note": "Primary excavation reports are in French (Louis Malleret, 1944 onward) and Vietnamese (modern Vietnamese Institute of Archaeology publications); English summary used here for the seed record.",
   "date": "site occupation 2nd century BCE - 12th century CE; Óc Eo culture proper c. 1-630 CE; excavations began 1942",
   "findspot": "Óc Eo commune, Thoại Sơn District, An Giang Province, Mekong Delta, southern Vietnam",
@@ -12,5 +16,15 @@
   "reference_translation": null,
   "translation_source": null,
   "citation": "https://en.wikipedia.org/wiki/%C3%93c_Eo",
-  "notes": "Óc Eo is the maritime-route site connecting the Southeast Asia seed cluster: it sits on the same 166 CE 'Romans-first-landed-here-before-China' tradition documented from the Chinese side by the Hou Hanshu (eastasia-02). Strong graph-edge candidate linking Southeast Asia and East Asia records. Scholarly identification with Ptolemy's 'Cattigara' remains debated — flag as contested when used in answers."
+  "notes": "Óc Eo is the maritime-route site connecting the Southeast Asia seed cluster: it sits on the same 166 CE 'Romans-first-landed-here-before-China' tradition documented from the Chinese side by the Hou Hanshu (eastasia-02). Strong graph-edge candidate linking Southeast Asia and East Asia records. Scholarly identification with Ptolemy's 'Cattigara' remains debated — flag as contested when used in answers.",
+  "findspot_places": [
+    {
+      "name": "Óc Eo",
+      "ground": "stated",
+      "gazetteer": "geonames",
+      "gazetteer_id": "13405688",
+      "uri": "https://www.geonames.org/13405688",
+      "note": "Confirmed 2026-08-13 against the GeoNames country dump named below; the snapshot date is recorded in data/gazetteer.json under sources.geonames. VN.zip. The same id `seasia-01-oc-eo-medallion` carries — one place, two records, which is what the UI's grouping by cached id exists to draw as a single marker. 13405688 'Óc Eo' 10.242/105.155, P.PPLA2, An Giang. **The coordinate denotes the modern town**; this record's findspot is 'Óc Eo commune', for which GeoNames also holds 8375917 (A.ADM3, 1.5 km away) — refused for the same reason as in seasia-01, and so that both records resolve to one point rather than two 1.5 km apart."
+    }
+  ]
 }

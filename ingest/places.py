@@ -45,6 +45,14 @@ third state this module exists to refuse.
 Coordinates appear nowhere in this module. A placement carries a `gazetteer`
 and a `gazetteer_id`; `ingest/gazetteer.py` turns ids into points, and nothing
 else may.
+
+`role` was added 2026-08-13, at the start of A4 and before any `subject_places`
+block existed, because A1 deliberately left the question open and A5 renders
+trade texts as **edges between subject places** — and an edge needs to know one
+end from the other. Deciding it at A1 would have been guessing; deciding it with
+the seven literary records in front of us is a decision with evidence. See
+`ROLES` below for the vocabulary and the two block-level rules that make an edge
+derivable.
 """
 
 from __future__ import annotations
@@ -70,6 +78,43 @@ PLACE_BLOCKS = ("findspot_places", "origin_places", "subject_places")
 # been considered" is both reachable and the thing actually worth asserting.
 NO_PLACES_KEY = "no_places_reason"
 
+# How a subject place stands to the passage that names it. `subject_places`
+# only; the other two blocks state their relation in the block name already,
+# and a `role` there would be a second name for the same fact.
+#
+# The vocabulary is closed and it is what A5 derives edges from:
+#
+#     source --> focus --> destination
+#
+# `focus` is the place the passage centres on — the port whose imports and
+# exports §28 lists, the polity the Weilüe describes. Every directional role is
+# relative to it, which is why a block carrying one requires it.
+#
+# Named `focus` and not `anchor` on purpose. This corpus is largely sailing
+# manuals; Periplus §4 discusses, in so many words, where ships anchor. A key
+# whose value could be read as a claim about the text's own subject matter is
+# the "two questions under one name" defect this repository has now paid for
+# four times (`has_extent`/`has_area`, `translation_chunk`/`translation_chunk_id`,
+# `--find`/`--survey`, and the field once called `pleiades_id`).
+ROLES = {
+    # The place the passage is organised around. At most one per block.
+    "focus",
+    # Goods, people or knowledge reach the focus FROM here.
+    "source",
+    # They leave the focus FOR here.
+    "destination",
+    # On the way, and named as such. Draws an edge; carries no ordering, which
+    # is this vocabulary's known limit — see PLACES.md.
+    "waypoint",
+    # Named, and nothing moves. Draws no edge. This is not "we have not decided
+    # yet"; it is the positive claim that the text merely names the place, which
+    # is why there is no default and every entry must say which it is.
+    "mentioned",
+}
+
+# Roles that assert a movement, and therefore require the other end of it.
+DIRECTIONAL_ROLES = {"source", "destination", "waypoint"}
+
 GROUNDS = {
     # The record's own text names the place.
     "stated",
@@ -94,6 +139,7 @@ GAZETTEERS: dict[str, dict[str, str]] = {
         "uri_prefix": "https://pleiades.stoa.org/places/",
         "uri_suffix": "",
         "scope": "Greco-Roman world; ancient places",
+        "publisher": "Pleiades",
     },
     "geonames": {
         # The human-readable page, not the sws.geonames.org linked-data URI,
@@ -102,6 +148,7 @@ GAZETTEERS: dict[str, dict[str, str]] = {
         "uri_prefix": "https://www.geonames.org/",
         "uri_suffix": "",
         "scope": "modern places worldwide; used where no ancient gazetteer covers the site",
+        "publisher": "GeoNames",
     },
 }
 
@@ -114,11 +161,47 @@ _OPTIONAL = {
     "contested",
     "contested_citations",
     "note",
+    # The gazetteer holds this place and does not record where it is. See
+    # UNLOCATED_KEY below.
+    "unlocated",
+    # Required on subject_places, forbidden elsewhere — a conditional the key
+    # set cannot express, so it is enforced in parse_place instead.
+    "role",
 }
 
 _STRING_KEYS = (
     "name", "ground", "gazetteer", "gazetteer_id", "uri", "ground_citation", "note",
+    "role",
 )
+
+SUBJECT_BLOCK = "subject_places"
+
+# "The gazetteer holds this place and does not know where it is."
+#
+# A6, 2026-08-13. This is the third state again, one level down from
+# `no_places_reason`, and it arrived the same way: by being written in prose
+# because the schema had nowhere to put it. Pleiades 40186 Kyeneion, 906027
+# Sabbatha and 60485/50630 Chryse all RESOLVE and carry no coordinate at all —
+# the gazetteer records the place and not its location.
+#
+# Until now such a placement had to be written with **no id**, because
+# `gazetteer --check` fails an entry resolving to neither point nor extent, so
+# citing the id would have failed the build. The id therefore survived only in
+# a free-text `note` — unreadable by any check, and at the data layer
+# indistinguishable from Ariake, which no gazetteer has ever heard of. Two
+# different states, one shape, exactly what `has_extent`/`has_area` and
+# `no_places_reason` were each split to prevent.
+#
+# Written as `true` or omitted, on the same rule as `contested`: an explicit
+# `false` would re-create the third state this key exists to remove. It
+# requires an id, because "the gazetteer has it and cannot locate it" is a
+# claim ABOUT an entry, and without the id there is no entry to make it about.
+#
+# It is a claim, so `--check` verifies it rather than trusting it: the cached
+# entry must really carry neither point nor extent. A placement declaring
+# `unlocated` against an entry that has a coordinate is a stale note, and the
+# day Pleiades locates Kyeneion this fails instead of quietly drawing nothing.
+UNLOCATED_KEY = "unlocated"
 
 
 class PlaceError(ValueError):
@@ -144,10 +227,26 @@ class Place:
     contested: bool
     contested_citations: tuple[str, ...]
     note: str | None
+    # None on findspot_places and origin_places, where the block already says
+    # the relation. Never None on subject_places.
+    role: str | None
+    # The gazetteer holds this place and records no location for it. See
+    # UNLOCATED_KEY.
+    unlocated: bool = False
 
     @property
     def key(self) -> str:
         return f"{self.doc_id}::{self.block}[{self.index}]"
+
+    @property
+    def draws_edge(self) -> bool:
+        """Whether A5 should draw a line from this place to its block's focus.
+
+        `mentioned` is the deliberate false: a text that names Laodicean wine
+        is not a text about a route to Laodicea, and an edge there would make
+        the network assert trade the passage does not describe.
+        """
+        return self.role in DIRECTIONAL_ROLES
 
     @property
     def locatable(self) -> bool:
@@ -156,8 +255,27 @@ class Place:
         False only for a `regional` placement carrying no id — the honest
         'we know the region and no more' case, which renders as nothing on
         the map rather than as a guessed point.
+
+        An `unlocated` placement is still locatable in this sense and
+        deliberately so: it cites an id, that id must resolve, and the entry
+        behind it must be cached so the claim that the gazetteer cannot place
+        it can be checked against the gazetteer. What it will not do is yield
+        a coordinate — see `drawable`.
         """
         return self.gazetteer_id is not None
+
+    @property
+    def drawable(self) -> bool:
+        """Whether a coordinate could ever come of this placement.
+
+        Distinct from `locatable`, which asks whether there is an id to look
+        up. The two were the same question until A6 and are not: an
+        `unlocated` placement has an id, resolves, caches, and can never put
+        anything on the map. Collapsing them is how "the gazetteer has never
+        heard of this" and "the gazetteer has it and does not know where it
+        is" came to look identical.
+        """
+        return self.gazetteer_id is not None and not self.unlocated
 
     @property
     def cache_key(self) -> str | None:
@@ -252,6 +370,102 @@ def _parse_contested(raw: dict[str, Any], ground: str, where: str) -> tuple[bool
     return True, tuple(c.strip() for c in cites)
 
 
+def _parse_unlocated(raw: dict[str, Any], gazetteer_id: str | None, where: str) -> bool:
+    """`unlocated: true`, or the key is absent. See UNLOCATED_KEY."""
+    if UNLOCATED_KEY not in raw:
+        return False
+
+    if raw[UNLOCATED_KEY] is not True:
+        raise PlaceError(
+            f"{where}: '{UNLOCATED_KEY}' may only be written as true. Absence "
+            f"means the gazetteer locates this place normally; an explicit "
+            f"false is a third state saying the same thing a second way."
+        )
+    if gazetteer_id is None:
+        raise PlaceError(
+            f"{where}: '{UNLOCATED_KEY}' without a gazetteer_id. The key is a "
+            f"claim about a gazetteer entry — that it holds this place and "
+            f"records no location for it — and with no id there is no entry "
+            f"to make the claim about. A place no gazetteer has heard of is "
+            f"'regional' with a note, which is a different state and the one "
+            f"this key exists to be told apart from."
+        )
+    return True
+
+
+def _parse_role(raw: dict[str, Any], block: str, where: str) -> str | None:
+    """`role` is required on subject_places and refused on the other two blocks.
+
+    Required, with no default, for the reason `expect_untranslatable` has no
+    default in `eval/goldset.py`: `mentioned` is a **claim** — that the text
+    names this place and describes nothing moving through it — and a claim may
+    never arrive by omission. Defaulting to `mentioned` would let an
+    uncurated entry silently assert the weakest reading, and defaulting to
+    anything else would let it silently assert an edge.
+    """
+    role = raw.get("role")
+    role = role.strip() if role else None
+
+    if block != SUBJECT_BLOCK:
+        if role is not None:
+            raise PlaceError(
+                f"{where}: 'role' belongs to {SUBJECT_BLOCK} only. "
+                f"'{block}' already names the relation, and a role here would "
+                f"be a second name for the same fact — free to disagree with "
+                f"the first, and nothing would notice which the map used."
+            )
+        return None
+
+    if role is None:
+        raise PlaceError(
+            f"{where}: {SUBJECT_BLOCK} requires a 'role', one of {sorted(ROLES)}. "
+            f"There is no default: 'mentioned' is the positive claim that the "
+            f"text merely names the place, and a directional role asserts that "
+            f"something moved. Neither may arrive by omission."
+        )
+    if role not in ROLES:
+        raise PlaceError(
+            f"{where}: role '{role}' is not one of {sorted(ROLES)}. The "
+            f"vocabulary is closed because A5 derives edges from it; a role it "
+            f"cannot read would drop a place off the network without failing."
+        )
+    return role
+
+
+def _check_block_roles(places: list[Place], doc_id: str, block: str) -> None:
+    """The two rules that make an edge derivable, checked across the block.
+
+    Neither can be seen from a single entry, which is why they are not in
+    `parse_place`: both are statements about how the entries stand together.
+    """
+    if block != SUBJECT_BLOCK:
+        return
+    in_block = [p for p in places if p.block == block]
+
+    foci = [p for p in in_block if p.role == "focus"]
+    if len(foci) > 1:
+        raise PlaceError(
+            f"{doc_id}::{block}: {len(foci)} places carry role 'focus' "
+            f"({', '.join(p.name for p in foci)}). A5 derives every edge as "
+            f"source -> focus -> destination, so two foci make each edge "
+            f"ambiguous about which end it has. If the passage genuinely turns "
+            f"on two places, one of them is a source, a destination or a "
+            f"waypoint of the other."
+        )
+
+    directional = [p for p in in_block if p.draws_edge]
+    if directional and not foci:
+        raise PlaceError(
+            f"{doc_id}::{block}: {len(directional)} place(s) carry a "
+            f"directional role ({', '.join(sorted(p.role for p in directional))}) "
+            f"but no place carries 'focus'. A directional role is relative — a "
+            f"source of goods reaching somewhere, a destination they leave for "
+            f"— so without a focus it names one end of an edge and no other. "
+            f"Either mark the place the passage centres on, or the roles are "
+            f"'mentioned'."
+        )
+
+
 def parse_place(raw: Any, doc_id: str, block: str, index: int) -> Place:
     where = f"{doc_id}::{block}[{index}]"
     if not isinstance(raw, dict):
@@ -337,6 +551,8 @@ def parse_place(raw: Any, doc_id: str, block: str, index: int) -> Place:
         )
 
     contested, contested_citations = _parse_contested(raw, ground, where)
+    role = _parse_role(raw, block, where)
+    unlocated = _parse_unlocated(raw, gazetteer_id, where)
 
     return Place(
         doc_id=doc_id,
@@ -351,6 +567,8 @@ def parse_place(raw: Any, doc_id: str, block: str, index: int) -> Place:
         contested=contested,
         contested_citations=contested_citations,
         note=note,
+        role=role,
+        unlocated=unlocated,
     )
 
 
@@ -431,6 +649,8 @@ def parse_record_places(record: dict[str, Any], doc_id: str | None = None) -> li
             )
         for index, raw in enumerate(raw_block):
             places.append(parse_place(raw, doc_id, block, index))
+
+        _check_block_roles(places, doc_id, block)
 
         keys = [p.cache_key for p in places if p.block == block and p.cache_key]
         dupes = sorted({k for k in keys if keys.count(k) > 1})

@@ -278,17 +278,32 @@ class Passage:
     similarity: float | None = None
     rank: int | None = None
     lang_note: str | None = None
-    # The English-translation chunk folded into this passage, if one was
-    # retrieved separately. Kept so the citation record can say the answer stood
-    # on two chunks, not one.
-    translation_chunk_id: str | None = None
-    # The same chunk as a record rather than an id. A published translation is
-    # not a floating string: it is a chunk of the seed JSON with its own field
-    # and its own character span, exactly like the original. Carrying the record
-    # is what lets a quotation from the English resolve to characters on disk
-    # instead of being verified and then dropped — which is what happened to
-    # every quotation in the first live run.
-    translation_chunk: ChunkRecord | None = None
+    # THESE TWO ARE NOT THE SAME CHUNK, and until 2026-08-14 they were named as
+    # though they were (`translation_chunk_id` / `translation_chunk`). The
+    # arithmetic was right; the names were a trap, and PHASE2_PLAN.md C1 exists
+    # because of it.
+    #
+    # The id of the single English chunk this passage was folded with: the one
+    # retrieval actually returned when it returned a translation, or the
+    # section's first chunk when it did not. A MEMBER of the section, never the
+    # section. Kept so the citation record can say the answer stood on two
+    # chunks, not one.
+    translation_member_chunk_id: str | None = None
+    # The whole English SECTION as a record — every member of it merged by
+    # `align._merge`, with the gaps between members filled so that character
+    # arithmetic over the merged text still lands on the right character in the
+    # file. A published translation is not a floating string: it is a chunk of
+    # the seed JSON with its own field and its own character span, exactly like
+    # the original. Carrying the record is what lets a quotation from the
+    # English resolve to characters on disk instead of being verified and then
+    # dropped — which is what happened to every quotation in the first live run.
+    #
+    # A merged section carries its FIRST member's chunk_id, so
+    # `translation_section.chunk_id` and `translation_member_chunk_id` agree
+    # whenever the original was the hit and disagree whenever a later member of
+    # a split section was. Reading either one as the other is the defect these
+    # names now refuse to hide.
+    translation_section: ChunkRecord | None = None
 
     @property
     def chunk_id(self) -> str:
@@ -331,7 +346,12 @@ class Passage:
             "char_end": self.chunk.char_end,
             "english": asdict(self.english),
             "lang_note": self.lang_note,
-            "translation_chunk_id": self.translation_chunk_id,
+            # Renamed from "translation_chunk_id" on 2026-08-14 (C1b). Runs
+            # archived before that date carry the old key; it held this same
+            # value, so the two are readable as one field, and the archives are
+            # NOT rewritten — an archive edited to match today's names stops
+            # being a record of what was written at the time.
+            "translation_member_chunk_id": self.translation_member_chunk_id,
         }
 
 
@@ -436,8 +456,8 @@ def build_passages(
     *,
     english_by_chunk: dict[str, EnglishChoice],
     max_sources: int | None = None,
-    translation_chunk_by_chunk: dict[str, str] | None = None,
-    translation_record_by_chunk: dict[str, ChunkRecord] | None = None,
+    translation_member_by_chunk: dict[str, str] | None = None,
+    translation_section_by_chunk: dict[str, ChunkRecord] | None = None,
 ) -> list[Passage]:
     """Number the evidence.
 
@@ -462,10 +482,10 @@ def build_passages(
                 similarity=similarity,
                 rank=rank,
                 lang_note=RETRIEVAL_LANG_NOTES.get(chunk.lang),
-                translation_chunk_id=(translation_chunk_by_chunk or {}).get(
-                    chunk.chunk_id
-                ),
-                translation_chunk=(translation_record_by_chunk or {}).get(
+                translation_member_chunk_id=(
+                    translation_member_by_chunk or {}
+                ).get(chunk.chunk_id),
+                translation_section=(translation_section_by_chunk or {}).get(
                     chunk.chunk_id
                 ),
             )

@@ -462,12 +462,13 @@ def test_folding() -> None:
                     lang="en", text="56. And there is brought")
     doc_passages = {"periplus": [original, english]}
 
-    anchors, folded, published = assemble.fold_hits(
+    anchors, members, published = assemble.fold_hits(
         [(english, 0.62), (original, 0.58)], doc_passages
     )
     expect(len(anchors) == 1 and anchors[0][0].chunk_id == "grc-0",
            "GUARD an original and its translation collapse into one source")
-    expect(folded["grc-0"] == "en-0", "the folded translation chunk is recorded")
+    expect(members["grc-0"] == "en-0",
+           "the English MEMBER chunk that was folded in is recorded by its own id")
     expect(published["grc-0"][0] == english.text,
            "the English chunk becomes the published translation")
     expect(published["grc-0"][1] == "section",
@@ -880,7 +881,7 @@ def test_live_run_defects() -> None:
         marker="S1", chunk=chunk(),
         english=EnglishChoice(kind="published", text=english_text,
                               ground="section"),
-        translation_chunk=translation_record, similarity=0.6, rank=1,
+        translation_section=translation_record, similarity=0.6, rank=1,
     )
     span = cite.locate_quote("grown in one region only", with_disk)
     # GUARD: verified to fail when locate_quote drops the translation chunk and
@@ -932,7 +933,7 @@ def test_live_run_defects() -> None:
     chinese = Passage(
         marker="S1", chunk=chunk(lang="lzh", text="大秦王安敦遣使自日南徼外獻象牙"),
         english=EnglishChoice(kind="published", text=hou_hanshu_en, ground="index"),
-        translation_chunk=chunk(
+        translation_section=chunk(
             chunk_id="en-hh", lang="en", role="translation", text=hou_hanshu_en,
             char_start=2000, source_field="reference_translation",
         ),
@@ -942,8 +943,19 @@ def test_live_run_defects() -> None:
     # source reads `The tribute`; the model lowercased it to fit mid-sentence.
     span_case = cite.locate_quote(
         "the tribute brought was neither precious nor rare", chinese)
-    expect(span_case is not None and span_case.match == "exact",
+    expect(span_case is not None and span_case.match == "case_folded",
            "GUARD a quotation lowercased to fit a sentence is still verified")
+    # GUARD (C1a, 2026-08-14): the third match state. Until this landed the
+    # fallback above recorded `match="exact"`, and `build_ui_data.py --verify`
+    # had to re-derive the difference from the characters and report it as a
+    # labelling defect — nine archived spans sit in that bucket. Verified to
+    # fail when locate_quote hardcodes "exact" again.
+    expect(span_case.match != "exact",
+           "GUARD a case-folded match is not recorded as exact")
+    expect(
+        cite.locate_in_text("The tribute", hou_hanshu_en).match == "exact",
+        "a quote whose case already agrees is still recorded as exact",
+    )
     # A case-folded match must not shift the offsets: _fold is length-preserving
     # precisely so the index map stays truthful.
     expect(
@@ -1034,7 +1046,7 @@ def test_live_run_defects() -> None:
     machine_only = Passage(
         marker="S1", chunk=chunk(),
         english=EnglishChoice(kind="machine", text=english_text, band="medium"),
-        translation_chunk=translation_record, similarity=0.6, rank=1,
+        translation_section=translation_record, similarity=0.6, rank=1,
     )
     expect(
         cite.locate_quote("grown in one region only", machine_only).abs_start is None,
@@ -1105,7 +1117,7 @@ def test_section_alignment() -> None:
         [m.chunk_id for m in pairs[0].members] == ["e4a", "e4b"],
         "the pair records every chunk its translation was merged from",
     )
-    anchors, folded, published = assemble.fold_hits(
+    anchors, members, published = assemble.fold_hits(
         [(greek[0], 0.56), (second, 0.49)],
         {"d1": greek + [first, second, third]},
     )
@@ -1113,6 +1125,36 @@ def test_section_alignment() -> None:
     expect(
         len(anchors) == 1 and anchors[0][0].chunk_id == "g4",
         "GUARD a later chunk of a merged section folds into its original",
+    )
+
+    # C1b, 2026-08-14. THIS is the case the old names hid: the hit was `e4b`,
+    # the second chunk of English §4, while the section presented to the reader
+    # is `e4a`+`e4b` merged and carries `e4a`'s id. Two different chunks, and
+    # until this test existed nothing in the suite ever saw them differ —
+    # `translation_chunk_id` and `translation_chunk` could be read as the same
+    # thing for as long as no section happened to split.
+    section = published["g4"][2]
+    expect(
+        members["g4"] == "e4b" and section.chunk_id == "e4a",
+        "the retrieved MEMBER and the merged SECTION are different chunks, and "
+        "each is recorded under its own name",
+    )
+    passages = build_passages(
+        anchors,
+        english_by_chunk={"g4": EnglishChoice(kind="published", text=section.text,
+                                              ground="section")},
+        translation_member_by_chunk=members,
+        translation_section_by_chunk={"g4": section},
+    )
+    expect(
+        passages[0].translation_member_chunk_id == "e4b"
+        and passages[0].translation_section.chunk_id == "e4a",
+        "a Passage carries both, and calling either one by the other's name is "
+        "now a name error rather than a silent half-truth",
+    )
+    expect(
+        passages[0].to_dict()["translation_member_chunk_id"] == "e4b",
+        "the archived record names the member it actually stood on",
     )
 
     # Two texts numbered 1..n independently must not align by coincidence.

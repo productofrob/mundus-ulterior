@@ -1,0 +1,146 @@
+# A4 second round — the ids the first survey could not settle.
+#
+# Every term here appeared in the 2026-08-13 survey ONLY in the `name:` list,
+# with no coordinate printed, or returned several candidates that a name match
+# cannot choose between. A name match is not an identification and the
+# coordinate decides, so none of these can be written yet.
+#
+# Run:
+#   python -m ingest.gazetteer --survey data/place_survey_a4b.txt --dump $d --names-dump $n
+#
+# Bare numeric terms search the id column, which is what most of this file is.
+#
+# ---------------------------------------------------------------------------
+# Also recovered since round 1 — these five are now attested in the ORIGINAL
+# text and need resolving for the first time (see PROGRESS.md, Finding 3).
+# ---------------------------------------------------------------------------
+
+@africa-03-recovered
+# Ἀλαλαίου, §4 — resolved in round 1 as 39281 (15.729/40.003, archipelago);
+# listed again only to confirm nothing else competes now the term is in scope.
+39281
+# Διοδώρου νῆσος, §4. Round 1 found NOTHING for "Diodorus Island"/"Diodoros".
+# Note the Periplus names a DIFFERENT Diodorus island at §25, in the Bab
+# el-Mandeb strait — do not let that one answer for this one.
+Diodoros
+Diodorou
+Διοδώρου
+
+@arabia-01-recovered
+# §27's closing clause, absent from the excerpt until today.
+59737
+Skythia
+Omana
+Ommana
+Persis
+Persida
+
+# ---------------------------------------------------------------------------
+# Ids seen only as a name, with no coordinate — resolve before writing
+# ---------------------------------------------------------------------------
+
+@africa-03-pending
+# the Nile. 727172 carried the names "Nile", "Neilos", "Νεῖλος" but never
+# appeared as a place row, so its feature type and coordinate are unseen.
+727172
+# Diospolis — §6's murrine is "made in Diospolis". Round 1 printed 6 of 10
+# hits and the Egyptian one may be among the 4 suppressed. The Delta
+# Diospolis (727111 / 730107, both 31.260/31.573) and Diospolis Magna are
+# different places and only one of them is a glass-working centre.
+727111
+730107
+216859
+Diospolis Magna
+Diospolis Parva
+Luxor
+Thebai
+# Laodicea — "Λαδικηνὸς οἶνος" is the wine of Laodicea ad Mare (Latakia), not
+# any of the Anatolian Laodiceas round 1 printed. 668290 and 668291 appeared
+# as names only; 668291 is explicitly "ad Libanum" and so is NOT it.
+668290
+668291
+Laodicea ad Mare
+Latakia
+# Italy — "οἶνος Ἰταλικός". Three ids carry the name Ἰταλία / Italia and none
+# printed a coordinate. What is wanted is the peninsula or the Augustan
+# region, not a villa.
+1052
+452346
+992073
+# Arsinoe — round 1's best candidate is 736893, the Arsinoite NOME
+# (29.286/30.735, -330..640), because Ἀρσινοητικαί is the nome adjective.
+# Confirming it, and noting the decoy 39295, an Arsinoe on the Red Sea coast
+# at 12.712/43.251 which is in the right region and the wrong place.
+736893
+39295
+
+@arabia-01-pending
+# the Frankincense Country. 39370 "Libanotophoros Chora" appeared as a name
+# with no coordinate. This is the source of the frankincense and should be a
+# region with an extent, not a point.
+39370
+
+@southasia-02-pending
+# Mandagora — name only, no coordinate.
+50116
+# Chersonesos — 23 hits, none of them obviously on the Konkan coast. The
+# Periplus's Χερσόνησος here is Indian; every id round 1 printed is Black Sea,
+# Aegean or Libyan. Search the names dump for an Indian one before concluding
+# it is unresolvable.
+Chersonesos
+Chersonesus
+# Leuke — Λευκὴ νῆσος, an island on the Konkan coast. 226677 is Leuke in the
+# Black Sea and is the wrong one.
+Leuke Nesos
+Leuke Ins
+50xxx
+# Pandion — 50201 carried the names "Pandion" and "Pandiones" with no
+# coordinate; that is very likely the Pandya kingdom label. 599854 "Pandion
+# Collis" is in Caria and is not it.
+50201
+# Ariake — TWO candidates and the choice matters, because this is the place
+# Schoff's English calls "Arabia". 59700 "Ariake/Larike" 22.304/71.976 is
+# Saurashtra; 49874 "Ariake Sadenon" 18.143/74.499 is inland Maharashtra.
+# §54 says ships come to Muziris FROM Ariake, so what is wanted is whichever
+# Pleiades treats as the coastal region, not an inland people-label.
+59700
+49874
+# Ganges — 59822 is the river (25.932/83.780) and 49984 carries the name
+# "Ganges" with no coordinate; §56's νάρδος ἡ Γαγγητικὴ is nard from the
+# Ganges region, and §63 names an emporion of the same name. Which one the
+# adjective points at is a judgement; resolve 49984 first.
+49984
+59822
+# Chryse — Χρυσονησιωτικὴ χελώνη, "tortoise-shell from Chryse Island".
+# 60485 "Chryse/Aurea" is UNLOCATED and so cannot be cached; 50630 "Chrysei"
+# appeared as a name only.
+60485
+50630
+Chryse Nesos
+Chrysonesos
+
+@eastasia-01-pending
+# Nothing in this record resolved in round 1 — Da Qin, Anxi, Tiaozhi, Angu and
+# Haixi all returned nothing under their own names, which is expected for a
+# Chinese text about places Pleiades indexes under Greek and Latin ones. These
+# are the identifications the translation gloss proposes, and each will need a
+# ground_citation because `identified` is what they are.
+912905
+Parthia
+590282460
+952097
+# Rome, the city — only Ῥώμῃ on 423025 showed, with no coordinate.
+423025
+# NOT searched: the Tiber. The Chinese excerpt is elided at exactly the point
+# where the capital and its river are described, so neither is in the text.
+
+@southasia-03-pending
+# Alexandria — 727070 carries "Alexandrea ad Aegyptum" and "Alexandreia ad
+# Aegyptum" but never printed a coordinate. Round 1's 41 place hits are
+# Alexandrias in Aria, Carmania, Arachosia and so on; the one wanted is the
+# Egyptian one the papyrus's fourth-tax warehouse stood in.
+727070
+# Muziris — now attested in the original text at r.ii.12 (κατὰ Μουζεῖριν),
+# recovered 2026-08-13. Same id as southasia-01 and -02, and the same trap:
+# read southasia-04-pattanam's findspot note before writing it.
+50146

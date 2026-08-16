@@ -110,6 +110,18 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         )],
     ),
     (
+        # C1a, 2026-08-14. The fallback below was never wrong; the LABEL was.
+        # Removing the one line that records which branch found the quote puts
+        # back the state this repository shipped for four days and reported to
+        # itself as nine `case_only` spans in `build_ui_data.py --verify`.
+        "case-folded match recorded as exact again",
+        [(
+            """        position = _fold(norm_hay).find(_fold(norm_quote))
+        match = "case_folded\"""",
+            """        position = _fold(norm_hay).find(_fold(norm_quote))""",
+        )],
+    ),
+    (
         "metadata quotations reported as fabrications again",
         [(
             """            metadata = _in_metadata(quote, known or list(by_marker), by_marker)""",
@@ -128,7 +140,13 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         "merged section gap filled with nothing",
         [(
-            """        gap = getattr(following, "char_start", 0) - getattr(previous, "char_end", 0)""",
+            # Was `getattr(following, "char_start", 0) - getattr(previous,
+            # "char_end", 0)` until 2026-08-13. Those defaults were what turned
+            # "this type has no offsets" into `gap = 0` — a silently wrong merge
+            # — for every caller whose rows lack the columns. The mutation is
+            # unchanged in what it does; the line it does it to now fails loudly
+            # rather than defaulting.
+            """        gap = following.char_start - previous.char_end""",
             """        gap = 0""",
         )],
     ),
@@ -144,11 +162,21 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         "published translation loses its on-disk span",
         [(
-            """            translation = passage.translation_chunk
+            """            translation = passage.translation_section
             if translation is not None and passage.english.kind in (""",
             """            translation = None
             if translation is not None and passage.english.kind in (""",
         )],
+    ),
+    (
+        # The A4 defect restored: _merge assumes every chunk type carries
+        # offsets. Part 7's does, Part 6's does not, and this is the branch that
+        # tells them apart. Removing it puts the AttributeError back.
+        "_merge assumes offsets on a chunk type that has none",
+        [("""    if not has_offsets(first):
+        return replace(first, text=" ".join(c.text for c in chunks))""",
+          """    if False:
+        return replace(first, text=" ".join(c.text for c in chunks))""")],
     ),
 ]
 
@@ -164,12 +192,39 @@ EXPECTED = [
     "GUARD a bare function word is never treated as a quotation",
     "GUARD terminal punctuation added to a quotation does not fabricate it",
     "GUARD a quotation lowercased to fit a sentence is still verified",
+    "GUARD a case-folded match is not recorded as exact",
     "GUARD quoting the record's title is named as metadata, not fabrication",
     "GUARD a section split into several chunks still aligns by section",
     "GUARD a merged section keeps exact offsets for its later chunks",
     "GUARD a later chunk of a merged section folds into its original",
     "GUARD a quote from a published translation resolves to characters on disk",
+    # Lives in answer.test_translate, which is why both suites now run.
+    "without offsets, the pieces are joined with a single space",
 ]
+
+
+# `align.py` is imported by BOTH Part 6 and Part 7, and until 2026-08-13 this
+# harness verified it against Part 7's suite alone. That was not a gap in the
+# testing so much as the bug itself, written down: `_merge` was covered — the
+# guard "a merged section keeps exact offsets for its later chunks" exercises it
+# thoroughly — but only ever with a chunk type that HAS offsets. Part 6's
+# `ChunkRow` has none, and the first time a translation section split into two
+# chunks the live run died on `last.char_end`.
+#
+# One module, two callers, one suite. Both suites now run for every mutation and
+# the failures are pooled, so a guard may live wherever the defect actually
+# shows up rather than wherever the mutation harness happens to look.
+SUITES = ("answer.test_answer", "answer.test_translate")
+
+
+def run_suites() -> set[str]:
+    failed: set[str] = set()
+    for suite in SUITES:
+        result = subprocess.run(
+            [sys.executable, "-m", suite], cwd=ROOT, capture_output=True, text=True
+        )
+        failed |= failures_from(result.stdout)
+    return failed
 
 
 def failures_from(output: str) -> set[str]:
@@ -198,11 +253,7 @@ def main() -> int:
                 edited[target] = edited[target].replace(old, new, 1)
             for f in SOURCES:
                 f.write_text(edited[f], encoding="utf-8")
-            result = subprocess.run(
-                [sys.executable, "-m", "answer.test_answer"],
-                cwd=ROOT, capture_output=True, text=True,
-            )
-            failed = failures_from(result.stdout)
+            failed = run_suites()
             if guard in failed:
                 print(f"  ok   {label}")
                 print(f"       -> {guard}")

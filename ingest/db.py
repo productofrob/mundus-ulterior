@@ -26,17 +26,38 @@ def get_dsn() -> str:
     return os.environ.get("APP_DATABASE_URL", DEFAULT_DSN)
 
 
-def apply_schema(conn: psycopg.Connection, schema_path: Path = SCHEMA_PATH) -> None:
-    """Apply the Part 3 schema, and the Part 4 migration if it exists.
+# Every migration that touches a view, in the order it must be applied. LATER
+# ENTRIES MUST FOLLOW EARLIER ONES, because a `CREATE OR REPLACE VIEW` in an
+# early file silently undoes a redefinition in a later one.
+#
+# That is not hypothetical. `schema-part4.sql` defines `retrievable_chunks`
+# WITHOUT Block B4's `AND NOT is_distractor`, and both `run_ingest` and
+# `run_embed` re-applied part4 on every invocation. So two commands in the
+# standing session ritual silently reverted distractor containment — and on
+# 2026-08-14 `run_embed` did exactly that, between a containment suite that
+# passed 15/15 and one that failed three assertions.
+#
+# Nothing detected it. `load_distractors` printed "corpus chunks unchanged:
+# 151 -> 151  OK" while reading the reverted view, so the check that existed to
+# catch containment failure was itself reading contaminated data.
+MIGRATIONS = (
+    "scripts/schema-part3.sql",
+    "scripts/schema-part4.sql",
+    "scripts/schema-b4-distractors.sql",
+)
 
-    Both are idempotent. Applying Part 4 here too means the embedding provenance
-    columns always exist before UPSERT_CHUNK references them, whatever order the
-    parts were run in.
+
+def apply_schema(conn: psycopg.Connection, schema_path: Path = SCHEMA_PATH) -> None:
+    """Apply every migration, in order, skipping any that is absent.
+
+    `schema_path` is honoured for the Part 3 file so existing callers and tests
+    keep working; everything after it comes from MIGRATIONS.
     """
     conn.execute(schema_path.read_text(encoding="utf-8"))
-    part4 = Path("scripts/schema-part4.sql")
-    if part4.exists():
-        conn.execute(part4.read_text(encoding="utf-8"))
+    for name in MIGRATIONS[1:]:
+        path = Path(name)
+        if path.exists():
+            conn.execute(path.read_text(encoding="utf-8"))
 
 
 def check_connection(dsn: str | None = None) -> str | None:
@@ -167,11 +188,23 @@ def write(
             doc_ids = [d.doc_id for d in documents]
             chunk_ids = [c.chunk_id for c in chunks]
             cur.execute(
-                "DELETE FROM chunks WHERE doc_id = ANY(%s) AND NOT (chunk_id = ANY(%s));",
+                "DELETE FROM chunks WHERE doc_id = ANY(%s) AND NOT (chunk_id = ANY(%s)) "
+                "AND NOT is_distractor;",
                 (doc_ids, chunk_ids),
             )
             pruned_chunks = cur.rowcount
-            cur.execute("DELETE FROM documents WHERE NOT (doc_id = ANY(%s));", (doc_ids,))
+            # `AND NOT is_distractor` is load-bearing, not defensive. Distractor
+            # documents are by definition absent from the seed corpus, and
+            # chunks.doc_id REFERENCES documents(doc_id) ON DELETE CASCADE — so
+            # without this clause one routine `python -m ingest.run_ingest`
+            # would cascade-delete the entire W2b distractor corpus and the
+            # batched embedding requests that produced it. Silently, from the
+            # command that opens every session.
+            cur.execute(
+                "DELETE FROM documents WHERE NOT (doc_id = ANY(%s)) "
+                "AND NOT is_distractor;",
+                (doc_ids,),
+            )
             pruned_docs = cur.rowcount
 
     conn.commit()

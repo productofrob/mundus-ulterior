@@ -44,10 +44,13 @@ Quote matching is done on whitespace-collapsed text. Whitespace is the one thing
 a model reliably alters when copying, and Literary Chinese has no word spaces at
 all, so a whitespace-sensitive check would hold Greek and Chinese to different
 standards — the same argument that made chrF whitespace-insensitive in Part 6.
-Where an exact match fails, a Unicode-NFC match is tried and the quote is marked
-verified-but-unresolved: NFC can merge codepoints, so the character offset is no
-longer trustworthy, and reporting a span that might be wrong is worse than
-reporting none.
+Where an exact match fails, a case-folded match is tried and recorded as
+`case_folded` — the span is still exact, because `_fold` is length-preserving,
+but the source renders those characters differently and a viewer that says
+"exact" beside two visibly different strings discredits itself. Where that fails
+too, a Unicode-NFC match is tried and the quote is marked verified-but-unresolved:
+NFC can merge codepoints, so the character offset is no longer trustworthy, and
+reporting a span that might be wrong is worse than reporting none.
 """
 
 from __future__ import annotations
@@ -55,6 +58,7 @@ from __future__ import annotations
 import re
 import unicodedata
 from dataclasses import dataclass, field, asdict
+from typing import NamedTuple
 
 from answer.evidence import Passage, caveat_for
 
@@ -361,7 +365,18 @@ class QuoteSpan:
     # own span is char_start..char_end; the quote sits inside it.
     abs_start: int | None
     abs_end: int | None
-    match: str          # 'exact' | 'normalised'
+    # 'exact'       the characters are there as written, allowing for whitespace
+    #               and for punctuation at the edges of the quotation.
+    # 'case_folded' they are there, but the letter case differs — the writer
+    #               lowercased an opening letter to fit the quotation into a
+    #               sentence of their own. The span is exact (`_fold` is
+    #               length-preserving, so the index map stays truthful); it is
+    #               the *rendering* that differs, and a viewer printing "exact"
+    #               beside two visibly different strings discredits itself.
+    # 'normalised'  found only after Unicode NFC, which can merge codepoints.
+    #               No span is claimed, because a span that might be wrong is
+    #               worse than none.
+    match: str          # 'exact' | 'case_folded' | 'normalised'
     within: str         # 'source' | 'english'
 
     def to_dict(self) -> dict:
@@ -389,7 +404,26 @@ def _fold(text: str) -> str:
     return "".join(out)
 
 
-def locate_in_text(quote: str, haystack: str) -> tuple[int, int] | None:
+class Located(NamedTuple):
+    """Where a quote sits, and *how* it had to be matched to be found there.
+
+    A NamedTuple rather than a dataclass so that `span[0]` and `span[1]` keep
+    meaning what they meant when this function returned a plain pair — the third
+    field is additive, and no caller that only wants offsets has to change.
+
+    `match` exists because until 2026-08-14 the case-folded fallback below was
+    invisible at the point of use: `locate_quote` recorded `match="exact"`
+    whichever branch found the quote, and `ui/build_ui_data.py --verify` had to
+    re-derive the distinction from the characters and report it as a labelling
+    defect. Nine archived spans sit in that bucket. The fallback was never
+    wrong; the label was.
+    """
+    start: int
+    end: int
+    match: str          # 'exact' | 'case_folded'
+
+
+def locate_in_text(quote: str, haystack: str) -> Located | None:
     """Offsets of `quote` within `haystack`, in `haystack`'s own coordinates.
 
     Insensitive to whitespace, to case, and to punctuation at the edges of the
@@ -402,20 +436,23 @@ def locate_in_text(quote: str, haystack: str) -> tuple[int, int] | None:
 
     Returns None when the quote is genuinely not present. The span returned
     covers the trimmed quotation, so a reported offset always round-trips to the
-    characters it names.
+    characters it names — including on the case-folded branch, which is why the
+    span can be reported at all and only its *label* had to change.
     """
     norm_hay, index = _collapse_with_map(haystack)
     norm_quote = collapse(quote).strip(_EDGE_PUNCTUATION)
     if not norm_quote:
         return None
+    match = "exact"
     position = norm_hay.find(norm_quote)
     if position < 0:
         position = _fold(norm_hay).find(_fold(norm_quote))
+        match = "case_folded"
     if position < 0:
         return None
     start = index[position]
     end = index[position + len(norm_quote) - 1] + 1
-    return start, end
+    return Located(start, end, match)
 
 
 def _nfc_contains(quote: str, haystack: str) -> bool:
@@ -442,7 +479,7 @@ def locate_quote(quote: str, passage: Passage) -> QuoteSpan | None:
             doc_id=passage.doc_id, source_field=passage.chunk.source_field,
             abs_start=passage.chunk.char_start + span[0],
             abs_end=passage.chunk.char_start + span[1],
-            match="exact", within="source",
+            match=span.match, within="source",
         )
 
     english = passage.english.text
@@ -455,7 +492,7 @@ def locate_quote(quote: str, passage: Passage) -> QuoteSpan | None:
             # `chunk_translations`, was made at Part 6 time, and has no character
             # span in any file. The distinction is the whole point — the reader
             # is told which of the two they are looking at.
-            translation = passage.translation_chunk
+            translation = passage.translation_section
             if translation is not None and passage.english.kind in (
                 "published", "published_document"
             ):
@@ -465,12 +502,12 @@ def locate_quote(quote: str, passage: Passage) -> QuoteSpan | None:
                     source_field=translation.source_field,
                     abs_start=translation.char_start + span[0],
                     abs_end=translation.char_start + span[1],
-                    match="exact", within="english",
+                    match=span.match, within="english",
                 )
             return QuoteSpan(
                 quote=quote, marker=passage.marker, chunk_id=passage.chunk_id,
                 doc_id=passage.doc_id, source_field=passage.chunk.source_field,
-                abs_start=None, abs_end=None, match="exact", within="english",
+                abs_start=None, abs_end=None, match=span.match, within="english",
             )
 
     if _nfc_contains(quote, passage.chunk.text):
@@ -595,6 +632,12 @@ def verify(
                     report.notes.append(
                         f"quote {quote[:40]!r} matched only after Unicode "
                         f"normalisation, so no character offset is claimed for it"
+                    )
+                elif located.match == "case_folded":
+                    report.notes.append(
+                        f"quote {quote[:40]!r} matched only after case folding: "
+                        f"the span is exact, but the source renders those "
+                        f"characters with different capitalisation"
                     )
                 continue
 

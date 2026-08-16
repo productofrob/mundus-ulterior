@@ -24,3 +24,8 @@ data/**/*.dump
 # "Most recent invocation" files. Calibrate from eval/runs/, eval/answer_runs/
 # and eval/sweeps/ — which ARE tracked — never from these.
 eval/*_last_run.json
+
+# Upstream gazetteer dumps: re-fetchable, and one is 129 MB. The gazetteer
+# built from them (data/gazetteer.json) is the asset and is tracked.
+data/pleiades-*.gz
+_to_delete/

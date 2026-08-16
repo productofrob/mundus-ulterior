@@ -1,0 +1,543 @@
+{
+  "checked": "2026-08-14",
+  "api": "https://collectionapi.metmuseum.org/public/collection/v1",
+  "departments": [
+    {
+      "departmentId": 1,
+      "displayName": "American Decorative Arts"
+    },
+    {
+      "departmentId": 3,
+      "displayName": "Ancient West Asian Art"
+    },
+    {
+      "departmentId": 4,
+      "displayName": "Arms and Armor"
+    },
+    {
+      "departmentId": 5,
+      "displayName": "Arts of Africa, Oceania, and the Americas"
+    },
+    {
+      "departmentId": 6,
+      "displayName": "Asian Art"
+    },
+    {
+      "departmentId": 7,
+      "displayName": "The Cloisters"
+    },
+    {
+      "departmentId": 8,
+      "displayName": "The Costume Institute"
+    },
+    {
+      "departmentId": 9,
+      "displayName": "Drawings and Prints"
+    },
+    {
+      "departmentId": 10,
+      "displayName": "Egyptian Art"
+    },
+    {
+      "departmentId": 11,
+      "displayName": "European Paintings"
+    },
+    {
+      "departmentId": 12,
+      "displayName": "European Sculpture and Decorative Arts"
+    },
+    {
+      "departmentId": 13,
+      "displayName": "Greek and Roman Art"
+    },
+    {
+      "departmentId": 14,
+      "displayName": "Islamic Art"
+    },
+    {
+      "departmentId": 15,
+      "displayName": "The Robert Lehman Collection"
+    },
+    {
+      "departmentId": 16,
+      "displayName": "The Libraries"
+    },
+    {
+      "departmentId": 17,
+      "displayName": "Medieval Art"
+    },
+    {
+      "departmentId": 18,
+      "displayName": "Musical Instruments"
+    },
+    {
+      "departmentId": 19,
+      "displayName": "Photographs"
+    },
+    {
+      "departmentId": 21,
+      "displayName": "Modern Art"
+    }
+  ],
+  "total_object_ids": 502238,
+  "sampled_object_ids": [
+    652873,
+    284790,
+    694864,
+    465575,
+    410176
+  ],
+  "observed_fields": [
+    "GalleryNumber",
+    "accessionNumber",
+    "accessionYear",
+    "additionalImages",
+    "artistAlphaSort",
+    "artistBeginDate",
+    "artistDisplayBio",
+    "artistDisplayName",
+    "artistEndDate",
+    "artistGender",
+    "artistNationality",
+    "artistPrefix",
+    "artistRole",
+    "artistSuffix",
+    "artistULAN_URL",
+    "artistWikidata_URL",
+    "city",
+    "classification",
+    "constituents",
+    "country",
+    "county",
+    "creditLine",
+    "culture",
+    "department",
+    "dimensions",
+    "dynasty",
+    "excavation",
+    "geographyType",
+    "isHighlight",
+    "isPublicDomain",
+    "isTimelineWork",
+    "linkResource",
+    "locale",
+    "locus",
+    "measurements",
+    "medium",
+    "metadataDate",
+    "objectBeginDate",
+    "objectDate",
+    "objectEndDate",
+    "objectID",
+    "objectName",
+    "objectURL",
+    "objectWikidata_URL",
+    "period",
+    "portfolio",
+    "primaryImage",
+    "primaryImageSmall",
+    "region",
+    "reign",
+    "repository",
+    "rightsAndReproduction",
+    "river",
+    "state",
+    "subregion",
+    "tags",
+    "title"
+  ],
+  "missing_required": [],
+  "sample_records": [
+    {
+      "objectID": 652873,
+      "isHighlight": false,
+      "accessionNumber": "50.602.1141",
+      "accessionYear": "1950",
+      "isPublicDomain": false,
+      "primaryImage": "",
+      "primaryImageSmall": "",
+      "additionalImages": [],
+      "constituents": [
+        {
+          "constituentID": 161861,
+          "role": "Artist",
+          "name": "Auguste Edouart",
+          "constituentULAN_URL": "http://vocab.getty.edu/page/ulan/500119964",
+          "constituentWikidata_URL": "https://www.wikidata.org/wiki/Q2870949",
+          "gender": ""
+        }
+      ],
+      "department": "Drawings and Prints",
+      "objectName": "cut paper",
+      "title": "L. G. Coles",
+      "culture": "",
+      "period": "",
+      "dynasty": "",
+      "reign": "",
+      "portfolio": "",
+      "artistRole": "Artist",
+      "artistPrefix": "",
+      "artistDisplayName": "Auguste Edouart",
+      "artistDisplayBio": "French, 1789–1861",
+      "artistSuffix": "",
+      "artistAlphaSort": "Edouart, Auguste",
+      "artistNationality": "French",
+      "artistBeginDate": "1789",
+      "artistEndDate": "1861",
+      "artistGender": "",
+      "artistWikidata_URL": "https://www.wikidata.org/wiki/Q2870949",
+      "artistULAN_URL": "http://vocab.getty.edu/page/ulan/500119964",
+      "objectDate": "1843",
+      "objectBeginDate": 1843,
+      "objectEndDate": 1843,
+      "medium": "Cut paper silhouette",
+      "dimensions": "Image: 8 7/16 × 3 1/4 in. (21.4 × 8.3 cm)",
+      "measurements": [
+        {
+          "elementName": "Image",
+          "elementDescription": null,
+          "elementMeasurements": {
+            "Height": 21.4,
+            "Width": 8.3
+          }
+        }
+      ],
+      "creditLine": "Glenn Tilley Morse Collection, Bequest of Glenn Tilley Morse, 1950",
+      "geographyType": "",
+      "city": "",
+      "state": "",
+      "county": "",
+      "country": "",
+      "region": "",
+      "subregion": "",
+      "locale": "",
+      "locus": "",
+      "excavation": "",
+      "river": "",
+      "classification": "Cut Paper",
+      "rightsAndReproduction": "",
+      "linkResource": "",
+      "metadataDate": "2022-02-09T04:42:08.947Z",
+      "repository": "Metropolitan Museum of Art, New York, NY",
+      "objectURL": "https://www.metmuseum.org/art/collection/search/652873",
+      "tags": null,
+      "objectWikidata_URL": "",
+      "isTimelineWork": false,
+      "GalleryNumber": ""
+    },
+    {
+      "objectID": 284790,
+      "isHighlight": false,
+      "accessionNumber": "1994.263.158",
+      "accessionYear": "1994",
+      "isPublicDomain": false,
+      "primaryImage": "",
+      "primaryImageSmall": "",
+      "additionalImages": [],
+      "constituents": [
+        {
+          "constituentID": 169986,
+          "role": "Artist",
+          "name": "Unknown",
+          "constituentULAN_URL": "http://vocab.getty.edu/page/ulan/500125274",
+          "constituentWikidata_URL": "https://www.wikidata.org/wiki/Q24238356",
+          "gender": ""
+        }
+      ],
+      "department": "Photographs",
+      "objectName": "Postcard",
+      "title": "[Living Room Interior with Unidentified Man, Possibly Ben Schultz or Dan Weiner, 441 East 92nd Street, New York]",
+      "culture": "",
+      "period": "",
+      "dynasty": "",
+      "reign": "",
+      "portfolio": "",
+      "artistRole": "Artist",
+      "artistPrefix": "",
+      "artistDisplayName": "Unknown",
+      "artistDisplayBio": "",
+      "artistSuffix": "",
+      "artistAlphaSort": "Unknown",
+      "artistNationality": "",
+      "artistBeginDate": "",
+      "artistEndDate": "",
+      "artistGender": "",
+      "artistWikidata_URL": "https://www.wikidata.org/wiki/Q24238356",
+      "artistULAN_URL": "http://vocab.getty.edu/page/ulan/500125274",
+      "objectDate": "1940s–50s",
+      "objectBeginDate": 1940,
+      "objectEndDate": 1959,
+      "medium": "Gelatin silver print",
+      "dimensions": "20.3 x 25.3 cm (8 x 9 15/16 in.)",
+      "measurements": [
+        {
+          "elementName": "Overall",
+          "elementDescription": null,
+          "elementMeasurements": {
+            "Height": 20.3,
+            "Width": 25.3
+          }
+        }
+      ],
+      "creditLine": "Walker Evans Archive, 1994",
+      "geographyType": "",
+      "city": "",
+      "state": "",
+      "county": "",
+      "country": "",
+      "region": "",
+      "subregion": "",
+      "locale": "",
+      "locus": "",
+      "excavation": "",
+      "river": "",
+      "classification": "Photographs",
+      "rightsAndReproduction": "",
+      "linkResource": "",
+      "metadataDate": "2025-03-06T04:54:30Z",
+      "repository": "Metropolitan Museum of Art, New York, NY",
+      "objectURL": "https://www.metmuseum.org/art/collection/search/284790",
+      "tags": [
+        {
+          "term": "Living Rooms",
+          "AAT_URL": "http://vocab.getty.edu/page/aat/300004435",
+          "Wikidata_URL": "https://www.wikidata.org/wiki/Q475018"
+        }
+      ],
+      "objectWikidata_URL": "",
+      "isTimelineWork": false,
+      "GalleryNumber": ""
+    },
+    {
+      "objectID": 694864,
+      "isHighlight": false,
+      "accessionNumber": "2004.545.165",
+      "accessionYear": "2004",
+      "isPublicDomain": false,
+      "primaryImage": "",
+      "primaryImageSmall": "",
+      "additionalImages": [],
+      "constituents": [
+        {
+          "constituentID": 55891,
+          "role": "Artist",
+          "name": "Josiah Johnson Hawes",
+          "constituentULAN_URL": "http://vocab.getty.edu/page/ulan/500032586",
+          "constituentWikidata_URL": "https://www.wikidata.org/wiki/Q1568757",
+          "gender": ""
+        }
+      ],
+      "department": "Photographs",
+      "objectName": "Carte-de-visite",
+      "title": "John Greenleaf Whittier",
+      "culture": "",
+      "period": "",
+      "dynasty": "",
+      "reign": "",
+      "portfolio": "",
+      "artistRole": "Artist",
+      "artistPrefix": "",
+      "artistDisplayName": "Josiah Johnson Hawes",
+      "artistDisplayBio": "American, Wayland, Massachusetts 1808–1901 Crawford Notch, New Hampshire",
+      "artistSuffix": "",
+      "artistAlphaSort": "Hawes, Josiah Johnson",
+      "artistNationality": "American",
+      "artistBeginDate": "1808",
+      "artistEndDate": "1901",
+      "artistGender": "",
+      "artistWikidata_URL": "https://www.wikidata.org/wiki/Q1568757",
+      "artistULAN_URL": "http://vocab.getty.edu/page/ulan/500032586",
+      "objectDate": "late 1850s–70s",
+      "objectBeginDate": 1850,
+      "objectEndDate": 1879,
+      "medium": "Albumen silver print from glass negative",
+      "dimensions": "4 3/16 × 2 1/2 in. (10.7 × 6.3 cm)",
+      "measurements": [
+        {
+          "elementName": "Overall",
+          "elementDescription": null,
+          "elementMeasurements": {
+            "Height": 10.7,
+            "Width": 6.3
+          }
+        }
+      ],
+      "creditLine": "Gift of Robert and Jessica Solomon, 2004",
+      "geographyType": "",
+      "city": "",
+      "state": "",
+      "county": "",
+      "country": "",
+      "region": "",
+      "subregion": "",
+      "locale": "",
+      "locus": "",
+      "excavation": "",
+      "river": "",
+      "classification": "Photographs",
+      "rightsAndReproduction": "",
+      "linkResource": "",
+      "metadataDate": "2020-03-02T21:50:01.377Z",
+      "repository": "Metropolitan Museum of Art, New York, NY",
+      "objectURL": "https://www.metmuseum.org/art/collection/search/694864",
+      "tags": null,
+      "objectWikidata_URL": "",
+      "isTimelineWork": false,
+      "GalleryNumber": ""
+    },
+    {
+      "objectID": 465575,
+      "isHighlight": false,
+      "accessionNumber": "17.193.250",
+      "accessionYear": "1917",
+      "isPublicDomain": true,
+      "primaryImage": "https://images.metmuseum.org/CRDImages/md/original/sf17-193-250s1.jpg",
+      "primaryImageSmall": "https://images.metmuseum.org/CRDImages/md/web-large/sf17-193-250s1.jpg",
+      "additionalImages": [],
+      "constituents": null,
+      "department": "Medieval Art",
+      "objectName": "Earring",
+      "title": "Earring",
+      "culture": "Frankish",
+      "period": "",
+      "dynasty": "",
+      "reign": "",
+      "portfolio": "",
+      "artistRole": "",
+      "artistPrefix": "",
+      "artistDisplayName": "",
+      "artistDisplayBio": "",
+      "artistSuffix": "",
+      "artistAlphaSort": "",
+      "artistNationality": "",
+      "artistBeginDate": "",
+      "artistEndDate": "",
+      "artistGender": "",
+      "artistWikidata_URL": "",
+      "artistULAN_URL": "",
+      "objectDate": "7th century",
+      "objectBeginDate": 600,
+      "objectEndDate": 699,
+      "medium": "Silver",
+      "dimensions": "Overall: 3 1/2 x 3 7/16 x 1/4 in. (8.9 x 8.8 x 0.7 cm)",
+      "measurements": [
+        {
+          "elementName": "Overall",
+          "elementDescription": null,
+          "elementMeasurements": {
+            "Depth": 0.7,
+            "Length": 8.9,
+            "Width": 8.8
+          }
+        }
+      ],
+      "creditLine": "Gift of J. Pierpont Morgan, 1917",
+      "geographyType": "Made in",
+      "city": "Niederbreisig",
+      "state": "",
+      "county": "",
+      "country": "Germany",
+      "region": "",
+      "subregion": "",
+      "locale": "",
+      "locus": "",
+      "excavation": "",
+      "river": "",
+      "classification": "Metalwork-Silver",
+      "rightsAndReproduction": "",
+      "linkResource": "",
+      "metadataDate": "2025-01-31T04:54:36.6Z",
+      "repository": "Metropolitan Museum of Art, New York, NY",
+      "objectURL": "https://www.metmuseum.org/art/collection/search/465575",
+      "tags": null,
+      "objectWikidata_URL": "",
+      "isTimelineWork": false,
+      "GalleryNumber": ""
+    },
+    {
+      "objectID": 410176,
+      "isHighlight": false,
+      "accessionNumber": "19.30.26",
+      "accessionYear": "1919",
+      "isPublicDomain": false,
+      "primaryImage": "",
+      "primaryImageSmall": "",
+      "additionalImages": [],
+      "constituents": [
+        {
+          "constituentID": 91420,
+          "role": "Artist",
+          "name": "Félix Leblanc",
+          "constituentULAN_URL": "",
+          "constituentWikidata_URL": "",
+          "gender": ""
+        },
+        {
+          "constituentID": 163671,
+          "role": "Artist",
+          "name": "After Paul Gavarni [Chevalier]",
+          "constituentULAN_URL": "http://vocab.getty.edu/page/ulan/500006992",
+          "constituentWikidata_URL": "https://www.wikidata.org/wiki/Q1074290",
+          "gender": ""
+        }
+      ],
+      "department": "Drawings and Prints",
+      "objectName": "Print",
+      "title": "Monter à cheval sur le cou d'un homme qu'on ne connait pas t'appelle ça plaisanter, toi!, plate 54 from \"Les Débardeurs\"",
+      "culture": "",
+      "period": "",
+      "dynasty": "",
+      "reign": "",
+      "portfolio": "Les Débardeurs",
+      "artistRole": "Artist",
+      "artistPrefix": "",
+      "artistDisplayName": "Félix Leblanc",
+      "artistDisplayBio": "French, born Paris, 1823",
+      "artistSuffix": "",
+      "artistAlphaSort": "Leblanc, Félix",
+      "artistNationality": "French",
+      "artistBeginDate": "1823",
+      "artistEndDate": "1923",
+      "artistGender": "",
+      "artistWikidata_URL": "",
+      "artistULAN_URL": "",
+      "objectDate": "19th century",
+      "objectBeginDate": 1800,
+      "objectEndDate": 1900,
+      "medium": "Wood engraving",
+      "dimensions": "Sheet: 8 1/4 x 6 1/8 in. (21 x 15.5 cm)",
+      "measurements": [
+        {
+          "elementName": "Sheet",
+          "elementDescription": null,
+          "elementMeasurements": {
+            "Height": 21,
+            "Width": 15.5
+          }
+        }
+      ],
+      "creditLine": "Rogers Fund, 1919",
+      "geographyType": "",
+      "city": "",
+      "state": "",
+      "county": "",
+      "country": "",
+      "region": "",
+      "subregion": "",
+      "locale": "",
+      "locus": "",
+      "excavation": "",
+      "river": "",
+      "classification": "Prints",
+      "rightsAndReproduction": "",
+      "linkResource": "",
+      "metadataDate": "2024-09-18T04:53:23.49Z",
+      "repository": "Metropolitan Museum of Art, New York, NY",
+      "objectURL": "https://www.metmuseum.org/art/collection/search/410176",
+      "tags": null,
+      "objectWikidata_URL": "",
+      "isTimelineWork": false,
+      "GalleryNumber": ""
+    }
+  ]
+}

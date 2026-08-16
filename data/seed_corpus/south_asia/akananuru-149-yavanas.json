@@ -15,5 +15,34 @@
   "citation": "https://en.wikipedia.org/wiki/Muziris#cite_note-Kulke1-24",
   "citation_original": "https://www.projectmadurai.org/pm_etexts/utf8/pmuni0229.html (Project Madurai PM 0229)",
   "notes": "One of only 9 Yavana references across the Sangam corpus; directly names Roman/Greek trading ships 'arriving with gold and departing with pepper' at Muziris — a strong candidate for the hero cross-lingual retrieval demo alongside the Weilue/Hou Hanshu East Asia pair.",
-  "text_recovered": "2026-08-09"
+  "text_recovered": "2026-08-09",
+  "subject_places": [
+    {
+      "name": "Muciri",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50146",
+      "uri": "https://pleiades.stoa.org/places/50146",
+      "role": "focus",
+      "note": "முசிறி, where the Yavana ships arrive with gold and leave with pepper. 50146 Muziris 10.154/76.213, 'settlement, port', -30..640, locationPrecision 'precise'. That coordinate IS Pattanam. Pleiades has therefore already adopted the identification `southasia-04-pattanam` treats as open, and marks it precise; read that record's findspot note before changing this one. What is contested there is whether the excavation site is Muziris — a claim about the coordinate. What this record does is name the place, which is why the ground here is 'stated' and the contested flag is not repeated: per PLACES.md, contested belongs to an identification, not to the fact that a text names a place. This record and `southasia-02-periplus-muziris` name the same place and use the same id; the two must not diverge."
+    },
+    {
+      "name": "the Culli",
+      "ground": "regional",
+      "role": "mentioned",
+      "note": "The river the Yavana ships stir to foam. Pleiades 50234 'Pseudostomos (river)' 9.848/76.819 is the Periyar under its Greek name and is the likely referent, but Culli ≈ Periyar ≈ Pseudostomos is a chain of scholarly identifications and this record carries a citation for none of them. `identified` without its ground_citation is an assertion wearing the word; regional is the honest ground until the citation exists."
+    },
+    {
+      "name": "the Chera country",
+      "ground": "regional",
+      "role": "mentioned",
+      "note": "The poem places the Culli in Chera territory. Nothing resolves: 246333 'Chera' is in Spain and is refused, as it is for `southasia-02`."
+    },
+    {
+      "name": "the land of the Yavanas",
+      "ground": "regional",
+      "role": "source",
+      "note": "யவனர், whose ships bring the gold. **Yavanar names a people, not a place** — a Tamil term for Greeks and Romans generally — so there is no place to resolve and no id that would not be an invention. The role is source because the poem is explicit that the gold arrives with them."
+    }
+  ]
 }

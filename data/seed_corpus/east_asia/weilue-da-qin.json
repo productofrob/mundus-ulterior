@@ -3,7 +3,9 @@
   "region": "East Asia",
   "title": "Weilüe (魏略), 'Peoples of the West' — Section 11, The Kingdom of Da Qin (Rome)",
   "source_type": "literary_text",
-  "language_code": ["lzh"],
+  "language_code": [
+    "lzh"
+  ],
   "language_note": "Classical Chinese. The Weilüe itself is lost as an independent work; this section survives because Pei Songzhi quoted it in his 429 CE commentary to the Sanguozhi (Wei Shu 30). Original composed by Yu Huan, c. 239-265 CE.",
   "date": "composed c. 239-265 CE; describes conditions as of the early 3rd century CE",
   "original_text_excerpt": "大秦國一號犂靬，在安息、條支西大海之西 ... 從安谷城乘船直渡海，海西人名之海西 ... 城以石為壁。",
@@ -12,5 +14,41 @@
   "translation_source": "John E. Hill, 'The Peoples of the West from the Weilüe by Yu Huan: A Third Century Chinese Account Composed between 239 and 265 CE', draft annotated translation, University of Washington Silk Road Seattle project.",
   "citation": "https://depts.washington.edu/silkroad/texts/weilue/weilue.html#section11",
   "citation_original": "https://zh.wikisource.org/wiki/%E9%AD%8F%E7%95%A5%E8%BC%AF%E6%9C%AC",
-  "notes": "This is the exact hero-demo source named in the project's AI Technology Showcase brief ('Retrieves the Weilue passage on Da Qin in Classical Chinese'). High priority for the cross-lingual retrieval sanity check — pair with the Hou Hanshu 166 CE envoy passage (eastasia-02) for a same-topic, two-source comparison."
+  "notes": "This is the exact hero-demo source named in the project's AI Technology Showcase brief ('Retrieves the Weilue passage on Da Qin in Classical Chinese'). High priority for the cross-lingual retrieval sanity check — pair with the Hou Hanshu 166 CE envoy passage (eastasia-02) for a same-topic, two-source comparison.",
+  "subject_places": [
+    {
+      "name": "Da Qin",
+      "ground": "regional",
+      "role": "focus",
+      "note": "大秦, the passage's subject — the Roman Empire, also called 犂靬 Lijian in the same sentence. A polity, not a settlement, and Pleiades holds no entry for it under any form searched. The English gloss identifies it with Rome, but that is the translator's identification and the record carries no citation for it, so the honest ground is regional with no id rather than `identified` without the scholar who made the identification. Pleiades 423025 Roma 41.890/12.491 was examined and is not used: the city is not the empire, and the Chinese excerpt is elided at exactly the point where the capital is described."
+    },
+    {
+      "name": "Anxi",
+      "ground": "regional",
+      "role": "mentioned",
+      "note": "安息, west of which Da Qin lies — Parthia. Refused: 952097 'Parthyene/Parthia' 38.500/57.500 and 590282460 'Parthian empire', which is locationPrecision 'related' and dated **2000..2099** — a modern label, not an ancient place. Both are identifications of the Chinese name rather than the name itself, and the record has no citation for either."
+    },
+    {
+      "name": "Tiaozhi",
+      "ground": "identified",
+      "role": "mentioned",
+      "note": "條支, named beside Anxi. UPGRADED FROM 'regional' 2026-08-13. A4 examined Pleiades 912905 and refused it with one stated reason — ‘it is the gloss’s identification and no citation supports it here’ — and that reason, and only that one, is now met by Paolillo 2024. This is a territory-to-territory identification, so it does not repeat the objection that sank Da Qin (the city of Rome is not the empire) or the one that sank Haixi (in the Weilüe, 海西 is an epithet of Da Qin, not a separate country). Confirmed against the Pleiades places snapshot of 2026-08-10 by coordinate — 31.468, 47.344 — title ‘Mesene/Characene/Shad Bahman/Maisan’, locationPrecision ‘precise’, attested -30..640, which overlaps this project’s -27..1204. NOTE THE NEAR MISS: the same snapshot holds 897810, also titled ‘Mesene’, a settlement near Ctesiphon whose ‘location has not been determined’. It is a different place and carries no coordinate; 912905 is the kingdom this identification is about. NOT marked contested: the scholarship varies over the extent rather than the referent — Hill glosses ‘Characene and Susiana’, Paolillo has Characene/Mesene ‘or its political centre Charax Spasinou’ — and flagging that as contested would dilute a flag that currently means a genuine two-sided dispute over which place is meant.",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "912905",
+      "uri": "https://pleiades.stoa.org/places/912905",
+      "ground_citation": "Maurizio Paolillo, 'Following a Mediterranean Clue. A Reconsideration of the Sources About the Country of Haixi 海西國 (2nd-3rd Cent. CE)', in Renata Vinci (ed.), Navigating the Mediterranean Through the Chinese Lens: Transcultural Narratives of the Sea Among Lands, Firenze University Press, 2024, pp. 25-37, at p. 30: “Tiaozhi, on the other hand, appears to correspond with the territory of Characene/Mesene in southern Mesopotamia or its political centre Charax Spasinou”. Peer-reviewed, open access under CC BY 4.0. DOI 10.36253/979-12-215-0598-6.04"
+    },
+    {
+      "name": "Angu",
+      "ground": "regional",
+      "role": "waypoint",
+      "note": "安谷城, the city on the Parthian frontier where one takes ship. The gloss offers Gerrha; Pleiades holds no resolving entry for it, only the name 'sinus Gerrhaicus' on 932455, which is a gulf and not the city."
+    },
+    {
+      "name": "Haixi",
+      "ground": "regional",
+      "role": "destination",
+      "note": "海西, 'west of the sea', where the crossing lands. The gloss identifies it with Egypt; that identification is the translator's and is not cited, so Pleiades 766 Aegyptus is deliberately NOT used here even though it is used for Egypt elsewhere in this corpus — there the Greek names Αἴγυπτος outright, and here the text names 海西."
+    }
+  ]
 }

@@ -21,6 +21,8 @@ against the real database before it counts as working.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import json
 import re
 import tempfile
@@ -445,6 +447,76 @@ def test_alignment() -> None:
     expect(align.section_label("§ 20 ANE") == "20", "§ form is a marker")
     expect(align.section_label("five hundred stadia, 56 of them") is None,
            "a number mid-sentence is not a section marker")
+
+    # ------------------------------------------------------------------
+    # _merge, against BOTH chunk types this module is called with.
+    #
+    # It had never run. `C` above is a plain class, so `is_dataclass` sent
+    # every call down the single-chunk return, and no translation section had
+    # ever split into two chunks in the corpus. The A4 Greek recovery split one,
+    # and Part 6 crashed on `last.char_end` — because `answer/store.py`'s
+    # ChunkRow has no offsets while `answer/answer_store.py`'s row does, and
+    # this function was written for the second and reached from both.
+    # ------------------------------------------------------------------
+
+    @dataclass(frozen=True)
+    class WithOffsets:
+        chunk_id: str
+        text: str
+        char_start: int
+        char_end: int
+
+    @dataclass(frozen=True)
+    class NoOffsets:          # the shape of answer/store.py's ChunkRow
+        chunk_id: str
+        text: str
+
+    expect(align.has_offsets(WithOffsets("a", "x", 0, 1))
+           and not align.has_offsets(NoOffsets("a", "x")),
+           "the two chunk types are distinguished by whether they carry offsets")
+
+    # With offsets: the gap between chunks is filled so that char_start + n
+    # still lands on the right character, which is what cite.py depends on.
+    merged = align._merge([
+        WithOffsets("a", "53. Beyond Calliena", 100, 119),
+        WithOffsets("b", "there are other towns", 124, 145),
+    ])
+    expect(merged.text == "53. Beyond Calliena     there are other towns",
+           "with offsets, the dropped characters are replaced space for space")
+    expect(merged.char_end == 145, "the merged span ends where the last chunk ends")
+    expect(merged.text.index("there") == 124 - 100,
+           "an offset into the merged text still resolves to the right character")
+
+    # Without offsets: merging must not crash, and must not invent a span.
+    #
+    # The exception is caught rather than allowed to propagate because the
+    # defect being guarded IS an AttributeError, and an uncaught one would abort
+    # the suite instead of failing this line. `scripts/mutate_part7b.py` reads
+    # `FAIL <label>`, and a crash is explicitly not a guard firing — the
+    # distinction test_embed.py cost two days to establish.
+    try:
+        merged = align._merge([NoOffsets("a", "53. Beyond Calliena"),
+                               NoOffsets("b", "there are other towns")])
+        joined = merged.text == "53. Beyond Calliena there are other towns"
+        no_span = not hasattr(merged, "char_end")
+    except Exception as exc:                      # noqa: BLE001 — see above
+        print(f"       _merge raised on a chunk type with no offsets: {exc!r}")
+        joined = no_span = False
+    expect(joined, "without offsets, the pieces are joined with a single space")
+    expect(no_span, "a chunk type with no span does not acquire one by being merged")
+
+    # The regression proper: the exact call Part 6 makes, which crashed.
+    try:
+        pairs = align.pair_chunks(
+            [NoOffsets("o1", "4. Μετὰ δὲ τὴν Πτολεμαΐδα")],
+            [NoOffsets("t1", "4. Below Ptolemais of the Hunts"),
+             NoOffsets("t2", "and about eight hundred stadia beyond")],
+        )
+        ok = pairs[0].ground == "section" and "eight hundred" in pairs[0].translation.text
+    except Exception as exc:                      # noqa: BLE001
+        print(f"       pair_chunks raised: {exc!r}")
+        ok = False
+    expect(ok, "a split translation section merges for a chunk type with no offsets")
 
 
 # --------------------------------------------------------------------------

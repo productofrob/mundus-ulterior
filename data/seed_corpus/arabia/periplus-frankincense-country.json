@@ -8,13 +8,124 @@
   ],
   "language_note": "Original Greek (anonymous 1st-century merchant's sailing manual). Not a regional-language source in the strict sense, but a Roman-Egyptian-authored primary account of Arabian ports, included per the Phase 1 candidate slate; original Greek available via Wikisource, cross-checked against the Sabaic/Himyarite polities it names (Eleazus/Ilazz, Charibael).",
   "date": "c. 40–70 CE",
-  "original_text_excerpt": "27. Ἀπὸ δὲ τῆς Εὐδαίμονος Ἀραβικῆς ἐκδέχεται συναφὴς αἰγιαλὸς ἐπιμήκης καὶ κόλπος ἐπὶ δισχιλίους ἢ πλείονας παρήκων σταδίους, Νομάδων τε καὶ Ἰχθυοφάγων κώμαις παροικούμενος, οὗ μετὰ τὴν προέχουσαν ἄκραν ἐμπόριόν ἐστιν ἕτερον παραθαλάσσιον, Κανὴ, βασιλείας Ἐλεάζου, χώρας λιβανωτοφόρου, καὶ κατ᾽ αὐτὴν ἔρημοι νῆσοι δύο, μία μὲν ἡ τῶν Ὀρνέων, ἡ δ᾽ ἑτέρα λεγομένη Τρούλλας, ἀπὸ σταδίων ἑκατὸν εἴκοσι τῆς Κανῆς. Ὑπέρκειται δὲ αὐτῆς μεσόγειος ἡ μητρόπολις Σαββαθὰ, ἐν ᾗ καὶ ὁ βασιλεὺς κατοικεῖ. Πᾶς δὲ ὁ γεννώμενος ἐν τῇ χώρᾳ λίβανος εἰς αὐτὴν ὥσπερ ἐκδοχεῖον εἰσάγεται καμήλοις τε καὶ σχεδίαις ἐντοπίαις δερματίναις ἐξ ἀσκῶν καὶ πλοίοις.\n\n28. Εἰσάγεται δὲ εἰς αὐτὴν ἀπ᾽ Αἰγύπτου μὲν ὁμοίως πυρὸς ὀλίγος καὶ οἶνος ὥσπερ καὶ εἰς Μούζα, καὶ ἱματισμὸς Ἀραβικὸς, ὁμοίως καὶ κοινὸς καὶ ἁπλοῦς καὶ ὁ νόθος περισσότερος, καὶ χαλκὸς καὶ κασσίτερος καὶ κοράλλιον καὶ στύραξ καὶ τὰ λοιπὰ ὅσα εἰς Μούζα· τὰ πλείονα δὲ ἀργυρώματα τετορευμένα καὶ χρήματα τῷ βασιλεῖ, καὶ ἵπποι δὲ καὶ ἀνδριάντες καὶ ἱματισμὸς διάφορος ἁπλοῦς. Ἐξάγεται δὲ ἐξ αὐτῆς ἐντόπια μὲν φορτία, λίβανος καὶ ἀλόη, τὰ δὲ λοιπὰ κατὰ μετοχὴν τῶν ἄλλων ἐμπορίων.\n\n29. Μετὰ δὲ Κανὴν, τῆς γῆς ἐπὶ πλεῖον ὑποχωρούσης, ἄλλος ἐκδέχεται βαθύτατος κόλπος, ἐπὶ πολὺ παρεκτείνων, ὁ λεγόμενος Σαχαλίτης, καὶ χώρα λιβανωτοφόρος, ὀρεινή τε καὶ δύσβατος, ἀέρα παχὺν ἔχουσα καὶ ὁμιχλώδη καὶ κατὰ τῶν δένδρων φερόμενον τὸν λίβανον. Ἔστι δὲ τὰ δένδρα τὰ λιβανοφόρα οὐ μεγάλα λίαν οὐδὲ ὑψηλὰ, φέρει δὲ ἐπὶ τῷ φλοιῷ πησσόμενον τὸν λίβανον, ὥς τινα καὶ τῶν παρ᾽ ἡμῖν ἐν Αἰγύπτῳ δένδρων δακρύει τὸ κόμμι. Μεταχειρίζεται δὲ ὁ λίβανος ὑπὸ δούλων βασιλικῶν καὶ τῶν ἐπὶ τιμωρίᾳ πεμπομένων.",
-  "original_text_note": "Verbatim Koine Greek recovered 2026-08-09 from the Greek Wikisource text of C. Müller, Geographi Graeci Minores I (Paris 1855), which is in the public domain. Section numbers (§) are Müller's and are retained in the text so the chunker can split on them. Marginal sigla and editorial asterisks in the Wikisource copy have been omitted; wording is otherwise unaltered.",
+  "original_text_excerpt": "27. Ἀπὸ δὲ τῆς Εὐδαίμονος Ἀραβικῆς ἐκδέχεται συναφὴς αἰγιαλὸς ἐπιμήκης καὶ κόλπος ἐπὶ δισχιλίους ἢ πλείονας παρήκων σταδίους, Νομάδων τε καὶ Ἰχθυοφάγων κώμαις παροικούμενος, οὗ μετὰ τὴν προέχουσαν ἄκραν ἐμπόριόν ἐστιν ἕτερον παραθαλάσσιον, Κανὴ, βασιλείας Ἐλεάζου, χώρας λιβανωτοφόρου, καὶ κατ᾽ αὐτὴν ἔρημοι νῆσοι δύο, μία μὲν ἡ τῶν Ὀρνέων, ἡ δ᾽ ἑτέρα λεγομένη Τρούλλας, ἀπὸ σταδίων ἑκατὸν εἴκοσι τῆς Κανῆς. Ὑπέρκειται δὲ αὐτῆς μεσόγειος ἡ μητρόπολις Σαββαθὰ, ἐν ᾗ καὶ ὁ βασιλεὺς κατοικεῖ. Πᾶς δὲ ὁ γεννώμενος ἐν τῇ χώρᾳ λίβανος εἰς αὐτὴν ὥσπερ ἐκδοχεῖον εἰσάγεται καμήλοις τε καὶ σχεδίαις ἐντοπίαις δερματίναις ἐξ ἀσκῶν καὶ πλοίοις. Ἔχει δὲ καὶ αὐτὴ σύγχρησιν τῶν τοῦ πέραν ἐμπορίων, Βαρυγάζων καὶ Σκυθίας καὶ Ὀμάνων καὶ τῆς παρακειμένης Περσίδος.\n\n28. Εἰσάγεται δὲ εἰς αὐτὴν ἀπ᾽ Αἰγύπτου μὲν ὁμοίως πυρὸς ὀλίγος καὶ οἶνος ὥσπερ καὶ εἰς Μούζα, καὶ ἱματισμὸς Ἀραβικὸς, ὁμοίως καὶ κοινὸς καὶ ἁπλοῦς καὶ ὁ νόθος περισσότερος, καὶ χαλκὸς καὶ κασσίτερος καὶ κοράλλιον καὶ στύραξ καὶ τὰ λοιπὰ ὅσα εἰς Μούζα· τὰ πλείονα δὲ ἀργυρώματα τετορευμένα καὶ χρήματα τῷ βασιλεῖ, καὶ ἵπποι δὲ καὶ ἀνδριάντες καὶ ἱματισμὸς διάφορος ἁπλοῦς. Ἐξάγεται δὲ ἐξ αὐτῆς ἐντόπια μὲν φορτία, λίβανος καὶ ἀλόη, τὰ δὲ λοιπὰ κατὰ μετοχὴν τῶν ἄλλων ἐμπορίων. Πλεῖται δὲ εἰς αὐτὴν περὶ τὸν αὐτὸν καιρὸν ὃν καὶ εἰς Μούζα, πρωϊμώτερον δέ.\n\n29. Μετὰ δὲ Κανὴν, τῆς γῆς ἐπὶ πλεῖον ὑποχωρούσης, ἄλλος ἐκδέχεται βαθύτατος κόλπος, ἐπὶ πολὺ παρεκτείνων, ὁ λεγόμενος Σαχαλίτης, καὶ χώρα λιβανωτοφόρος, ὀρεινή τε καὶ δύσβατος, ἀέρα παχὺν ἔχουσα καὶ ὁμιχλώδη καὶ κατὰ τῶν δένδρων φερόμενον τὸν λίβανον. Ἔστι δὲ τὰ δένδρα τὰ λιβανοφόρα οὐ μεγάλα λίαν οὐδὲ ὑψηλὰ, φέρει δὲ ἐπὶ τῷ φλοιῷ πησσόμενον τὸν λίβανον, ὥς τινα καὶ τῶν παρ᾽ ἡμῖν ἐν Αἰγύπτῳ δένδρων δακρύει τὸ κόμμι. Μεταχειρίζεται δὲ ὁ λίβανος ὑπὸ δούλων βασιλικῶν καὶ τῶν ἐπὶ τιμωρίᾳ πεμπομένων. Ἐπίνοσοι δὲ δεινῶς οἱ τόποι, καὶ τοῖς μὲν παραπλέουσι λοιμικοὶ, τοῖς δὲ ἐργαζομένοις πάντοτε θανατώδεις, ἔτι δὲ καὶ διὰ τὴν ἔνδειαν τῆς τροφῆς εὐχερῶς ἀπολλυμένοις.",
+  "original_text_note": "Verbatim Koine Greek recovered 2026-08-09 from the Greek Wikisource text of C. Müller, Geographi Graeci Minores I (Paris 1855), which is in the public domain. Section numbers (§) are Müller's and are retained in the text so the chunker can split on them. Marginal sigla and editorial asterisks in the Wikisource copy have been omitted; wording is otherwise unaltered. RECOVERY 2026-08-13: the excerpt held on disk was found to be 81.7% of this section range as the cited Wikisource text gives it — 357 characters of Koine Greek missing across 3 sections, dropped silently and not recorded by the note above, which described only the wording of what was present. Restored in full from the same source and the same edition, with the same normalisation applied as on 2026-08-09: editorial brackets and parentheses removed and their contents kept, asterisk sigla removed, runs of whitespace collapsed, and Müller's section numbers retained so the chunker can still split on them. No word is altered, added or reordered. Found while extracting subject places for Phase 2 A4: places named in the reference translation had no counterpart in the original — see PROGRESS.md.",
   "reference_translation": "§27 After Arabia Eudaemon there is a continuous length of coast, and a bay extending two thousand stadia or more, along which there are Nomads and Fish-Eaters living in villages; just beyond the cape projecting from this bay there is another market-town by the shore, Cana [Kane], of the Kingdom of Eleazus, the Frankincense Country; and facing it there are two desert islands, one called Island of Birds, the other Dome Island, one hundred and twenty stadia from Cana. Inland from this place lies the metropolis Sabbatha, in which the King lives. All the frankincense produced in the country is brought by camels to that place to be stored, and to Cana on rafts held up by inflated skins after the manner of the country, and in boats. And this place has a trade also with the far-side ports, with Barygaza and Scythia and Ommana and the neighboring coast of Persia.\n\n§28 There are imported into this place from Egypt a little wheat and wine, as at Muza; clothing in the Arabian style, plain and common and most of it spurious; and copper and tin and coral and storax and other things such as go to Muza; and for the King usually wrought gold and silver plate, also horses, statuettes, and thin clothing of fine quality. And there are exported from this place, native produce, frankincense and aloes, and the rest of the things that enter into the trade of the other ports. The voyage to this place is best made at the same time as that to Muza, or rather earlier.\n\n§29 Beyond Cana, the land receding greatly, there follows a very deep bay stretching a great way across, which is called Sachalites; and the Frankincense Country, mountainous and forbidding, wrapped in thick clouds and fog, and yielding frankincense from the trees. These incense-bearing trees are not of great height or thickness; they bear the frankincense sticking in drops on the bark, just as the trees among us in Egypt weep their gum. The frankincense is gathered by the King's slaves and those who are sent to this service for punishment. For these places are very unhealthy, and pestilential even to those sailing along the coast, but almost always fatal to those working there, who also perish often from want of food.",
   "translation_source": "Wilfred H. Schoff translation (1912), as adapted/hosted by ToposText.",
   "citation": "https://topostext.org/work/491#27",
   "citation_original": "https://el.wikisource.org/wiki/Περίπλους_της_Ερυθράς_Θαλάσσης (ed. C. Müller, Geographi Graeci Minores I, Paris 1855; public domain)",
   "notes": "Directly documents the incense-route economy (Cana/Qana, Eleazus = the Hadrami king Ilaz Yalit) that connected the Roman Red Sea trade to South Arabia — pairs well with a Sabaic/Hadrami inscription naming the same polity for a cross-lingual retrieval demo.",
-  "text_recovered": "2026-08-09",
-  "reference_translation_note": "Replaced 2026-08-10, the same defect and the same fix as subsaharan_africa/periplus-adulis.json. The previous text was an abridgement: it elided most of each section with '...', omitted §28 entirely, and ran §27 and §29 together as a single block, so only §27 could be aligned and §28-§29 had no published English at all. Now Wilfred H. Schoff's 1912 translation of §27, §28 and §29 in full and in order, from the ToposText digitisation (topostext.org/work/491) already named in translation_source. Two mechanical changes, as for Adulis: ToposText's hyperlinks are reduced to their link text, and runs of whitespace are collapsed. Schoff's spellings and section numbering are left as they stand. §28 previously reached readers only through a Part 6 machine translation (band high, cos 0.937); it now has a published one."
+  "text_recovered": "2026-08-13",
+  "reference_translation_note": "Replaced 2026-08-10, the same defect and the same fix as subsaharan_africa/periplus-adulis.json. The previous text was an abridgement: it elided most of each section with '...', omitted §28 entirely, and ran §27 and §29 together as a single block, so only §27 could be aligned and §28-§29 had no published English at all. Now Wilfred H. Schoff's 1912 translation of §27, §28 and §29 in full and in order, from the ToposText digitisation (topostext.org/work/491) already named in translation_source. Two mechanical changes, as for Adulis: ToposText's hyperlinks are reduced to their link text, and runs of whitespace are collapsed. Schoff's spellings and section numbering are left as they stand. §28 previously reached readers only through a Part 6 machine translation (band high, cos 0.937); it now has a published one.",
+  "subject_places": [
+    {
+      "name": "Cana",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39355",
+      "uri": "https://pleiades.stoa.org/places/39355",
+      "role": "focus",
+      "note": "Confirmed against the Pleiades snapshot of 2026-08-10 on 2026-08-13: 39355 Kane 13.992/48.236, settlement, -30..1999 — Bir Ali on the Hadrami coast. The passage's port: §28 lists what is imported into and exported from it."
+    },
+    {
+      "name": "Arabia Eudaemon",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39269",
+      "uri": "https://pleiades.stoa.org/places/39269",
+      "role": "mentioned",
+      "note": "§27 measures the coast from it. 39269 'Adane/Athenae/Eudaimon Arabia' 12.772/45.039, settlement — Aden. **Refused: 746710 'Arabia Eudaemon'**, a peninsula label at 28.960/35.350 in north-west Arabia, which matches the term exactly and is a thousand kilometres wrong. Note 39269 was also examined and refused as the Aksumite coin's findspot, for a different reason: there it was ~300 km from where the coin was found."
+    },
+    {
+      "name": "the Island of Birds",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39405",
+      "uri": "https://pleiades.stoa.org/places/39405",
+      "role": "mentioned",
+      "note": "39405 'Orneon Ins.' 13.932/48.387, island — ~17 km east of Kane, consistent with §27's 120 stadia. Refused: 50179 'Orneon? Pr.' in Sri Lanka and 50706, unlocated."
+    },
+    {
+      "name": "Trullas",
+      "ground": "regional",
+      "role": "mentioned",
+      "note": "§27's second desert island off Kane. Nothing resolves; the only hit for the name is 424659855 San Nicola di Trullas, a medieval church in Sardinia, refused on coordinate and on date."
+    },
+    {
+      "name": "Sabbatha",
+      "ground": "regional",
+      "role": "source",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "906027",
+      "uri": "https://pleiades.stoa.org/places/906027",
+      "unlocated": true,
+      "note": "§27's inland metropolis where all the frankincense of the country is stored before going to Cana — Shabwa. Pleiades 906027 'Sabbatha/Sabatha/Sabdata' resolves and is UNLOCATED, so it has no coordinate to cache. Cited rather than dropped since A6 added `unlocated`; same class as Kyeneion."
+    },
+    {
+      "name": "Barygaza",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "59737",
+      "uri": "https://pleiades.stoa.org/places/59737",
+      "role": "destination",
+      "note": "59737 Barygaza 21.701/72.983, settlement, -330..2099 — Bharuch on the Gulf of Khambhat. Named in §27's closing clause — 'this place has a trade also with the far-side ports' — which was absent from the original text on disk until 2026-08-13 and existed only in Schoff's English."
+    },
+    {
+      "name": "Scythia",
+      "ground": "regional",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "59850",
+      "uri": "https://pleiades.stoa.org/places/59850",
+      "role": "destination",
+      "note": "§27's Σκυθία. 59850 Indoskythia 26.366/67.811, 'region, label', -30..300 — Indo-Scythia, the lower Indus. **Refused: 1001892 'Skythia'** 42.500/27.500, a province on the Black Sea, and 222186 'Skythias', unlocated. A far-side port of Cana is on the Indian Ocean, which is what decides it. Recovered text, as above."
+    },
+    {
+      "name": "Ommana",
+      "ground": "regional",
+      "role": "destination",
+      "note": "§27's Ὄμμανα, a Persian Gulf port (the Periplus returns to it at §36). Nothing resolves: the exact form returns nothing, and 'Omana' matches only Spanish and Italian sites containing 'romana'. Recovered text."
+    },
+    {
+      "name": "the neighbouring coast of Persia",
+      "ground": "regional",
+      "role": "destination",
+      "note": "§27's τῆς παρακειμένης Περσίδος. Refused: 609499 'Persis (mountain)' 38.847/30.809, which is in Phrygia. No entry covers the Persian coast as the passage means it. Recovered text."
+    },
+    {
+      "name": "Egypt",
+      "ground": "regional",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "766",
+      "uri": "https://pleiades.stoa.org/places/766",
+      "role": "source",
+      "note": "766 'Aegyptus (Roman imperial province)', locationPrecision 'related', attested -30..2100 — contemporary with the Periplus, which is why it is used where Pleiades 837 'Asia Minor' was refused for persia-02 (that one is attested 1700..1799, a modern cartographic label). Its representative point 31.201/29.910 is Alexandria's own coordinate, so this placement must render as an extent and never as a pin; see `has_area` in gazetteer.py."
+    },
+    {
+      "name": "Muza",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39390",
+      "uri": "https://pleiades.stoa.org/places/39390",
+      "role": "mentioned",
+      "note": "§28 twice uses it as the comparison — 'as at Muza'. 39390 'Mouza Emporion' 13.261/43.421, station, -330..300 — modern Mocha on the Red Sea. Refused: 756300531 Gebel el-Muzawaka, a cemetery in the Egyptian western desert, which is what a bare title search returns first."
+    },
+    {
+      "name": "the Sachalites bay",
+      "ground": "stated",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39419",
+      "uri": "https://pleiades.stoa.org/places/39419",
+      "role": "mentioned",
+      "note": "§29's ὁ λεγόμενος Σαχαλίτης. 39419 'Sachalites Sinus' 15.927/52.209, 'water-open, bay', -30..2100 — the Dhofar coast."
+    },
+    {
+      "name": "the Frankincense Country",
+      "ground": "regional",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39370",
+      "uri": "https://pleiades.stoa.org/places/39370",
+      "role": "source",
+      "note": "§27 and §29's χώρα λιβανωτοφόρος, the region the incense comes from. 39370 'Libanophoros Chora' 17.411/53.407, region, -30..300 — note Pleiades titles it *Libano-*, not *Libanoto-*, which is why a search on the text's own form returned only a name-list hit."
+    }
+  ]
 }

@@ -1,0 +1,517 @@
+# A4 subject-place survey — the 7 literary records.
+#
+# Same format and the same rules as data/place_survey.txt:
+#
+#   @<record id> groups the terms searched for that record. Terms include the
+#   ancient name as the record's own text gives it, the Latin transliteration,
+#   and common alternative forms — because Pleiades titles Adulis "Adouli" and
+#   Aksum "A(u)xoume", and three searches on the corpus's own vocabulary missed
+#   both.
+#
+# Run:
+#   python -m ingest.gazetteer --survey data/place_survey_a4.txt --dump $d --names-dump $n
+#
+# Nothing here is a placement. It is a list of things to look at. Every id that
+# comes back is accepted on its COORDINATE and feature types, never its name,
+# and no id is written from memory.
+#
+# The `->` after each group of terms is the ROLE proposed for that place, for
+# review when the records are written. Roles are `focus` / `source` /
+# `destination` / `waypoint` / `mentioned`; see data/seed_corpus/PLACES.md.
+# At most one focus per record, and any directional role requires one.
+#
+# ---------------------------------------------------------------------------
+# TWO THINGS TO SETTLE BEFORE THE RECORDS ARE WRITTEN — see the foot of this
+# file. Both were found by reading the sources rather than the titles, and
+# both change what gets placed.
+# ---------------------------------------------------------------------------
+
+
+# ===========================================================================
+# africa-03-periplus-adulis  (Periplus §4-6)   focus: Adulis
+# ===========================================================================
+
+@africa-03-periplus-adulis
+
+# -> focus
+Adulis
+Adouli
+Ἀδουλί
+Zula
+
+# -> mentioned  (the distance reference §4 opens from)
+Ptolemais of the Hunts
+Ptolemais Theron
+Πτολεμαΐς τῶν θηρῶν
+Ptolemais Epitheras
+
+# -> mentioned  (the island ships now anchor behind)
+Oreine
+Ὀρεινή
+Mountain Island
+
+# -> mentioned  (the older anchorage, §4)
+Diodorus Island
+Diodoros
+
+# -> source  ("an inland town and the first market for ivory")
+Coloe
+Koloe
+Κολόη
+Qohaito
+Matara
+
+# -> source  ("to that place all the ivory is brought ... and thence to Adulis")
+Auxumites
+Axum
+Aksum
+Axoume
+A(u)xoume
+Αὐξωμιτῶν
+
+# -> waypoint  (the district the ivory is carried through)
+Cyeneum
+Kyeneion
+Κυήνειον
+
+# -> mentioned  (the ivory comes "from the country beyond" it)
+Nile
+Neilos
+Νεῖλος
+
+# -> source  (tortoise-shell "brought to market there by the Fish-Eaters")
+Alalaei
+Alalaiou
+Dahlak
+
+# -> source  (unbleached cloth "made in Egypt")
+Egypt
+Aegyptus
+Αἴγυπτος
+
+# -> source  ("Arsinoitic robes")
+Arsinoe
+Arsinoite
+Ἀρσινοΐτης
+
+# -> source  (murrine "made in Diospolis")
+Diospolis
+Διόσπολις
+Thebes
+
+# -> source  ("Laodicean wine")
+Laodicea
+Laodikeia
+Λαοδίκεια
+
+# -> source  ("and Italian, not much")
+Italy
+Italia
+Ἰταλία
+
+# -> mentioned, expect regional  (a people, not a settlement)
+Moschophagi
+Moschophagoi
+Calf-Eaters
+
+# -> mentioned, expect regional
+Barbaria
+Βαρβαρία
+
+
+# ===========================================================================
+# arabia-01-periplus  (Periplus §27-29)   focus: Cana / Kane
+# ===========================================================================
+
+@arabia-01-periplus
+
+# -> focus
+Cana
+Kane
+Qana
+Κανή
+Bir Ali
+
+# -> mentioned  (the coast §27 is measured from)
+Arabia Eudaemon
+Eudaimon Arabia
+Εὐδαίμων Ἀραβική
+Aden
+
+# -> mentioned
+Island of Birds
+Orneon
+Ὀρνέων
+
+# -> mentioned
+Trullas
+Τρούλλας
+Dome Island
+
+# -> source  ("all the frankincense ... is brought by camels to that place to
+#    be stored, and to Cana")
+Sabbatha
+Sabbata
+Σαββαθά
+Shabwa
+Shabwat
+
+# -> destination  ("this place has a trade also with ...")
+Barygaza
+Βαρύγαζα
+Bharuch
+
+# -> destination
+Scythia
+Skythia
+Σκυθία
+
+# -> destination
+Ommana
+Ὄμμανα
+
+# -> destination, expect regional  ("the neighboring coast of Persia")
+Persia
+Persis
+
+# -> source  ("imported into this place from Egypt")
+Egypt
+Aegyptus
+Αἴγυπτος
+
+# -> mentioned  (twice, as the comparison: "as at Muza")
+Muza
+Mouza
+Μούζα
+Mocha
+Al-Makha
+
+# -> mentioned  (the bay beyond Cana)
+Sachalites
+Σαχαλίτης
+Sachalite Bay
+
+# -> source, expect regional  (the Frankincense Country itself)
+Frankincense Country
+Libanotophoros
+Hadramaut
+Hadhramaut
+
+
+# ===========================================================================
+# southasia-02-periplus-muziris  (Periplus §53-56)   focus: Muziris
+#
+# SEE FINDING 1 AT THE FOOT OF THIS FILE. Schoff's English and the Greek do
+# not name the same places in §53 and §54. Terms below follow the GREEK.
+# ===========================================================================
+
+@southasia-02-periplus-muziris
+
+# -> focus.  Read southasia-04-pattanam's findspot note BEFORE writing this
+#    entry: Pleiades has already adopted the identification our corpus treats
+#    as open, and the two entries must not contradict each other.
+Muziris
+Mouziris
+Μουζιρίς
+Muciri
+Pattanam
+
+# -> mentioned  (the §53 list of market-towns, in Greek forms)
+Kalliena
+Καλλίενα
+Calliena
+Kalyan
+
+Semylla
+Σήμυλλα
+Simylla
+Chaul
+
+Mandagora
+Μανδαγόρα
+
+Palaipatmai
+Παλαιπάτμαι
+Palaepatmae
+
+Melizeigara
+Μελιζειγάρα
+
+Byzantion
+Βυζάντιον
+Byzantium
+
+Toparon
+Τοπαρόν
+Togarum
+
+Tyrannosboas
+Τυραννοσβόας
+Aurannoboas
+
+# -> mentioned  (the §53 islands)
+Sesekreienai
+Σησεκρείεναι
+Sesecrienae
+
+Aigidion
+Αἰγιδίων
+Aegidii
+
+Kaineiton
+Καινειτῶν
+Caenitae
+
+Chersonesos
+Χερσόνησος
+Chersonesus
+
+Leuke
+Λευκὴ νῆσος
+White Island
+
+# -> waypoint  ("the first markets of Limyrike")
+Naoura
+Νάουρα
+Naura
+
+Tyndis
+Τύνδις
+Tondi
+
+# -> mentioned  (the neighbouring market-town of the other kingdom)
+Nelkynda
+Νέλκυνδα
+Nelcynda
+
+# -> waypoint  ("to which ships drop down ... to take on their cargoes")
+Bakare
+Βακαρή
+Bacare
+
+# -> mentioned, expect regional  (the Chera kingdom)
+Keprobotros
+Κηπροβότρου
+Cerobothra
+Chera
+
+# -> mentioned, expect regional
+Pandion
+Πανδίονος
+Pandya
+
+# -> mentioned, expect regional  (Λιμυρική — NOT Schoff's "Damirica")
+Limyrike
+Λιμυρική
+Damirica
+
+# -> source  ("ships coming to it from Ariake" — the GREEK reading; Schoff
+#    prints "Arabia" here. See Finding 1.)
+Ariake
+Ἀριακή
+Ariaca
+
+# -> mentioned  (the wine comparison, "as much as at Barygaza")
+Barygaza
+Βαρύγαζα
+Bharuch
+
+# -> source  ("pepper ... produced in only one region, a district called
+#    Kottonarike")
+Kottonarike
+Κοττοναρική
+Cottonara
+
+# -> source  ("spikenard from the Ganges")
+Ganges
+Γάγγης
+Gangetic
+
+# -> source  ("tortoise-shell, that from Chryse Island")
+Chryse
+Χρυσῆ
+Chryse Island
+Chrysonesos
+
+# -> source  ("who set out from Egypt about the month of July")
+Egypt
+Aegyptus
+Αἴγυπτος
+
+
+# ===========================================================================
+# eastasia-01-weilue   focus: Da Qin
+# ===========================================================================
+
+@eastasia-01-weilue
+
+# -> focus, expect regional  (a polity, not a settlement — no Pleiades entry
+#    is expected; "Roman Empire" is not a gazetteer feature)
+Da Qin
+大秦
+Lijian
+犂靬
+
+# -> mentioned, expect regional  (Parthia)
+Anxi
+安息
+Parthia
+
+# -> mentioned  (Characene and Susiana)
+Tiaozhi
+條支
+Characene
+Charax Spasinu
+Susiana
+
+# -> waypoint  ("from the city of Angu, on the frontier of Anxi, you take a
+#    boat")
+Angu
+安谷
+Gerrha
+
+# -> destination  ("cut directly across to Haixi" — glossed as Egypt)
+Haixi
+海西
+Egypt
+Aegyptus
+
+# -> mentioned  ("the king has his capital close to the mouth of a river")
+Rome
+Roma
+Ῥώμη
+
+# -> mentioned  (the river the capital sits on; named only in the gloss —
+#    see Finding 2)
+Tiber
+Tiberis
+
+
+# ===========================================================================
+# eastasia-02-hou-hanshu   focus: Rinan
+# ===========================================================================
+
+@eastasia-02-hou-hanshu
+
+# -> focus  (the commandery the embassy arrived through — the only place in
+#    this passage that is a place rather than a polity)
+Rinan
+日南
+Jihnan
+Nhat Nam
+
+# -> source  ("the king of Da Qin ... sent envoys")
+Da Qin
+大秦
+
+# NOTE: Luoyang, the court the tribute was offered to, is NOT named in this
+# passage. It is not searched for and must not be placed.
+
+
+# ===========================================================================
+# southasia-01-akananuru-149   focus: Muciri
+# ===========================================================================
+
+@southasia-01-akananuru-149
+
+# -> focus  (same place and the same contested identification as
+#    southasia-02; the two entries must agree)
+Muciri
+முசிறி
+Muziris
+Pattanam
+
+# -> mentioned  (the river the ships stir to foam)
+Culli
+Periyar
+Choolli
+
+# -> mentioned, expect regional  (the Chera country)
+Chera
+Cera
+Keralaputra
+
+# -> source, expect regional and NO id  ("the Yavanas ... arriving with gold").
+#    Yavanar names a people, not a place. If nothing honest resolves, this is
+#    `regional` with a note, which is the correct answer and not a workaround.
+Yavana
+Yavanar
+யவனர்
+Ionia
+Yona
+
+
+# ===========================================================================
+# southasia-03-muziris-papyrus   focus: SEE FINDING 2
+# ===========================================================================
+
+@southasia-03-muziris-papyrus
+
+# -> the Egyptian leg is what the excerpted text actually names.
+Koptos
+Κόπτος
+Coptos
+Qift
+
+Alexandria
+Ἀλεξάνδρεια
+Alexandreia
+
+# -> source  ("Gangetic nard", νάρδου Γανγιτικῆς)
+Ganges
+Γάγγης
+Gangetic
+
+# NOT searched for, deliberately: Muziris and Berenike. Neither is named in
+# the excerpted text. See Finding 2.
+
+
+# ===========================================================================
+# FINDINGS — both change what is placed, and neither is mine to settle
+# ===========================================================================
+#
+# FINDING 1 — Schoff's English and the Greek name different places.
+#
+#   §54 Greek: τοῖς ἀπὸ τῆς Ἀριακῆς εἰς αὐτὴν ἐρχομένοις πλοίοις
+#       "ships coming to it from ARIAKE"
+#   §54 Schoff: "abounds in ships sent there with cargoes from ARABIA"
+#
+#   Ariake is the northern Konkan coast; Arabia is not. Schoff 1912 is
+#   translating a different reading, and Casson 1989 prints Ariake. Two more
+#   in the same sections: the Greek has Λιμυρική where Schoff has "Damirica",
+#   and Τοπαρόν / Τυραννοσβόας where Schoff has "Togarum / Aurannohoas".
+#
+#   The placement must follow the ORIGINAL, not the reference translation.
+#   Ariake and Arabia are a thousand miles apart and would draw a different
+#   trade network. This is the Part 6 lesson arriving in W1: chrf_ref treats
+#   a published translation as ground truth, and a published translation is
+#   itself an edition with readings in it.
+#
+#   Action: place Ariake, and record the divergence in the entry's note so the
+#   next reader does not "correct" it back to Schoff.
+#
+# FINDING 2 — the Muziris papyrus does not name Muziris.
+#
+#   The excerpted text names Koptos (twice), Alexandria, and the Ganges
+#   adjectivally. It does not name Muziris, Berenike, or the Red Sea port the
+#   cargo landed at. "Muziris" is in our title, our notes and the papyrus's
+#   conventional name — that is, in editorial prose, not in the source.
+#
+#   Placing Muziris as this record's focus would be the Vimose defect exactly:
+#   a claim carried by our own scaffolding rather than by the text, arriving
+#   downstream attached to a citation. The excerpt's subject geography is the
+#   Egyptian leg — Koptos to Alexandria.
+#
+#   Two honest options, and the choice is a curatorial one:
+#
+#     (a) focus = Koptos, destination = Alexandria, source = Ganges.
+#         Places only what the text names. The record then contributes the
+#         Egyptian half of the route and no Indian endpoint.
+#
+#     (b) Extend the excerpt to a passage of SB 18 13167 that does name the
+#         Indian port, then place it. The recto names Muziris elsewhere in the
+#         papyrus; this record excerpted col. ii lines 2-8 only.
+#
+#   (b) is the better record and costs a source-recovery pass against
+#   papyri.info, the same shape as the Part 3b recoveries. (a) is correct
+#   today and can be superseded.

@@ -110,7 +110,11 @@ def main(argv: list[str] | None = None) -> int:
         if not args.skip_index:
             from pathlib import Path
 
-            conn.execute(Path("scripts/schema-part4.sql").read_text(encoding="utf-8"))
+            # Was `conn.execute(schema-part4.sql)` alone, which redefines
+            # `retrievable_chunks` WITHOUT Block B4's distractor guard and so
+            # silently reverted containment on every embed run. Go through
+            # db.apply_schema, which applies every migration in order.
+            db.apply_schema(conn)
             conn.commit()
 
         rows = fetch_pending(conn, args.force, args.limit)

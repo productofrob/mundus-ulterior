@@ -274,12 +274,20 @@ def fold_hits(
     retrieved becomes an anchor in its own right, but is looked up in the
     document's originals so it can still show the source text it translates.
 
-    Returns (anchors in retrieval order, folded translation chunk id by anchor,
-    published English by anchor as (text, alignment ground)).
+    Returns (anchors in retrieval order, **translation MEMBER chunk id** by
+    anchor, published English by anchor as (text, alignment ground, the merged
+    **SECTION** record)).
+
+    The second and third are about different chunks and that is the whole point
+    of C1b: `members` is the English chunk retrieval returned — or, when the
+    original was the hit, the section's first chunk — while the record in
+    `published` is every member of that section merged. They coincide except
+    where a section split into several English chunks and a later one was the
+    hit, which is exactly the case `align.py` was rewritten for.
     """
     anchors: list[tuple[ChunkRecord, float]] = []
     seen: set[str] = set()
-    folded: dict[str, str] = {}
+    members: dict[str, str] = {}
     published: dict[str, tuple[str, str]] = {}
 
     # Pair each document once, so alignment ground is computed on the whole
@@ -304,12 +312,12 @@ def fold_hits(
         if record.role == "translation":
             origin = original_by_translation.get(record.chunk_id)
             if origin is not None and origin.chunk_id in seen:
-                folded[origin.chunk_id] = record.chunk_id
+                members[origin.chunk_id] = record.chunk_id
                 continue
             if origin is not None:
                 anchors.append((origin, similarity))
                 seen.add(origin.chunk_id)
-                folded[origin.chunk_id] = record.chunk_id
+                members[origin.chunk_id] = record.chunk_id
                 translation, ground = pairs_by_original.get(origin.chunk_id, (None, "none"))
                 if translation is not None:
                     published[origin.chunk_id] = (
@@ -330,9 +338,9 @@ def fold_hits(
         translation, ground = pairs_by_original.get(record.chunk_id, (None, "none"))
         if translation is not None:
             published[record.chunk_id] = (translation.text, ground, translation)
-            folded[record.chunk_id] = translation.chunk_id
+            members[record.chunk_id] = translation.chunk_id
 
-    return anchors, folded, published
+    return anchors, members, published
 
 
 def build_evidence(
@@ -353,7 +361,7 @@ def build_evidence(
 
     doc_ids = list(dict.fromkeys(record.doc_id for record, _ in hits))
     doc_passages = answer_store.fetch_doc_passages(conn, doc_ids)
-    anchors, folded, published = fold_hits(hits, doc_passages)
+    anchors, members, published = fold_hits(hits, doc_passages)
     anchors = anchors[:max_sources]
 
     machine = answer_store.fetch_current_translations(
@@ -361,7 +369,7 @@ def build_evidence(
     )
 
     english_by_chunk: dict[str, EnglishChoice] = {}
-    translation_records: dict[str, ChunkRecord] = {
+    translation_sections: dict[str, ChunkRecord] = {
         chunk_id: entry[2] for chunk_id, entry in published.items()
     }
     for record, _ in anchors:
@@ -381,8 +389,8 @@ def build_evidence(
         anchors,
         english_by_chunk=english_by_chunk,
         max_sources=max_sources,
-        translation_chunk_by_chunk=folded,
-        translation_record_by_chunk=translation_records,
+        translation_member_by_chunk=members,
+        translation_section_by_chunk=translation_sections,
     )
 
 

@@ -114,8 +114,7 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "the unconfirmed-licence gate is removed",
-        [("""    if not licence.get("text") or licence["text"] == LICENCE_UNCONFIRMED:""",
-          """    if False:""")],
+        [("""        if not licence_is_recorded(licence):""", """        if False:""")],
     ),
     (
         "the licence may be asserted without the publisher declaring it",
@@ -135,6 +134,183 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         "a cached entry with neither point nor extent passes the check",
         [("""        if not entry.has_point and not entry.has_extent:""",
           """        if False:""")],
+    ),
+    # A4 — the five rules that make `source -> focus -> destination` derivable.
+    #
+    # The first is the one to read. It does not delete the requirement, it gives
+    # it a DEFAULT — which is how this defect would actually arrive, and why the
+    # guard is worded around "no default" rather than around a missing key. A
+    # half-edited record would then quietly assert that every place it had not
+    # got to yet is merely mentioned, and the network would be short of edges
+    # with nothing anywhere saying so.
+    (
+        "a missing role defaults to `mentioned` instead of being refused",
+        [("""    if role is None:
+        raise PlaceError(""",
+          """    if role is None:
+        return "mentioned"
+    if role is None:
+        raise PlaceError(""")],
+    ),
+    (
+        "any string is accepted as a role",
+        [("""    if role not in ROLES:""", """    if False:""")],
+    ),
+    (
+        "a role is accepted on findspot_places and origin_places, where the "
+        "block name already says the relation",
+        [("""    if block != SUBJECT_BLOCK:
+        if role is not None:""",
+          """    if block != SUBJECT_BLOCK:
+        if False:""")],
+    ),
+    (
+        "two places may both be the focus, leaving every edge ambiguous about "
+        "which end it has",
+        [("""    if len(foci) > 1:""", """    if False:""")],
+    ),
+    (
+        "a directional role is accepted with no focus to be directional about",
+        [("""    if directional and not foci:""", """    if False:""")],
+    ),
+    (
+        # A regional id whose bbox has no area resolves, caches and passes every
+        # other check — and draws nothing, because a regional placement renders
+        # as an extent and never as a pin. `pleiades:766 Aegyptus` is exactly
+        # this, and Egypt is the source in three of the seven literary records.
+        "a regional placement that can never be drawn is not reported",
+        [("""        elif p.ground == "regional" and not entry.has_area:""",
+          """        elif False:""")],
+    ),
+    # --- GeoNames, added 2026-08-13 with the second gazetteer ----------------
+    #
+    # The Pleiades reader discovers its columns from a header row. GeoNames has
+    # no header and documented positional columns, so the discovery step does
+    # not apply — but the obligation behind it does, and these four are what
+    # replaced it. Each one, disabled, turns a malformed file into 19 fields of
+    # plausible nonsense.
+    (
+        "the GeoNames field count is not checked, so a truncated row is accepted",
+        [("""    if len(fields) != n:""", """    if False:""")],
+    ),
+    (
+        "a GeoNames header row is accepted as data",
+        [("""    if not fields[0].strip().isdigit():""", """    if False:""")],
+    ),
+    (
+        "an undocumented GeoNames feature class is accepted",
+        [("""    if fields[6].strip() and fields[6].strip() not in GEONAMES_FEATURE_CLASSES:""",
+          """    if False:""")],
+    ),
+    (
+        "an unzipped GeoNames .txt is given a guessed snapshot date",
+        [("""    if path.suffix.lower() != ".zip":""", """    if False:""")],
+    ),
+    # The licence split. Pleiades is CC BY 3.0 US and GeoNames is CC BY 4.0;
+    # each of these three restores a way for one publisher's terms to be
+    # recorded over the other's points with nothing noticing.
+    (
+        "one licence is assumed to cover every gazetteer, as it did before GeoNames",
+        [("""    for gaz in sorted(gazetteers_in_use(by_doc)):""",
+          """    for gaz in sorted(set()):""")],
+    ),
+    (
+        "a legacy flat licence block is read as covering every gazetteer",
+        [("""        data["licences"] = {"pleiades": legacy} if legacy else {}""",
+          """        data["licences"] = {g: legacy for g in GAZETTEERS} if legacy else {}""")],
+    ),
+    (
+        "a cache holding both licence shapes picks one silently",
+        [('''    elif "licence" in data:''', """    elif False:""")],
+    ),
+    (
+        # A GeoNames country file holds one country and this corpus spans four,
+        # so every per-country refresh misses the others' ids. Reporting that
+        # as UNRESOLVED told a curator with exactly the right file to go and
+        # check they had the right file.
+        "a country file that lacks another country's ids is reported as the "
+        "curator having the wrong file",
+        [("""    still_uncached = sorted(""",
+          """    print("UNRESOLVED — check you have the right country file")
+    still_uncached = sorted(""")],
+    ),
+    # --- A6, the date-overlap check ------------------------------------------
+    #
+    # An id can resolve, cache, carry a real coordinate and pass every guard
+    # above while denoting a place attested nowhere near this project's era.
+    # These four restore, in turn: the out-of-era failure, the hull/attestation
+    # distinction the Ka'ba-ye Zartosht turns on, the refusal to guess a range
+    # for a period the dump disagrees about, and the rule that an unanswerable
+    # check says so rather than passing.
+    (
+        "an entry attested entirely outside 27 BC - AD 1204 is accepted",
+        [("""    if not in_project_window(hull):""", """    if False:""")],
+    ),
+    (
+        # The motivating case. Pleiades derives minDate/maxDate from the
+        # attested periods, so for an entry attesting only Achaemenid and
+        # modern the pair spans the 2,240-year gap between them. Trusting the
+        # hull is precisely the defect: it reports in-scope and attests nothing.
+        "the hull is trusted as an attestation, so a period-shaped hole reads "
+        "as coverage",
+        [("""    for key, span in known:
+        if in_project_window((span["min"], span["max"])):
+            return DATE_OK, None""",
+          """    return DATE_OK, None""")],
+    ),
+    (
+        "a period whose dump rows disagree is given a guessed range instead of "
+        "none",
+        [("""        if len(spans) == 1:""", """        if True:""")],
+    ),
+    (
+        "a multi-period row is read as stating its first period's range",
+        [("""            if len(keys) != 1:""", """            if len(keys) < 1:""")],
+    ),
+    (
+        # The defect the first real run against the 2026-08-10 dump exposed.
+        # A `hole` is the positive claim that NOTHING attested is in era; with
+        # a period unaccounted for, that period could be the one in era. This
+        # restores the version that claimed a hole as soon as no *known*
+        # period matched — a finding about the gazetteer that was really a gap
+        # in the derived vocabulary.
+        "a hole is claimed while a period has no derived range, so a gap in "
+        "the vocabulary reads as a finding about the gazetteer",
+        [("""    if unknown:
+        return DATE_UNKNOWN, (
+            f"its hull {hull[0]:.0f}..{hull[1]:.0f} covers this project's \"""",
+          """    if False:
+        return DATE_UNKNOWN, (
+            f"its hull {hull[0]:.0f}..{hull[1]:.0f} covers this project's \"""")],
+    ),
+    # --- A6, UNLOCATED vs no entry at all ------------------------------------
+    #
+    # Two states that looked identical until this block: a place no gazetteer
+    # has heard of, and a gazetteer entry that records no coordinate. These
+    # three restore, in turn: the requirement that the claim names an entry,
+    # the third state an explicit `false` re-creates, and — the one that
+    # matters — the check that the claim is TRUE of the cached entry rather
+    # than merely asserted by the record.
+    (
+        "`unlocated` no longer needs the gazetteer id it is a claim about",
+        [("""    if gazetteer_id is None:
+        raise PlaceError(
+            f"{where}: '{UNLOCATED_KEY}' without a gazetteer_id.""",
+          """    if False:
+        raise PlaceError(
+            f"{where}: '{UNLOCATED_KEY}' without a gazetteer_id.""")],
+    ),
+    (
+        "`unlocated: false` is accepted, re-creating the third state",
+        [("""    if raw[UNLOCATED_KEY] is not True:""", """    if False:""")],
+    ),
+    (
+        # The claim is only worth moving out of a free-text note if something
+        # checks it. Trusting it would leave a stale `unlocated` drawing
+        # nothing on a place the gazetteer has since located.
+        "an `unlocated` claim is trusted instead of checked against the entry",
+        [("""            if entry.has_point or entry.has_extent:""",
+          """            if False:""")],
     ),
 ]
 
@@ -168,6 +344,54 @@ EXPECTED = [
     "a resolving id whose title marks it deprecated is refused, and the failure "
     "says so",
     "an entry resolving to neither point nor extent fails",
+    "a subject place with no role is refused",
+    "a role outside the closed vocabulary is refused",
+    # Over-determined with "a role on origin_places is refused" — one rule
+    # covers both blocks, so both guards fire. Pinned to the findspot one
+    # because findspot_places is the block 17 of 24 records carry, and so the
+    # one a stray role would actually appear in. Fourth occurrence of this
+    # shape; see the licence note above.
+    "a role on findspot_places is refused",
+    "two foci in one block are refused",
+    "directional roles with no focus are refused",
+    "a regional placement whose bbox has no area is reported as unrenderable, "
+    "and does not fail the check",
+    # Over-determined with "the reader applies the shape check to the first
+    # data row", which asserts the same guard end-to-end. Pinned to the pure
+    # function, because removing the guard makes the end-to-end path CRASH
+    # three lines later and this harness counts a crash as a MISS. Fifth
+    # occurrence of the over-determination shape; see the licence note above.
+    "a dump with the wrong field count is refused, naming the count",
+    "a header row is refused — GeoNames dumps have none",
+    "an undocumented feature class is refused",
+    "an unzipped .txt is refused a guessed date, and says why",
+    "a GeoNames placement is not covered by the Pleiades licence, and the "
+    "failure names the gazetteer that is missing one",
+    "the migrated licence covers Pleiades only — it does not become a licence "
+    "for a gazetteer nobody recorded one for",
+    "a cache holding BOTH licence shapes is refused rather than one being "
+    "guessed as current",
+    "and it does not tell the curator to check a file that is already correct",
+    # A6. The first is pinned to the pure function rather than to cmd_check's
+    # exit code: `date_audit` runs before the licence gate in the same loop, so
+    # asserting on the exit code alone would be over-determined by whichever
+    # failure the fixture happened to reach first. Sixth occurrence of this
+    # shape in the repository; same answer as the licence and role cases above.
+    "an entry attested only after the project's window is refused, and the "
+    "failure names the range it actually has",
+    "an entry whose hull spans the window but whose every attested period "
+    "falls outside it is reported as a hole, NOT as a failure — the placement "
+    "can be correct and the gazetteer merely narrow",
+    "a key whose rows disagree is given NO range — a majority rule would make "
+    "the check assert what the dump does not say",
+    "every row is read; the multi-period one is not counted as stating a "
+    "single period's range",
+    "a period with NO derived range makes the verdict unknown, not a hole — "
+    "the missing period could be the one in era",
+    "unlocated without a gazetteer_id is refused",
+    "unlocated written as false is refused",
+    "an unlocated claim against an entry that HAS a location fails — the claim "
+    "is checked against the gazetteer, not trusted",
 ]
 
 

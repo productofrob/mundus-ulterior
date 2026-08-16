@@ -3,7 +3,10 @@
   "region": "East Asia",
   "title": "Hwangnam-daechong Roman Glassware — Glass Ewer and Cups from the South Mound of Tomb No. 98, Gyeongju (National Treasure No. 193)",
   "source_type": "find_record",
-  "language_code": ["ko", "en"],
+  "language_code": [
+    "ko",
+    "en"
+  ],
   "language_note": "Official Korean Heritage Service record is in Korean (경주 98호 남분 유리병 및 잔); English summary from Wikipedia/Met Museum catalogue (Lee & Leidy, Silla: Korea's Golden Kingdom, 2013) used here. No direct textual original — this is an artefact/find record, included for Pillar 4 (multimodal artefact intelligence) rather than text-pair retrieval.",
   "date": "late 4th century CE (manufacture, likely Roman Syria); deposited in tomb c. 450 CE",
   "findspot": "Hwangnam-daechong tomb (South Mound, Tomb No. 98), Gyeongju, North Gyeongsang Province, South Korea; excavated 1975",
@@ -13,5 +16,15 @@
   "translation_source": "Summarized from Lee, Soyoung & Leidy, Denise Patry, Silla: Korea's Golden Kingdom (Metropolitan Museum of Art, 2013), pp. 115-131, as reproduced on Wikipedia.",
   "citation": "https://en.wikipedia.org/wiki/Hwangnam-daechong_Roman_Glassware",
   "citation_original": "https://www.heritage.go.kr/heri/cul/culSelectDetail.do?pageNo=1_1_1_1&VdkVgwKey=11,01930000,11",
-  "notes": "One of the clearest physical-evidence anchors for direct Rome-East Asia material contact via the Silk Road, independent of the textual Weilue/Hou Hanshu sources (eastasia-01, -02). Good candidate for a graph edge linking 'Roman Syria glass workshops' to 'Silla royal tombs' in the Pillar 2 knowledge graph."
+  "notes": "One of the clearest physical-evidence anchors for direct Rome-East Asia material contact via the Silk Road, independent of the textual Weilue/Hou Hanshu sources (eastasia-01, -02). Good candidate for a graph edge linking 'Roman Syria glass workshops' to 'Silla royal tombs' in the Pillar 2 knowledge graph.",
+  "findspot_places": [
+    {
+      "name": "Gyeongju",
+      "ground": "stated",
+      "gazetteer": "geonames",
+      "gazetteer_id": "1841603",
+      "uri": "https://www.geonames.org/1841603",
+      "note": "Confirmed 2026-08-13 against the GeoNames country dump named below; the snapshot date is recorded in data/gazetteer.json under sources.geonames. KR.zip. 1841603 'Gyeongju' 35.843/129.212, feature code P.PPL (populated place), North Gyeongsang — 0.6 km from the Daereungwon tumulus park that holds Hwangnam-daechong. **The coordinate denotes the modern city, not the tomb**: GeoNames has no entry for Tomb No. 98 or its south mound, and none was invented. Refused: 1833276 'Gyeongju' 35.833/129.250, which carries the same name and is A.ADM2 — the municipality, whose representative point sits 3.6 km east of the tumuli and which is a claim about an administrative area rather than about the settlement the record names. Also present and irrelevant: 44 hotels, schools, toll gates and country clubs whose names begin 'Gyeongju'."
+    }
+  ]
 }

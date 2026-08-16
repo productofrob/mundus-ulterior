@@ -73,23 +73,60 @@ def _inherited_labels(items: Sequence) -> list[str | None]:
     return labels
 
 
+# This module is called with TWO different chunk types and only one of them
+# carries offsets:
+#
+#   answer/answer_store.py  — Part 7's row. Has char_start/char_end, because
+#                             cite.py resolves a quotation to characters on disk.
+#   answer/store.py         — Part 6's ChunkRow. Has neither.
+#
+# `_merge` was written on 2026-08-10 against the first and is reached from both.
+# It never ran on real data until the A4 Greek recovery lengthened §4 and §6
+# enough to split a section into two chunks, at which point Part 6 crashed on
+# `last.char_end`.
+#
+# **The defensive `getattr(..., 0)` defaults were the defect, not the crash.**
+# They turned "this type has no offsets" into `gap = 0 - 0`, which is a silently
+# wrong merge rather than an error; the one line that did NOT have a default is
+# the only reason anybody found out. A default that makes a missing field look
+# like a legitimate value is worse than no handling at all. Offsets are now
+# either present and used, or absent and said to be absent.
+OFFSET_FIELDS = ("char_start", "char_end")
+
+
+def has_offsets(obj: object) -> bool:
+    """Whether this chunk type can support exact character arithmetic."""
+    return all(hasattr(obj, name) for name in OFFSET_FIELDS)
+
+
 def _merge(chunks: list) -> object:
     """Several chunks of one section, presented as the section.
 
-    The gap between two adjacent chunks is filled with as many spaces as the
-    characters that were dropped between them, so `char_start + offset` still
-    lands on the right character for text taken from any member. Quote matching
-    is whitespace-insensitive, so substituting spaces for the original newlines
-    costs nothing and keeps the arithmetic exact.
+    **With offsets** the gap between two adjacent chunks is filled with as many
+    spaces as the characters dropped between them, so `char_start + offset`
+    still lands on the right character for text taken from any member. Quote
+    matching is whitespace-insensitive, so substituting spaces for the original
+    newlines costs nothing and keeps the arithmetic exact.
+
+    **Without offsets** the pieces are joined with a single space and the result
+    carries no `char_end` to update. The merged text is then good for scoring —
+    chrF is whitespace-insensitive by deliberate design, so the separator cannot
+    move a score — and is *not* good for locating a quotation on disk. Nothing
+    that needs the second uses this type; if that ever changes, the type gains
+    the columns rather than this function gaining a default.
     """
     if len(chunks) == 1:
         return chunks[0]
     first, last = chunks[0], chunks[-1]
     if not is_dataclass(first):
         return first
+
+    if not has_offsets(first):
+        return replace(first, text=" ".join(c.text for c in chunks))
+
     parts = [first.text]
     for previous, following in zip(chunks, chunks[1:]):
-        gap = getattr(following, "char_start", 0) - getattr(previous, "char_end", 0)
+        gap = following.char_start - previous.char_end
         parts.append(" " * max(0, gap) + following.text)
     return replace(first, text="".join(parts), char_end=last.char_end)
 
