@@ -1,0 +1,5134 @@
+{
+ "schema": "mundus-ulterior/query-renderings/v2",
+ "built": "2026-08-17T07:54:24+0000",
+ "prompt_version": "c2-render-v1",
+ "chat_model_this_run": "anthropic/claude-haiku-4-5-20251001",
+ "chat_models_in_file": [
+  "None",
+  "anthropic/claude-sonnet-5"
+ ],
+ "view": "retrievable_chunks_with_distractors",
+ "index_langs": [
+  "en",
+  "gmq-pro",
+  "grc",
+  "lzh",
+  "oty",
+  "xna",
+  "xpr",
+  "xsa"
+ ],
+ "about": "C2 query renderings, Block C rulings 12/15b/17a/19. Keyed on query TEXT and holding no pair id, so a per-pair target language cannot be recorded here: the language set comes from index_langs and the query's own language, and from nothing about the answer. Every rendering is script-checked; ok:false rows are kept as evidence and are never embedded. Read from disk by every ranking run, whose archived report records this file's content hash — two runs on different days are the same configuration only if that hash is. RULING 23a, and it travels with any per-language number taken from this file: the selection regime is NOT uniform. Old Tamil rows were drawn twice (haiku, then chat-strong) and promoted by the gold-blind script guard; every other language was drawn once. `attempt_count` per row is the record of that, and a per-language comparison must say so.",
+ "queries": [
+  {
+   "query": "How did Chinese sources describe the Roman empire?",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Hvernig lýstu Kínversk heimildir Rómaveldinu?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Hvernig lýstu Kínversk heimildir Rómaveldinu?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "πῶς αἱ Χῖναι πηγαὶ τὴν Ῥωμαϊκὴν ἀρχὴν περιέγραψαν;",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "πῶς αἱ Χῖναι πηγαὶ τὴν Ῥωμαϊκὴν ἀρχὴν περιέγραψαν;",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "中國文獻如何描述羅馬帝國？",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "中國文獻如何描述羅馬帝國？",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "சீனப் பொருளாய்ப்பு நூல்கள் ரோமப் பேரரசை எவ்வாறு விவரித்தன?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "சீனர்கள் யவனப் பேரரசை எவ்வாறு விவரித்தனர்?",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "சீனப் பொருளாய்ப்பு நூல்கள் ரோமப் பேரரசை எவ்வாறு விவரித்தன?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "'yky dkr' mnbw' ṣyny' 't mlkw' d-Rmyh?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "'yky dkr' mnbw' ṣyny' 't mlkw' d-Rmyh?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "čiyān nibištagān rōmāyīg šāhanšāhīh čiyōn nibištand?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "čiyān nibištagān rōmāyīg šāhanšāhīh čiyōn nibištand?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Kyfm dkrw mṣdr Ṣyny l-Mmlkt Rmnyh?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Kyfm dkrw mṣdr Ṣyny l-Mmlkt Rmnyh?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "How did Mediterranean glassware reach Korea?",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Hvernig kom Miðilhafslandi gler til Kóreu?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Hvernig kom Miðilhafslandi gler til Kóreu?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "Πῶς τὸ Μεσόγειον ὑάλινον σκεῦος εἰς Κορέαν ἀφίκετο;",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Πῶς τὸ Μεσόγειον ὑάλινον σκεῦος εἰς Κορέαν ἀφίκετο;",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "地中海玻璃器皿如何傳入朝鮮？",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "地中海玻璃器皿如何傳入朝鮮？",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "மத்திய தரைக்கடல் கண்ணாடிப் பொருட்கள் கொரியாவுக்கு எவ்வாறு வந்தன?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "மத்தியதரைக்கடல் கண்ணாடிப் பாத்திரங்கள் கொரியாவை எவ்வாறு அடைந்தன?",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "மத்திய தரைக்கடல் கண்ணாடிப் பொருட்கள் கொரியாவுக்கு எவ்வாறு வந்தன?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "kyp' 'tk zgjwt mdytrnwn lqwr'?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "kyp' 'tk zgjwt mdytrnwn lqwr'?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "čiyōn šišē-y Frāngestān az Daryāy Miyānē tā Kōryē rasīd?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "čiyōn šišē-y Frāngestān az Daryāy Miyānē tā Kōryē rasīd?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Kyfm gls mdtrny šrq l-Kwr?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Kyfm gls mdtrny šrq l-Kwr?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "How was frankincense gathered and stored in southern Arabia?",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Hvernig var olíbanum safnað og geymt í suðurArabíu?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Hvernig var olíbanum safnað og geymt í suðurArabíu?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "πῶς τὸ λίβανον ἐν τῇ νοτίᾳ Ἀραβίᾳ συνελέγετο καὶ ἐφυλάσσετο;",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "πῶς τὸ λίβανον ἐν τῇ νοτίᾳ Ἀραβίᾳ συνελέγετο καὶ ἐφυλάσσετο;",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "南阿拉伯乳香如何採集及貯藏？",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "南阿拉伯乳香如何採集及貯藏？",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "தெற்கு அரேபியாவில் குண்டுருக்கம் எவ்வாறு சேகரிக்கப்பட்டு சேமிக்கப்பட்டது?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "தென் அரபியாவில் குந்துருக்கம் எவ்வாறு சேகரிக்கப்பட்டு எவ்வாறு பேணிவைக்கப்பட்டது?",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "தெற்கு அரேபியாவில் குண்டுருக்கம் எவ்வாறு சேகரிக்கப்பட்டு சேமிக்கப்பட்டது?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "kyd' 'tqnyt lbwn' w-kyd' tnṭrwh b-drwm 'rby'?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "kyd' 'tqnyt lbwn' w-kyd' tnṭrwh b-drwm 'rby'?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "čiyōn lubānag az daxšag-ē nēmrōz-ē Arabāyān griftan ud nihādan būd?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "čiyōn lubānag az daxšag-ē nēmrōz-ē Arabāyān griftan ud nihādan būd?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Kyfʿ tḥṣyl w-ʾḥfẓ lbwnt bnʾrḍ Qṭbn?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Kyfʿ tḥṣyl w-ʾḥfẓ lbwnt bnʾrḍ Qṭbn?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "Mediterranean amphora sherds excavated on the Kerala coast",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Miðilhafskir amforabrotur grafnir á Keralastrondu",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Miðilhafskir amforabrotur grafnir á Keralastrondu",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "Μεσόγειοι ἀμφορέων ὄστρακα ἀνασκαφέντα ἐπὶ τῆς Κεράλα παραλίας",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Μεσόγειοι ἀμφορέων ὄστρακα ἀνασκαφέντα ἐπὶ τῆς Κεράλα παραλίας",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "地中海陶罐碎片 於喀拉拉海岸出土",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "地中海陶罐碎片 於喀拉拉海岸出土",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "கடலோலைக் கரையிൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകടലോലൈക്കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nகடலோலைக் கரையிൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nகடலோலைக் கரையிൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളക്കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ\n\nകേരളത്തിന്റെ കരയിൽ ഖനനം ചെയ്യപ്പെട്ട മെഡിറ്റെരേനിയൻ അമ്ഫോറ കഷണങ്ങൾ",
+       "ok": false,
+       "problems": [
+        "script: 3% of the judged characters are tamil, floor is 100%; 1262 stray character(s) [്െയനറികരടപമങേതോൽഖം]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [
+        "response contained 22 <translation> blocks; joined them in order"
+       ],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.03
+      },
+      {
+       "text": "கேரளக் கடற்கரையில் அகழ்ந்தெடுக்கப்பட்ட மத்தியதரைக் கடல் ஆம்போரா கலன் ஓடுகள்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "கேரளக் கடற்கரையில் அகழ்ந்தெடுக்கப்பட்ட மத்தியதரைக் கடல் ஆம்போரா கலன் ஓடுகள்",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "qšrwt 'mprwrh mn ym hmwkh 'šr nqbw 'l špt krl",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "qšrwt 'mprwrh mn ym hmwkh 'šr nqbw 'l špt krl",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "Šerds ī amphorā ī Thalassā ī Mediterranā ī kāvēd ī pad kīnārā ī Kerala",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Šerds ī amphorā ī Thalassā ī Mediterranā ī kāvēd ī pad kīnārā ī Kerala",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "qṭʿ ʾnfwr mtwsṭ ym ḥfrt ʿly sḥl krʾl",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "qṭʿ ʾnfwr mtwsṭ ym ḥfrt ʿly sḥl krʾl",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "Roman silver drinking cups found in a Danish chieftain's grave",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Rómversk silfr drykkjukoppar fundinir í danska höfðingja haugi",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Rómversk silfr drykkjukoppar fundinir í danska höfðingja haugi",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "ἀργυροῦν ποτήρια Ῥωμαϊκὰ εὑρεθέντα ἐν τάφῳ Δανικοῦ ἀρχηγοῦ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ἀργυροῦν ποτήρια Ῥωμαϊκὰ εὑρεθέντα ἐν τάφῳ Δανικοῦ ἀρχηγοῦ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "羅馬銀製飲杯出土於丹麥酋長之墓",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "羅馬銀製飲杯出土於丹麥酋長之墓",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "ரோமান் வெள்ளிய பானपात्र கண்டுபிடிக्कप्पट्ट डेनिश मुखिय्यर् समाधिയिल्",
+       "ok": false,
+       "problems": [
+        "script: 39% of the judged characters are tamil, floor is 100%; 38 stray character(s) [्िपारटमयানतकडेनशुख]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.3871
+      },
+      {
+       "text": "உரோமானிய வெள்ளிக் குடிநீர்க் கிண்ணங்கள் டேனிய தலைவனின் கல்லறையில் கண்டெடுக்கப்பட்டன",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "உரோமானிய வெள்ளிக் குடிநீர்க் கிண்ணங்கள் டேனிய தலைவனின் கல்லறையில் கண்டெடுக்கப்பட்டன",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "kswt' ksp' lmšty' 'šr nštkw bqbr' d-mlk' dny'",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "kswt' ksp' lmšty' 'šr nštkw bqbr' d-mlk' dny'",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "nqysʾ ʾrgwntʾ pʾtryʾ ʾywnd drynkndg kwsʾ hnd dn dʾnmrk srdr gwbr",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "nqysʾ ʾrgwntʾ pʾtryʾ ʾywnd drynkndg kwsʾ hnd dn dʾnmrk srdr gwbr",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "kws sgr rmyn mn dwqn mlk dnmrk b-qbr",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "kws sgr rmyn mn dwqn mlk dnmrk b-qbr",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "Roman weapons and equipment deposited in a Danish bog",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Rómversk vápn ok búnaðr lagðr í danskan mór",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Rómversk vápn ok búnaðr lagðr í danskan mór",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "ὅπλα καὶ σκευὴ Ῥωμαϊκὰ ἐν ἑλώδει τόπῳ τῆς Δανίας κατατεθειμένα",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ὅπλα καὶ σκευὴ Ῥωμαϊκὰ ἐν ἑλώδει τόπῳ τῆς Δανίας κατατεθειμένα",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "羅馬兵器及裝備沈於丹麥沼澤",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "羅馬兵器及裝備沈於丹麥沼澤",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "ரோமன் ஆயுதங்களும் உபகரணங்களும் டேனிய சதுப்புநிலையில் வைக்கப்பட்டவை",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "உரோமரின் படைக்கலன்களும் கருவிகளும் டேனிய சதுப்பு நிலத்தில் இடப்பட்டவை",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ரோமன் ஆயுதங்களும் உபகரணங்களும் டேனிய சதுப்புநிலையில் வைக்கப்பட்டவை",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "nšqy w-klym rmyy štyqw b-brk dnmrqy",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "nšqy w-klym rmyy štyqw b-brk dnmrqy",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "framandar-ī ud abzār-ī Hrōmāyīg pad gaud-ī Dānmārkīg nihād",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "framandar-ī ud abzār-ī Hrōmāyīg pad gaud-ī Dānmārkīg nihād",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": "c2-render-retry-v1",
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "nšqm w-ʿdm rmyn mwdʿm b-brk dnmrk",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "nšqm w-ʿdm rmyn mwdʿm b-brk dnmrk",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "What accompanied the bracteate treasure found on Funen?",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Hvat fylgdi brakteatiskum fé funnu á Fúnum?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Hvat fylgdi brakteatiskum fé funnu á Fúnum?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "τί συνῆν τῷ θησαυρῷ τῶν βρακτεάτων εὑρεθέντι ἐν Φούνῃ;",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "τί συνῆν τῷ θησαυρῷ τῶν βρακτεάτων εὑρεθέντι ἐν Φούνῃ;",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "芬恩島所發現之薄金幣寶藏伴隨何物？",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "芬恩島所發現之薄金幣寶藏伴隨何物？",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "புனെனिल् कडिक्क पडिन्न ब्रक्टेअटु निधिक्कु सामै एन्नै?",
+       "ok": false,
+       "problems": [
+        "script: 9% of the judged characters are tamil, floor is 100%; 43 stray character(s) [्किनडटुैെलपबरेअधसा]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.0851
+      },
+      {
+       "text": "ஃபூனெனில் கண்டெடுக்கப்பட்ட ப்ராக்டியேட் புதையலுடன் என்ன இருந்தது?",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ஃபூனெனில் கண்டெடுக்கப்பட்ட ப்ராக்டியேட் புதையலுடன் என்ன இருந்தது?",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mnh 'lp 't brktyt' dštkḥt 'l Fwnn?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mnh 'lp 't brktyt' dštkḥt 'l Fwnn?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "čē pad bracteate ganj ī Funen abāg čē hanjāmand būd?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "čē pad bracteate ganj ī Funen abāg čē hanjāmand būd?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Mh ʾṯbʿ ʾl-knz ʾl-brktʾt ʾl-wjd ʿl Fwnn?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Mh ʾṯbʿ ʾl-knz ʾl-brktʾt ʾl-wjd ʿl Fwnn?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "What did Rome trade with the Kingdom of Aksum?",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Hvat skipta Rómaborg við Aksumaríki?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Hvat skipta Rómaborg við Aksumaríki?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "Τί ἡ Ῥώμη ἐμπορεύετο μετὰ τῆς βασιλείας τῆς Ἀξύμης;",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Τί ἡ Ῥώμη ἐμπορεύετο μετὰ τῆς βασιλείας τῆς Ἀξύμης;",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "羅馬與阿克蘇姆王國貿易何物？",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "羅馬與阿克蘇姆王國貿易何物？",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "ரோம் அக்सும் இராज்யத்துடன் என்ன வணிகம் செய்தது?",
+       "ok": false,
+       "problems": [
+        "script: 95% of the judged characters are tamil, floor is 100%; 2 stray character(s) [सज]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.9512
+      },
+      {
+       "text": "உரோமையர் அக்சூம் அரசுடன் எதை வாணிகம் செய்தனர்?",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "உரோமையர் அக்சூம் அரசுடன் எதை வாணிகம் செய்தனர்?",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mā nšlḥ Rūmā ʿm mlkwtā d-ʾAksūm?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mā nšlḥ Rūmā ʿm mlkwtā d-ʾAksūm?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "čē Rom pad Aksum šāhān šāh pad kē handēzīhā abāz dād?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "čē Rom pad Aksum šāhān šāh pad kē handēzīhā abāz dād?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Mh trdw Rūm ʿm mlkt ʾKsm?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Mh trdw Rūm ʿm mlkt ʾKsm?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "What did ships carry from Muziris?",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Hvat baru skip frá Muziris?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Hvat baru skip frá Muziris?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "τί τὰ πλοῖα ἐκ Μουζίριδος ἔφερον;",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "τί τὰ πλοῖα ἐκ Μουζίριδος ἔφερον;",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "船自木支離載何物？",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "船自木支離載何物？",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "முழिരिस्निरुन्तु एमक्कम् एन्तु कोडुत्तनै?",
+       "ok": false,
+       "problems": [
+        "script: 8% of the judged characters are tamil, floor is 100%; 34 stray character(s) [्नुतिकएमരसरोडै]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.0811
+      },
+      {
+       "text": "முசிறியிலிருந்து கலங்கள் எதனைக் கொண்டு சென்றன?",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "முசிறியிலிருந்து கலங்கள் எதனைக் கொண்டு சென்றன?",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mā nśʾw ʾnyyʾ mn Muziris?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mā nśʾw ʾnyyʾ mn Muziris?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "čē pad Muziris az kištig čē abāyēnd?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "čē pad Muziris az kištig čē abāyēnd?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "mh nšʾw mlḥyn mn Mwzyrys?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mh nšʾw mlḥyn mn Mwzyrys?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "What do the Vimose runes say?",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Hvat segja Vimósa rúnir?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Hvat segja Vimósa rúnir?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "Τί λέγουσιν αἱ Οἰμόσης ρῦναι;",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Τί λέγουσιν αἱ Οἰμόσης ρῦναι;",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "維摩塞盧恩文字說何？",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "維摩塞盧恩文字說何？",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "விமோசே ருணுக்கள் என்ன சொல்லுகின்றன?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "விமோஸ் ரூன் எழுத்துக்கள் என்ன கூறுகின்றன?",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "விமோசே ருணுக்கள் என்ன சொல்லுகின்றன?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mā ʾmryn rūšy Vimose?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mā ʾmryn rūšy Vimose?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "čiyā Vimose rune-ā čiyānd?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "čiyā Vimose rune-ā čiyānd?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Mh yqwl rws Wmws?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Mh yqwl rws Wmws?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "What was exported from Adulis?",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Hvat var útflutit frá Adulis?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Hvat var útflutit frá Adulis?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "Τί ἐξ Ἀδούλιδος ἐξήγετο;",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Τί ἐξ Ἀδούλιδος ἐξήγετο;",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "阿杜利斯出口何物？",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "阿杜利斯出口何物？",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "அடுலിசிலிருந்து என்ன ஏற்றுமதி செய்யப்பட்டது?",
+       "ok": false,
+       "problems": [
+        "script: 98% of the judged characters are tamil, floor is 100%; 1 stray character(s) [ി]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 0.975
+      },
+      {
+       "text": "அதுலிசிலிருந்து யாவை கொண்டு செல்லப்பட்டன?",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "அதுலிசிலிருந்து யாவை கொண்டு செல்லப்பட்டன?",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mā' itpqad min Adulis?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mā' itpqad min Adulis?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "čē pad Adulis frōd abāyišt?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "čē pad Adulis frōd abāyišt?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "mh-y khrg mn ʿdwls?",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mh-y khrg mn ʿdwls?",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "a Nabataean tomb inscription cursing anyone who disturbs the grave",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "ein nabatæisk grafarsteinn með bölvi fyrir þann er hrærðir hinn dauða",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ein nabatæisk grafarsteinn með bölvi fyrir þann er hrærðir hinn dauða",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "ἐπιγραφὴ τάφου Ναβαταίου κατάρα τινὰ κατακαταρωμένη τὸν ταράσσοντα τὸν τάφον",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ἐπιγραφὴ τάφου Ναβαταίου κατάρα τινὰ κατακαταρωμένη τὸν ταράσσοντα τὸν τάφον",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "納巴泰人墓碑銘文詛咒任何擾亂墓葬者",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "納巴泰人墓碑銘文詛咒任何擾亂墓葬者",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "நபதேய கல்லறை銘文 யாரையும் சபிக்கும் கல்லறையை கலக்குபவனை",
+       "ok": false,
+       "problems": [
+        "script: 96% of the judged characters are tamil, floor is 100%; 2 stray character(s) [銘文]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.9583
+      },
+      {
+       "text": "நபாதேயர் கல்லறைக் கல்வெட்டு ஒன்று, கல்லறையைக் குலைப்பவரைச் சபிக்கிறது",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "நபாதேயர் கல்லறைக் கல்வெட்டு ஒன்று, கல்லறையைக் குலைப்பவரைச் சபிக்கிறது",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "ktb qbr nbṭy 'lh mn yšṭr 't qbrh",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ktb qbr nbṭy 'lh mn yšṭr 't qbrh",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "ništifriy ī Nabatāyān pad gōhr ī gōbān pad xwāstag ī pad har kas ī gōhr ī xwēš ī frāz ōšmārišn kunēd",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ništifriy ī Nabatāyān pad gōhr ī gōbān pad xwāstag ī pad har kas ī gōhr ī xwēš ī frāz ōšmārišn kunēd",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "ktb qbr nbṭw lʿn kl mn yʿkr ʾw yšll ʾw yġyr ʾw yḥll ʾw yšʿl ʾw yqṭʿ ʾw yḥrq ʾw yktm ʾw yʾḫḏ mn h-qbr",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ktb qbr nbṭw lʿn kl mn yʿkr ʾw yšll ʾw yġyr ʾw yḥll ʾw yšʿl ʾw yqṭʿ ʾw yḥrq ʾw yktm ʾw yʾḫḏ mn h-qbr",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "suðrarbíarabisk ritun biðjandi þess arðs dróttins himils",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "suðrarbíarabisk ritun biðjandi þess arðs dróttins himils",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "ἐπιγραφὴ Νοτίου Ἀραβίας ἐπικαλουμένη τὸν ἐλεήμονα κύριον τῶν οὐρανῶν",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ἐπιγραφὴ Νοτίου Ἀραβίας ἐπικαλουμένη τὸν ἐλεήμονα κύριον τῶν οὐρανῶν",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "南阿拉伯銘文祈求慈悲之天主",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "南阿拉伯銘文祈求慈悲之天主",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "தெற்கு அரேபிய கல்வெட்டு கருணையுள்ள வானத்தின் ஆண்டவனை வேண்டுகிற",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "வானங்களுக்குரிய அருளுடைய இறைவனை வேண்டி நிற்கும் தென் அரபியக் கல்வெட்டு ஒன்று",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "தெற்கு அரேபிய கல்வெட்டு கருணையுள்ள வானத்தின் ஆண்டவனை வேண்டுகிற",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "ktb mnqš mn ʾrḍ tymn qrʾ l-ʾdn rḥmn ʾdn šmyʾ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ktb mnqš mn ʾrḍ tymn qrʾ l-ʾdn rḥmn ʾdn šmyʾ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "nšqft mn tymn drby 'l-rḥmn rb šmyʾ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "nšqft mn tymn drby 'l-rḥmn rb šmyʾ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "ktb ysʾln mrḥmn b ʿl smwt",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ktb ysʾln mrḥmn b ʿl smwt",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "tamilsk kviðr um yavana skip at komandi til mukiris með gulli ok farandi með pipri",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "tamilsk kviðr um yavana skip at komandi til mukiris með gulli ok farandi með pipri",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "Ταμιλικὸν ποίημα περὶ Ἰαβανικῶν πλοίων εἰς Μουζίριν ἀφικνουμένων μετὰ χρυσοῦ καὶ ἀπερχομένων μετὰ πέπερος",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Ταμιλικὸν ποίημα περὶ Ἰαβανικῶν πλοίων εἰς Μουζίριν ἀφικνουμένων μετὰ χρυσοῦ καὶ ἀπερχομένων μετὰ πέπερος",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "泰米爾詩描寫雍那船隻抵達木支里攜金而來、載胡椒而去",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "泰米爾詩描寫雍那船隻抵達木支里攜金而來、載胡椒而去",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "யவனர் கப्पलु सोनमु कोण्टु मुचिरिक्कु वन्तु मिरिचु कोण्टु पोक विवरणम् तमिळ् पत्तु",
+       "ok": false,
+       "problems": [
+        "script: 10% of the judged characters are tamil, floor is 100%; 62 stray character(s) [ु्िमकोतपणरवनटचलसळ]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.1014
+      },
+      {
+       "text": "யவனர் பொன்னொடு முசிறிக்கு வந்து மிளகொடு மீளும் கலங்களை விவரிக்கும் தமிழ்ப் பாட்டு",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "யவனர் பொன்னொடு முசிறிக்கு வந்து மிளகொடு மீளும் கலங்களை விவரிக்கும் தமிழ்ப் பாட்டு",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "šīrā tamilīt dī-mnqdt ʿl ʾnīyāt yawnīyāt dī-mtʾn l-mqrī bdhbh w-nfqn bplplh",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "šīrā tamilīt dī-mnqdt ʿl ʾnīyāt yawnīyāt dī-mtʾn l-mqrī bdhbh w-nfqn bplplh",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "Tamil kavya oru Yavana nāvāikaḷ Muciri-kku vanttu poṉ-ōdum vanttu milaku-ōdum poyi",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Tamil kavya oru Yavana nāvāikaḷ Muciri-kku vanttu poṉ-ōdum vanttu milaku-ōdum poyi",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "šʿr tmyl dkr ʾnyn ywwn bʾw Mukrr wḏhb w-ṯlkw b-flfl",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "šʿr tmyl dkr ʾnyn ywwn bʾw Mukrr wḏhb w-ṯlkw b-flfl",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "gullz aflíkingr af Rómversku myntum Antonínusar þess friðsamra funinn í Mekongz delta",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "gullz aflíkingr af Rómversku myntum Antonínusar þess friðsamra funinn í Mekongz delta",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "χρυσοῦν μίμημα νομίσματος Ῥωμαϊκοῦ Ἀντωνίνου τοῦ Εὐσεβοῦς εὑρεθὲν ἐν τῷ δέλτᾳ τοῦ Μεκόγγ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "χρυσοῦν μίμημα νομίσματος Ῥωμαϊκοῦ Ἀντωνίνου τοῦ Εὐσεβοῦς εὑρεθὲν ἐν τῷ δέλτᾳ τοῦ Μεκόγγ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "在湄公河三角洲發現之安敦尼烏斯·庇烏斯羅馬錢幣之金製仿品",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "在湄公河三角洲發現之安敦尼烏斯·庇烏斯羅馬錢幣之金製仿品",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "அந்தோனீனுஸ் பியுஸின் ரோமன் நாணயத்தின் பொன்னிய பிரதிபு மெகொங் டெல்டாவில் கண்டெடுக்கப்பட்டது",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "மேகாங் கழிமுகத்தில் கிடைத்த அந்தோனினுஸ் பயசின் உரோமைய நாணயத்தின் பொன் போலி",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "அந்தோனீனுஸ் பியுஸின் ரோமன் நாணயத்தின் பொன்னிய பிரதிபு மெகொங் டெல்டாவில் கண்டெடுக்கப்பட்டது",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "dhmw' dhhb' d'tnyn' lmtl' nms' rmyy' d'ntwnynws pws' dštkḥ' bgw' mlk'",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "dhmw' dhhb' d'tnyn' lmtl' nms' rmyy' d'ntwnynws pws' dštkḥ' bgw' mlk'",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "zarēš hamāyišn ī sikkē ī Rōmāyīg ī Antōnīnōs Pīōs ī pad Mēkong daltā abāg haft",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "zarēš hamāyišn ī sikkē ī Rōmāyīg ī Antōnīnōs Pīōs ī pad Mēkong daltā abāg haft",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "dhbm mṯl nqd Rmyn mn ʾnṭwnynws Pws wjd bn dlt Mkwng",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "dhbm mṯl nqd Rmyn mn ʾnṭwnynws Pws wjd bn dlt Mkwng",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "a royal hunt scene on Sasanian metalwork",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "konungligr huntscen á Sasansku málmverki",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "konungligr huntscen á Sasansku málmverki",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "σκηνὴ βασιλικῆς θήρας ἐπὶ μεταλλικῶν ἔργων Σασανιδικῶν",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "σκηνὴ βασιλικῆς θήρας ἐπὶ μεταλλικῶν ἔργων Σασανιδικῶν",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "薩珊金屬器上之王狩獵場景",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "薩珊金屬器上之王狩獵場景",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "சாസാനிய உலோகவேலையில் ஒரு王 வேட்டைக் காட்சி",
+       "ok": false,
+       "problems": [
+        "script: 89% of the judged characters are tamil, floor is 100%; 4 stray character(s) [സാന王]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.8919
+      },
+      {
+       "text": "சாசானிய உலோகப் பொருளில் ஓர் அரச வேட்டைக் காட்சி",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "சாசானிய உலோகப் பொருளில் ஓர் அரச வேட்டைக் காட்சி",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mšḥq' mlk' 'l nḥšt' s's nyn'",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mšḥq' mlk' 'l nḥšt' s's nyn'",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "šāhān šikār-ī bar farzānān-ī Sāsānīyān",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "šāhān šikār-ī bar farzānān-ī Sāsānīyān",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "mnqrt mlk ʿl nḥšt ssnny",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mnqrt mlk ʿl nḥšt ssnny",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "an envoy sent by the king of Da Qin, the Roman empire",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "sendimaðr sendr af konungi Daqin, Rómaveldis",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "sendimaðr sendr af konungi Daqin, Rómaveldis",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "πρέσβις ἀπεσταλμένος ὑπὸ τοῦ βασιλέως τῆς Δα Κιν, τῆς Ῥωμαϊκῆς ἀρχῆς",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "πρέσβις ἀπεσταλμένος ὑπὸ τοῦ βασιλέως τῆς Δα Κιν, τῆς Ῥωμαϊκῆς ἀρχῆς",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "大秦王遣遣之使",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "大秦王遣遣之使",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "தா சீனின் அரசனால் அனுப்பப்பட்ட தூதர், ரோமப் பேரரசு",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "தாசின் அரசனால் அனுப்பப்பட்ட தூதன், யவன அரசு",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "தா சீனின் அரசனால் அனுப்பப்பட்ட தூதர், ரோமப் பேரரசு",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "šlīḥ' šdīr mn mlk' d-Dqyn mlkwt' d-Rūmāyē",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "šlīḥ' šdīr mn mlk' d-Dqyn mlkwt' d-Rūmāyē",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "framadar ī pad šāh ī Da Qin, šāhanšāh ī Hrōm frāz šudag",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "framadar ī pad šāh ī Da Qin, šāhanšāh ī Hrōm frāz šudag",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "mlʾk šlḥ mn mlk Dqnn mlkwt Rūmyh",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mlʾk šlḥ mn mlk Dqnn mlkwt Rūmyh",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "ristaðir gimsteinar af Miðilhafslandi handverkum funir í Suðaustur Asíu",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ristaðir gimsteinar af Miðilhafslandi handverkum funir í Suðaustur Asíu",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "λίθοι γλυπτοὶ τῆς Μεσογείου τεχνικῆς εὑρεθέντες ἐν τῇ Νοτιοανατολικῇ Ἀσίᾳ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "λίθοι γλυπτοὶ τῆς Μεσογείου τεχνικῆς εὑρεθέντες ἐν τῇ Νοτιοανατολικῇ Ἀσίᾳ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "在東南亞發現之地中海工藝雕刻寶石",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "在東南亞發現之地中海工藝雕刻寶石",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "தென்கடலோரப் பணிமுறையினாலான செதுக்கப்பட்ட மணிகள் தென்கிழக்கு ஆசியாவில் கண்டுபடிந்தன",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "தென்கிழக்கு ஆசியாவில் கிடைத்த யவனர் வேலைப்பாட்டுப் பொறிக்கப்பட்ட மணிக்கற்கள்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "தென்கடலோரப் பணிமுறையினாலான செதுக்கப்பட்ட மணிகள் தென்கிழக்கு ஆசியாவில் கண்டுபடிந்தன",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "'bny kmʾ šqpw mn ʿbd mlḥ mqddm mṭbʿ bmdnḥ qdm",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "'bny kmʾ šqpw mn ʿbd mlḥ mqddm mṭbʿ bmdnḥ qdm",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "sang-hā ud marmārīg ī Thalassīg kār ī Anatolīg ud Yawnānīg ud Rōmānīg ī Purba-Dakṣiṇa Āsiyā ī abāg windād",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "sang-hā ud marmārīg ī Thalassīg kār ī Anatolīg ud Yawnānīg ud Rōmānīg ī Purba-Dakṣiṇa Āsiyā ī abāg windād",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "ʾḥjr mnsqrm mn ṣnʿt Mtws̱rnh wjdw fy Šrq ʾsyʾ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ʾḥjr mnsqrm mn ṣnʿt Mtws̱rnh wjdw fy Šrq ʾsyʾ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "large ships loading pepper and malabathrum from Kottanarike",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "stórir skip hlöðandi pipri ok malabathrum frá Kottanáríki",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "stórir skip hlöðandi pipri ok malabathrum frá Kottanáríki",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "μεγάλα πλοῖα φορτία πέπερι καὶ μαλάβαθρον ἀπὸ Κοττανάρικης φορτοῦντα",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "μεγάλα πλοῖα φορτία πέπερι καὶ μαλάβαθρον ἀπὸ Κοττανάρικης φορτοῦντα",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "大船自科塔那里克裝載胡椒及葉子香料",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "大船自科塔那里克裝載胡椒及葉子香料",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "பெரிய கப்பलुक्ळ् पेप्पर् अनु मलबथ्रुम् कोट्टनरिकेयिनु लोडु सेय्युम्",
+       "ok": false,
+       "problems": [
+        "script: 15% of the judged characters are tamil, floor is 100%; 51 stray character(s) [्ुलकपेरनमयोटिळअबथड]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.15
+      },
+      {
+       "text": "கொட்டநாட்டினின்று மிளகும் தாளிசமும் ஏற்றிய பெரிய கலங்கள்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "கொட்டநாட்டினின்று மிளகும் தாளிசமும் ஏற்றிய பெரிய கலங்கள்",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "'nyyʾ rbwt mlʾ pplwn w mlbtrwm mn Qwṭnrq",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "'nyyʾ rbwt mlʾ pplwn w mlbtrwm mn Qwṭnrq",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "grd šiphr xwb-šn pprg ud mlbtrm z Kwtynrk brdn",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "grd šiphr xwb-šn pprg ud mlbtrm z Kwtynrk brdn",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "sufn kbr yḥmlwn plfr w-mlbṯrm mn Kṭnrk",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "sufn kbr yḥmlwn plfr w-mlbṯrm mn Kṭnrk",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Rómverjalanda Kilikía, Kappadókía, Suría ok Galatía",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Rómverjalanda Kilikía, Kappadókía, Suría ok Galatía",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "αἱ Ῥωμαϊκαὶ ἐπαρχίαι Κιλικίας, Καππαδοκίας, Συρίας καὶ Γαλατίας",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "αἱ Ῥωμαϊκαὶ ἐπαρχίαι Κιλικίας, Καππαδοκίας, Συρίας καὶ Γαλατίας",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "羅馬之基利家、卡帕多基亞、敘利亞及加拉太諸省",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "羅馬之基利家、卡帕多基亞、敘利亞及加拉太諸省",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "ரோமन प्रान्तहरु सिलिसिया, कप्पादोसिया, सिरिया र गलातिया\n\nரோமன் பிரதேசங்கள் சிலிசியா, கப்பாடோசியா, சிரியா மற்றும் கலாத்தியா",
+       "ok": false,
+       "problems": [
+        "script: 58% of the judged characters are tamil, floor is 100%; 44 stray character(s) [ािरसयप्नतलहुकदोग]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [
+        "response contained 2 <translation> blocks; joined them in order"
+       ],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.5769
+      },
+      {
+       "text": "யவனரின் சிலிசியா, கப்பதோக்கியா, சிரியா, கலாத்தியா ஆகிய மாகாணங்கள்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "யவனரின் சிலிசியா, கப்பதோக்கியா, சிரியா, கலாத்தியா ஆகிய மாகாணங்கள்",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mlkwt' rmyt' d-Qylqyʾ w-Qpqdwqyʾ w-Swryʾ w-Gltyʾ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mlkwt' rmyt' d-Qylqyʾ w-Qpqdwqyʾ w-Swryʾ w-Gltyʾ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "Kilikia, Kappadokia, Suriya ud Galatia, Romāyīg šahrvān",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Kilikia, Kappadokia, Suriya ud Galatia, Romāyīg šahrvān",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "mlkwt Rūm dy Klkyw w Qpqdwkyw w Šrym w Gltyh",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mlkwt Rūm dy Klkyw w Qpqdwkyw w Šrym w Gltyh",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "the frankincense-bearing country and the port of Kane in Arabia",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "landi þæs olíbani-berandi ok hafnir Kana in Arabiu",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "landi þæs olíbani-berandi ok hafnir Kana in Arabiu",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "ἡ λιβανωτοφόρος χώρα καὶ τὸ ἐμπόριον Κάνη ἐν τῇ Ἀραβίᾳ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ἡ λιβανωτοφόρος χώρα καὶ τὸ ἐμπόριον Κάνη ἐν τῇ Ἀραβίᾳ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "乳香國及阿拉伯之凱尼港",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "乳香國及阿拉伯之凱尼港",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": "c2-render-retry-v1",
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "கந்தனுடைய நாடு மற்றும் அரேபியாவிலுள்ள கணே துறைமுகம்",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "குந்துருக்கம் தரும் நாடும், அரபு நாட்டிலுள்ள கானே துறைமுகமும்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "கந்தனுடைய நாடு மற்றும் அரேபியாவிலுள்ள கணே துறைமுகம்",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "'rṣ' dyt nṭl' lbwn' w'skl' dy Kn' b'rb'",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "'rṣ' dyt nṭl' lbwn' w'skl' dy Kn' b'rb'",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "ī frānkīnsens-bārandī kuntrī ud ī pōrt ī Kānē ī Arabīyā",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ī frānkīnsens-bārandī kuntrī ud ī pōrt ī Kānē ī Arabīyā",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": "c2-render-retry-v1",
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "'rḍ' dkrt 'lbnt w-mnt' Kn' b-'rb'",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "'rḍ' dkrt 'lbnt w-mnt' Kn' b-'rb'",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Adulis hafn ok elfendbein borit til Aksumisku höfuðborgar",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Adulis hafn ok elfendbein borit til Aksumisku höfuðborgar",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "τὸ ἐμπόριον τῆς Ἀδούλιδος καὶ τὸ ἐλέφας κομισθὲν εἰς τὴν πρωτεύουσαν τῶν Ἀξουμιτῶν",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "τὸ ἐμπόριον τῆς Ἀδούλιδος καὶ τὸ ἐλέφας κομισθὲν εἰς τὴν πρωτεύουσαν τῶν Ἀξουμιτῶν",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "阿杜利斯港及運至阿克蘇姆首都之象牙",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "阿杜利斯港及運至阿克蘇姆首都之象牙",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "அடுலिस் நगरम् आणि अक्षुमीत राजधानीक्षेत्रम् आनीत हस्तिदन्तम्",
+       "ok": false,
+       "problems": [
+        "script: 11% of the judged characters are tamil, floor is 100%; 48 stray character(s) [्तमिरीनसआकषागणअुजध]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.1111
+      },
+      {
+       "text": "அதுலிசு துறைமுகமும் அக்சூமியரின் தலைநகரத்திற்குக் கொண்டுவரப்பட்ட யானைத் தந்தமும்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "அதுலிசு துறைமுகமும் அக்சூமியரின் தலைநகரத்திற்குக் கொண்டுவரப்பட்ட யானைத் தந்தமும்",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "nmlʾ dʾdwls wšnhg' dkrštʾ dytybwt lʿsmt mlkʾ dʾkswm",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "nmlʾ dʾdwls wšnhg' dkrštʾ dytybwt lʿsmt mlkʾ dʾkswm",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "bandargāh ī Adulis ud hāthī-dand ī āwurd tā šahr ī Aksum",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "bandargāh ī Adulis ud hāthī-dand ī āwurd tā šahr ī Aksum",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "mnt ʿdwls w-ʾl-šn hbʾ l-ʿsmr",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mnt ʿdwls w-ʾl-šn hbʾ l-ʿsmr",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "þæir hafnir Tyndis, Muziris ok Nelkynda ok þau ríki er þau tilheyra",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "þæir hafnir Tyndis, Muziris ok Nelkynda ok þau ríki er þau tilheyra",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "αἱ λιμένες Τύνδεως καὶ Μουζήρεως καὶ Νελκύνδας καὶ αἱ βασιλεῖαι αἷς ἀνήκουσιν",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "αἱ λιμένες Τύνδεως καὶ Μουζήρεως καὶ Νελκύνδας καὶ αἱ βασιλεῖαι αἷς ἀνήκουσιν",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "丁度、木支里、尼剌幹陀之港口及其所屬之國家",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "丁度、木支里、尼剌幹陀之港口及其所屬之國家",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "தिണ്ടിസ്, മുസിരിസ്, നെൽക്കിന്ദ എന്നിവയുടെ തുറമുഖങ്ങളും അവ സ്ഥിതിചെയ്യുന്ന രാജ്യങ്ങളും",
+       "ok": false,
+       "problems": [
+        "script: 1% of the judged characters are tamil, floor is 100%; 75 stray character(s) [്ിുനസയങെടമരകവതളംिണ]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.0132
+      },
+      {
+       "text": "தொண்டி, முசிறி, நெல்கிண்டா ஆகிய துறைமுகங்களும் அவை சார்ந்துள்ள அரசுகளும்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "தொண்டி, முசிறி, நெல்கிண்டா ஆகிய துறைமுகங்களும் அவை சார்ந்துள்ள அரசுகளும்",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "nmlʾ dy Tyndis w-Muziris w-Nelkynda w-mlkwtʾ dy hnnwn",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "nmlʾ dy Tyndis w-Muziris w-Nelkynda w-mlkwtʾ dy hnnwn",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "bandargān ī Tyndis ud Muziris ud Nelkynda ud šāhrgān ī pad ān abāg hend",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "bandargān ī Tyndis ud Muziris ud Nelkynda ud šāhrgān ī pad ān abāg hend",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "mwānʾ Tyndis w-Muziris w-Nelkynda w-l-mamālik ʾilā ʾilhm tntsʿ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mwānʾ Tyndis w-Muziris w-Nelkynda w-l-mamālik ʾilā ʾilhm tntsʿ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "the royal titles claimed by the king of Aksum",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "konungligir titlar þeir er konungr Aksum kvaðsk eigandi",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "konungligir titlar þeir er konungr Aksum kvaðsk eigandi",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "αἱ βασιλικαὶ τιμαὶ ἃς ὁ βασιλεὺς τῆς Ἀξύμης ἐπεκαλεῖτο",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "αἱ βασιλικαὶ τιμαὶ ἃς ὁ βασιλεὺς τῆς Ἀξύμης ἐπεκαλεῖτο",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "阿克蘇姆王所聲稱之王號",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "阿克蘇姆王所聲稱之王號",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "அக்ஸூமின் அரசனால் கூறப்பட்ட அரச பட்டங்கள்",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "அக்சூம் மன்னன் கொண்ட அரசப் பட்டங்கள்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "அக்ஸூமின் அரசனால் கூறப்பட்ட அரச பட்டங்கள்",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mlkwt' mlk' dy mlk' d'kswm",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mlkwt' mlk' dy mlk' d'kswm",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "šāhanšāh nāmag ī šāh ī Aksum dādestān",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "šāhanšāh nāmag ī šāh ī Aksum dādestān",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "ʾlqb mlk ʾksum dy-tqnw",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ʾlqb mlk ʾksum dy-tqnw",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "the valuation of a cargo of nard and ivory shipped on the Hermapollon",
+   "query_lang": "en",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "mating af farmaþi nardaz ok elfantabain skipaz a Hermapollani",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mating af farmaþi nardaz ok elfantabain skipaz a Hermapollani",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "ἡ τιμολόγησις τοῦ φορτίου νάρδου καὶ ἐλέφαντος πεμφθέντος ἐπὶ τοῦ Ἑρμαπόλλωνος",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ἡ τιμολόγησις τοῦ φορτίου νάρδου καὶ ἐλέφαντος πεμφθέντος ἐπὶ τοῦ Ἑρμαπόλλωνος",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "赫爾瑪波隆號船上運載的甘松與象牙貨物之估價",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "赫爾瑪波隆號船上運載的甘松與象牙貨物之估價",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "நार்த्तु इवरि पणक्कु अयिरै नावै हेर्मपोल्लोनिल् एरुप्पिक्कप्पट्ट वलैप्पु",
+       "ok": false,
+       "problems": [
+        "script: 5% of the judged characters are tamil, floor is 100%; 62 stray character(s) [्परुिकलवैानोटतइणअय]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.0462
+      },
+      {
+       "text": "எர்மப்பொல்லோன் எனும் கப்பலில் ஏற்றப்பட்ட நாரதமும் தந்தமும் அடங்கிய சரக்கின் மதிப்பு",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "எர்மப்பொல்லோன் எனும் கப்பலில் ஏற்றப்பட்ட நாரதமும் தந்தமும் அடங்கிய சரக்கின் மதிப்பு",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "qīmtā d-qrqltā d-spiknrd w-šnhbly šdyrt 'l-Hermāpwlwn",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "qīmtā d-qrqltā d-spiknrd w-šnhbly šdyrt 'l-Hermāpwlwn",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "hamāyišn ī kargān ī spigandag ud dantīg ī pad Hermapollon frēstag",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "hamāyišn ī kargān ī spigandag ud dantīg ī pad Hermapollon frēstag",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "qymtw mlḥ nrd w šn' šlḥw ʿl ʾlhrmplwn",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "qymtw mlḥ nrd w šn' šlḥw ʿl ʾlhrmplwn",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "šāhān šāh Ērān ud Anēran Šābuhr",
+   "query_lang": "xpr",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "konungr konunga Airanō ok Anairanō Šabuhr",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "konungr konunga Airanō ok Anairanō Šabuhr",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "βασιλεὺς βασιλέων Ἰρανίας καὶ Ἀνιρανίας Σάβωρος",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "βασιλεὺς βασιλέων Ἰρανίας καὶ Ἀνιρανίας Σάβωρος",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "沙漢沙赫伊蘭烏德安伊蘭沙布爾",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "沙漢沙赫伊蘭烏德安伊蘭沙布爾",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "சாහான் சாห் ஏரான் உத் அனேரன் சாபுஹ்ர்",
+       "ok": false,
+       "problems": [
+        "script: 94% of the judged characters are tamil, floor is 100%; 2 stray character(s) [හห]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.9375
+      },
+      {
+       "text": "ஷாஹான் ஷாஹ் ஏரான் உத் அநேரான் ஷாபுஹ்ர்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ஷாஹான் ஷாஹ் ஏரான் உத் அநேரான் ஷாபுஹ்ர்",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mlk' mlk' 'yn w-'yn-'ḥrn Šbwr",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mlk' mlk' 'yn w-'yn-'ḥrn Šbwr",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "mlk mlkn Saba wa-l-ʿArab Šabur",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mlk mlkn Saba wa-l-ʿArab Šabur",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
+   "query_lang": "grc",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Muzīris ok Nelkunda ok Tundis, konungríki þæs Limyrikæ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Muzīris ok Nelkunda ok Tundis, konungríki þæs Limyrikæ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "木支里及涅爾崑達及丁地，利木里基之王國",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "木支里及涅爾崑達及丁地，利木里基之王國",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "முழिരി கை நேલ்कुण्ड कै तुण्डि, बसिलेइै तेस् लिमुरिकेस्",
+       "ok": false,
+       "problems": [
+        "script: 17% of the judged characters are tamil, floor is 100%; 38 stray character(s) [ि्कुसेणडैतलരിલबइमर]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.1739
+      },
+      {
+       "text": "முசிறியும் தொண்டியும் நெல்கிண்டாவும், தமிழகத்தின் அரசுகள்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "முசிறியும் தொண்டியும் நெல்கிண்டாவும், தமிழகத்தின் அரசுகள்",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "Mwzyrys wkl Nlkyndh wkl Tyndys, mlkwt' dy Lmyrykh",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Mwzyrys wkl Nlkyndh wkl Tyndys, mlkwt' dy Lmyrykh",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "Muzirīs ud Nelkunda ud Tyndis, šāhān ī Limyrikē",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Muzirīs ud Nelkunda ud Tyndis, šāhān ī Limyrikē",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Muzīris w-Nelkunda w-Tyndis, mamlakat Limyarikē",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Muzīris w-Nelkunda w-Tyndis, mamlakat Limyarikē",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
+   "query_lang": "grc",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Muzirís ok Nelkunda kaupstöðir þærs Limyrikæ",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Muzirís ok Nelkunda kaupstöðir þærs Limyrikæ",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "木支里與尼爾崑達乃利木瑞基之商埠",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "木支里與尼爾崑達乃利木瑞基之商埠",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "முழिരി கை நேલ்कुण्ड एम्पोरिया थे लिमुरिके",
+       "ok": false,
+       "problems": [
+        "script: 22% of the judged characters are tamil, floor is 100%; 28 stray character(s) [िकु्मरेരിલणडएपोयाथ]. A rendering in the wrong writing system retrieves badly for a reason no rank can report."
+       ],
+       "notes": [],
+       "prompt_version": "c2-render-retry-v1",
+       "chat_model": null,
+       "script_ratio": 0.2222
+      },
+      {
+       "text": "முசிறியும் நெல்கண்டையும் தமிழகத்தின் வாணிகத் துறைமுகங்கள்",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "முசிறியும் நெல்கண்டையும் தமிழகத்தின் வாணிகத் துறைமுகங்கள்",
+     "ok": true,
+     "problems": [],
+     "notes": [
+      "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+     ],
+     "prompt_version": "c2-render-v1",
+     "chat_model": "anthropic/claude-sonnet-5",
+     "temperature": 1.0,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "Mwzyrys wkn-Nlkwnd' empwryn' d-Lymwrk'",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Mwzyrys wkn-Nlkwnd' empwryn' d-Lymwrk'",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "Muzirīs ud Nelkunda hānīyān ī Limyrikē",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Muzirīs ud Nelkunda hānīyān ī Limyrikē",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Muzīris w-Nalkynda mwdʿ n-Lymyrykh",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Muzīris w-Nalkynda mwdʿ n-Lymyrykh",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+   "query_lang": "oty",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Yavana Muciṛi poṉṉoṭu vantu kaṛiyoṭu peyarum",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Yavana Muciṛi poṉṉoṭu vantu kaṛiyoṭu peyarum",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "Ἰάονες Μουσιρίδα χρυσῷ ἐλθόντες ὀψαρίῳ μεταβαίνουσιν",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Ἰάονες Μουσιρίδα χρυσῷ ἐλθόντες ὀψαρίῳ μεταβαίνουσιν",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "lzh": {
+     "attempts": [
+      {
+       "text": "夷方商人至牟舍厘，携金而来，以货物而去",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "夷方商人至牟舍厘，携金而来，以货物而去",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "Yawnānā Musīrī dhnbw' bdhbh' wslqw",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Yawnānā Musīrī dhnbw' bdhbh' wslqw",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "yawanā Mousirē sōnē āgamya kāriyē parinayanti",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "yawanā Mousirē sōnē āgamya kāriyē parinayanti",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Yawnr mwsyry pnnwdu wnd qrydu pyrwm",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Yawnr mwsyry pnnwdu wnd qrydu pyrwm",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  },
+  {
+   "query": "大秦國在安息西，海西之地",
+   "query_lang": "lzh",
+   "renderings": {
+    "gmq-pro": {
+     "attempts": [
+      {
+       "text": "Stórríki Þín stendur vestr Parthía, lond við haf vestr",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Stórríki Þín stendur vestr Parthía, lond við haf vestr",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "grc": {
+     "attempts": [
+      {
+       "text": "ἡ μεγάλη Τσὶν χώρα κεῖται δυσμὰς τῆς Παρθίας, ἐν τῇ γῇ τῇ ἐπέκεινα τῆς θαλάσσης",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "ἡ μεγάλη Τσὶν χώρα κεῖται δυσμὰς τῆς Παρθίας, ἐν τῇ γῇ τῇ ἐπέκεινα τῆς θαλάσσης",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "oty": {
+     "attempts": [
+      {
+       "text": "தாக்கிநாடு அரசு அன்பு மேற்கிலும், கடல் மேற்கின் நிலமும்",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      },
+      {
+       "text": "யவன நாடு அன்சிக்கு மேற்கே, கடல் மேற்கின் நிலத்தே உள்ளது",
+       "notes": [
+        "sampled at temperature=1.0: this model refuses greedy decoding, so the rendering is one draw and not a reproducible one"
+       ],
+       "prompt_version": "c2-render-v1",
+       "chat_model": "anthropic/claude-sonnet-5",
+       "temperature": 1.0,
+       "ok": true,
+       "problems": [],
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "தாக்கிநாடு அரசு அன்பு மேற்கிலும், கடல் மேற்கின் நிலமும்",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 2
+    },
+    "xna": {
+     "attempts": [
+      {
+       "text": "mlkwtʾ dqysʾ bʿrbyʾ qydm lmʾdʾ, wʾrʿʾ dymʾ qydm lh",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "mlkwtʾ dqysʾ bʿrbyʾ qydm lmʾdʾ, wʾrʿʾ dymʾ qydm lh",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xpr": {
+     "attempts": [
+      {
+       "text": "Ērānšahr ī Anšōhār ī paščōmār, zamīg ī daryā ī paščōmār",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Ērānšahr ī Anšōhār ī paščōmār, zamīg ī daryā ī paščōmār",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    },
+    "xsa": {
+     "attempts": [
+      {
+       "text": "Dqnt mlk b-m'rb Prs w-b-'rḍ ym-s",
+       "ok": true,
+       "problems": [],
+       "notes": [],
+       "prompt_version": null,
+       "chat_model": null,
+       "script_ratio": 1.0
+      }
+     ],
+     "text": "Dqnt mlk b-m'rb Prs w-b-'rḍ ym-s",
+     "ok": true,
+     "problems": [],
+     "notes": [],
+     "prompt_version": null,
+     "chat_model": null,
+     "temperature": null,
+     "script_ratio": 1.0,
+     "attempt_count": 1
+    }
+   }
+  }
+ ]
+}

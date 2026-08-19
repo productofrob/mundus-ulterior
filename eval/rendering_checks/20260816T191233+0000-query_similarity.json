@@ -1,0 +1,1574 @@
+{
+ "schema": "mundus-ulterior/rendering-similarity/v1",
+ "measured": "20260816T191233+0000",
+ "renderings_file": "eval\\gold\\query_renderings.json",
+ "renderings_digest": "4f88a71089675148",
+ "embedding_model": "voyage/voyage-3.5",
+ "mad_multiple": 2.0,
+ "about": "Ruling 17(b). cos(source query, rendering), pre-rerank, from the same vectors a ranking run computes. Measures semantic drift from the query; does NOT identify a language. Reported, never gated.",
+ "by_language": {
+  "gmq-pro": {
+   "n": 30,
+   "median": 0.6559748370187093,
+   "mad": 0.10066064217104381,
+   "min": 0.3157202132662881,
+   "max": 0.8572144258507647
+  },
+  "grc": {
+   "n": 28,
+   "median": 0.5650324866521876,
+   "mad": 0.07169958497851575,
+   "min": 0.2773951449123753,
+   "max": 0.8048989868673477
+  },
+  "lzh": {
+   "n": 29,
+   "median": 0.6416680595627146,
+   "mad": 0.11135799079800923,
+   "min": 0.2475675781669089,
+   "max": 0.8593105677975713
+  },
+  "oty": {
+   "n": 13,
+   "median": 0.47093830087538063,
+   "mad": 0.04291557334484103,
+   "min": 0.24587208328843005,
+   "max": 0.7148399095907623
+  },
+  "xna": {
+   "n": 30,
+   "median": 0.2877340772602005,
+   "mad": 0.05573060456473511,
+   "min": 0.1347920018765361,
+   "max": 0.6760629256703474
+  },
+  "xpr": {
+   "n": 29,
+   "median": 0.5345905726603304,
+   "mad": 0.09381797332814734,
+   "min": 0.268966238661882,
+   "max": 0.7977115438496534
+  },
+  "xsa": {
+   "n": 30,
+   "median": 0.2673674904699783,
+   "mad": 0.062127866266108236,
+   "min": 0.14493170486833565,
+   "max": 0.6223797161963847
+  }
+ },
+ "rows": [
+  {
+   "query": "How was frankincense gathered and stored in southern Arabia?",
+   "lang": "xna",
+   "cos": 0.1347920018765361,
+   "text": "kyd' 'tqnyt lbwn' w-kyd' tnṭrwh b-drwm 'rby'?",
+   "lang_median": 0.2877340772602005,
+   "outlier": true
+  },
+  {
+   "query": "How did Chinese sources describe the Roman empire?",
+   "lang": "xsa",
+   "cos": 0.14493170486833565,
+   "text": "Kyfm dkrw mṣdr Ṣyny l-Mmlkt Rmnyh?",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "How was frankincense gathered and stored in southern Arabia?",
+   "lang": "xsa",
+   "cos": 0.17573926633532524,
+   "text": "Kyfʿ tḥṣyl w-ʾḥfẓ lbwnt bnʾrḍ Qṭbn?",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+   "lang": "xsa",
+   "cos": 0.1791372603826908,
+   "text": "mlkwt Rūm dy Klkyw w Qpqdwkyw w Šrym w Gltyh",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+   "lang": "xna",
+   "cos": 0.18002276419456378,
+   "text": "dhmw' dhhb' d'tnyn' lmtl' nms' rmyy' d'ntwnynws pws' dštkḥ' bgw' mlk'",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "大秦國在安息西，海西之地",
+   "lang": "xna",
+   "cos": 0.19091106733867116,
+   "text": "mlkwtʾ dqysʾ bʿrbyʾ qydm lmʾdʾ, wʾrʿʾ dymʾ qydm lh",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "How did Chinese sources describe the Roman empire?",
+   "lang": "xna",
+   "cos": 0.1923242907145401,
+   "text": "'yky dkr' mnbw' ṣyny' 't mlkw' d-Rmyh?",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+   "lang": "xna",
+   "cos": 0.19692764958722087,
+   "text": "'bny kmʾ šqpw mn ʿbd mlḥ mqddm mṭbʿ bmdnḥ qdm",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "Roman silver drinking cups found in a Danish chieftain's grave",
+   "lang": "xsa",
+   "cos": 0.20884718695284368,
+   "text": "kws sgr rmyn mn dwqn mlk dnmrk b-qbr",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "What was exported from Adulis?",
+   "lang": "xsa",
+   "cos": 0.21128850216151493,
+   "text": "mh-y khrg mn ʿdwls?",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+   "lang": "xsa",
+   "cos": 0.2145156885763779,
+   "text": "mnt ʿdwls w-ʾl-šn hbʾ l-ʿsmr",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "Roman weapons and equipment deposited in a Danish bog",
+   "lang": "xna",
+   "cos": 0.21596056164042346,
+   "text": "nšqy w-klym rmyy štyqw b-brk dnmrqy",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "Roman silver drinking cups found in a Danish chieftain's grave",
+   "lang": "xna",
+   "cos": 0.22247465261310717,
+   "text": "kswt' ksp' lmšty' 'šr nštkw bqbr' d-mlk' dny'",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "a royal hunt scene on Sasanian metalwork",
+   "lang": "xsa",
+   "cos": 0.22945385636425505,
+   "text": "mnqrt mlk ʿl nḥšt ssnny",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "Mediterranean amphora sherds excavated on the Kerala coast",
+   "lang": "xsa",
+   "cos": 0.2408109392164953,
+   "text": "qṭʿ ʾnfwr mtwsṭ ym ḥfrt ʿly sḥl krʾl",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "大秦國在安息西，海西之地",
+   "lang": "xsa",
+   "cos": 0.2412000050756458,
+   "text": "Dqnt mlk b-m'rb Prs w-b-'rḍ ym-s",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "large ships loading pepper and malabathrum from Kottanarike",
+   "lang": "xna",
+   "cos": 0.24153229277782362,
+   "text": "'nyyʾ rbwt mlʾ pplwn w mlbtrwm mn Qwṭnrq",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+   "lang": "xsa",
+   "cos": 0.24258983562326922,
+   "text": "dhbm mṯl nqd Rmyn mn ʾnṭwnynws Pws wjd bn dlt Mkwng",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "the frankincense-bearing country and the port of Kane in Arabia",
+   "lang": "xna",
+   "cos": 0.24259929704785158,
+   "text": "'rṣ' dyt nṭl' lbwn' w'skl' dy Kn' b'rb'",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "Mediterranean amphora sherds excavated on the Kerala coast",
+   "lang": "xna",
+   "cos": 0.24354869881110172,
+   "text": "qšrwt 'mprwrh mn ym hmwkh 'šr nqbw 'l špt krl",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "大秦國在安息西，海西之地",
+   "lang": "oty",
+   "cos": 0.24587208328843005,
+   "text": "தாக்கிநாடு அரசு அன்பு மேற்கிலும், கடல் மேற்கின் நிலமும்",
+   "lang_median": 0.47093830087538063,
+   "outlier": true
+  },
+  {
+   "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+   "lang": "lzh",
+   "cos": 0.2475675781669089,
+   "text": "夷方商人至牟舍厘，携金而来，以货物而去",
+   "lang_median": 0.6416680595627146,
+   "outlier": true
+  },
+  {
+   "query": "the frankincense-bearing country and the port of Kane in Arabia",
+   "lang": "xsa",
+   "cos": 0.24777792971489201,
+   "text": "'rḍ' dkrt 'lbnt w-mnt' Kn' b-'rb'",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+   "lang": "xna",
+   "cos": 0.24882587427117533,
+   "text": "nmlʾ dʾdwls wšnhg' dkrštʾ dytybwt lʿsmt mlkʾ dʾkswm",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "the valuation of a cargo of nard and ivory shipped on the Hermapollon",
+   "lang": "xsa",
+   "cos": 0.25205672408922497,
+   "text": "qymtw mlḥ nrd w šn' šlḥw ʿl ʾlhrmplwn",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "Roman weapons and equipment deposited in a Danish bog",
+   "lang": "xsa",
+   "cos": 0.25269035549447677,
+   "text": "nšqm w-ʿdm rmyn mwdʿm b-brk dnmrk",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+   "lang": "xsa",
+   "cos": 0.2546919374093422,
+   "text": "ʾḥjr mnsqrm mn ṣnʿt Mtws̱rnh wjdw fy Šrq ʾsyʾ",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+   "lang": "xna",
+   "cos": 0.2607049005950852,
+   "text": "mlkwt' rmyt' d-Qylqyʾ w-Qpqdwqyʾ w-Swryʾ w-Gltyʾ",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+   "lang": "xsa",
+   "cos": 0.2671370505126906,
+   "text": "Yawnr mwsyry pnnwdu wnd qrydu pyrwm",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+   "lang": "xsa",
+   "cos": 0.2675979304272661,
+   "text": "ktb ysʾln mrḥmn b ʿl smwt",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+   "lang": "xpr",
+   "cos": 0.268966238661882,
+   "text": "yawanā Mousirē sōnē āgamya kāriyē parinayanti",
+   "lang_median": 0.5345905726603304,
+   "outlier": true
+  },
+  {
+   "query": "a royal hunt scene on Sasanian metalwork",
+   "lang": "xna",
+   "cos": 0.2758443442765484,
+   "text": "mšḥq' mlk' 'l nḥšt' s's nyn'",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "What did Rome trade with the Kingdom of Aksum?",
+   "lang": "xsa",
+   "cos": 0.27627280973956364,
+   "text": "Mh trdw Rūm ʿm mlkt ʾKsm?",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "What accompanied the bracteate treasure found on Funen?",
+   "lang": "grc",
+   "cos": 0.2773951449123753,
+   "text": "τί συνῆν τῷ θησαυρῷ τῶν βρακτεάτων εὑρεθέντι ἐν Φούνῃ;",
+   "lang_median": 0.5650324866521876,
+   "outlier": true
+  },
+  {
+   "query": "large ships loading pepper and malabathrum from Kottanarike",
+   "lang": "xsa",
+   "cos": 0.28367038826543833,
+   "text": "sufn kbr yḥmlwn plfr w-mlbṯrm mn Kṭnrk",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "How did Mediterranean glassware reach Korea?",
+   "lang": "xna",
+   "cos": 0.2841284490566499,
+   "text": "kyp' 'tk zgjwt mdytrnwn lqwr'?",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "the royal titles claimed by the king of Aksum",
+   "lang": "xna",
+   "cos": 0.284749185676166,
+   "text": "mlkwt' mlk' dy mlk' d'kswm",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "What accompanied the bracteate treasure found on Funen?",
+   "lang": "xna",
+   "cos": 0.2907189688442351,
+   "text": "mnh 'lp 't brktyt' dštkḥt 'l Fwnn?",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "Roman silver drinking cups found in a Danish chieftain's grave",
+   "lang": "xpr",
+   "cos": 0.29417485152720657,
+   "text": "nqysʾ ʾrgwntʾ pʾtryʾ ʾywnd drynkndg kwsʾ hnd dn dʾnmrk srdr gwbr",
+   "lang_median": 0.5345905726603304,
+   "outlier": true
+  },
+  {
+   "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+   "lang": "grc",
+   "cos": 0.2972079275536112,
+   "text": "Ἰάονες Μουσιρίδα χρυσῷ ἐλθόντες ὀψαρίῳ μεταβαίνουσιν",
+   "lang_median": 0.5650324866521876,
+   "outlier": true
+  },
+  {
+   "query": "the valuation of a cargo of nard and ivory shipped on the Hermapollon",
+   "lang": "xna",
+   "cos": 0.29729070470099017,
+   "text": "qīmtā d-qrqltā d-spiknrd w-šnhbly šdyrt 'l-Hermāpwlwn",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+   "lang": "xna",
+   "cos": 0.30082351922277506,
+   "text": "Yawnānā Musīrī dhnbw' bdhbh' wslqw",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+   "lang": "gmq-pro",
+   "cos": 0.3157202132662881,
+   "text": "Yavana Muciṛi poṉṉoṭu vantu kaṛiyoṭu peyarum",
+   "lang_median": 0.6559748370187093,
+   "outlier": true
+  },
+  {
+   "query": "šāhān šāh Ērān ud Anēran Šābuhr",
+   "lang": "xna",
+   "cos": 0.3167050941250236,
+   "text": "mlk' mlk' 'yn w-'yn-'ḥrn Šbwr",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "a Nabataean tomb inscription cursing anyone who disturbs the grave",
+   "lang": "xna",
+   "cos": 0.31879768350940646,
+   "text": "ktb qbr nbṭy 'lh mn yšṭr 't qbrh",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
+   "lang": "xna",
+   "cos": 0.3217319357916789,
+   "text": "Mwzyrys wkn-Nlkwnd' empwryn' d-Lymwrk'",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+   "lang": "xna",
+   "cos": 0.32429357912965273,
+   "text": "ktb mnqš mn ʾrḍ tymn qrʾ l-ʾdn rḥmn ʾdn šmyʾ",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+   "lang": "xpr",
+   "cos": 0.33045075156359954,
+   "text": "nšqft mn tymn drby 'l-rḥmn rb šmyʾ",
+   "lang_median": 0.5345905726603304,
+   "outlier": true
+  },
+  {
+   "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+   "lang": "oty",
+   "cos": 0.33112975129085903,
+   "text": "தெற்கு அரேபிய கல்வெட்டு கருணையுள்ள வானத்தின் ஆண்டவனை வேண்டுகிற",
+   "lang_median": 0.47093830087538063,
+   "outlier": true
+  },
+  {
+   "query": "大秦國在安息西，海西之地",
+   "lang": "xpr",
+   "cos": 0.3312367059770431,
+   "text": "Ērānšahr ī Anšōhār ī paščōmār, zamīg ī daryā ī paščōmār",
+   "lang_median": 0.5345905726603304,
+   "outlier": true
+  },
+  {
+   "query": "an envoy sent by the king of Da Qin, the Roman empire",
+   "lang": "xsa",
+   "cos": 0.33310291948506016,
+   "text": "mlʾk šlḥ mn mlk Dqnn mlkwt Rūmyh",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "What do the Vimose runes say?",
+   "lang": "xsa",
+   "cos": 0.3341189709676546,
+   "text": "Mh yqwl rws Wmws?",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "What accompanied the bracteate treasure found on Funen?",
+   "lang": "xsa",
+   "cos": 0.335875693977614,
+   "text": "Mh ʾṯbʿ ʾl-knz ʾl-brktʾt ʾl-wjd ʿl Fwnn?",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "large ships loading pepper and malabathrum from Kottanarike",
+   "lang": "xpr",
+   "cos": 0.3378378916496508,
+   "text": "grd šiphr xwb-šn pprg ud mlbtrm z Kwtynrk brdn",
+   "lang_median": 0.5345905726603304,
+   "outlier": true
+  },
+  {
+   "query": "What did ships carry from Muziris?",
+   "lang": "xsa",
+   "cos": 0.338836925385076,
+   "text": "mh nšʾw mlḥyn mn Mwzyrys?",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+   "lang": "xsa",
+   "cos": 0.33959032369130515,
+   "text": "šʿr tmyl dkr ʾnyn ywwn bʾw Mukrr wḏhb w-ṯlkw b-flfl",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "How did Mediterranean glassware reach Korea?",
+   "lang": "xsa",
+   "cos": 0.34615806151410483,
+   "text": "Kyfm gls mdtrny šrq l-Kwr?",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "a Nabataean tomb inscription cursing anyone who disturbs the grave",
+   "lang": "xsa",
+   "cos": 0.35781790086620363,
+   "text": "ktb qbr nbṭw lʿn kl mn yʿkr ʾw yšll ʾw yġyr ʾw yḥll ʾw yšʿl ʾw yqṭʿ ʾw yḥrq ʾw yktm ʾw yʾḫḏ mn h-qbr",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "šāhān šāh Ērān ud Anēran Šābuhr",
+   "lang": "xsa",
+   "cos": 0.38323789646800377,
+   "text": "mlk mlkn Saba wa-l-ʿArab Šabur",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "How was frankincense gathered and stored in southern Arabia?",
+   "lang": "xpr",
+   "cos": 0.3922033573287311,
+   "text": "čiyōn lubānag az daxšag-ē nēmrōz-ē Arabāyān griftan ud nihādan būd?",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "an envoy sent by the king of Da Qin, the Roman empire",
+   "lang": "xna",
+   "cos": 0.39471740930282256,
+   "text": "šlīḥ' šdīr mn mlk' d-Dqyn mlkwt' d-Rūmāyē",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "the royal titles claimed by the king of Aksum",
+   "lang": "oty",
+   "cos": 0.39891422542100435,
+   "text": "அக்ஸூமின் அரசனால் கூறப்பட்ட அரச பட்டங்கள்",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "What was exported from Adulis?",
+   "lang": "grc",
+   "cos": 0.4215156275440367,
+   "text": "Τί ἐξ Ἀδούλιδος ἐξήγετο;",
+   "lang_median": 0.5650324866521876,
+   "outlier": true
+  },
+  {
+   "query": "Roman weapons and equipment deposited in a Danish bog",
+   "lang": "xpr",
+   "cos": 0.4290853352102825,
+   "text": "framandar-ī ud abzār-ī Hrōmāyīg pad gaud-ī Dānmārkīg nihād",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "the royal titles claimed by the king of Aksum",
+   "lang": "xsa",
+   "cos": 0.43389869576509105,
+   "text": "ʾlqb mlk ʾksum dy-tqnw",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "How was frankincense gathered and stored in southern Arabia?",
+   "lang": "oty",
+   "cos": 0.4387067425788131,
+   "text": "தெற்கு அரேபியாவில் குண்டுருக்கம் எவ்வாறு சேகரிக்கப்பட்டு சேமிக்கப்பட்டது?",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+   "lang": "xna",
+   "cos": 0.44160430887595314,
+   "text": "šīrā tamilīt dī-mnqdt ʿl ʾnīyāt yawnīyāt dī-mtʾn l-mqrī bdhbh w-nfqn bplplh",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "How did Chinese sources describe the Roman empire?",
+   "lang": "xpr",
+   "cos": 0.4436819802321053,
+   "text": "čiyān nibištagān rōmāyīg šāhanšāhīh čiyōn nibištand?",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "How did Mediterranean glassware reach Korea?",
+   "lang": "xpr",
+   "cos": 0.45156873656999136,
+   "text": "čiyōn šišē-y Frāngestān az Daryāy Miyānē tā Kōryē rasīd?",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "What was exported from Adulis?",
+   "lang": "oty",
+   "cos": 0.4529028120981425,
+   "text": "அடுலിசிலிருந்து என்ன ஏற்றுமதி செய்யப்பட்டது?",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "the frankincense-bearing country and the port of Kane in Arabia",
+   "lang": "oty",
+   "cos": 0.45605637663386367,
+   "text": "கந்தனுடைய நாடு மற்றும் அரேபியாவிலுள்ள கணே துறைமுகம்",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "a Nabataean tomb inscription cursing anyone who disturbs the grave",
+   "lang": "gmq-pro",
+   "cos": 0.45774187121374826,
+   "text": "ein nabatæisk grafarsteinn með bölvi fyrir þann er hrærðir hinn dauða",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "What do the Vimose runes say?",
+   "lang": "grc",
+   "cos": 0.45993254543835743,
+   "text": "Τί λέγουσιν αἱ Οἰμόσης ρῦναι;",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+   "lang": "xpr",
+   "cos": 0.4654811475237258,
+   "text": "sang-hā ud marmārīg ī Thalassīg kār ī Anatolīg ud Yawnānīg ud Rōmānīg ī Purba-Dakṣiṇa Āsiyā ī abāg windād",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "the valuation of a cargo of nard and ivory shipped on the Hermapollon",
+   "lang": "xpr",
+   "cos": 0.46730121059358126,
+   "text": "hamāyišn ī kargān ī spigandag ud dantīg ī pad Hermapollon frēstag",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "a Nabataean tomb inscription cursing anyone who disturbs the grave",
+   "lang": "xpr",
+   "cos": 0.4682967356068848,
+   "text": "ništifriy ī Nabatāyān pad gōhr ī gōbān pad xwāstag ī pad har kas ī gōhr ī xwēš ī frāz ōšmārišn kunēd",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+   "lang": "oty",
+   "cos": 0.47093830087538063,
+   "text": "தென்கடலோரப் பணிமுறையினாலான செதுக்கப்பட்ட மணிகள் தென்கிழக்கு ஆசியாவில் கண்டுபடிந்தன",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+   "lang": "oty",
+   "cos": 0.47614438107581614,
+   "text": "அந்தோனீனுஸ் பியுஸின் ரோமன் நாணயத்தின் பொன்னிய பிரதிபு மெகொங் டெல்டாவில் கண்டெடுக்கப்பட்டது",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "How did Mediterranean glassware reach Korea?",
+   "lang": "grc",
+   "cos": 0.47880089846465396,
+   "text": "Πῶς τὸ Μεσόγειον ὑάλινον σκεῦος εἰς Κορέαν ἀφίκετο;",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What accompanied the bracteate treasure found on Funen?",
+   "lang": "lzh",
+   "cos": 0.48025278501346647,
+   "text": "芬恩島所發現之薄金幣寶藏伴隨何物？",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "a royal hunt scene on Sasanian metalwork",
+   "lang": "xpr",
+   "cos": 0.48050822303838936,
+   "text": "šāhān šikār-ī bar farzānān-ī Sāsānīyān",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "What did ships carry from Muziris?",
+   "lang": "lzh",
+   "cos": 0.48283010339613724,
+   "text": "船自木支離載何物？",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "How was frankincense gathered and stored in southern Arabia?",
+   "lang": "grc",
+   "cos": 0.4871369512277887,
+   "text": "πῶς τὸ λίβανον ἐν τῇ νοτίᾳ Ἀραβίᾳ συνελέγετο καὶ ἐφυλάσσετο;",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What did Rome trade with the Kingdom of Aksum?",
+   "lang": "xna",
+   "cos": 0.488030327317981,
+   "text": "mā nšlḥ Rūmā ʿm mlkwtā d-ʾAksūm?",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "How did Mediterranean glassware reach Korea?",
+   "lang": "gmq-pro",
+   "cos": 0.49311551919313285,
+   "text": "Hvernig kom Miðilhafslandi gler til Kóreu?",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
+   "lang": "xsa",
+   "cos": 0.49401134372347116,
+   "text": "Muzīris w-Nelkunda w-Tyndis, mamlakat Limyarikē",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "Mediterranean amphora sherds excavated on the Kerala coast",
+   "lang": "gmq-pro",
+   "cos": 0.4952724416641188,
+   "text": "Miðilhafskir amforabrotur grafnir á Keralastrondu",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "大秦國在安息西，海西之地",
+   "lang": "grc",
+   "cos": 0.49878024134984555,
+   "text": "ἡ μεγάλη Τσὶν χώρα κεῖται δυσμὰς τῆς Παρθίας, ἐν τῇ γῇ τῇ ἐπέκεινα τῆς θαλάσσης",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+   "lang": "grc",
+   "cos": 0.4988848210641414,
+   "text": "χρυσοῦν μίμημα νομίσματος Ῥωμαϊκοῦ Ἀντωνίνου τοῦ Εὐσεβοῦς εὑρεθὲν ἐν τῷ δέλτᾳ τοῦ Μεκόγγ",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What do the Vimose runes say?",
+   "lang": "lzh",
+   "cos": 0.5002845319705641,
+   "text": "維摩塞盧恩文字說何？",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the frankincense-bearing country and the port of Kane in Arabia",
+   "lang": "gmq-pro",
+   "cos": 0.5007221889785543,
+   "text": "landi þæs olíbani-berandi ok hafnir Kana in Arabiu",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "an envoy sent by the king of Da Qin, the Roman empire",
+   "lang": "oty",
+   "cos": 0.5055742588961618,
+   "text": "தா சீனின் அரசனால் அனுப்பப்பட்ட தூதர், ரோமப் பேரரசு",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "the royal titles claimed by the king of Aksum",
+   "lang": "grc",
+   "cos": 0.5061779099748994,
+   "text": "αἱ βασιλικαὶ τιμαὶ ἃς ὁ βασιλεὺς τῆς Ἀξύμης ἐπεκαλεῖτο",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What was exported from Adulis?",
+   "lang": "xpr",
+   "cos": 0.5109153076184079,
+   "text": "čē pad Adulis frōd abāyišt?",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "Roman weapons and equipment deposited in a Danish bog",
+   "lang": "oty",
+   "cos": 0.5138538742202217,
+   "text": "ரோமன் ஆயுதங்களும் உபகரணங்களும் டேனிய சதுப்புநிலையில் வைக்கப்பட்டவை",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+   "lang": "grc",
+   "cos": 0.5153880301705973,
+   "text": "λίθοι γλυπτοὶ τῆς Μεσογείου τεχνικῆς εὑρεθέντες ἐν τῇ Νοτιοανατολικῇ Ἀσίᾳ",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "大秦國在安息西，海西之地",
+   "lang": "gmq-pro",
+   "cos": 0.5158006046278177,
+   "text": "Stórríki Þín stendur vestr Parthía, lond við haf vestr",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+   "lang": "lzh",
+   "cos": 0.5169945095130625,
+   "text": "丁度、木支里、尼剌幹陀之港口及其所屬之國家",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
+   "lang": "lzh",
+   "cos": 0.5211819508915814,
+   "text": "木支里及涅爾崑達及丁地，利木里基之王國",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "What accompanied the bracteate treasure found on Funen?",
+   "lang": "gmq-pro",
+   "cos": 0.5227262947624917,
+   "text": "Hvat fylgdi brakteatiskum fé funnu á Fúnum?",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
+   "lang": "lzh",
+   "cos": 0.5303100687647053,
+   "text": "木支里與尼爾崑達乃利木瑞基之商埠",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the valuation of a cargo of nard and ivory shipped on the Hermapollon",
+   "lang": "grc",
+   "cos": 0.5328410463282137,
+   "text": "ἡ τιμολόγησις τοῦ φορτίου νάρδου καὶ ἐλέφαντος πεμφθέντος ἐπὶ τοῦ Ἑρμαπόλλωνος",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What did ships carry from Muziris?",
+   "lang": "xna",
+   "cos": 0.5328573244456515,
+   "text": "mā nśʾw ʾnyyʾ mn Muziris?",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
+   "lang": "xna",
+   "cos": 0.5339629186493862,
+   "text": "Mwzyrys wkl Nlkyndh wkl Tyndys, mlkwt' dy Lmyrykh",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "an envoy sent by the king of Da Qin, the Roman empire",
+   "lang": "xpr",
+   "cos": 0.5345905726603304,
+   "text": "framadar ī pad šāh ī Da Qin, šāhanšāh ī Hrōm frāz šudag",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "How did Chinese sources describe the Roman empire?",
+   "lang": "gmq-pro",
+   "cos": 0.5382466068526516,
+   "text": "Hvernig lýstu Kínversk heimildir Rómaveldinu?",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "What did ships carry from Muziris?",
+   "lang": "xpr",
+   "cos": 0.5385754920068183,
+   "text": "čē pad Muziris az kištig čē abāyēnd?",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "the royal titles claimed by the king of Aksum",
+   "lang": "xpr",
+   "cos": 0.5409436456868699,
+   "text": "šāhanšāh nāmag ī šāh ī Aksum dādestān",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "šāhān šāh Ērān ud Anēran Šābuhr",
+   "lang": "gmq-pro",
+   "cos": 0.5412070634278434,
+   "text": "konungr konunga Airanō ok Anairanō Šabuhr",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "the valuation of a cargo of nard and ivory shipped on the Hermapollon",
+   "lang": "gmq-pro",
+   "cos": 0.5454817487341106,
+   "text": "mating af farmaþi nardaz ok elfantabain skipaz a Hermapollani",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+   "lang": "grc",
+   "cos": 0.5460275553583397,
+   "text": "αἱ λιμένες Τύνδεως καὶ Μουζήρεως καὶ Νελκύνδας καὶ αἱ βασιλεῖαι αἷς ἀνήκουσιν",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
+   "lang": "xsa",
+   "cos": 0.551641635843928,
+   "text": "Muzīris w-Nalkynda mwdʿ n-Lymyrykh",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+   "lang": "xpr",
+   "cos": 0.556580180824327,
+   "text": "zarēš hamāyišn ī sikkē ī Rōmāyīg ī Antōnīnōs Pīōs ī pad Mēkong daltā abāg haft",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "Mediterranean amphora sherds excavated on the Kerala coast",
+   "lang": "grc",
+   "cos": 0.557063422301268,
+   "text": "Μεσόγειοι ἀμφορέων ὄστρακα ἀνασκαφέντα ἐπὶ τῆς Κεράλα παραλίας",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+   "lang": "grc",
+   "cos": 0.5590719096628213,
+   "text": "ἐπιγραφὴ Νοτίου Ἀραβίας ἐπικαλουμένη τὸν ἐλεήμονα κύριον τῶν οὐρανῶν",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What did Rome trade with the Kingdom of Aksum?",
+   "lang": "xpr",
+   "cos": 0.5607781101627269,
+   "text": "čē Rom pad Aksum šāhān šāh pad kē handēzīhā abāz dād?",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+   "lang": "gmq-pro",
+   "cos": 0.5654257587136852,
+   "text": "suðrarbíarabisk ritun biðjandi þess arðs dróttins himils",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "the valuation of a cargo of nard and ivory shipped on the Hermapollon",
+   "lang": "lzh",
+   "cos": 0.5665264154136612,
+   "text": "赫爾瑪波隆號船上運載的甘松與象牙貨物之估價",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "Roman weapons and equipment deposited in a Danish bog",
+   "lang": "grc",
+   "cos": 0.570993063641554,
+   "text": "ὅπλα καὶ σκευὴ Ῥωμαϊκὰ ἐν ἑλώδει τόπῳ τῆς Δανίας κατατεθειμένα",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+   "lang": "gmq-pro",
+   "cos": 0.5743752334897225,
+   "text": "ristaðir gimsteinar af Miðilhafslandi handverkum funir í Suðaustur Asíu",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "What accompanied the bracteate treasure found on Funen?",
+   "lang": "xpr",
+   "cos": 0.5821082030708091,
+   "text": "čē pad bracteate ganj ī Funen abāg čē hanjāmand būd?",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "What was exported from Adulis?",
+   "lang": "xna",
+   "cos": 0.5857394253596386,
+   "text": "mā' itpqad min Adulis?",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "What do the Vimose runes say?",
+   "lang": "oty",
+   "cos": 0.5870015761428303,
+   "text": "விமோசே ருணுக்கள் என்ன சொல்லுகின்றன?",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "Mediterranean amphora sherds excavated on the Kerala coast",
+   "lang": "lzh",
+   "cos": 0.5879299782357122,
+   "text": "地中海陶罐碎片 於喀拉拉海岸出土",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "a Nabataean tomb inscription cursing anyone who disturbs the grave",
+   "lang": "grc",
+   "cos": 0.589103174028813,
+   "text": "ἐπιγραφὴ τάφου Ναβαταίου κατάρα τινὰ κατακαταρωμένη τὸν ταράσσοντα τὸν τάφον",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "šāhān šāh Ērān ud Anēran Šābuhr",
+   "lang": "lzh",
+   "cos": 0.5903395468092019,
+   "text": "沙漢沙赫伊蘭烏德安伊蘭沙布爾",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "How did Mediterranean glassware reach Korea?",
+   "lang": "oty",
+   "cos": 0.5913248692327192,
+   "text": "மத்திய தரைக்கடல் கண்ணாடிப் பொருட்கள் கொரியாவுக்கு எவ்வாறு வந்தன?",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "Roman silver drinking cups found in a Danish chieftain's grave",
+   "lang": "grc",
+   "cos": 0.5916321417293243,
+   "text": "ἀργυροῦν ποτήρια Ῥωμαϊκὰ εὑρεθέντα ἐν τάφῳ Δανικοῦ ἀρχηγοῦ",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "an envoy sent by the king of Da Qin, the Roman empire",
+   "lang": "lzh",
+   "cos": 0.5995832699566023,
+   "text": "大秦王遣遣之使",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "How was frankincense gathered and stored in southern Arabia?",
+   "lang": "gmq-pro",
+   "cos": 0.6025236699061713,
+   "text": "Hvernig var olíbanum safnað og geymt í suðurArabíu?",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "šāhān šāh Ērān ud Anēran Šābuhr",
+   "lang": "grc",
+   "cos": 0.6045374842561355,
+   "text": "βασιλεὺς βασιλέων Ἰρανίας καὶ Ἀνιρανίας Σάβωρος",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+   "lang": "grc",
+   "cos": 0.6089491586131963,
+   "text": "τὸ ἐμπόριον τῆς Ἀδούλιδος καὶ τὸ ἐλέφας κομισθὲν εἰς τὴν πρωτεύουσαν τῶν Ἀξουμιτῶν",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "the royal titles claimed by the king of Aksum",
+   "lang": "lzh",
+   "cos": 0.6114850949986249,
+   "text": "阿克蘇姆王所聲稱之王號",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the frankincense-bearing country and the port of Kane in Arabia",
+   "lang": "grc",
+   "cos": 0.6128616682233241,
+   "text": "ἡ λιβανωτοφόρος χώρα καὶ τὸ ἐμπόριον Κάνη ἐν τῇ Ἀραβίᾳ",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What did Rome trade with the Kingdom of Aksum?",
+   "lang": "gmq-pro",
+   "cos": 0.6142465303064346,
+   "text": "Hvat skipta Rómaborg við Aksumaríki?",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+   "lang": "lzh",
+   "cos": 0.6155502471211404,
+   "text": "泰米爾詩描寫雍那船隻抵達木支里攜金而來、載胡椒而去",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+   "lang": "xpr",
+   "cos": 0.620841932978056,
+   "text": "Tamil kavya oru Yavana nāvāikaḷ Muciri-kku vanttu poṉ-ōdum vanttu milaku-ōdum poyi",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+   "lang": "xsa",
+   "cos": 0.6223797161963847,
+   "text": "mwānʾ Tyndis w-Muziris w-Nelkynda w-l-mamālik ʾilā ʾilhm tntsʿ",
+   "lang_median": 0.2673674904699783,
+   "outlier": false
+  },
+  {
+   "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+   "lang": "xpr",
+   "cos": 0.6284085459884777,
+   "text": "bandargān ī Tyndis ud Muziris ud Nelkynda ud šāhrgān ī pad ān abāg hend",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "a royal hunt scene on Sasanian metalwork",
+   "lang": "lzh",
+   "cos": 0.6317355987521134,
+   "text": "薩珊金屬器上之王狩獵場景",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the frankincense-bearing country and the port of Kane in Arabia",
+   "lang": "lzh",
+   "cos": 0.6416680595627146,
+   "text": "乳香國及阿拉伯之凱尼港",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "What did ships carry from Muziris?",
+   "lang": "grc",
+   "cos": 0.6421794113068771,
+   "text": "τί τὰ πλοῖα ἐκ Μουζίριδος ἔφερον;",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "large ships loading pepper and malabathrum from Kottanarike",
+   "lang": "lzh",
+   "cos": 0.6473356850525063,
+   "text": "大船自科塔那里克裝載胡椒及葉子香料",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "large ships loading pepper and malabathrum from Kottanarike",
+   "lang": "grc",
+   "cos": 0.6480564179647129,
+   "text": "μεγάλα πλοῖα φορτία πέπερι καὶ μαλάβαθρον ἀπὸ Κοττανάρικης φορτοῦντα",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What do the Vimose runes say?",
+   "lang": "gmq-pro",
+   "cos": 0.6485797003608134,
+   "text": "Hvat segja Vimósa rúnir?",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+   "lang": "xna",
+   "cos": 0.6509495103367179,
+   "text": "nmlʾ dy Tyndis w-Muziris w-Nelkynda w-mlkwtʾ dy hnnwn",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "an envoy sent by the king of Da Qin, the Roman empire",
+   "lang": "grc",
+   "cos": 0.6573130653053686,
+   "text": "πρέσβις ἀπεσταλμένος ὑπὸ τοῦ βασιλέως τῆς Δα Κιν, τῆς Ῥωμαϊκῆς ἀρχῆς",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "a South Arabian inscription invoking the merciful lord of the heavens",
+   "lang": "lzh",
+   "cos": 0.6584066229307538,
+   "text": "南阿拉伯銘文祈求慈悲之天主",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "What did Rome trade with the Kingdom of Aksum?",
+   "lang": "grc",
+   "cos": 0.6611973539064491,
+   "text": "Τί ἡ Ῥώμη ἐμπορεύετο μετὰ τῆς βασιλείας τῆς Ἀξύμης;",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "Roman weapons and equipment deposited in a Danish bog",
+   "lang": "gmq-pro",
+   "cos": 0.6633699736766053,
+   "text": "Rómversk vápn ok búnaðr lagðr í danskan mór",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "How was frankincense gathered and stored in southern Arabia?",
+   "lang": "lzh",
+   "cos": 0.6675749831668099,
+   "text": "南阿拉伯乳香如何採集及貯藏？",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+   "lang": "grc",
+   "cos": 0.6716042005488577,
+   "text": "Ταμιλικὸν ποίημα περὶ Ἰαβανικῶν πλοίων εἰς Μουζίριν ἀφικνουμένων μετὰ χρυσοῦ καὶ ἀπερχομένων μετὰ πέπερος",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+   "lang": "lzh",
+   "cos": 0.6718092388721982,
+   "text": "羅馬之基利家、卡帕多基亞、敘利亞及加拉太諸省",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "What do the Vimose runes say?",
+   "lang": "xna",
+   "cos": 0.6760629256703474,
+   "text": "mā ʾmryn rūšy Vimose?",
+   "lang_median": 0.2877340772602005,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
+   "lang": "xpr",
+   "cos": 0.6838440298175118,
+   "text": "Muzirīs ud Nelkunda hānīyān ī Limyrikē",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "How did Chinese sources describe the Roman empire?",
+   "lang": "grc",
+   "cos": 0.6878651058709315,
+   "text": "πῶς αἱ Χῖναι πηγαὶ τὴν Ῥωμαϊκὴν ἀρχὴν περιέγραψαν;",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "What was exported from Adulis?",
+   "lang": "lzh",
+   "cos": 0.6921063394062575,
+   "text": "阿杜利斯出口何物？",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
+   "lang": "gmq-pro",
+   "cos": 0.6956868658269851,
+   "text": "Muzīris ok Nelkunda ok Tundis, konungríki þæs Limyrikæ",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+   "lang": "xpr",
+   "cos": 0.6960744005685262,
+   "text": "bandargāh ī Adulis ud hāthī-dand ī āwurd tā šahr ī Aksum",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "an envoy sent by the king of Da Qin, the Roman empire",
+   "lang": "gmq-pro",
+   "cos": 0.6972105317797022,
+   "text": "sendimaðr sendr af konungi Daqin, Rómaveldis",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "What did ships carry from Muziris?",
+   "lang": "gmq-pro",
+   "cos": 0.7006477443938796,
+   "text": "Hvat baru skip frá Muziris?",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "a royal hunt scene on Sasanian metalwork",
+   "lang": "grc",
+   "cos": 0.7045946839761408,
+   "text": "σκηνὴ βασιλικῆς θήρας ἐπὶ μεταλλικῶν ἔργων Σασανιδικῶν",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "the frankincense-bearing country and the port of Kane in Arabia",
+   "lang": "xpr",
+   "cos": 0.7095304190462913,
+   "text": "ī frānkīnsens-bārandī kuntrī ud ī pōrt ī Kānē ī Arabīyā",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "How did Chinese sources describe the Roman empire?",
+   "lang": "oty",
+   "cos": 0.7148399095907623,
+   "text": "சீனப் பொருளாய்ப்பு நூல்கள் ரோமப் பேரரசை எவ்வாறு விவரித்தன?",
+   "lang_median": 0.47093830087538063,
+   "outlier": false
+  },
+  {
+   "query": "a royal hunt scene on Sasanian metalwork",
+   "lang": "gmq-pro",
+   "cos": 0.7181247639469693,
+   "text": "konungligr huntscen á Sasansku málmverki",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα καὶ Τύνδις, βασιλεῖαι τῆς Λιμυρικῆς",
+   "lang": "xpr",
+   "cos": 0.7182417063234122,
+   "text": "Muzirīs ud Nelkunda ud Tyndis, šāhān ī Limyrikē",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "What was exported from Adulis?",
+   "lang": "gmq-pro",
+   "cos": 0.7221138300229326,
+   "text": "Hvat var útflutit frá Adulis?",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+   "lang": "gmq-pro",
+   "cos": 0.7286212045125033,
+   "text": "Rómverjalanda Kilikía, Kappadókía, Suría ok Galatía",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "Μουζιρὶς καὶ Νέλκυνδα ἐμπόρια τῆς Λιμυρικῆς",
+   "lang": "gmq-pro",
+   "cos": 0.7313803420860207,
+   "text": "Muzirís ok Nelkunda kaupstöðir þærs Limyrikæ",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "a Nabataean tomb inscription cursing anyone who disturbs the grave",
+   "lang": "lzh",
+   "cos": 0.732293522890706,
+   "text": "納巴泰人墓碑銘文詛咒任何擾亂墓葬者",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+   "lang": "gmq-pro",
+   "cos": 0.7367732897061956,
+   "text": "Adulis hafn ok elfendbein borit til Aksumisku höfuðborgar",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "Roman silver drinking cups found in a Danish chieftain's grave",
+   "lang": "gmq-pro",
+   "cos": 0.7468030330761982,
+   "text": "Rómversk silfr drykkjukoppar fundinir í danska höfðingja haugi",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "What do the Vimose runes say?",
+   "lang": "xpr",
+   "cos": 0.7553944446334967,
+   "text": "čiyā Vimose rune-ā čiyānd?",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+   "lang": "lzh",
+   "cos": 0.7604853850188266,
+   "text": "在湄公河三角洲發現之安敦尼烏斯·庇烏斯羅馬錢幣之金製仿品",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "engraved gemstones of Mediterranean workmanship found in Southeast Asia",
+   "lang": "lzh",
+   "cos": 0.7709286545496009,
+   "text": "在東南亞發現之地中海工藝雕刻寶石",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the port of Adulis and the ivory brought to the Aksumite capital",
+   "lang": "lzh",
+   "cos": 0.7740368827791763,
+   "text": "阿杜利斯港及運至阿克蘇姆首都之象牙",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "Roman silver drinking cups found in a Danish chieftain's grave",
+   "lang": "lzh",
+   "cos": 0.779104379345775,
+   "text": "羅馬銀製飲杯出土於丹麥酋長之墓",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+   "lang": "xpr",
+   "cos": 0.7862077140264198,
+   "text": "Kilikia, Kappadokia, Suriya ud Galatia, Romāyīg šahrvān",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "a Tamil poem describing Yavana ships arriving at Muciri with gold and departing with pepper",
+   "lang": "gmq-pro",
+   "cos": 0.786779688424115,
+   "text": "tamilsk kviðr um yavana skip at komandi til mukiris með gulli ok farandi með pipri",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "Mediterranean amphora sherds excavated on the Kerala coast",
+   "lang": "xpr",
+   "cos": 0.7977115438496534,
+   "text": "Šerds ī amphorā ī Thalassā ī Mediterranā ī kāvēd ī pad kīnārā ī Kerala",
+   "lang_median": 0.5345905726603304,
+   "outlier": false
+  },
+  {
+   "query": "a gold imitation of a Roman coin of Antoninus Pius found in the Mekong delta",
+   "lang": "gmq-pro",
+   "cos": 0.7993077126077243,
+   "text": "gullz aflíkingr af Rómversku myntum Antonínusar þess friðsamra funinn í Mekongz delta",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "large ships loading pepper and malabathrum from Kottanarike",
+   "lang": "gmq-pro",
+   "cos": 0.8008671615833419,
+   "text": "stórir skip hlöðandi pipri ok malabathrum frá Kottanáríki",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "the Roman provinces of Cilicia, Cappadocia, Syria and Galatia",
+   "lang": "grc",
+   "cos": 0.8048989868673477,
+   "text": "αἱ Ῥωμαϊκαὶ ἐπαρχίαι Κιλικίας, Καππαδοκίας, Συρίας καὶ Γαλατίας",
+   "lang_median": 0.5650324866521876,
+   "outlier": false
+  },
+  {
+   "query": "Roman weapons and equipment deposited in a Danish bog",
+   "lang": "lzh",
+   "cos": 0.808232642885389,
+   "text": "羅馬兵器及裝備沈於丹麥沼澤",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "What did Rome trade with the Kingdom of Aksum?",
+   "lang": "lzh",
+   "cos": 0.8086066235941479,
+   "text": "羅馬與阿克蘇姆王國貿易何物？",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the ports of Tyndis, Muziris and Nelkynda and the kingdoms they belong to",
+   "lang": "gmq-pro",
+   "cos": 0.8232514371763138,
+   "text": "þæir hafnir Tyndis, Muziris ok Nelkynda ok þau ríki er þau tilheyra",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "How did Chinese sources describe the Roman empire?",
+   "lang": "lzh",
+   "cos": 0.8429838571213116,
+   "text": "中國文獻如何描述羅馬帝國？",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  },
+  {
+   "query": "the royal titles claimed by the king of Aksum",
+   "lang": "gmq-pro",
+   "cos": 0.8572144258507647,
+   "text": "konungligir titlar þeir er konungr Aksum kvaðsk eigandi",
+   "lang_median": 0.6559748370187093,
+   "outlier": false
+  },
+  {
+   "query": "How did Mediterranean glassware reach Korea?",
+   "lang": "lzh",
+   "cos": 0.8593105677975713,
+   "text": "地中海玻璃器皿如何傳入朝鮮？",
+   "lang_median": 0.6416680595627146,
+   "outlier": false
+  }
+ ]
+}

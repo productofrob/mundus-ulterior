@@ -10299,3 +10299,316 @@ If it lands, the honest report is: 30/30 records found, 21-or-so of 30 source
 texts reachable, one gate criterion still unmet, and the recall reached partly
 through English on nine units. That is a very different sentence from "G2
 passed", and it is the one that goes in the deliverable.
+
+# G2's recall criterion is MET: 29/30 = 0.967 (2026-08-16)
+
+Run `20260816T162515+0000-…-collapsed-reranked50.json`, committed at `695a06b`.
+
+```
+                                 recall@6      MRR@10
+uncollapsed, no rerank           27/30 0.900   0.726
+collapsed (C2a, rulings 8-11)    28/30 0.933   0.834
+collapsed + reranked (C3)        29/30 0.967   0.841   <- G2 needs >=0.95
+via the original text            21/30 0.700
+```
+
+**The two interventions are complementary, and neither reaches the gate alone.**
+
+```
+collapse alone fixes   adulis-exports        15 -> 3
+rerank alone fixes     aksum-trade-adulis    35 -> 2
+                       au-khao-sam-kaeo      17 -> 1
+rerank alone breaks    adulis-exports         3 -> 8   (its one cost)
+```
+
+Together: 27 + collapse(+1) + rerank(+2, −1) = **29/30**. The single remaining
+miss is `adulis-exports`, which the collapse fixes and the reranker undoes.
+
+`china-describes-rome` survives this time — `weilue` slips 5 → 7 but `houhanshu`
+holds at 4, and the unit scores on its best target under ruling 1.
+
+## What the number does and does not say
+
+Nine pairs reached a SOURCE TEXT through its English, including
+`muziris-cargo-akananuru` at 309 → 5 under collapse and → 39 after reranking.
+Three more entered through a translation-role chunk of a record that has no
+source text, which ruling 11 correctly does not count as a bypass.
+
+**29/30 is whether the record was found. 21/30 is whether the non-English text
+was reachable.** G2 asks the first question. This project exists to answer the
+second, and the answer is 0.700.
+
+## An instrument gap, recorded rather than fixed in the same breath
+
+`recall@6 via the original text` is computed on the COLLAPSED ordering, before
+reranking. **The adopted configuration is collapse + rerank, so the companion
+does not currently describe the configuration the gate passed under.** It is a
+pre-rerank number reported on a post-rerank page — exactly the kind of mismatch
+ruling 3 exists to prevent, arriving in the instrument built to prevent it.
+
+Fix: compute it a second time on the reranked ordering and print both, named for
+where each was measured. Not done in this session, deliberately: the number is
+currently conservative in the right direction and nothing depends on it yet.
+
+## G2, as it now stands
+
+```
+[x] ranking metric over >=20 pairs, baseline recorded before any change
+[x] distractor curve to >=450, shape stated and reproducible
+[x] top 6 for >=95% at 450        29/30 = 0.967, collapse + rerank
+[ ] score gap wider than baseline +0.016 vs +0.0249. NOT MET, and untouchable
+                                  by C2a and C3 alike. Ruling 10's query
+                                  translation is the only remaining candidate.
+[ ] measured across >=2 days      one day. Runs now take seconds, so this is
+                                  cheap — but not until the configuration is
+                                  final, and it is not.
+[x] cite.py third match state, mutation-verified
+[x] translation_chunk* rename
+```
+
+**Five of seven. The two outstanding are the gap and the second day, and the
+second day is blocked on the gap because C2 will change the configuration.**
+
+## The configuration is now declared, because C5-C6 must measure a fixed one
+
+**Adopted: `--collapse --rerank`.** C3 was a net negative on its own and is not
+one in combination — it is the difference between 28/30 and 29/30 — so it earns
+its place, and the earlier reading that it should be dropped is withdrawn on
+this evidence.
+
+## Suites
+
+```
+python -m eval.test_ranking_check      131 assertions   (67 at the start of the day)
+python scripts\mutate_ranking.py        50 mutations    (23 at the start of the day)
+```
+
+## Next, in order
+
+1. **Does C2a subsume C4?** The runbook's C4 re-examines `align._merge`
+   presenting a whole section when one member was retrieved — which is the same
+   territory ruling 8 has now ruled on from the retrieval side. If it does, an
+   item the plan flags as *"most likely to absorb a week for a null result"*
+   closes on an argument rather than a week. Ruling, not code.
+2. **C2 as query translation**, per ruling 10. The only remaining candidate for
+   the gap criterion, and the only intervention aimed at the 21/30 rather than
+   the 29/30.
+3. **Fix the companion's measurement point** (above) before any number produced
+   under it is reported outside this file.
+4. **Then, and only then, C5-C6**: two runs on different days against the frozen
+   configuration.
+
+## Handoff
+
+`C2_START.md` is the starting point for the next thread, and is also written to
+the project as `claude/c2-start.md` so a new session sees it without being told.
+It carries the measured state, the eleven rulings in one line each, what C2 must
+clear, four design constraints — including the leakage trap that would
+invalidate the whole intervention — the traps this session paid for, and the
+verification commands with their expected numbers.
+
+`C3_START.md` is superseded and says so in `C2_START.md`. It is kept for its
+traps, not its state.
+
+**What this session cost and produced.** Eight reranked runs and four collapse
+runs; ~2.4M rerank tokens, 1.2% of the free allowance, and $0. Assertions 67 →
+131, mutations 23 → 50. Five rulings made and implemented. G2's recall criterion
+moved from unmet to met, 27/30 → 29/30, by two interventions neither of which
+reaches it alone. One companion metric added that no translation-mediated fix
+can inflate, and which says the honest number is 21/30. Six defects found in the
+tooling that measures all of it, and the repository under version control for
+the first time since Block A2.
+
+# C2 is measured and REJECTED: the gap moved +0.0003 (2026-08-17)
+
+_Run `20260817T080300+0000-retrievable_chunks_with_distractors-collapsed-reranked50.json`.
+Renderings digest `af427581d957d0ba`, 205 admitted, 0 held._
+
+Ruling 10 named query translation as the only remaining candidate for the gap
+criterion. It has now been built, declared in advance, and measured. It does not
+work, and the run says so in more than one way.
+
+## The number
+
+```
+                    recall@6      MRR@10    gapDoc     gapAny
+single-variant      27/33 pairs    0.636   +0.0160    -0.0151
+fused               26/33 pairs    0.579   +0.0163    -0.0174
+
+per unit            pre    collapsed  reranked   via original
+single-variant      27/30    28/30      29/30       21/30
+fused               25/30    26/30      29/30       20/30
+
+GAP     B2 baseline +0.0249    single +0.0160    fused +0.0163
+```
+
+## Why it is rejected, and it is not close
+
+1. **The gap did not move.** +0.0160 → +0.0163 over 33 pairs: the fourth decimal,
+   and still below the baseline G2 names. `gapAny`, the diagnostic, got **worse**.
+2. **Recall fell**, 27/30 → 25/30 pre-rerank and 28/30 → 26/30 collapsed. Both
+   arms land at 29/30 only because the cross-encoder rescues the fused arm from
+   further back.
+3. **`recall@6 via the original text` fell, 21/30 → 20/30.** That is the number
+   this project exists to raise, and C2 was the only intervention aimed at it.
+4. **Old Tamil went 2/3 → 0/3.** The language C2 was built for, and the one most
+   of the session's rendering work went into, is the single language fusion
+   destroyed. Every other language held or gained; `grc` went 8/12 → 9/12.
+
+## The mechanism, because it generalises
+
+Max over eight variants raises the ceiling for **every** candidate. A target
+gains only where its own-language rendering is good; a distractor gains from all
+eight draws. Renderings claimed the target's score for 19 of 33 pairs — and
+recall still fell, because the same renderings were lifting distractors faster.
+
+That is not a defect in the renderings and not a defect in the fusion. It is what
+max-fusion does to a 450-chunk index where, for any given target, seven of eight
+variants are in the wrong language. Ruling 13 was declared before a call was
+spent and produced a clean negative. **That is the instrument working.**
+
+## Ruling 15b's control fired on the first run that could trip it
+
+`probe-tamil-akananuru` — a Tamil query against a Tamil target, rank 1 in the
+single-variant arm — **fell to rank 14 under fusion**. The control was written
+the day before precisely to catch a rendering beating a native-language query,
+and it caught it. It is reported, never gated, exactly as ruled.
+
+## The gap criterion has never been measured the way it is written
+
+G2 says *"score gap wider than baseline, **same pairs**"*. The pairs changed:
+Block C's fifth item added `probe-tamil-akananuru-en` on 2026-08-14, after the
+baseline was recorded, and it is the hardest pair in the set at gapDoc −0.098.
+
+```
+gapDoc, all 33 pairs                 +0.0161   (the run prints +0.0160)
+gapDoc, the 32 pairs B2 measured     +0.0196
+W2b's recorded 450-chunk rung        +0.020
+```
+
+**The apparent slide from +0.020 to +0.0160 is the denominator changing, not
+retrieval degrading.** It does not rescue G2 — +0.0196 at 450 is still under
++0.0249 at 57 — but the criterion as applied has been comparing two different
+pair sets *and* two different index sizes, and only one of those was intended.
+Figures reconstructed from the printed table, which rounds to three decimals;
+recompute from the archived run before either leaves this file.
+
+## Thirteen rulings, 12–24
+
+Full text and costs in `C2_RULINGS.md`. In one line each:
+
+12. The render language set comes from the **INDEX**, never the pair; the file is
+    keyed on query text and holds no pair id, so leakage is not representable.
+13. Fusion is **max per candidate**, declared before any call. Exact only because
+    `SEARCH_K is None`; `fuse` asserts that and refuses otherwise.
+14. Every C2 run reports **both arms**, same index, same day. A fused gap below
+    the same-run single-variant arm is not a win, and the report will not say it is.
+15b. The rule is **uniform**; the control is an assertion the pipeline can fail.
+16. The reranker keeps the pair's **own query text**; the cache keys on the arm
+    and the candidate ids, or the fused arm gets the single arm's scores.
+17. Script check, query-to-query cosine (reported, never gated), renderings
+    archived, and the sentence that travels with every number.
+18. **C4 closed** as a ranking item — `_merge` is inert in the harness.
+19. Renderings are **frozen data**; the content hash is in every run.
+20. Script floor **1.0**; a retry is a different prompt under its own version.
+21. Attempts are **additive**; a retry can only improve the file.
+22. Temperature is **classified, recorded and opt-in** — never dropped.
+23. Uneven sampling recorded (23a); marks judged, not only letters (23b).
+24. The verdict is **derived on read**, never trusted from disk.
+
+## G2, as it now stands
+
+```
+[x] ranking metric over >=20 pairs, baseline recorded before any change
+[x] distractor curve to >=450, shape stated and reproducible
+[x] top 6 for >=95% at 450        29/30 = 0.967, collapse + rerank
+[ ] score gap wider than baseline +0.0160 vs +0.0249. NOT MET, and there is
+                                  now NO INTERVENTION LEFT: ruling 5 settled
+                                  that no reranker can move it, and C2 — the
+                                  only candidate — has been measured.
+[ ] measured across >=2 days      C5-C6, and no longer blocked: the adoption
+                                  decision the second day was waiting on is
+                                  made.
+[x] cite.py third match state, mutation-verified
+[x] translation_chunk* rename
+```
+
+**Five of seven. C5-C6 takes it to six and does not change the verdict.** The
+gate now rests entirely on how its gap criterion is read.
+
+## The configuration is unchanged, and now frozen
+
+**`--collapse --rerank`, exactly as adopted on 2026-08-16.** C2 is not adopted.
+`--fuse` stays in the repository, off by default, as a measured negative with 209
+assertions and 86 mutations behind it. The renderings file is not read by the
+frozen configuration at all, so its digest stops being something to hold still.
+
+## Eight defects in the instrument, found by using it
+
+1. **A test whose failure detail is non-Latin DIED instead of failing.** Through
+   a pipe on Windows the child's stdout falls back to cp1252 and `print` raises.
+   Invisible at baseline — the detail only prints on failure — so the mutation
+   harness saw a crash where there was a caught failure and reported a working
+   mutation as unwatched. **Every guard in this repository whose message carries
+   Greek, Tamil or Chinese was affected.** Both ends fixed: `check()` escapes
+   rather than dies, and the harness forces UTF-8 on the child.
+2. **Deleting code by line offset took a neighbouring function with it.**
+   `write_atomically` vanished and surfaced as a `NameError` at the moment of
+   writing, *after* a correction had been detected and announced. Delete by name.
+3. **An inverted log line** printed "kept the earlier attempt" on exactly the
+   sixteen rows where the new attempt had won.
+4. **A loader that dropped `text`/`ok` made the promotion counter blind**, so a
+   computed correction was reported as "nothing to do" and thrown away unwritten.
+5. **The reader trusted a stored verdict.** The file said `ok: true` for a
+   rendering carrying a Malayalam vowel sign, judged under the pre-23b guard, and
+   the fusion would have embedded it. Ruling 24.
+6. **A retry at temperature 0 is the same call.** The corrective prompt made Old
+   Tamil *worse* on seven of ten rows — and the retry pass overwrote the better
+   text, which is why attempts are now additive.
+7. **A fixture where the max is the last value tests the word "max"**, not the
+   behaviour. Two fusion mutations passed until the fixture was rebuilt so that
+   neither first-wins nor last-wins reproduces the answer.
+8. **A check that greps a heading passes against a report that prints the heading
+   and no rows.**
+
+## Suites
+
+```
+python -m eval.test_ranking_check      209 assertions   (131 at the start)
+python scripts\mutate_ranking.py        86 mutations    (50 at the start)
+```
+
+## Next, in order
+
+1. **C5**: the frozen configuration, today. **C6**: the same command on a
+   different calendar day. Nothing on the ranking path may change between them.
+2. **The via-original measurement point** — still computed pre-rerank while the
+   configuration reranks. It touches the ranking path, so it lands **before C5 or
+   after C6, never between**.
+3. **Decision 3, the gap criterion**, argued against the recomputed same-pairs
+   number and not the current one. Recompute **offline from the archives**, not
+   by changing the harness. `C2_RESULT.md` sets out 3a (kill trigger 1), 3b
+   (recompute first) and 3c (replace the criterion) with their costs.
+   **Recommended: 3b, then 3a or 3c. Do not skip to 3c** — changing a gate after
+   seeing the number it failed is the most dangerous move available.
+
+## Handoff
+
+`C5_START.md` is the starting point for the next thread, written to the project
+as `claude/c5-start.md` so a new session sees it without being told. It carries
+the measured state, the frozen configuration as a literal command, the numbers
+C5 must reproduce, rulings 12–24 in one line each, the nine traps this session
+paid for, and the sequencing trap above.
+
+`C2_START.md` is superseded. `C2_STATUS.md` is marked superseded in place and
+kept for its refuse-list, which stands.
+
+**What this session cost and produced.** ~257 chat calls across three models'
+worth of rendering attempts, ~454 embedded texts, 60 rerank requests and 627K
+rerank tokens — 0.3% of the free allowance, and $0. Assertions 131 → 209,
+mutations 50 → 86. Thirteen rulings made and implemented. A complete
+query-translation pipeline built, declared in advance, measured, and **rejected
+on its own evidence** — which is the outcome the rulings were written to make
+possible. Eight defects found in the tooling that measures all of it, one of
+which had been silently unwatching guards across the whole repository. G2 is
+unchanged at five of seven, and the gap now has no intervention left.

@@ -63,6 +63,8 @@ Usage:
     python -m eval.run_ranking_check --with-distractors   # B5, elevated N
     python -m eval.run_ranking_check --dry-run       # load + resolve, no spend
     python -m eval.run_ranking_check --with-distractors --rerank   # C3
+    python -m eval.run_ranking_check --with-distractors --collapse --rerank --fuse
+                                                     # C2: both arms, ruling 14
 """
 
 from __future__ import annotations
@@ -76,6 +78,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 RUNS_DIR = Path(__file__).parent / "ranking_runs"
+# C2. Named here rather than at the call site, for the same reason the two view
+# names are: "which renderings was this measured against" should be one grep and
+# should appear in the archived run.
+_DEFAULT_RENDERINGS = Path(__file__).parent / "gold" / "query_renderings.json"
 
 # The two views, named here rather than interpolated at the call site so that
 # "which index was this measured against" is one grep and appears in the
@@ -292,6 +298,25 @@ class PairResult:
     # and document, so this settles it offline for every run from here on.
     rerank_top_chunk_ids: list[str] = field(default_factory=list)
     rerank_beaten_by: list[str] = field(default_factory=list)
+    # ------------------------------------------------------------------
+    # C2 — ruling 13. A fused row is a SEPARATE PairResult in
+    # `Report.pairs_fused`, not extra columns on this one, because ruling 14
+    # requires the two arms side by side and an arm is a whole measurement:
+    # its own rank, its own gaps, its own collapse and its own rerank. The
+    # fields below say which arm a row belongs to and what produced it.
+    # ------------------------------------------------------------------
+    fused: bool = False
+    # The variant languages fused for this pair, in declaration order. The
+    # query's own language is always first.
+    fused_variants: list[str] = field(default_factory=list)
+    # Which variant produced the TARGET's score. If this is the query's own
+    # language for every pair, C2 did nothing — a result, and one the header
+    # has to be able to state rather than leave to be inferred from a gap that
+    # did not move.
+    fused_from_lang: str | None = None
+    # Ruling 15b's control, per pair. Empty for an English query. A violation
+    # is a FINDING printed beside the number, never a gate.
+    native_control_problems: list[str] = field(default_factory=list)
     note: str = ""
 
 
@@ -332,6 +357,30 @@ class Report:
     rerank_pace_seconds: float = 0.0
     rerank_tpm_budget: float = 0.0
     rerank_seconds_waiting: float = 0.0
+    # ------------------------------------------------------------------
+    # C2 — rulings 13/14/19. `pairs` above stays the SINGLE-VARIANT arm and
+    # keeps every meaning it has had since B2, so a fused run is still
+    # comparable to every run before it. The fused arm lives here.
+    # ------------------------------------------------------------------
+    fused: bool = False
+    renderings_path: str | None = None
+    # Ruling 19. Two runs on different days are the same configuration only if
+    # this string is the same in both.
+    renderings_digest: str | None = None
+    # Ruling 24. Rows whose verdict on disk disagreed with the guard that read
+    # them. The digest says the bytes are the same; this says whether the rules
+    # that judged them are.
+    renderings_stale: list = field(default_factory=list)
+    fused_variant_langs: list[str] = field(default_factory=list)
+    fusion_stats: dict = field(default_factory=dict)
+    pairs_fused: list[PairResult] = field(default_factory=list)
+    aggregate_fused: dict = field(default_factory=dict)
+    by_cohort_fused: dict = field(default_factory=dict)
+    units_fused: list[UnitResult] = field(default_factory=list)
+    aggregate_units_fused: dict = field(default_factory=dict)
+    # Ruling 15b, collected across pairs so the control is one line rather than
+    # something the reader has to assemble from a table.
+    native_control: list = field(default_factory=list)
 
 
 # --------------------------------------------------------------------------
@@ -690,6 +739,18 @@ def score_pair(p, hits, target_chunk_id: str, target_text: str = "",
     )
 
 
+def _own_variant(pair):
+    """The single-variant arm's one variant: the pair's own query text.
+
+    Built here rather than imported so that an unfused run does not depend on
+    `retrieve.render` at all — a run with no renderings file must behave exactly
+    as it did before C2 existed, including when that file is absent.
+    """
+    from types import SimpleNamespace
+
+    return SimpleNamespace(lang=pair.query_lang, text=pair.query, source="query")
+
+
 def apply_collapse(result: PairResult, ordering: list,
                    entry: dict | None = None,
                    section_of: dict | None = None,
@@ -986,7 +1047,7 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
         collapse_sections: bool = False,
         rerank: bool = False, rerank_window: int | None = None,
         rerank_model: str | None = None, rerank_pace: float = 0.0,
-        rerank_tpm: float = 0.0) -> Report:
+        rerank_tpm: float = 0.0, fuse_renderings: str | None = None) -> Report:
     from eval.goldset import load_ranking_pairs
     from retrieve.search import search
 
@@ -1112,15 +1173,83 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
         # and 32 separate calls would be eleven minutes of sleeping.
         from ingest.embed import embed_texts, resolve_model_label
 
-        embedded = embed_texts([p.query for p in live], input_type="query")
+        # ------------------------------------------------------------------
+        # C2 — ruling 12/13. The variants, and the coverage check that refuses
+        # to measure a configuration nobody chose.
+        # ------------------------------------------------------------------
+        variants_by_pair: dict = {}
+        if fuse_renderings:
+            from retrieve.render import (
+                Variant, coverage_problems, load as load_renderings,
+            )
+
+            renderings = load_renderings(fuse_renderings)
+            with conn.cursor() as cur:
+                cur.execute(
+                    f"SELECT DISTINCT lang FROM {view} WHERE lang IS NOT NULL;")
+                index_langs = sorted(r[0] for r in cur.fetchall())
+            bad = coverage_problems(
+                renderings, {p.query: p.query_lang for p in live}, index_langs)
+            if bad:
+                raise SystemExit(
+                    "the rendering file does not match this run:\n  - "
+                    + "\n  - ".join(bad)
+                    + "\n(ruling 12 derives the language set from the INDEX, so "
+                      "a file built against another index is a different rule.)"
+                )
+            for pair in live:
+                variants_by_pair[pair.id] = renderings.variants_for(
+                    pair.query, pair.query_lang)
+            report.fused = True
+            report.renderings_path = str(fuse_renderings)
+            report.renderings_digest = renderings.digest
+            report.renderings_stale = [
+                {"query": q, "lang": lang, "ok_now": ok}
+                for q, lang, ok in renderings.stale
+            ]
+            report.fused_variant_langs = sorted({
+                v.lang for vs in variants_by_pair.values() for v in vs})
+            if renderings.stale:
+                report.notes.append(
+                    f"{len(renderings.stale)} rendering(s) carried a verdict "
+                    f"the current guard disagrees with and were re-judged on "
+                    f"read (ruling 24). The content hash alone would not have "
+                    f"shown this."
+                )
+
+        # Every distinct text embedded ONCE. Two pairs sharing a query share a
+        # vector, and so do a query and any rendering identical to it.
+        texts: list[str] = []
+        position: dict[str, int] = {}
+        for pair in live:
+            for variant in variants_by_pair.get(
+                    pair.id, [_own_variant(pair)]):
+                if variant.text not in position:
+                    position[variant.text] = len(texts)
+                    texts.append(variant.text)
+
+        embedded = embed_texts(texts, input_type="query")
         report.query_embedding_model = resolve_model_label()
+        vector_of = {text: embedded.vectors[i] for text, i in position.items()}
         report.notes.append(
-            f"{len(live)} queries embedded in {embedded.batches} request(s)"
+            f"{len(live)} pairs, {len(texts)} distinct query text(s) embedded "
+            f"in {embedded.batches} request(s)"
+            + (f"; fused over {report.fused_variant_langs}" if fuse_renderings
+               else "")
         )
 
-        for p, vector in zip(live, embedded.vectors):
-            hits = search(conn, vector, k=_search_depth(n_index),
-                          langs=p.langs, roles=p.roles, view=view)
+        def score_arm(p, hits, arm: str) -> PairResult:
+            """One pair, one candidate list, through the whole pipeline.
+
+            Ruling 14 needs two arms measured on the same index on the same day,
+            and an arm is a WHOLE measurement — its own rank, its own gaps, its
+            own collapse and its own rerank. So the pipeline is written once and
+            called twice rather than copied, and `arm` exists for exactly one
+            reason: the rerank cache keys on it. Two arms hand the cross-encoder
+            different candidate sets under the same query, and a cache that
+            could not tell them apart would score the fused arm with the
+            single-variant arm's answer and report it as a rerank.
+            """
             target_id, target_text = resolved[p.id]
             alt_ids, alt_ground = alternates.get(p.id, ([], None))
             result = score_pair(p, hits, target_id, target_text,
@@ -1139,7 +1268,7 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
                 from retrieve.collapse import entry_roles
 
                 base = collapse(hits, section_of, canonical)
-                if not report.collapse_stats:
+                if arm == "single" and not report.collapse_stats:
                     report.collapse_stats = collapse_report(hits, base)
                 apply_collapse(result, base, entry_roles(hits, section_of),
                                section_of, primary_by_doc)
@@ -1162,7 +1291,14 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
                         f"{p.id}: the set about to be reranked does not match the "
                         f"pair's own filters:\n  - " + "\n  - ".join(bad_pool)
                     )
-                key = (p.query, tuple(p.langs or ()), tuple(p.roles or ()))
+                # The ARM is part of the key. Ruling 16 keeps `p.query` as what
+                # the cross-encoder is asked, so two arms of one pair send the
+                # same query — but over different candidate sets, and a rerank
+                # is a function of both. Keying on the query alone would hand
+                # the fused arm the single-variant arm's scores and print them
+                # as a reranked result.
+                key = (arm, p.query, tuple(p.langs or ()), tuple(p.roles or ()),
+                       tuple(h.chunk_id for h in candidates))
                 if key not in rerank_cache:
                     try:
                         rr = rerank_documents(
@@ -1207,14 +1343,67 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
                         (p.observed_chunk_id,),
                     )
                     result.observed_chunk_still_exists = cur.fetchone() is not None
-                if not result.observed_chunk_matches_resolved:
+                if arm == "single" and not result.observed_chunk_matches_resolved:
                     report.chunk_id_drift.append({
                         "id": p.id,
                         "archived_chunk_id": p.observed_chunk_id,
                         "resolves_to": target_id,
                         "archived_id_still_exists": result.observed_chunk_still_exists,
                     })
-            report.pairs.append(result)
+            return result
+
+        for p in live:
+            # ARM ONE — the query's own text alone. This is the configuration
+            # adopted on 2026-08-16, and `report.pairs` keeps every meaning it
+            # has had since the B2 baseline was recorded.
+            hits = search(conn, vector_of[p.query], k=_search_depth(n_index),
+                          langs=p.langs, roles=p.roles, view=view)
+            report.pairs.append(score_arm(p, hits, "single"))
+
+            if not fuse_renderings:
+                continue
+
+            # ARM TWO — ruling 13. One search per variant over the SAME view
+            # under the SAME filters, fused by max.
+            from retrieve.fuse import fuse
+            from retrieve.fuse import pool_problems as fuse_pool_problems
+
+            per_variant = []
+            for variant in variants_by_pair[p.id]:
+                if variant.text == p.query:
+                    per_variant.append((variant.lang, hits))
+                    continue
+                per_variant.append((variant.lang, search(
+                    conn, vector_of[variant.text], k=_search_depth(n_index),
+                    langs=p.langs, roles=p.roles, view=view)))
+            bad_variants = fuse_pool_problems(per_variant)
+            if bad_variants:
+                raise SystemExit(
+                    f"{p.id}: the variants about to be fused are not "
+                    f"comparable:\n  - " + "\n  - ".join(bad_variants)
+                )
+            fused = fuse(per_variant, SEARCH_K)
+            fused_result = score_arm(p, fused.hits, "fused")
+            fused_result.fused = True
+            fused_result.fused_variants = list(fused.variants)
+            fused_result.fused_from_lang = fused.lang_of(
+                fused_result.resolved_chunk_id)
+            if not report.fusion_stats:
+                from retrieve.fuse import fusion_report
+                report.fusion_stats = fusion_report(hits, fused)
+            # Ruling 15b. The control is an assertion the pipeline can fail,
+            # and a violation is printed, never gated.
+            from retrieve.render import native_query_problems
+
+            fused_result.native_control_problems = native_query_problems(
+                p.query_lang, fused_result.fused_from_lang,
+                report.pairs[-1].rank, fused_result.rank)
+            if fused_result.native_control_problems:
+                report.native_control.append({
+                    "id": p.id, "query_lang": p.query_lang,
+                    "problems": fused_result.native_control_problems,
+                })
+            report.pairs_fused.append(fused_result)
 
     report.aggregate = summarise(report.pairs)
     cohorts = sorted({r.provenance for r in report.pairs})
@@ -1225,6 +1414,16 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
         report.pairs, {p.unit: p.query for p in pairs}
     )
     report.aggregate_units = summarise_units(report.units)
+    if report.pairs_fused:
+        report.aggregate_fused = summarise(report.pairs_fused)
+        report.by_cohort_fused = {
+            c: summarise([r for r in report.pairs_fused if r.provenance == c])
+            for c in sorted({r.provenance for r in report.pairs_fused})
+        }
+        report.units_fused = build_units(
+            report.pairs_fused, {p.unit: p.query for p in pairs}
+        )
+        report.aggregate_units_fused = summarise_units(report.units_fused)
     return report
 
 
@@ -1254,6 +1453,17 @@ def print_report(report: Report) -> None:
               f"tpm={report.rerank_tpm_budget:g} "
               f"waiting={report.rerank_seconds_waiting:.0f}s "
               f"tokens={report.rerank_tokens if report.rerank_tokens is not None else 'not reported'}")
+    if report.fused:
+        f = report.fusion_stats or {}
+        print(f"  C2 FUSED  renderings={report.renderings_path} "
+              f"digest={report.renderings_digest} "
+              f"variants={report.fused_variant_langs}")
+        print(f"            top6 moved={f.get('moved', 0)} "
+              f"won_by_rendering={f.get('won_by_rendering', 0)} "
+              f"won_by_lang={f.get('won_by_lang', {})}")
+        if report.renderings_stale:
+            print(f"            STALE {len(report.renderings_stale)} row(s) "
+                  f"were re-judged on read; the digest alone would not say so")
     for note in report.notes:
         print(f"  note: {note}")
     print()
@@ -1331,6 +1541,8 @@ def print_report(report: Report) -> None:
             _print_collapse(report)
         if report.reranked:
             _print_rerank(report)
+        if report.fused:
+            _print_fused(report)
 
     print()
     print("Phase 1's comparable number is `spread` (mean top-1 to rank-6): 0.105 "
@@ -1533,6 +1745,99 @@ def _print_rerank(report: Report) -> None:
           "  C3 cannot move the gap criterion at all — that is C2's, per ruling 5.")
 
 
+def _print_fused(report: Report) -> None:
+    """Ruling 14, and the whole point of it is the last two lines.
+
+    G2 asks for a gap "wider than baseline", and the baseline is B2's gapDoc
+    +0.0249 recorded at 57 chunks. This run is at 450, where the SAME
+    configuration reads about +0.016. A fused gap that beats the historical
+    number while sitting below the same-run single-variant arm is not evidence
+    that C2 widened anything, and this function refuses to print it as though
+    it were.
+    """
+    if not report.pairs_fused:
+        return
+    single, fused = report.aggregate, report.aggregate_fused
+    us, uf = report.aggregate_units, report.aggregate_units_fused
+
+    print()
+    print("C2 — the two arms, same index, same day, same pairs (ruling 14)")
+    print(f"{'':22s} {'recall@6':>10s} {'MRR@10':>8s} "
+          f"{'gapDoc':>8s} {'gapAny':>8s}")
+    for name, agg in (("single-variant", single), ("fused", fused)):
+        print(f"  {name:20.20s} "
+              f"{agg.get('recall_at_6_n', 0):3d}/{agg.get('pairs', 0):<6d} "
+              f"{_fmt(agg.get('mrr_at_10'), 8)} "
+              f"{_fmt(agg.get('mean_gap_vs_other_doc'), 8, 4)} "
+              f"{_fmt(agg.get('mean_gap_vs_other_chunk'), 8, 4)}")
+
+    print()
+    print("  per unit — what G2's recall criterion reads")
+    for name, agg in (("single-variant", us), ("fused", uf)):
+        if not agg:
+            continue
+        for label, key in (("", "recall_at_6"),
+                           ("collapsed", "recall_at_6_collapsed"),
+                           ("reranked", "recall_at_6_reranked"),
+                           ("via original", "recall_at_6_via_original")):
+            if f"{key}_n" not in agg:
+                continue
+            print(f"    {name:16.16s} {label:13.13s} "
+                  f"{agg[f'{key}_n']:3d}/{agg.get('units', 0):<4d} "
+                  f"{agg[key]:.3f}")
+
+    # Per language, because the plan's own C2 instruction is that an aggregate
+    # win which loses Chinese is a loss.
+    print()
+    print("  per expected language — recall@6, single -> fused")
+    langs = sorted({r.expect_lang or "?" for r in report.pairs})
+    by_id = {r.id: r for r in report.pairs_fused}
+    for lang in langs:
+        rows = [r for r in report.pairs if (r.expect_lang or "?") == lang]
+        s = sum(1 for r in rows if r.recall_at_6)
+        f = sum(1 for r in rows if by_id.get(r.id) and by_id[r.id].recall_at_6)
+        flag = "  <- LOST" if f < s else ("  <- gained" if f > s else "")
+        print(f"    {lang:10.10s} {s:2d}/{len(rows):<2d} -> {f:2d}/{len(rows):<2d}{flag}")
+
+    won = [r.fused_from_lang for r in report.pairs_fused if r.fused_from_lang]
+    from collections import Counter
+    print()
+    print(f"  the target's winning variant, per pair: {dict(Counter(won))}")
+    if report.native_control:
+        print("  RULING 15b CONTROL — findings, printed and never gated:")
+        for row in report.native_control:
+            for problem in row["problems"]:
+                print(f"    {row['id']:28.28s} {problem}")
+    else:
+        print("  ruling 15b control: no native-language query moved or lost "
+              "to a rendering")
+
+    baseline = 0.0249
+    sd = single.get("mean_gap_vs_other_doc")
+    fd = fused.get("mean_gap_vs_other_doc")
+    print()
+    print(f"  GAP, the outstanding half of G2")
+    print(f"    B2 baseline (57 chunks)      {baseline:+.4f}")
+    print(f"    single-variant, this run     {sd:+.4f}" if sd is not None else
+          "    single-variant, this run     none")
+    print(f"    fused, this run              {fd:+.4f}" if fd is not None else
+          "    fused, this run              none")
+    if sd is not None and fd is not None:
+        if fd <= sd:
+            verdict = ("NOT a C2 win: the fused gap is not wider than the "
+                       "same-run single-variant arm.")
+        elif fd <= baseline:
+            verdict = ("wider than the single-variant arm, but NOT wider than "
+                       "the B2 baseline G2 names.")
+        else:
+            verdict = ("wider than BOTH the same-run single-variant arm and the "
+                       "B2 baseline.")
+        print(f"    -> {verdict}")
+    print()
+    print("  A translated query that succeeds proves the pipeline works, not "
+          "that the retriever is cross-lingual.")
+
+
 def archive(report: Report) -> Path:
     RUNS_DIR.mkdir(parents=True, exist_ok=True)
     # A reranked run is a different measurement from an unreranked one at the
@@ -1582,6 +1887,14 @@ def main(argv=None) -> int:
                          "a guess by construction.")
     ap.add_argument("--rerank-model", default=None,
                     help="gateway alias for the reranker (default rerank-2.5)")
+    ap.add_argument("--fuse", nargs="?", const=str(_DEFAULT_RENDERINGS),
+                    default=None, metavar="PATH",
+                    help="C2 (ruling 13): also score every pair over its query "
+                         "RENDERINGS, fused by max per candidate, and report "
+                         "that arm beside the single-variant one (ruling 14). "
+                         "Reads eval/gold/query_renderings.json unless a path "
+                         "is given; the file's content hash is archived with "
+                         "the run.")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     args = ap.parse_args(argv)
 
@@ -1597,7 +1910,7 @@ def main(argv=None) -> int:
                  collapse_sections=args.collapse,
                  rerank=args.rerank, rerank_window=args.rerank_window,
                  rerank_model=args.rerank_model, rerank_pace=args.rerank_pace,
-                 rerank_tpm=args.rerank_tpm)
+                 rerank_tpm=args.rerank_tpm, fuse_renderings=args.fuse)
 
     # ARCHIVE FIRST, then print. On 2026-08-16 a KeyError in `print_report`
     # killed the process before `archive()` ran and a twenty-six-minute run —

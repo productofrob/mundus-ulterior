@@ -7,6 +7,35 @@ model_list:
       model: anthropic/claude-haiku-4-5-20251001   # cheap for the hello test; swap to claude-sonnet-5 anytime
       api_key: os.environ/ANTHROPIC_API_KEY
 
+  # chat model, stronger tier — added 2026-08-16 for Block C ruling 21.
+  #
+  # WHY IT EXISTS. Every one of C2's 205 query renderings was made by
+  # `chat-default`, which is haiku-4-5 and which the comment above calls "cheap
+  # for the hello test". Sixteen of them were refused by the script guard and
+  # ALL SIXTEEN are Old Tamil — the model returned Devanagari, Malayalam, Sinhala
+  # or Bengali instead. Old Tamil is also the language of the corpus's one
+  # genuinely broken cross-lingual link, so the intervention aimed at the worst
+  # case failed hardest exactly there. That is a statement about one model tier
+  # and it had never been tested against another.
+  #
+  # NOT a replacement for chat-default. Part 6's translations and Part 7's
+  # answers were measured on haiku and repointing their alias would silently
+  # make every archived number incomparable. This is a second alias, used only
+  # where a run names it, and `answer.translate.resolve_model_label` records
+  # whichever concrete model answered beside every rendering.
+  #
+  #   python scripts/build_query_renderings.py --model chat-strong --limit 2
+  #   python scripts/build_query_renderings.py --model chat-strong --attempt-all
+  #
+  # If LiteLLM rejects the model string below, paste the dated id from
+  # https://docs.claude.com/en/docs/about-claude/models/overview in its place —
+  # the provenance column records what actually answered either way, so a wrong
+  # guess here is a failed call and never a mislabelled rendering.
+  - model_name: chat-strong
+    litellm_params:
+      model: anthropic/claude-sonnet-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
   # embedding model — Voyage AI (Anthropic's recommended embeddings partner).
   # BGE-M3 replaces this in Part 4.
   - model_name: embed-default

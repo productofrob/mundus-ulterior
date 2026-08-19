@@ -55,6 +55,27 @@ PROMPT_VERSION = "p6-translate-v1"
 # place: prompt_version is part of the primary key, so v1 rows stay readable and
 # distinguishable instead of being silently overwritten by v2 output.
 BACK_PROMPT_VERSION = "p6-backtranslate-v2"
+# C2 (Block C ruling 12). A THIRD direction, and a third version, because a
+# query is not a passage: it is short, it is usually interrogative, and the
+# thing it has to survive is retrieval rather than a chrF score. Sharing
+# BACK_PROMPT_VERSION would put two different jobs under one provenance string
+# and make a rendering indistinguishable from a back-translation afterwards —
+# the exact confusion `prompt_version` exists to prevent.
+#
+# v1 renders the query in its OWN grammatical form: a question stays a question.
+# Changing form and language at once would confound two interventions, and the
+# gold set's English queries are questions. If C2 falls short, "the rendering
+# style was a variable nobody varied" is the first thing to check, and it is
+# checked by bumping this string rather than by editing the prompt in place.
+QUERY_PROMPT_VERSION = "c2-render-v1"
+# Ruling 20's retry, and it needs its own version for a reason worth stating.
+# `_chat` runs at temperature=0 so the harness is reproducible; re-issuing the
+# SAME prompt to the same model is therefore not a retry at all, it is the same
+# call, and it would return the same wrong-script rendering while looking like a
+# second attempt. A retry has to be a different prompt, and a different prompt
+# has to be a different version — otherwise the file would hold two prompts'
+# output under one provenance string.
+QUERY_RETRY_PROMPT_VERSION = "c2-render-retry-v1"
 
 MAX_RETRIES = 3
 BACKOFF_SECONDS = 2.0
@@ -102,6 +123,19 @@ class TranslationError(RuntimeError):
     pass
 
 
+# A third classifier, beside `_is_rate_limit_error` and `_is_connection_error`
+# and for the same reason: the provider reports this as a bare 400, which a
+# naive handler retries three times and then reports as "translation failed",
+# sending you to debug a prompt. Block C ruling 22 — the first `--model
+# chat-strong` run spent 615 requests on it before it was stopped by hand.
+def _is_unsupported_temperature(message: str) -> bool:
+    lowered = (message or "").lower()
+    return ("temperature" in lowered
+            and ("does not support" in lowered
+                 or "unsupportedparams" in lowered
+                 or "only temperature=1" in lowered))
+
+
 @dataclass
 class Translation:
     """One direction of one round trip."""
@@ -113,6 +147,12 @@ class Translation:
     raw_response: str = ""
     notes: list[str] = field(default_factory=list)
     retries: int = 0
+    # WHAT SAMPLER PRODUCED THIS. Block C ruling 22: claude-sonnet-5 refuses
+    # temperature=0 outright, so a stronger model cannot be a drop-in for a
+    # harness whose reproducibility argument was "temperature=0". Recorded
+    # rather than assumed, because a rendering sampled at 1.0 and one decoded
+    # at 0.0 are not the same measurement and nothing else in the row says so.
+    temperature: float = 0.0
 
     @property
     def is_empty(self) -> bool:
@@ -213,6 +253,72 @@ def build_back_messages(english_text: str, target_lang: str) -> list[dict]:
     ]
 
 
+SYSTEM_RENDER = (
+    "You are a philological translator working on ancient and medieval sources "
+    "for a scholarly database. You will be given a SEARCH QUERY. Render it into "
+    "{target_name} so that it could be used to search texts written in that "
+    "language.\n"
+    "Rules:\n"
+    "1. Render the query itself. Do not answer it, do not explain it, and do "
+    "not add background, context or commentary of any kind.\n"
+    "2. Keep the query's grammatical form. A question stays a question; a "
+    "phrase stays a phrase.\n"
+    "3. For a place, people or title that the sources in that language have "
+    "their own name for, use that name. Otherwise transliterate.\n"
+    "{script_rule}"
+    "4. Render the whole query, omitting nothing and adding nothing.\n"
+    "5. Reply with the rendering only, wrapped in "
+    "<translation></translation> tags, and nothing outside those tags."
+)
+
+
+_RETRY_RULE = (
+    "0. A previous attempt at this returned text in the WRONG WRITING SYSTEM. "
+    "Before answering, check that every letter you write belongs to the script "
+    "named below. Do not mix scripts. If you cannot render a word in that "
+    "script, transliterate it into that script rather than leaving it in "
+    "another.\n"
+)
+
+
+def build_render_messages(query: str, source_lang: str, target_lang: str,
+                          *, retry: bool = False) -> list[dict]:
+    """Messages for one query rendering. C2, Block C ruling 12.
+
+    The script rule is the SAME rule the back-translation uses, read from the
+    same two sets, because "this language is stored romanised in this corpus" is
+    one fact and a second copy of it would drift. Getting it wrong here is the
+    Part 4 incident in a new place: a romanised Tamil query retrieves badly, and
+    a bad rank says nothing about which of the two went wrong.
+
+    `retrieve.render.rendering_problems` checks the output against the same
+    distinction afterwards, so the rule is both asked for and verified.
+    """
+    if target_lang in TRANSLITERATED_LANGS:
+        script_rule = _TRANSLITERATION_RULE
+    elif target_lang in NATIVE_SCRIPT_LANGS:
+        script_rule = _NATIVE_SCRIPT_RULE.format(script=NATIVE_SCRIPT_LANGS[target_lang])
+    else:
+        script_rule = ""
+
+    system = SYSTEM_RENDER.format(
+        target_name=language_name(target_lang), script_rule=script_rule
+    )
+    if retry:
+        system = system.replace("Rules:\n", "Rules:\n" + _RETRY_RULE, 1)
+    return [
+        {"role": "system", "content": system},
+        {
+            "role": "user",
+            "content": (
+                f"Source language: {language_name(source_lang)}\n"
+                f"Target language: {language_name(target_lang)}\n\n"
+                f"Search query:\n{query}"
+            ),
+        },
+    ]
+
+
 # --------------------------------------------------------------------------
 # Response parsing
 # --------------------------------------------------------------------------
@@ -275,24 +381,58 @@ def _chat(
     client=None,
     max_tokens: int = DEFAULT_MAX_TOKENS,
     sleep=time.sleep,
-) -> tuple[str, int]:
-    """One chat completion, with the Part 4 retry policy. Returns (text, retries)."""
+    temperature: float = 0,
+    temperature_fallback: float | None = None,
+) -> tuple[str, int, float]:
+    """One chat completion, with the Part 4 retry policy.
+
+    Returns (text, retries, temperature_actually_used).
+
+    `temperature_fallback` is OPT-IN and defaults to None, so Part 6's
+    translations and Part 7's answers keep sending temperature=0 and keep
+    failing loudly if a model refuses it. Silently sampling where an archived
+    measurement assumed greedy decoding would make old and new rows
+    incomparable with nothing in either to say which was which — and LiteLLM's
+    own suggested fix, `drop_params = True`, does exactly that, globally, to
+    every call including the embeddings. Refused for that reason.
+
+    Where a caller DOES opt in, the fallback temperature is returned so it can
+    be written into the row's provenance.
+    """
     client = client or _make_client()
     retries = 0
     last_error: Exception | None = None
+    used = temperature
 
     for attempt in range(MAX_RETRIES):
         try:
             response = client.chat.completions.create(
                 model=model,
                 messages=messages,
-                temperature=0,      # a translation harness must be reproducible
+                temperature=used,   # a translation harness must be reproducible
                 max_tokens=max_tokens,
             )
-            return (response.choices[0].message.content or ""), retries
+            return (response.choices[0].message.content or ""), retries, used
 
         except Exception as exc:  # noqa: BLE001 — provider errors are untyped
             message = str(exc)
+            if _is_unsupported_temperature(message):
+                if temperature_fallback is None or used == temperature_fallback:
+                    raise TranslationError(
+                        f"model {model!r} refuses temperature={used}. This "
+                        f"harness sends 0 because a translation that cannot be "
+                        f"reproduced cannot be compared, and it will not drop "
+                        f"the parameter silently — LiteLLM's `drop_params` "
+                        f"would do that to every call in the gateway, "
+                        f"embeddings included.\nEither point the alias at a "
+                        f"model that supports greedy decoding, or use a caller "
+                        f"that opts into a recorded temperature fallback.\n"
+                        f"Provider said: {message[:300]}"
+                    ) from exc
+                used = temperature_fallback
+                retries += 1
+                continue
+
             if _is_rate_limit_error(message):
                 retries += 1
                 if attempt == MAX_RETRIES - 1:
@@ -335,7 +475,7 @@ def translate_to_english(
     if not text or not text.strip():
         raise TranslationError("nothing to translate: the passage is empty")
 
-    raw, retries = _chat(
+    raw, retries, temperature = _chat(
         build_forward_messages(text, source_lang),
         model=model, client=client, max_tokens=max_tokens, sleep=sleep,
     )
@@ -354,6 +494,7 @@ def translate_to_english(
         raw_response=raw,
         notes=notes,
         retries=retries,
+        temperature=temperature,
     )
 
 
@@ -372,7 +513,7 @@ def back_translate(
             "nothing to back-translate: the forward translation was empty"
         )
 
-    raw, retries = _chat(
+    raw, retries, temperature = _chat(
         build_back_messages(english_text, target_lang),
         model=model, client=client, max_tokens=max_tokens, sleep=sleep,
     )
@@ -386,6 +527,76 @@ def back_translate(
         raw_response=raw,
         notes=notes,
         retries=retries,
+        temperature=temperature,
+    )
+
+
+def render_query(
+    query: str,
+    source_lang: str,
+    target_lang: str,
+    *,
+    model: str = DEFAULT_MODEL,
+    client=None,
+    max_tokens: int = DEFAULT_MAX_TOKENS,
+    sleep=time.sleep,
+    retry: bool = False,
+) -> Translation:
+    """One query, rendered into one target language. C2, Block C ruling 12.
+
+    Deliberately takes three strings and knows nothing about a gold pair. Which
+    target languages are asked for is decided by `retrieve.render.target_langs`
+    from the INDEX, and this function is not a place that decision could leak
+    into: it renders what it is told to render.
+
+    `max_tokens` is left at the module default rather than lowered to something
+    query-sized. A truncated rendering is a silently shortened query, which
+    retrieves plausibly and wrongly; the spend saved would be a rounding error
+    against the 205 calls this costs once.
+    """
+    if not query or not query.strip():
+        raise TranslationError("nothing to render: the query is empty")
+    if target_lang == source_lang:
+        raise TranslationError(
+            f"asked to render a {source_lang} query into {target_lang}. "
+            f"retrieve.render.target_langs excludes a query's own language, so "
+            f"reaching here means the language rule was bypassed — and a "
+            f"self-rendering fused by max is a second copy of the "
+            f"single-variant arm, which would make C2 look free."
+        )
+
+    # Ruling 22. The renderer is the ONE caller that opts into a temperature
+    # fallback, because it is the one whose reproducibility does not rest on the
+    # sampler: ruling 19 already freezes the renderings to disk and every run
+    # reads that file and records its hash. What a re-render would produce is
+    # not what makes two runs comparable — the committed file is.
+    raw, retries, temperature = _chat(
+        build_render_messages(query, source_lang, target_lang, retry=retry),
+        model=model, client=client, max_tokens=max_tokens, sleep=sleep,
+        temperature_fallback=1.0,
+    )
+    parsed, notes = parse_translation(raw)
+    if temperature != 0:
+        notes.append(
+            f"sampled at temperature={temperature}: this model refuses greedy "
+            f"decoding, so the rendering is one draw and not a reproducible one"
+        )
+    if target_lang not in LANG_NAMES:
+        notes.append(
+            f"language code '{target_lang}' is not in LANG_NAMES; the prompt "
+            f"named it by code only, which weakens the rendering"
+        )
+    return Translation(
+        text=parsed,
+        source_lang=source_lang,
+        target_lang=target_lang,
+        model=model,
+        prompt_version=(QUERY_RETRY_PROMPT_VERSION if retry
+                        else QUERY_PROMPT_VERSION),
+        raw_response=raw,
+        notes=notes,
+        retries=retries,
+        temperature=temperature,
     )
 
 

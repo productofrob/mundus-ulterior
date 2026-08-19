@@ -19,6 +19,7 @@ Run: python scripts/mutate_ranking.py
 
 from __future__ import annotations
 
+import os
 import pathlib
 import subprocess
 import sys
@@ -40,7 +41,22 @@ RERANK = ROOT / "retrieve" / "rerank.py"
 # Ruling 8's collapse. It decides which chunk retrieval RETURNS, so it decides
 # whether a G2 recall number is about the passage the pair names.
 COLLAPSE = ROOT / "retrieve" / "collapse.py"
-SOURCES = (CHECK, GOLDSET, SEARCH, RERANK, COLLAPSE)
+# Ruling 13's fusion. It decides the SIMILARITY every gap is denominated in
+# under C2, which makes it the one file that can move the gap criterion -- the
+# outstanding half of G2 -- without moving a single rank anybody would notice.
+FUSE = ROOT / "retrieve" / "fuse.py"
+# Added 2026-08-16 for C2. The language rule is the one place the leakage trap
+# can be sprung — a target language chosen by reading the pair's `expect_lang`
+# produces a beautiful curve that measures nothing — and it is invisible in
+# every rank the run prints. A guard on that nobody has watched fail is worth
+# as much as no guard at all.
+RENDER = ROOT / "retrieve" / "render.py"
+# The render prompt's writing-system rule lives here, beside the
+# back-translation rule it is read from. Getting it wrong is the Part 4
+# chrF-0.004 incident moved to a place where it produces a bad rank rather than
+# a bad row.
+TRANSLATE = ROOT / "answer" / "translate.py"
+SOURCES = (CHECK, GOLDSET, SEARCH, RERANK, COLLAPSE, RENDER, TRANSLATE, FUSE)
 
 SUITE = "eval.test_ranking_check"
 
@@ -331,6 +347,195 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("    if langs:\n        wrong = sorted({h.lang for h in hits if h.lang not in set(langs)})",
           "    if False:\n        wrong = sorted({h.lang for h in hits if h.lang not in set(langs)})")],
     ),
+    # ----------------------------------------------------------------------
+    # C2 — rulings 12 / 15b / 17a / 19. Thirteen mutations, and the first two
+    # are the reason this block exists: the leakage trap cannot be caught by
+    # reading a rank, so the only thing that can catch it is a guard that has
+    # been watched failing.
+    # ----------------------------------------------------------------------
+    (
+        "the language rule renders a query into its own language",
+        [('        if lang and lang != "en" and lang != query_lang',
+          '        if lang and lang != "en"')],
+    ),
+    (
+        "English becomes a render target for a non-English query",
+        [('        if lang and lang != "en" and lang != query_lang',
+          '        if lang and lang != query_lang')],
+    ),
+    (
+        "the cost of the rule is computed over the whole index, not the rule",
+        [("    return sum(len(target_langs(index_langs, q)) for q in query_langs)",
+          "    return sum(len(index_langs) for q in query_langs)")],
+    ),
+    (
+        "the script floor is lowered to nothing",
+        [("SCRIPT_FLOOR = 1.0", "SCRIPT_FLOOR = 0.0")],
+    ),
+    (
+        "one character of the right script passes the whole rendering",
+        [("    return hits / len(counted)", "    return 1.0 if hits else 0.0")],
+    ),
+    (
+        "the echo refusal is dropped",
+        [("    if source_text and text.strip() == source_text.strip():",
+          "    if False and text.strip() == source_text.strip():")],
+    ),
+    (
+        "a rendering the script check refused is fused anyway",
+        [('            if row.get("ok"):', "            if True:")],
+    ),
+    (
+        "a query with no renderings degrades silently to the English-only arm",
+        [("        entry = self.by_query.get(query)",
+          "        entry = self.by_query.get(query) or {}")],
+    ),
+    (
+        "the rendering file may name a pair after all",
+        [('    if "pair_ids" in json.dumps(doc):', "    if False:")],
+    ),
+    (
+        "the file may hold renderings the language rule never asked for",
+        [("        if have - wanted:", "        if False:")],
+    ),
+    (
+        "the coverage check stops comparing the file's index to the run's",
+        [("    if sorted(set(index_langs)) != sorted(set(renderings.index_langs)):",
+          "    if False:")],
+    ),
+    (
+        "ruling 15b's native-language control reports nothing",
+        [('    if query_lang == "en":\n        return []',
+          "    if True:\n        return []")],
+    ),
+    (
+        "a language may be rendered into itself at the call",
+        [("    if target_lang == source_lang:", "    if False:")],
+    ),
+    (
+        # Ruling 20. 0.6 is the value the first real run was made at, and it
+        # admitted ten mixed-script renderings; this is that regression, kept
+        # as a mutation so the raise can never be quietly undone.
+        "the script floor is put back to the value that admitted mixed scripts",
+        [("SCRIPT_FLOOR = 1.0", "SCRIPT_FLOOR = 0.6")],
+    ),
+    (
+        "the Latin ranges lose the modifier letters transliteration needs",
+        [("(0x02B0, 0x02FF), (0x1E00, 0x1EFF)),", "(0x1E00, 0x1EFF)),")],
+    ),
+    (
+        "a retry re-issues the same prompt at temperature zero",
+        [("    if retry:\n        system = system.replace(",
+          "    if False:\n        system = system.replace(")],
+    ),
+    (
+        # Ruling 21. This is the defect the retry pass created, kept as a
+        # mutation: taking the newest attempt replaced a 98%-Tamil rendering
+        # with a 5% one.
+        "the newest attempt becomes the rendering, whatever it came back as",
+        [("    return min(enumerate(attempts), key=key)[1]",
+          "    return attempts[-1]")],
+    ),
+    (
+        "a held attempt ranks equal with an admitted one",
+        [('        return (0 if attempt.get("ok") else 1,', "        return (0,")],
+    ),
+    (
+        "a tie between attempts keeps the later one, so a re-run churns",
+        [("                -float(attempt.get(\"script_ratio\") or 0.0),\n                position)",
+          "                -float(attempt.get(\"script_ratio\") or 0.0),\n                -position)")],
+    ),
+    (
+        "a superseded rendering schema is read as though it were current",
+        [("    if doc.get(\"schema\") in SUPERSEDED_SCHEMAS:", "    if False:")],
+    ),
+    (
+        # Ruling 22. Unclassified, this arrives as a bare 400 that the retry
+        # policy tries three times and then reports as "translation failed" —
+        # 615 requests on the first chat-strong run before it was read by hand.
+        "a temperature refusal is left unclassified",
+        [('    lowered = (message or "").lower()', '    lowered = ""')],
+    ),
+    (
+        "the temperature fallback applies whether or not a caller asked for it",
+        [("            if temperature_fallback is None or used == temperature_fallback:",
+          "            if temperature_fallback is None and False:")],
+    ),
+    (
+        "the temperature fallback becomes the default for every caller",
+        [("    temperature_fallback: float | None = None,",
+          "    temperature_fallback: float | None = 1.0,")],
+    ),
+    (
+        # Ruling 23b. Letters-only was the rule until the Malayalam vowel sign
+        # in `adulis-exports` passed at "100% Tamil".
+        "the script check counts letters only, as it did before ruling 23b",
+        [('        elif category in ("Mn", "Mc", "Me") and not (',
+          '        elif False and not (')],
+    ),
+    (
+        "script-neutral diacritics are counted against the script that uses them",
+        [("_NEUTRAL_MARKS = (0x0300, 0x036F)", "_NEUTRAL_MARKS = (0x0, 0x0)")],
+    ),
+    (
+        "the fusion takes the LAST variant's score instead of the best",
+        [("            if current is None or hit.similarity > current[0]:",
+          "            if True:")],
+    ),
+    (
+        "a tie promotes the later variant, so a no-op rendering reads as a win",
+        [("            if current is None or hit.similarity > current[0]:",
+          "            if current is None or hit.similarity >= current[0]:")],
+    ),
+    (
+        "fusion proceeds over truncated result lists",
+        [("    if search_k is not None:", "    if False:")],
+    ),
+    (
+        "the fused list is emitted unsorted, in insertion order",
+        [("    ordered = sorted(best.values(), key=lambda row: -row[0])",
+          "    ordered = list(best.values())")],
+    ),
+    (
+        "the fusion stops recording that a rendering beat the query's own text",
+        [('        "won_by_rendering": sum(\n            1 for chunk_id in after\n            if fused.winning_lang.get(chunk_id) not in (None, own)\n        ),', '        "won_by_rendering": 0,')],
+    ),
+    (
+        "variants searched under different filters are fused anyway",
+        [("    if len(distinct) > 1:", "    if False:")],
+    ),
+    (
+        "the reader trusts the verdict stored in the file",
+        [("            settle_row(row, lang, entry[\"query\"])",
+          "            pass")],
+    ),
+    (
+        "the reader stops recording that a stored verdict was stale",
+        [("            was_ok, was_text = row.get(\"ok\"), row.get(\"text\")",
+          "            was_ok, was_text = None, None")],
+    ),
+    (
+        "a fused gap is called a win without beating the same-run arm",
+        [("        if fd <= sd:", "        if False:")],
+    ),
+    (
+        "the two-arm report stops breaking recall down by language",
+        [("    for lang in langs:", "    for lang in []:")],
+    ),
+    (
+        "the render prompt drops its writing-system rule",
+        [("""    if target_lang in TRANSLITERATED_LANGS:
+        script_rule = _TRANSLITERATION_RULE
+    elif target_lang in NATIVE_SCRIPT_LANGS:
+        script_rule = _NATIVE_SCRIPT_RULE.format(script=NATIVE_SCRIPT_LANGS[target_lang])
+    else:
+        script_rule = ""
+
+    system = SYSTEM_RENDER.format(""",
+          """    script_rule = ""
+
+    system = SYSTEM_RENDER.format(""")],
+    ),
 ]
 
 EXPECTED = [
@@ -391,6 +596,43 @@ EXPECTED = [
     "reaching a record with no source text is not counted as a bypass",
     "a run with BOTH collapse and rerank keeps BOTH sets of keys",
     "a pool that violates the pair's own lang filter is a loud failure",
+    # C2 — fourteen, in the same order as the fourteen mutations above.
+    "a query is never rendered into its own language",
+    "English is never a render target — it is the single-variant arm",
+    "ruling 12 costs exactly 205 renderings over this gold set",
+    "ROMANISED Tamil is refused for oty — the Part 4 chrF-0.004 failure",
+    "Literary Chinese inside an English sentence is refused for lzh",
+    "a rendering identical to its query is refused as an echo",
+    "a rendering the script check refused is never fused",
+    "a query with no renderings raises rather than degrading silently",
+    "a rendering file that mentions a pair id is refused outright",
+    "a rendering the language rule never asked for is refused",
+    "a file built against a different index is refused",
+    "a rendering beating the native text on a native query is a finding",
+    "rendering a language into itself is refused at the call",
+    "a rendering admitted by the old 0.6 floor is refused at 1.0",
+    "scholarly modifier letters do not make a Latin rendering foreign",
+    "the retry prompt is a different prompt from the first",
+    "a retry that came back worse does not become the rendering",
+    "an admitted attempt beats a held one whatever the order",
+    "among equals the earlier attempt is kept, so a re-run changes nothing",
+    "a rendering file under a superseded schema is refused by the reader",
+    "a temperature refusal is classified, not left as a mystery 400",
+    "without an opt-in, a temperature refusal is raised and NAMED",
+    "the temperature fallback is off by default, so archived paths stay greedy",
+    "a foreign VOWEL SIGN inside a native word is refused",
+    "script-neutral combining diacritics are not counted against anyone",
+    "a candidate takes the BEST score any variant gave it",
+    "a tie keeps the query's own text, which is always declared first",
+    "fusion REFUSES to run over truncated result lists",
+    "the fused order is by fused score, not by any one variant's order",
+    "the run records how many of the top six a RENDERING claimed",
+    "variants searched under different filters are refused",
+    "a stored verdict is re-derived on read, never trusted",
+    "the reader records which rows disagreed with the file",
+    "a fused gap narrower than the single-variant arm is NOT called a win",
+    "the report prints per-language recall for both arms",
+    "the render prompt demands the Tamil script for oty",
 ]
 
 
@@ -433,13 +675,30 @@ def failures_from(output: str) -> set[str]:
 # how it presented on 2026-08-16 and it cost half an hour.
 SUITE_CRASHED = "<the suite CRASHED instead of reporting a failure>"
 
+# Where the last crash came from. Naming the crash was the 2026-08-16 fix; it
+# stopped a died-suite reading as "no failures", but it still left you to
+# reproduce the mutation by hand to find out WHY. The traceback is right there
+# in the subprocess's stderr, and throwing it away cost another round trip the
+# first time a mutation crashed on a machine the author could not reach.
+LAST_CRASH = {"stderr": ""}
+
 
 def run_suite() -> set[str]:
+    # PYTHONIOENCODING is not decoration. Through a pipe on Windows the child's
+    # stdout falls back to cp1252, and this suite's failure messages carry
+    # Greek, Tamil and Chinese — so a guard whose detail is non-Latin raised
+    # UnicodeEncodeError and DIED rather than printing FAIL. This harness reads
+    # FAIL lines out of that pipe, so it saw a crash where there was a caught
+    # failure, and reported a working mutation as unwatched. Both ends are
+    # fixed: the child is told to write UTF-8, and the parent to read it.
     result = subprocess.run(
-        [sys.executable, "-B", "-m", SUITE], cwd=ROOT, capture_output=True, text=True
+        [sys.executable, "-B", "-m", SUITE], cwd=ROOT, capture_output=True,
+        text=True, encoding="utf-8", errors="replace",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
     )
     failures = failures_from(result.stdout)
     if result.returncode != 0 and not failures:
+        LAST_CRASH["stderr"] = result.stderr
         return {SUITE_CRASHED}
     return failures
 
@@ -486,6 +745,10 @@ def main() -> int:
                        "MUTATIONS and EXPECTED are still in the same order."
                        if drifted else "")
                 )
+                if SUITE_CRASHED in failed:
+                    tail = [line for line in
+                            LAST_CRASH["stderr"].strip().splitlines() if line][-12:]
+                    problems[-1] += "\n      " + "\n      ".join(tail)
                 print(f"  MISS {label}"
                       + ("  (suite crashed)" if SUITE_CRASHED in failed else "")
                       + ("  (detected by another guard - list drift?)"

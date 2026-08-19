@@ -41,8 +41,32 @@ PASS, FAIL = [], []
 
 
 def check(name: str, ok: bool, detail: str = "") -> None:
+    """Record and print one assertion.
+
+    The print is encode-guarded, and the reason is a defect this suite had for
+    as long as it has had a non-English corpus. A failing check prints its
+    detail, and details here carry Greek, Tamil and Chinese. Run in a terminal
+    that is UTF-8 the line prints; run through a PIPE on Windows the child's
+    stdout falls back to cp1252, `print` raises UnicodeEncodeError, and the
+    suite DIES instead of failing.
+
+    That is invisible at baseline — the line is only printed when the check
+    fails — so it surfaced first under `scripts/mutate_ranking.py`, which reads
+    FAIL lines out of a pipe. Every guard whose failure message contains a
+    non-Latin character was, until 2026-08-16, a guard that could not be
+    watched failing: the harness saw a crash, not a failure.
+
+    Escaping beats dying. The mutation harness now also forces UTF-8 on the
+    child, so both ends of the pipe are fixed rather than one.
+    """
     (PASS if ok else FAIL).append(name)
-    print(f"{'ok  ' if ok else 'FAIL'} {name}" + (f"\n       {detail}" if detail and not ok else ""))
+    line = f"{'ok  ' if ok else 'FAIL'} {name}" + (
+        f"\n       {detail}" if detail and not ok else "")
+    try:
+        print(line)
+    except UnicodeEncodeError:
+        encoding = sys.stdout.encoding or "ascii"
+        print(line.encode(encoding, "backslashreplace").decode(encoding))
 
 
 @dataclass
@@ -1058,6 +1082,627 @@ def test_post_rerank_units_are_scored_over_the_whole_gate() -> None:
           "recall_at_6_reranked" not in summarise_units(
               build_units([pair("z", "u9", 3, None, reranked=False)])))
 
+def test_the_query_rendering_rule_cannot_see_the_answer() -> None:
+    """C2, Block C rulings 12 / 15b / 17a / 19.
+
+    The leakage trap is the one that would invalidate every C2 number, and it
+    cannot be caught by looking at a rank: a run that chose each query's target
+    language by reading `expect_lang` would produce a beautiful curve and would
+    measure nothing at all. So it is caught here, structurally, before a call is
+    spent — the rule's SIGNATURE is asserted, not merely its output.
+    """
+    import inspect
+    import json as _json
+    import tempfile
+    from pathlib import Path as _Path
+
+    from answer.translate import (  # noqa: E402
+        TranslationError,
+        build_render_messages,
+        render_query,
+    )
+    from retrieve.render import (  # noqa: E402
+        SCHEMA as R_SCHEMA,
+        SCRIPT_FLOOR,
+        RenderingError,
+        Renderings,
+        coverage_problems,
+        expected_rendering_count,
+        load,
+        native_query_problems,
+        rendering_problems,
+        required_script,
+        script_ratio,
+        target_langs,
+    )
+
+    gold_path = _Path(__file__).resolve().parent / "gold" / "ranking_pairs.json"
+    gold_doc = _json.loads(gold_path.read_text(encoding="utf-8"))
+
+    # ---- ruling 12: the signature is the assertion -----------------------
+    params = list(inspect.signature(target_langs).parameters)
+    check("the language rule takes the index and the query and nothing else",
+          params == ["index_langs", "query_lang"],
+          f"signature is {params} — a third parameter is how expect_lang gets in")
+
+    corpus_langs = sorted(gold_doc["pools"]["non_english"]["langs"])
+    index_langs = sorted(set(corpus_langs) | {"en"})
+
+    # Both directions. Excluding English only for an English query would leave
+    # a Greek query rendered into English — which is the index's own
+    # translations answering a query about the original, the thing ruling 8's
+    # collapse exists to stop competing.
+    check("English is never a render target — it is the single-variant arm",
+          "en" not in target_langs(index_langs, "en")
+          and "en" not in target_langs(index_langs, "grc"),
+          f"grc -> {target_langs(index_langs, 'grc')}")
+    check("a query is never rendered into its own language",
+          "grc" not in target_langs(index_langs, "grc")
+          and "oty" not in target_langs(index_langs, "oty"))
+    check("ruling 15b: an English query gets every non-English index language",
+          target_langs(index_langs, "en") == corpus_langs,
+          f"{target_langs(index_langs, 'en')}")
+    check("ruling 15b: a native-language query is rendered too, minus its own",
+          len(target_langs(index_langs, "grc")) == len(corpus_langs) - 1)
+
+    # The whole cost of ruling 12, computed rather than estimated:
+    # 25 English queries x 7 + 5 native-language queries x 6 = 205.
+    query_langs = {p["query"]: p["query_lang"] for p in gold_doc["pairs"]}
+    cost = expected_rendering_count(index_langs, query_langs.values())
+    check("ruling 12 costs exactly 205 renderings over this gold set",
+          cost == 205, f"{cost}")
+
+    # ---- ruling 17(a): the script check ---------------------------------
+    check("Greek script passes a grc rendering",
+          not rendering_problems("τί ἔφερον τὰ πλοῖα ἐκ Μουζιρίδος;", "grc"))
+    check("ROMANISED Tamil is refused for oty — the Part 4 chrF-0.004 failure",
+          any(p.startswith("script") for p in
+              rendering_problems("yavanar muciri ponnotu vantu", "oty")),
+          "a romanised query retrieves badly for a reason no rank can report")
+    check("Literary Chinese inside an English sentence is refused for lzh",
+          any(p.startswith("script") for p in rendering_problems(
+              "the country 大秦 that the query asks about", "lzh")),
+          f"ratio {script_ratio('the country 大秦 that the query asks about', 'han'):.2f} "
+          f"against a floor of {SCRIPT_FLOOR}")
+    check("Chinese characters pass a lzh rendering",
+          not rendering_problems("大秦國的使者從何處來", "lzh"))
+    check("scholarly transliteration passes xpr, and Greek script does not",
+          not rendering_problems("šāhān šāh Ērān ud Anēran Šābuhr", "xpr")
+          and any(p.startswith("script") for p in
+                  rendering_problems("βασιλεὺς βασιλέων", "xpr")))
+    check("an empty rendering is refused before it can be embedded",
+          rendering_problems("   ", "grc")
+          == ["empty: the model returned no usable rendering"])
+    check("a rendering identical to its query is refused as an echo",
+          any(p.startswith("echo") for p in
+              rendering_problems("Μουζιρίς", "grc", source_text="Μουζιρίς")),
+          "fused by max, an echo is a second copy of the single-variant arm")
+    try:
+        required_script("qqq")
+        raised = False
+    except RenderingError:
+        raised = True
+    check("a language with no declared writing system is refused, not waved through",
+          raised)
+
+    # ---- ruling 20: the floor was 0.6 and the first real run found the band --
+    # This exact string was ADMITTED at floor 0.6: Tamil, Hangul, Han and Latin
+    # in one rendering. The argument for 0.6 was that a wholly-wrong rendering
+    # sits at 0.0 and the band between is empty. Ten of 205 renderings were in
+    # it.
+    mixed = "கேரளக் கரையில்발掘된 지중해 amphora sherds"
+    problems = rendering_problems(mixed, "oty")
+    check("a rendering one third in another writing system is refused",
+          any(p.startswith("script") for p in problems),
+          f"ratio {script_ratio(mixed, 'tamil'):.2f}, floor {SCRIPT_FLOOR}")
+    check("the refusal names the letters that do not belong",
+          bool(problems) and "발" in problems[0] and "amphora" not in problems[0],
+          problems[0] if problems else "no problem reported")
+    # Indexed defensively. A mutation that drops the floor makes this list
+    # empty, and an IndexError here would CRASH the suite — which the mutation
+    # harness reads as "no failures", marking the mutation unwatched and
+    # skipping every check after it. That is the SUITE_CRASHED failure the
+    # harness was taught to name on 2026-08-16; a test must fail, not die.
+    _wholly = rendering_problems("romanised", "oty")
+    wholly = _wholly[0] if _wholly else ""
+    check("mixed script and wrong script are different diagnoses, both printed",
+          bool(problems) and "41%" in problems[0]
+          and "0% of the judged" in wholly and problems[0] != wholly,
+          f"{problems[0][:70] if problems else ''} || {wholly[:40]}")
+    # THE BAND. 69% Han, admitted by the 0.6 floor the first run was made at
+    # and refused at 1.0. Written as its own check because the 30% string above
+    # is refused under either floor and so cannot witness the raise.
+    check("a rendering admitted by the old 0.6 floor is refused at 1.0",
+          any(p.startswith("script") for p in
+              rendering_problems("乳香國及阿拉伯之Kane港", "lzh")),
+          f"ratio {script_ratio('乳香國及阿拉伯之Kane港', 'han'):.2f}, "
+          f"floor {SCRIPT_FLOOR}")
+    # ʾ and ʿ are Unicode LETTERS in no Latin block. Before U+02B0-02FF was
+    # added to the Latin ranges, a whole-language floor would have refused the
+    # corpus's own transliteration convention — 118 Sabaic and Nabataean rows.
+    check("scholarly modifier letters do not make a Latin rendering foreign",
+          not rendering_problems("mlk mlkn Saba wa-l-ʿArab Šabur", "xsa")
+          and not rendering_problems("ʾrḍ dkrt lbnt w-mnt Kn b-ʿrb", "xsa"))
+    check("a stray Greek letter still refuses a Latin rendering",
+          any(p.startswith("script") for p in
+              rendering_problems("pad dānmārkīg bataγ nihād", "xpr")),
+          "the one genuinely impure Latin rendering of the 2026-08-16 run")
+
+    # ---- ruling 19, and ruling 12's structural half ----------------------
+    def _file(doc) -> _Path:
+        handle = tempfile.NamedTemporaryFile(
+            "w", suffix=".json", delete=False, encoding="utf-8")
+        handle.write(_json.dumps(doc, ensure_ascii=False))
+        handle.close()
+        return _Path(handle.name)
+
+    good = {
+        "schema": R_SCHEMA, "prompt_version": "c2-render-v1",
+        "chat_model": "stub", "view": "v", "index_langs": index_langs,
+        "queries": [{
+            "query": "q", "query_lang": "en",
+            "renderings": {
+                "grc": {"text": "ἑλληνικά", "ok": True},
+                "oty": {"text": "romanised", "ok": False,
+                        "problems": ["script: 0% of the letters are tamil"]},
+            },
+        }],
+    }
+    loaded = load(_file(good))
+    variants = loaded.variants_for("q", "en")
+    check("the query's own text is always the first variant",
+          variants[0].source == "query" and variants[0].text == "q"
+          and variants[0].lang == "en")
+    check("a rendering the script check refused is never fused",
+          [v.lang for v in variants] == ["en", "grc"],
+          f"{[v.lang for v in variants]}")
+    check("a refused rendering is kept as evidence rather than deleted",
+          bool(loaded.rejected()) and loaded.rejected()[0][1] == "oty")
+    check("the rendering file carries a content hash for the two-day criterion",
+          len(loaded.digest) == 16)
+
+    try:
+        loaded.variants_for("a query nobody rendered", "en")
+        raised = False
+    except RenderingError:
+        raised = True
+    check("a query with no renderings raises rather than degrading silently",
+          raised,
+          "falling back to the English-only arm for SOME pairs would report a "
+          "C2 number about a configuration nobody chose")
+
+    leaky = _json.loads(_json.dumps(good))
+    leaky["queries"][0]["pair_ids"] = ["muziris-cargo-periplus"]
+    try:
+        load(_file(leaky))
+        raised = False
+    except RenderingError:
+        raised = True
+    check("a rendering file that mentions a pair id is refused outright", raised,
+          "ruling 12: the file must be structurally incapable of recording a "
+          "per-pair language choice")
+
+    wrong_schema = _json.loads(_json.dumps(good))
+    wrong_schema["schema"] = "something/else"
+    try:
+        load(_file(wrong_schema))
+        raised = False
+    except RenderingError:
+        raised = True
+    check("a rendering file of an unknown schema is refused", raised)
+
+    # ---- the file and the run must be about the same index ---------------
+    check("a query missing from the file is a refusal, not a gap",
+          any("no renderings for query" in p for p in
+              coverage_problems(loaded, {"q": "en", "other": "en"}, index_langs)))
+    check("a file built against a different index is refused",
+          any("index languages" in p for p in
+              coverage_problems(loaded, {"q": "en"}, ["en", "grc"])))
+    over = Renderings(
+        path=_Path("x"), prompt_version="", chat_model="", view="v",
+        index_langs=index_langs,
+        by_query={"q": {lang: {"text": "t", "ok": True}
+                        for lang in corpus_langs + ["la"]}})
+    check("a rendering the language rule never asked for is refused",
+          any("does not ask for" in p for p in
+              coverage_problems(over, {"q": "en"}, index_langs)))
+
+    # ---- ruling 15b: the assertion that replaces invariance --------------
+    check("an English query is not subject to the native-query control",
+          native_query_problems("en", "grc", 1, 1) == [])
+    check("a native query winning in its own language at the same rank passes",
+          native_query_problems("grc", "grc", 1, 1) == [])
+    check("a rendering beating the native text on a native query is a finding",
+          any("beat the query's own" in p for p in
+              native_query_problems("grc", "lzh", 1, 1)))
+    check("fusion making a native-language query worse is a finding",
+          any("rank 1 to 4" in p for p in
+              native_query_problems("grc", "grc", 1, 4)))
+    check("fusion losing a native-language query entirely is a finding",
+          any("lost a native-language query" in p for p in
+              native_query_problems("grc", "grc", 1, None)))
+
+    # ---- the prompt asks for the script rule, it is not only checked -----
+    tamil = build_render_messages("a query", "en", "oty")[0]["content"]
+    parthian = build_render_messages("a query", "en", "xpr")[0]["content"]
+    check("the render prompt demands the Tamil script for oty",
+          "Tamil script" in tamil and "Do NOT romanise" in tamil)
+    check("the render prompt demands transliteration for xpr",
+          "transliteration" in parthian
+          and "not in its historical script" in parthian)
+    check("the render prompt asks for the query, not for an answer to it",
+          "Do not answer it" in tamil and "SEARCH QUERY" in tamil)
+    # Asserted on the MESSAGE, not merely on the exception type. A stub client
+    # and a stub sleep mean the mutated arm also ends in a TranslationError —
+    # three failed attempts against an object with no `chat` — so a check that
+    # only caught the type would pass against a bypassed guard and report a
+    # mutation as watched. It is the same class of defect as a stub that lies.
+    try:
+        render_query("q", "grc", "grc", client=object(), sleep=lambda _s: None)
+        raised = ""
+    except TranslationError as exc:
+        raised = str(exc)
+    check("rendering a language into itself is refused at the call",
+          "the language rule was bypassed" in raised, raised[:140])
+
+    # ---- ruling 20: a retry has to be a different prompt ------------------
+    from answer.translate import (  # noqa: E402
+        QUERY_PROMPT_VERSION,
+        QUERY_RETRY_PROMPT_VERSION,
+    )
+
+    first = build_render_messages("a query", "en", "oty")[0]["content"]
+    again = build_render_messages("a query", "en", "oty", retry=True)[0]["content"]
+    check("the retry prompt is a different prompt from the first",
+          again != first and "WRONG WRITING SYSTEM" in again,
+          "at temperature=0 the same prompt is the same call, not a second "
+          "attempt — it would return the same wrong-script string")
+    check("the retry prompt keeps the writing-system rule it is retrying",
+          "Tamil script" in again)
+    check("a retried rendering carries its own prompt version",
+          QUERY_RETRY_PROMPT_VERSION != QUERY_PROMPT_VERSION,
+          "otherwise the file holds two prompts' output under one provenance "
+          "string")
+
+    # ---- ruling 21: a retry may improve a row and may never destroy it -----
+    # The 2026-08-16 retry pass is the argument, and it is the reason this
+    # exists rather than a hypothetical: the corrective prompt came back WORSE
+    # on seven of ten Old Tamil rows — one went from a single stray letter to
+    # thirty-six — and a pipeline that takes the newest attempt would have
+    # replaced a rendering at 98% Tamil with one at 5% and called it a fix.
+    from retrieve.render import SUPERSEDED_SCHEMAS, best_attempt  # noqa: E402
+
+    first_try = {"text": "ok text", "ok": True, "script_ratio": 0.98}
+    worse = {"text": "worse", "ok": False, "script_ratio": 0.05}
+    better = {"text": "better", "ok": True, "script_ratio": 1.0}
+    # The case that makes `ok` load-bearing rather than decorative. An ECHO is
+    # 100% in the right script and still not a rendering, so script ratio alone
+    # would rank it first — and it arrived first, so position would too. Only
+    # the admitted/held term separates them.
+    echo_attempt = {"text": "same as the query", "ok": False,
+                    "script_ratio": 1.0}
+    admitted = {"text": "a real rendering", "ok": True, "script_ratio": 1.0}
+    check("an admitted attempt beats a held one whatever the order",
+          best_attempt([echo_attempt, admitted])["text"] == "a real rendering"
+          and best_attempt([admitted, echo_attempt])["text"] == "a real rendering",
+          "an echo is wholly in the right script and is still not a rendering")
+    check("a retry that came back worse does not become the rendering",
+          best_attempt([first_try, worse])["text"] == "ok text",
+          "seven of ten Old Tamil retries were worse than what they replaced")
+    check("a retry that came back better does become the rendering",
+          best_attempt([first_try, better])["text"] == "better")
+    check("among equals the earlier attempt is kept, so a re-run changes nothing",
+          best_attempt([dict(better, text="a"), dict(better, text="b")])["text"]
+          == "a")
+    check("no attempts at all is None, not an empty rendering",
+          best_attempt([]) is None)
+
+    # ---- ruling 23b: combining marks are not letters, and Indic ones carry
+    # much of the phonology. This exact string passed at "100% Tamil" while a
+    # Malayalam vowel sign sat inside the place name, and it is the query for
+    # `adulis-exports` — the pair C2a's collapse moved from 15 to 3.
+    adulis = "\u0b85\u0b9f\u0bc1\u0bb2\u0d3f\u0b9a\u0bbf\u0bb2\u0bbf\u0bb0\u0bc1\u0ba8\u0bcd\u0ba4\u0bc1"
+    marked = rendering_problems(adulis, "oty")
+    check("a foreign VOWEL SIGN inside a native word is refused",
+          any(p.startswith("script") for p in marked),
+          f"ratio {script_ratio(adulis, 'tamil'):.3f}")
+    check("the refusal names the mark, not just a percentage",
+          bool(marked) and "\u0d3f" in marked[0], marked[0] if marked else "")
+    check("a script's OWN marks are not foreign to it",
+          not rendering_problems("\u0bae\u0bc1\u0b9a\u0bbf\u0bb1\u0bbf", "oty"),
+          "Tamil vowel signs live inside the Tamil block")
+    # U+0300-036F belongs to no script and is used by Greek and by scholarly
+    # transliteration alike. Refusing it would refuse correct renderings.
+    check("script-neutral combining diacritics are not counted against anyone",
+          not rendering_problems("s\u0301abuhr", "xpr")
+          and not rendering_problems("\u03b2\u03b1\u03c3\u03b9\u03bb\u03b5\u03cd\u03c2", "grc"))
+
+    # ---- ruling 22: a model that refuses greedy decoding -----------------
+    from answer.translate import _chat, _is_unsupported_temperature  # noqa: E402
+
+    SONNET_400 = (
+        "Error code: 400 - {'error': {'message': "
+        "'litellm.UnsupportedParamsError: claude-sonnet-5 does not support "
+        "temperature=0. Only temperature=1 is supported.'}}"
+    )
+    check("a temperature refusal is classified, not left as a mystery 400",
+          _is_unsupported_temperature(SONNET_400)
+          and not _is_unsupported_temperature("rate limit exceeded"),
+          "615 requests were spent on this before it was read by hand")
+
+    class _Refusing:
+        """Refuses temperature=0 exactly as the gateway did, then answers."""
+        def __init__(self):
+            self.temperatures = []
+            self.chat = self
+
+        @property
+        def completions(self):
+            return self
+
+        def create(self, **kwargs):
+            self.temperatures.append(kwargs["temperature"])
+            if kwargs["temperature"] == 0:
+                raise RuntimeError(SONNET_400)
+            class R:
+                choices = [type("C", (), {"message": type(
+                    "M", (), {"content": "<translation>ok</translation>"})()})()]
+            return R()
+
+    client = _Refusing()
+    try:
+        _chat([], model="m", client=client, sleep=lambda _s: None)
+        refused = ""
+    except TranslationError as exc:
+        refused = str(exc)
+    check("without an opt-in, a temperature refusal is raised and NAMED",
+          "refuses temperature=0" in refused and "drop_params" in refused,
+          "LiteLLM's own fix drops the parameter for every call in the "
+          "gateway, embeddings included")
+    check("the refusal is raised on the FIRST call, not after three retries",
+          client.temperatures == [0], f"{client.temperatures}")
+
+    client = _Refusing()
+    # Guarded, for the SUITE_CRASHED reason again: a mutation that unclassifies
+    # the refusal makes this raise, and an uncaught raise would be read by the
+    # mutation harness as "no failures".
+    try:
+        text, _retries, used = _chat([], model="m", client=client,
+                                     sleep=lambda _s: None,
+                                     temperature_fallback=1.0)
+    except TranslationError as exc:
+        text, used = f"raised instead of falling back: {exc}", None
+    check("a caller that opts in falls back once and reports what it used",
+          used == 1.0 and client.temperatures == [0, 1.0]
+          and "<translation>ok</translation>" in text,
+          f"{client.temperatures}")
+    # The opt-in must DEFAULT to off, or Part 6's translations and Part 7's
+    # answers would start sampling the moment their alias moved, and every
+    # archived number would quietly stop being comparable to the new ones.
+    check("the temperature fallback is off by default, so archived paths stay greedy",
+          inspect.signature(_chat).parameters["temperature_fallback"].default
+          is None,
+          f"{inspect.signature(_chat).parameters['temperature_fallback'].default!r}")
+
+    # ---- ruling 24: the reader re-derives the verdict, never trusts it ----
+    # The file below claims ok:true for a rendering the CURRENT guard refuses,
+    # exactly as eval/gold/query_renderings.json did on 2026-08-16: the row had
+    # been judged before ruling 23b and carried a Malayalam vowel sign. A reader
+    # that trusts a stored verdict embeds whatever the last guard permitted.
+    stale_doc = {
+        "schema": R_SCHEMA, "prompt_version": "c2-render-v1",
+        "chat_model": "stub", "view": "v", "index_langs": index_langs,
+        "queries": [{
+            "query": "q", "query_lang": "en",
+            "renderings": {"oty": {
+                "text": "\u0b85\u0b9f\u0bc1\u0bb2\u0d3f",
+                "ok": True, "problems": [],
+                "attempts": [
+                    {"text": "\u0b85\u0b9f\u0bc1\u0bb2\u0d3f",
+                     "chat_model": "old"},
+                    {"text": "\u0b85\u0b9f\u0bc1\u0bb2\u0bbf",
+                     "chat_model": "new"},
+                ],
+            }},
+        }],
+    }
+    rejudged = load(_file(stale_doc))
+    check("a stored verdict is re-derived on read, never trusted",
+          rejudged.by_query["q"]["oty"]["text"] == "\u0b85\u0b9f\u0bc1\u0bb2\u0bbf",
+          f"got {rejudged.by_query['q']['oty']['text']!r} — the file said the "
+          f"first attempt was fine and the current guard says it is not")
+    check("the reader records which rows disagreed with the file",
+          [(q, l) for q, l, _ok in rejudged.stale] == [("q", "oty")],
+          f"{rejudged.stale}")
+    # .get, not [] — a mutation that skips the re-derivation leaves the row
+    # without these keys, and a KeyError here would CRASH the suite, which the
+    # mutation harness reads as "no failures".
+    check("a clean attempt beside a stale one is promoted without a call",
+          rejudged.by_query["q"]["oty"].get("chat_model") == "new"
+          and rejudged.by_query["q"]["oty"].get("ok") is True,
+          f"{rejudged.by_query['q']['oty'].get('chat_model')!r}")
+    check("a file whose verdicts already match the guard reports nothing stale",
+          load(_file(good)).stale == [], f"{load(_file(good)).stale}")
+
+    superseded = _json.loads(_json.dumps(good))
+    superseded["schema"] = sorted(SUPERSEDED_SCHEMAS)[0]
+    try:
+        load(_file(superseded))
+        raised = ""
+    except RenderingError as exc:
+        raised = str(exc)
+    check("a rendering file under a superseded schema is refused by the reader",
+          "superseded" in raised and "build_query_renderings" in raised,
+          "a v1 row holds one text and no history, so a run could not say "
+          "whether a rendering had been retried or what the retry replaced")
+
+
+def test_the_fusion_is_a_max_and_says_what_won() -> None:
+    """C2, Block C ruling 13. Declared before any call was spent."""
+    from retrieve.fuse import FusionError, fuse, fusion_report, pool_problems
+
+    def hits(*rows):
+        return [StubHit(c, c.split("::")[0], s) for c, s in rows]
+
+    # The fixture is built so that NEITHER "first variant wins" nor "last
+    # variant wins" reproduces the max, and so that insertion order is not
+    # score order. A fixture where the max happens to be the last value tests
+    # the word "max" and not the behaviour.
+    #
+    #            en     grc    fused   won by
+    #   doc-a   0.50   0.55    0.55    grc      a rendering wins
+    #   doc-b   0.60   0.30    0.60    en       the query's own text wins
+    #   doc-c   0.10   0.70    0.70    grc      a rendering wins, from last place
+    en = hits(("doc-a::original::000", 0.50), ("doc-b::original::000", 0.60),
+              ("doc-c::original::000", 0.10))
+    grc = hits(("doc-a::original::000", 0.55), ("doc-b::original::000", 0.30),
+               ("doc-c::original::000", 0.70))
+
+    f = fuse([("en", en), ("grc", grc)], None)
+    by_id = {h.chunk_id: h.similarity for h in f.hits}
+    check("a candidate takes the BEST score any variant gave it",
+          abs(by_id["doc-b::original::000"] - 0.60) < 1e-9
+          and abs(by_id["doc-c::original::000"] - 0.70) < 1e-9
+          and abs(by_id["doc-a::original::000"] - 0.55) < 1e-9,
+          f"{ {k: round(v, 2) for k, v in by_id.items()} }")
+    check("the fused order is by fused score, not by any one variant's order",
+          [h.chunk_id for h in f.hits] == ["doc-c::original::000",
+                                           "doc-b::original::000",
+                                           "doc-a::original::000"],
+          "insertion order here is doc-a, doc-b, doc-c — deliberately not the "
+          "score order, so an unsorted emit cannot pass")
+    check("the run records WHICH variant won each candidate",
+          f.lang_of("doc-a::original::000") == "grc"
+          and f.lang_of("doc-b::original::000") == "en"
+          and f.lang_of("doc-c::original::000") == "grc")
+    check("fusing never invents or loses a candidate",
+          f.n_candidates == 3 and len(f.hits) == 3)
+
+    # The query's own text is declared first, so a rendering that merely equals
+    # it must not be recorded as having beaten it.
+    tie = fuse([("en", hits(("c::original::000", 0.7))),
+                ("grc", hits(("c::original::000", 0.7)))], None)
+    check("a tie keeps the query's own text, which is always declared first",
+          tie.lang_of("c::original::000") == "en")
+
+    # Ruling 13's exactness condition, asserted rather than trusted.
+    try:
+        fuse([("en", en)], 50)
+        refused = ""
+    except FusionError as exc:
+        refused = str(exc)
+    check("fusion REFUSES to run over truncated result lists",
+          "unknown" in refused.lower() and "50" in refused,
+          "a max over survivors favours whatever the truncation kept")
+    try:
+        fuse([], None)
+        raised = False
+    except FusionError:
+        raised = True
+    check("fusing no variants at all is a loud failure", raised)
+
+    check("variants searched under different filters are refused",
+          any("never comparable" in p for p in
+              pool_problems([("en", en), ("grc", grc[:2])])))
+    check("one variant language appearing twice is refused",
+          any("twice" in p for p in pool_problems([("en", en), ("en", en)])))
+    check("variants of equal size and distinct language pass silently",
+          pool_problems([("en", en), ("grc", grc)]) == [])
+
+    report = fusion_report(sorted(en, key=lambda h: -h.similarity), f)
+    check("the run records what the fusion moved in the top six",
+          report["moved"] == 3 and report["candidates"] == 3
+          and report["entered_top6"] == [],
+          f"{report}")
+    check("the run records how many of the top six a RENDERING claimed",
+          report["won_by_rendering"] == 2
+          and report["won_by_lang"] == {"en": 1, "grc": 2},
+          "if this is zero, C2 changed nothing the reader would see, whatever "
+          "the aggregate gap says")
+
+
+def test_the_two_arm_report_cannot_kill_a_run() -> None:
+    """Ruling 14's printer, exercised because printing has destroyed a run here.
+
+    On 2026-08-16 a KeyError in `print_report` killed the process before
+    `archive()` and a twenty-six-minute reranked run was lost. Archiving now
+    happens first, so a crash here costs the terminal output and not the
+    evidence — but `_print_fused` is a new printer full of `.get`s over
+    aggregates that are empty on a dry run, None when no pair ranked, and
+    partial when only one intervention is on. It is the exact shape of the thing
+    that already cost a day, so it is called here over the degenerate cases
+    rather than trusted.
+    """
+    import io
+    from contextlib import redirect_stdout
+
+    from eval.run_ranking_check import Report, _print_fused, print_report
+
+    def pair(pid, rank, fused=False, gap=0.02):
+        r = score_pair(StubPair(id=pid, expect_lang="grc"),
+                       [StubHit("doc-a::original::000", "doc-a", 0.9),
+                        StubHit("doc-b::original::000", "doc-b", 0.9 - gap)],
+                       "doc-a::original::000" if rank else "nowhere")
+        r.fused = fused
+        r.fused_from_lang = "grc" if fused else None
+        return r
+
+    for label, build in (
+        ("no fused pairs at all", lambda rep: None),
+        ("fused pairs but empty aggregates", lambda rep: rep.pairs_fused.append(pair("a", 1, True))),
+        ("a pair that never ranked, so the gaps are None", lambda rep: (
+            rep.pairs.append(pair("b", 0)), rep.pairs_fused.append(pair("b", 0, True)))),
+    ):
+        report = Report(timestamp="t", view="v", search_k=1, index_chunks=1,
+                        embedding_models=[], query_embedding_model="")
+        report.fused = True
+        report.pairs.append(pair("a", 1))
+        build(report)
+        report.aggregate = summarise(report.pairs)
+        if report.pairs_fused:
+            report.aggregate_fused = summarise(report.pairs_fused)
+            report.units_fused = build_units(report.pairs_fused)
+            report.aggregate_units_fused = summarise_units(report.units_fused)
+        report.units = build_units(report.pairs)
+        report.aggregate_units = summarise_units(report.units)
+        try:
+            with redirect_stdout(io.StringIO()):
+                _print_fused(report)
+                print_report(report)
+            crashed = ""
+        except Exception as exc:            # noqa: BLE001 — that IS the test
+            crashed = f"{type(exc).__name__}: {exc}"
+        check(f"the two-arm report survives: {label}", not crashed, crashed)
+
+    # Ruling 14's verdict line must not call a fused gap a win when it is not.
+    report = Report(timestamp="t", view="v", search_k=1, index_chunks=1,
+                    embedding_models=[], query_embedding_model="")
+    report.fused = True
+    report.pairs = [pair("a", 1, gap=0.05)]
+    report.pairs_fused = [pair("a", 1, True, gap=0.01)]
+    report.aggregate = summarise(report.pairs)
+    report.aggregate_fused = summarise(report.pairs_fused)
+    report.units = build_units(report.pairs)
+    report.aggregate_units = summarise_units(report.units)
+    report.units_fused = build_units(report.pairs_fused)
+    report.aggregate_units_fused = summarise_units(report.units_fused)
+    buffer = io.StringIO()
+    with redirect_stdout(buffer):
+        _print_fused(report)
+    printed = buffer.getvalue()
+    check("a fused gap narrower than the single-variant arm is NOT called a win",
+          "NOT a C2 win" in printed,
+          "\n".join(line for line in printed.splitlines() if "->" in line))
+    # Asserted on a language ROW, not on the heading. A check that greps for
+    # the heading passes against a report that prints the heading and no rows —
+    # which is exactly what the first mutation written for it produced, and it
+    # was reported as an unwatched guard.
+    check("the report prints per-language recall for both arms",
+          any(line.strip().startswith("grc") and "->" in line
+              for line in printed.splitlines()),
+          "an aggregate win that loses Chinese is a loss")
+
+
 def main() -> int:
     test_gold_set()
     test_loader_is_strict()
@@ -1073,6 +1718,9 @@ def main() -> int:
     test_a_section_is_one_record_and_it_is_the_original()
     test_the_paced_client_waits_before_the_call_not_after_the_refusal()
     test_post_rerank_units_are_scored_over_the_whole_gate()
+    test_the_query_rendering_rule_cannot_see_the_answer()
+    test_the_fusion_is_a_max_and_says_what_won()
+    test_the_two_arm_report_cannot_kill_a_run()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     if FAIL:
         for name in FAIL:
