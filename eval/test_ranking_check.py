@@ -1082,6 +1082,162 @@ def test_post_rerank_units_are_scored_over_the_whole_gate() -> None:
           "recall_at_6_reranked" not in summarise_units(
               build_units([pair("z", "u9", 3, None, reranked=False)])))
 
+
+def test_the_via_original_companion_is_measured_at_both_points() -> None:
+    """C7. `recall@6 via the original text` is computed on the COLLAPSED
+    ordering, while the adopted configuration RERANKS. The report printed it on
+    the same page as a post-rerank recall with nothing to say the two were
+    measured at different points, so 29/30 and 21/30 read as one measurement.
+
+    The fix is a SECOND field under a second name. Overwriting the first would
+    be unrecoverable: every run archived since ruling 9 holds the pre-rerank
+    figure, and a run that replaced it would be incomparable to all of them —
+    which is the same reason `rank_reranked` never overwrote `rank`.
+
+    Every condition below reads the aggregate with `.get`. A check that raises
+    KeyError on the defect it guards DIES instead of failing, and this harness
+    reads FAIL lines out of stdout.
+    """
+    import io
+    from contextlib import redirect_stdout
+
+    from eval.run_ranking_check import (
+        Report, _print_collapse, _print_rerank, apply_collapse, apply_rerank,
+        build_units, summarise_units,
+    )
+
+    def at(cid, rank):
+        """A ranking with `cid` at `rank` and fillers everywhere else."""
+        specs = [(f"filler-{i}::original::000", 0.9 - i / 100)
+                 for i in range(1, max(rank, RECALL_AT) + 3)]
+        specs[rank - 1] = (cid, 0.99)
+        return ranking(*specs)
+
+    def scored(name, entry_role, primary, rank_co, rank_rr):
+        """One unit of one pair, collapsed at `rank_co`, reranked to `rank_rr`."""
+        cid = f"{name}::original::000"
+        r = _rr_pair(id=name, unit=name, expect_doc=name,
+                     resolved_chunk_id=cid, accepted_chunk_ids=[cid],
+                     rank=rank_co, rank_accepted=rank_co,
+                     recall_at_6_accepted=rank_co <= RECALL_AT)
+        apply_collapse(r, at(cid, rank_co),
+                       {cid: entry_role} if entry_role else {},
+                       {cid: cid} if entry_role else {},
+                       {name: primary})
+        apply_rerank(r, at(cid, rank_rr), {}, 50, name)
+        return r
+
+    # The three shapes C7 named, and two more that make the two figures come
+    # out DIFFERENT — 2/5 and 3/5. A fixture where they agree would let a report
+    # printing one number twice pass for a report printing both, which is the
+    # same defect as the fixture whose max was its last value.
+    bypassed = scored("bypassed", "translation", "original", 10, 2)
+    no_source = scored("no-source-text", "translation", "translation", 10, 2)
+    leaves = scored("leaves-top-6", "original", "original", 3, 9)
+    steady = scored("steady", "original", "original", 2, 2)
+    rescued = scored("rescued", None, "original", 12, 3)
+    pairs = [bypassed, no_source, leaves, steady, rescued]
+    units = build_units(pairs)
+    agg = summarise_units(units)
+
+    check("a record rescued into the top 6 through its ENGLISH is still not "
+          "via-original",
+          bypassed.recall_at_6_accepted_reranked
+          and bypassed.recall_at_6_via_original_reranked is False,
+          f"rank {bypassed.rank_accepted_collapsed} -> "
+          f"{bypassed.rank_accepted_reranked}; entry "
+          f"{bypassed.collapse_entry_role}, primary "
+          f"{bypassed.collapse_primary_role}")
+    check("a rescued record with NO source text does count as via-original",
+          no_source.recall_at_6_via_original_reranked
+          and no_source.recall_at_6_via_original is False,
+          f"pre={no_source.recall_at_6_via_original} "
+          f"post={no_source.recall_at_6_via_original_reranked}")
+    check("a unit reranked OUT of the top 6 loses the post-rerank figure and "
+          "keeps the pre-rerank one",
+          leaves.recall_at_6_via_original
+          and leaves.recall_at_6_via_original_reranked is False,
+          f"rank {leaves.rank_accepted_collapsed} -> "
+          f"{leaves.rank_accepted_reranked}; "
+          f"pre={leaves.recall_at_6_via_original} "
+          f"post={leaves.recall_at_6_via_original_reranked}")
+    check("the pre-rerank via-original is not overwritten by the post-rerank one",
+          agg.get("recall_at_6_via_original_n") == 2
+          and agg.get("recall_at_6_via_original_reranked_n") == 3,
+          f"pre {agg.get('recall_at_6_via_original_n')}/5   "
+          f"post {agg.get('recall_at_6_via_original_reranked_n')}/5")
+
+    # A run that fell over after the collapse and before the rerank. The pair
+    # carries a post-rerank figure it was never entitled to, and the unit gate
+    # is the only thing that refuses it — which is why the gate reads
+    # `reranked` and not `collapsed`.
+    half = _rr_pair(id="half", unit="half", expect_doc="half",
+                    resolved_chunk_id="half::original::000",
+                    accepted_chunk_ids=["half::original::000"],
+                    rank=2, rank_accepted=2, recall_at_6_accepted=True)
+    apply_collapse(half, at("half::original::000", 2), {}, {}, {})
+    half.recall_at_6_via_original_reranked = True
+    gate = build_units([half, scored("gate-ok", "original", "original", 2, 2)])
+    by_gate = {u.unit: u.recall_at_6_via_original_reranked for u in gate}
+    check("a unit whose pairs were not all reranked is refused the post-rerank "
+          "figure",
+          by_gate == {"half": False, "gate-ok": True}
+          and summarise_units(gate).get(
+              "recall_at_6_via_original_reranked_n") == 1,
+          f"{by_gate}")
+
+    lone = _rr_pair(id="lone", unit="lone", expect_doc="lone",
+                    resolved_chunk_id="lone::original::000",
+                    accepted_chunk_ids=["lone::original::000"],
+                    rank=2, rank_accepted=2, recall_at_6_accepted=True)
+    apply_collapse(lone, at("lone::original::000", 2), {}, {}, {})
+    s_co = summarise_units(build_units([lone]))
+    check("an unreranked run reports no post-rerank via-original key at all",
+          "recall_at_6_via_original_n" in s_co
+          and "recall_at_6_via_original_reranked_n" not in s_co,
+          f"{sorted(k for k in s_co if 'via_original' in k)}")
+
+    # Ruling 26. Without a collapse there is no entry role for the bypass
+    # clause to fire on, so the post-rerank figure would come out exactly equal
+    # to post-rerank recall — 29/30 published under a name that says something
+    # else. An uncollapsed run reports neither.
+    rr_only = _rr_pair(id="rr", unit="rr", expect_doc="rr",
+                       resolved_chunk_id="rr::original::000",
+                       accepted_chunk_ids=["rr::original::000"],
+                       rank=2, rank_accepted=2, recall_at_6_accepted=True)
+    apply_rerank(rr_only, at("rr::original::000", 2), {}, 50, "rr")
+    s_rr = summarise_units(build_units([rr_only]))
+    check("a run that reranked without collapsing reports NEITHER via-original "
+          "figure",
+          not [k for k in s_rr if "via_original" in k],
+          f"{sorted(k for k in s_rr if 'via_original' in k)}")
+
+    report = Report(timestamp="t", view="v", search_k=1, index_chunks=1,
+                    embedding_models=[], query_embedding_model="")
+    report.pairs, report.units, report.aggregate_units = pairs, units, agg
+    report.collapsed, report.collapse_sections = True, 1
+    report.collapse_stats = {"in": 5, "out": 5, "removed": 0,
+                             "roles_removed": []}
+    report.reranked = True
+    report.rerank_model, report.rerank_window = "rerank-2.5", 50
+    buffer = io.StringIO()
+    with redirect_stdout(buffer):
+        _print_collapse(report)
+        _print_rerank(report)
+    printed = buffer.getvalue()
+    shown = "\n".join(line for line in printed.splitlines()
+                      if "VIA THE ORIGINAL" in line)
+
+    # Asserted on the VALUES and never on the heading: a check that greps a
+    # heading passes against a report that prints the heading and no number.
+    check("the report says which measurement point the collapsed figure is",
+          any("VIA THE ORIGINAL TEXT, PRE-rerank" in line and "(2/5)" in line
+              for line in printed.splitlines()), shown)
+    check("the report prints BOTH via-original values, pre and post",
+          any("(2/5)" in line and "(3/5)" in line
+              for line in printed.splitlines()), shown)
+
+
 def test_the_query_rendering_rule_cannot_see_the_answer() -> None:
     """C2, Block C rulings 12 / 15b / 17a / 19.
 
@@ -1718,6 +1874,7 @@ def main() -> int:
     test_a_section_is_one_record_and_it_is_the_original()
     test_the_paced_client_waits_before_the_call_not_after_the_refusal()
     test_post_rerank_units_are_scored_over_the_whole_gate()
+    test_the_via_original_companion_is_measured_at_both_points()
     test_the_query_rendering_rule_cannot_see_the_answer()
     test_the_fusion_is_a_max_and_says_what_won()
     test_the_two_arm_report_cannot_kill_a_run()

@@ -10612,3 +10612,475 @@ on its own evidence** — which is the outcome the rulings were written to make
 possible. Eight defects found in the tooling that measures all of it, one of
 which had been silently unwatching guards across the whole repository. G2 is
 unchanged at five of seven, and the gap now has no intervention left.
+
+# Decision 3b, and RULING 25: G2's gap criterion has FAILED (2026-08-17)
+
+_Recomputed at full precision from the archived run JSONs. No harness change, no
+calls, nothing on the ranking path touched. Full text in
+`C5_3B_AND_PROTOCOL.md`._
+
+The previous section closed with decision 3 open and recommended 3b — recompute
+the gap the way the criterion is written, on the pairs the baseline measured,
+offline from the archives — before ruling on it. That was done first, and the
+ruling was made on the corrected number and not the printed one.
+
+## 3b: the gap on the pairs B2 actually measured
+
+```
+                                       run                            n   gapDoc      gapAny
+B2 baseline, 57 chunks                 20260814T084042               32   +0.024927   -0.008360
+W2b 450-chunk rung, same pairs         20260814T133556               32   +0.019586   -0.012406
+frozen config, 450 chunks, same pairs  20260817T080300 single-arm    32   +0.019622   -0.012452
+frozen config, 450 chunks, all pairs   20260817T080300 single-arm    33   +0.016047   -0.015056
+```
+
+The pair sets differ by exactly one member, and it is the one the previous
+section named: `probe-tamil-akananuru-en`, gapDoc **−0.098380** at rank 4, worth
+**−0.003575** on the mean. `C2_RESULT.md`'s reconstruction was right to four
+decimals — **+0.0196 is +0.019622** — and the apparent slide from W2b's recorded
++0.020 is confirmed as the denominator changing rather than retrieval degrading:
+the 450-chunk rung on B2's own pair set reads +0.019586, and +0.020 is that
+number rounded.
+
+## Ruling 25 — 3a. The criterion fails on its own arithmetic
+
+```
+G2 asks     450-chunk gapDoc, same pairs   >   B2 baseline
+measured                        +0.019622  <  +0.024927
+short by                        0.005305      = 21.3% of the baseline
+```
+
+**Kill trigger 1 is pulled. W3 does not start.** The sourcebook is polished at
+24–60 records rather than chased to 200, exactly as `PHASE2_PLAN` pre-declared
+before any of this was measured.
+
+What the ruling costs, stated here so it is not discovered later: W3 does not
+happen, and **`recall@6 via the original text` stays where it is with no
+intervention left aimed at it** — ruling 5 settled that no reranker moves the
+gap, and C2, the only remaining candidate, was measured on 2026-08-17 and
+rejected.
+
+**3c was not taken, and the argument for it is recorded rather than used.** 3b
+strengthened the *measurability* half of a 3c case — the 450-chunk rung on B2's
+pairs read +0.019586 on 08-14 and +0.019622 on 08-17, agreeing to four decimals
+across three days and a harness rewrite — and the *legitimacy* half not at all.
+Changing a gate after seeing the number it failed remains the most dangerous
+move available, and it was not made. Anyone reopening this must argue from the
+W2b curve's shape, recorded before any of this, and must keep the reading below
+beside the new one.
+
+## Both readings travel together, permanently
+
+```
+gapDoc, all 33 pairs, 450 chunks     +0.016047     the run prints this
+gapDoc, B2's 32 pairs, 450 chunks    +0.019622     the criterion asks for this
+B2 baseline, 32 pairs, 57 chunks     +0.024927
+```
+
+Neither number may be published without the other, and neither without the index
+size beside it.
+
+## C5–C6 still run, and the reason is not ceremony
+
+The verdict is settled, so a reader may reasonably ask why two more days of
+measurement were spent on it. Because a criterion that fails **alone** is a
+stronger record than one that fails with a second criterion still unknown. C5–C6
+takes G2 from five of seven to six of seven and isolates the failure to exactly
+one line of the checklist.
+
+## Two hazards found in the archive while doing it
+
+Both are in `C5_3B_AND_PROTOCOL.md` §3–4 in full.
+
+1. **The ranking path was uncommitted for two days and unprovable until
+   `bff0605`.** The code that produced the 08-17 run existed only as
+   working-tree state: `eval/run_ranking_check.py` was 3,557 lines against HEAD,
+   with `retrieve/render.py` and `retrieve/fuse.py` untracked. C5 and C6 require
+   that no code on the ranking path moves between the two days, and nothing
+   could have proved it — an editor autosave, a stash, a partial revert or a
+   `git checkout` of one file between them destroys criterion 5 **silently**. A
+   commit changes no file content, so it is not a change on the ranking path; it
+   is the only thing that makes two days provably one configuration. Committed
+   before C5 as `bff0605`.
+
+2. **`20260814T144013` reports `index_chunks=450` and did not search it.** It is
+   byte-identical to the 57-chunk run of the same minute on all 33 pairs —
+   `sim_target`, `sim_best_other_doc`, `sim_best_other_chunk`, `rank` and
+   `top_doc`, zero differences. Adding 393 distractors cannot change nothing.
+   The distractors were reachable earlier the same day: the 13:35 run on the
+   same view moved gapDoc from +0.024927 to +0.019586 and changed
+   `sim_best_other_doc` on 4 of 32 pairs. `check_search_reaches_the_view`, which
+   asserts `n_hits == n_index` and refuses otherwise, landed in **bb3bef5 on
+   2026-08-16 — after this run** — so the guard already covers C5 and C6 and
+   this is an archival caveat, not a live defect. Two things travel with it:
+   **`20260814T144013` must never be cited as a 450-chunk measurement** (W2b's
+   450 rung is the 13:35 run, which is what 3b uses), and **`index_chunks`
+   records the view's row count, not what the search reached** — the number in a
+   run header is not self-validating, the guard is what validates it, and
+   `--skip-check` is refused by the frozen configuration for exactly that
+   reason.
+
+---
+
+# C5 and C6: two days, one tree, and the same number to the bit (2026-08-19 / 2026-08-20)
+
+_`eval/ranking_runs/20260819T102211+0000-…-collapsed-reranked50.json` and
+`20260820T151200+0000-…-collapsed-reranked50.json`, both at tree `bff0605`.
+Judged against thresholds written in `C5_3B_AND_PROTOCOL.md` §2 **before C5
+existed** and not retuned since. Full verdicts in `C5_RESULT.md` and
+`C6_RESULT.md`; the runbook C6 was fired from is `C6_RUNBOOK.md`._
+
+## C6 is not "within tolerance" — it is identical
+
+Every threshold was written expecting drift, and there is none to measure:
+
+```
+config fields on the abort list                    0 differ
+unit-aggregate fields (all 24)                     0 moved
+rank changes, pre / collapsed / reranked           NONE, at any stage
+per-pair sim_target,  bit-for-bit                  0 of 33 differ
+per-pair sim_best_other_doc, bit-for-bit           0 of 33 differ
+rerank tokens                                      310185  =  310185
+
+gapDoc, 33 pairs        +0.015946701  ->  +0.015946701   d = 0.000000000
+gapAny, 33 pairs        -0.015152071  ->  -0.015152071   d = 0.000000000
+gapDoc, B2's 32 pairs   +0.019534956  ->  +0.019534956   d = 0.000000000
+```
+
+The gated integers, restated because they are what the criterion reads:
+
+```
+recall@6 per unit    pre 27/30 0.900   collapsed 28/30 0.933   reranked 29/30 0.967
+recall@6 via the original text         21/30 = 0.700     <- pre-rerank; see the next section
+coverage             pre 28   collapsed 30   reranked 29   of 33 targets
+```
+
+The tree was verified **without touching it** — blob hash against the committed
+blob, so no `git status` and no index lock. `HEAD` `bff0605` unchanged;
+`run_ranking_check.py`, `ranking_pairs.json`, `retrieval_probes.json`,
+`search.py`, `collapse.py`, `rerank.py`, `fuse.py`, `render.py` and `embed.py`
+all UNCHANGED.
+
+Two runs, two calendar days, one provably identical tree, one identical number
+to seventeen decimal places. **That is criterion 5 satisfied at the strongest
+level it can be.**
+
+## C5 moved, and every part of the movement closes exactly
+
+C5 is judged against the 08-17 single-variant arm, and three units moved a rank,
+none across a gate:
+
+```
+unit                        pre-rerank   collapsed   effect on a gated figure
+probe-tamil-akananuru-en      4 ->  5      4 ->  5   none - still recall@6
+aksum-trade-adulis           34 -> 35     11 -> 10   none - a miss either way
+au-khao-sam-kaeo             17 -> 16     16 -> 15   none - a miss either way
+```
+
+The whole MRR delta is those moves and nothing else, to the last decimal with no
+residual: pre-rerank 0.726111 → 0.724444 is `probe-tamil-akananuru-en` alone at
+−0.05/30; collapsed 0.830556 → 0.832222 is that pair plus `aksum-trade-adulis`
+crossing the rank-10 boundary at +0.10/30. **The reranked stage — the one G2's
+recall criterion reads — did not move at all, in any figure, to six decimals.**
+
+## The embedding-régime note, which is new and must not be lost
+
+`C5_3B_AND_PROTOCOL.md` §2 asserted that `voyage-3.5` does not return a
+bit-identical vector for identical text across calls. **That was inferred from
+two runs and it is wrong.** Traced on `probe-greek-muziris` across every archived
+run:
+
+```
+run              pairs   embedding call                probe-greek-muziris sim_target
+20260814 08:40    32     32 queries,  1 request        0.63747713789207683
+20260814 13:35    32     32 queries,  1 request        0.63747713789207683
+20260814 14:40    33     33 queries,  2 requests       0.63747713789207683   <- different shape, same vector
+20260816 07:36    33     33 queries,  2 requests       0.63747713789207683
+20260816 16:25    33     33 queries,  2 requests       0.63747713789207683
+20260817 08:03    33    235 texts,    8 requests       0.63969614269161401
+20260819 10:22    33     30 texts,    1 request        0.63903526300402180
+20260820 15:12    33     30 texts,    1 request        0.63903526300402180   <- C6 reproduces C5 exactly
+```
+
+Seven runs, five sessions, three calendar days, two index sizes and two gold-set
+sizes — **byte-identical to seventeen decimal places** — then two régime changes,
+one at or before 08-17 and one at or before 08-19, and bit-identical again across
+C5 and C6.
+
+**Batch composition is refuted as the cause**: 32-queries-in-1-request and
+33-in-2 return the same vector. Nothing in the repository explains it either —
+no query cache exists (`vector_of` and `rerank_cache` are both built per-run),
+`gateway/config.yaml`'s only edit is the additive `chat-strong` alias, the index
+is unmoved at 450/450/0 with identical `collapse_stats` and `chunk_id_drift`,
+and `ranking_pairs.json` has not changed since 08-14. **The remaining
+explanation is provider-side, and it is recorded as an open observation, not a
+finding.**
+
+What must travel with future numbers:
+
+```
+within a régime      comparisons are EXACT           C5 = C6, to the bit
+across a régime      aggregate gapDoc floor  ~1e-4
+                     per-pair gapDoc floor   ~2e-3
+```
+
+**B2's baseline +0.024927 was measured in the old régime and C5–C6's +0.019535 in
+the new one, so the gap criterion's comparison spans a boundary.** It does not
+rescue the gap and does not disturb ruling 25 — the deficit is **0.005392** and
+the drift is **~1.6% of it**, two orders of magnitude too small to matter. It
+belongs beside the number anyway, because every future comparison in this
+repository against a pre-08-17 figure carries that floor and nothing else in the
+archive says so.
+
+## The criterion earned its keep, and here is the evidence
+
+`C5_START.md` abbreviated criterion 5 to *"measured across ≥2 days"*. The full
+wording at line 9229 is *"≥2 **SESSIONS** on **DIFFERENT DAYS**"* — the
+abbreviation dropped a word and the dropped word is the stricter one. The
+rationale, written 2026-08-14 before any of this was measured, is at line 9199:
+a run made in the same session as the code that changed the metric is a weak
+first day. So the criterion is not testing arithmetic stability, which a second
+run an hour later would test; it is testing whether the number survives the
+environment changing underneath it. **The withdrawn determinism claim above is
+exactly that failure caught in miniature, and a second run of C5 an hour later
+could not have surfaced any of it.**
+
+The two run JSONs are the evidence for criterion 5 and are committed in
+`744e57c`, together with `C5_3B_AND_PROTOCOL.md`, `C5_RESULT.md`,
+`C6_RUNBOOK.md`, `C6_RESULT.md` and `C7_START.md`.
+
+---
+
+# The sequencing trap is fixed: via-original is measured at both points (2026-08-20)
+
+_Ruled **after C6** so that no code on the ranking path could move between the
+two days. C6 was archived first; this landed second; the two-day window was
+closed before a line changed._
+
+## What was wrong
+
+`recall@6 via the original text` was computed **PRE-rerank**, in `apply_collapse`
+on the collapsed ordering, while the adopted configuration **reranks**. The
+report printed recall at 29/30 post-rerank and via-original at 21/30 pre-rerank
+on the same page, with nothing to say the two were measured at different points.
+They were not the same measurement and the page read as though they were.
+
+## What made the fix cheap, and why no new computation was needed
+
+**The collapse runs BEFORE the rerank and emits one row per section.** So
+`collapse_entry_role` is fixed at collapse time and the reranker cannot change
+which member of a section surfaced first — there is exactly one row per section
+left for it to reorder. The reranker can rescue a record into the top 6; it
+cannot change how retrieval reached it. The fix is therefore the **same
+predicate** evaluated against the post-rerank recall column, and `apply_rerank`
+gained no entry-role logic at all.
+
+## The shape
+
+`PairResult.recall_at_6_via_original_reranked` is a **new field under a new
+name**, exactly as `rank_reranked` never overwrote `rank`. Every archived run
+holds the pre-rerank figure, and a run that replaced it would be incomparable to
+all of them. `UnitResult` gains the same field, gated on `reranked` as the
+existing one is gated on `collapsed`; the aggregate gains
+`recall_at_6_via_original_reranked` and `…_n`; and the report prints **both
+lines, labelled with their measurement point**.
+
+## Ruling 26 — the two via-original keys are emitted from the COLLAPSE block
+
+The entry role the predicate reads is a fact the **collapse** produces. A run
+with `--rerank` and no `--collapse` has no entry role for the bypass clause to
+fire on, so the post-rerank figure would come out **exactly equal to post-rerank
+recall** — 29/30 published under a name that says something else. Both keys are
+therefore emitted from the collapse block, the post-rerank one additionally
+conditional on rerank:
+
+```
+uncollapsed run              NEITHER figure is reported
+collapsed, not reranked      the pre-rerank figure alone
+collapsed and reranked       both, printed side by side and labelled
+```
+
+No archived run has the rerank-only shape and the frozen configuration cannot
+produce one. The ruling exists because the harness allows it and a number that
+cannot be produced today is still a number the code would publish.
+
+## The result, and the two near-misses that are the whole test
+
+Computed offline from C6's archive **before the code was written**, so the fix
+had a target it had to hit rather than a number it was free to produce:
+
+```
+via-original, PRE-rerank    21/30 = 0.700      what the harness printed
+via-original, POST-rerank   22/30 = 0.733      what it prints now
+```
+
+Exactly one unit changes, and the two units that must NOT change are the test:
+
+```
+unit                  entry role   primary role   coll rank   rr rank   changes?
+au-khao-sam-kaeo      None         translation       15          1      NO -> YES
+aksum-trade-adulis    translation  original          10          2      no, and must not
+adulis-exports        translation  original           3          7      no, and must not
+```
+
+`aksum-trade-adulis` is rescued by the cross-encoder from 35 to 2 and **still
+does not count as via-original**, because its entry was the translation and its
+record's primary is the original — that is a bypass whatever the reranker does.
+**A fix printing 23/30 has dropped the primary-role clause; a fix printing 21/30
+has not taken effect. 22/30 is the only correct answer.**
+
+## The verification run, and the proof that the fix is additive
+
+`20260820T161457+0000-…-collapsed-reranked50.json`, the frozen command on the
+patched tree. **It is not a third day and must never be cited as one** — same
+calendar day as C6, and a changed tree. It exists to verify the fix and nothing
+else; criterion 5 was already met by C5 and C6 and does not depend on it.
+
+What it proves is that the change is purely additive, checked field by field
+against C6:
+
+```
+config fields on the abort list                    0 differ
+pairs differing on ANY pre-existing field          0 of 33
+unit-aggregate fields moved                        NONE of the 24
+keys added                recall_at_6_via_original_reranked, ..._n
+keys removed              none
+
+recall@6 VIA THE ORIGINAL TEXT   pre-rerank 0.700 (21/30)   ->   POST-rerank 0.733 (22/30)
+```
+
+Every rank, both similarities, both gaps, the collapse stats, the rerank token
+count: unchanged. **The harness gained a column and moved nothing.** That is the
+strongest available evidence that 22/30 is the same measurement corrected, and
+not a new measurement.
+
+## What the mutation harness caught in the fix's own tests
+
+The first C7 run of `mutate_ranking.py` reported one MISS, and it reported it as
+possible list drift. It was not drift — it was a single mutation paired with the
+wrong guard, and the pairing was wrong because of a real misreading:
+
+**Dropping `and collapse_primary_role == "original"` makes the predicate
+STRICTER, not looser.** It removes ruling 11's exemption for records with no
+source text, so the guard that fails is *"a rescued record with NO source text
+does count as via-original"* — not the English-bypass guard it was filed under.
+
+Two things follow, and the second is the one worth keeping:
+
+1. The guard was re-pointed.
+2. **The English-bypass guard had no mutation behind it at all.** The two
+   clauses of the predicate need two mutations, and only one had been written.
+   A guard nobody has watched fail is worth what no guard is worth — which is
+   the sentence this harness exists to enforce, and it enforced it on the
+   session that added the guard. The fifth mutation, *"the post-rerank predicate
+   stops recognising a translation entry"*, is the analogue of the pre-rerank
+   *"a record reached via its translation counts as via-original"* and it now
+   watches that guard.
+
+Mutations 86 → 91, not 90.
+
+## What the fix does NOT do
+
+**29/30 is whether the RECORD was found. 22/30 is whether the NON-ENGLISH TEXT
+was reachable.** The second number moved by one unit because the measurement
+point was corrected, not because retrieval improved: `au-khao-sam-kaeo` was
+always rescued by the reranker and the harness was always looking at the wrong
+column. No text became reachable that was not reachable before.
+`muziris-cargo-akananuru` still sits at rank 310, the corpus's one genuinely
+broken cross-lingual link, not counted toward the gate.
+
+---
+
+# Block C closes (2026-08-20)
+
+## G2 — six of seven, and the failure is isolated
+
+```
+[x] ranking metric over >=20 pairs, baseline recorded before any change    B2
+[x] distractor curve to >=450, shape stated and reproducible               W2b
+[x] top 6 for >=95% at 450                       29/30 = 0.967
+[ ] score gap wider than baseline                +0.019535 vs +0.024927    FAILED, ruling 25
+[x] measured across >=2 sessions on different days    C5 2026-08-19 / C6 2026-08-20
+[x] cite.py third match state, mutation-verified                           C1a
+[x] translation_chunk* rename                                              C1b
+```
+
+**The gap is the sole remaining failure, with nothing else unmeasured beside
+it.** Kill trigger 1 is pulled and W3 does not start.
+
+## The configuration, unchanged and frozen
+
+```powershell
+python -m eval.run_ranking_check --with-distractors --collapse --rerank --rerank-tpm 2000000
+```
+
+No `--fuse`. No `--skip-check`. ~90 seconds, ~30 rerank requests, ~310K tokens.
+`--rerank-tpm 2000000` is pacing only and cannot move a number; without it two
+archived runs took 27 minutes, of which 1,553s was rate-limit waiting.
+`gateway/config.yaml`'s `chat-default` (haiku-4-5, greedy) must keep serving
+Part 6 and Part 7 — repointing it makes every archived number incomparable.
+
+## Suites
+
+```
+python -m eval.test_ranking_check      218 assertions   (209 at the start of C7)
+python scripts\mutate_ranking.py        91 mutations    (86 at the start of C7)
+```
+
+Not re-run this session: `ingest.test_distractors`, `mutate_distractors`,
+`answer.test_answer`, `answer.test_translate`, `mutate_part7b`,
+`ui\test_build_ui_data.py`, `ui\check_ui.mjs`.
+
+## The four traps this block paid for, carried forward
+
+The first three have cost this repository a session each and all three were live
+for a thread editing `run_ranking_check.py`.
+
+1. **A test whose failure detail is non-Latin DIED instead of failing** — through
+   a pipe on Windows the child's stdout falls back to cp1252 and `print` raises.
+   Both ends are fixed, but any new assertion whose message carries Greek, Tamil
+   or Chinese re-enters this territory. Every assertion added in C7 is Latin-only
+   for that reason.
+2. **Deleting code by line offset took a neighbouring function with it.**
+   `write_atomically` vanished and surfaced as a `NameError` at the moment of
+   writing. **Edit by name.** Every C7 edit was an exact string replacement
+   required to match exactly once, refusing the whole file otherwise.
+3. **A check that greps a heading passes against a report that prints the heading
+   and no rows.** C7 added a report line, and the assertion on it reads the two
+   VALUES — `(2/5)` and `(3/5)` on one line — never the heading.
+4. **A fixture where the two figures agree tests nothing.** The via-original
+   fixture is built so the pre-rerank and post-rerank aggregates come out
+   different — 2/5 and 3/5 — or a report printing one number twice would pass
+   for a report printing both. This is trap 7 of the previous block, the fixture
+   whose max was its last value, in its new clothes.
+5. **A guard added in the same session as its mutation can still be unwatched.**
+   C7's English-bypass guard had no mutation behind it until the harness said
+   so, because the mutation written for it broke a different guard. **A
+   predicate with two clauses needs two mutations**, and pairing one mutation
+   with the guard you expected rather than the guard that fired is how a
+   half-watched predicate looks from the outside.
+
+## What this block cost and produced
+
+Ruling 25 made on the recomputed number and kill trigger 1 pulled. Two runs on
+two calendar days over one provably identical tree, byte-identical across all 33
+pairs, both similarities, every rank, every aggregate and the rerank token count.
+The determinism claim in `C5_3B_AND_PROTOCOL.md` §2 withdrawn and replaced with
+a measured régime note. Two archival hazards found and written down. The
+sequencing trap fixed with ruling 26 beside it, verified against a target
+computed from the archive before the code was written, and proved additive
+field by field against C6. Assertions 209 → 218, mutations 86 → 91 — the
+ninety-first because the harness caught a guard of C7's own that nothing was
+watching.
+
+## Next
+
+**The sourcebook, at 24–60 records.** W3 does not start.
+
+## The sentence that travels with all of it
+
+**C5 and C6 measured a stable pipeline. They did not measure a solved problem.**
+The W2b curve still rests on **English-only padding** — seams 1 and 2 were
+dropped on a time-box, so the twelve Greek-target pairs faced no competing Greek
+at any rung, and *"flat over an eightfold index"* still means *"English-target
+retrieval survives English competition"*.

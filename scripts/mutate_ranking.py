@@ -536,6 +536,58 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
 
     system = SYSTEM_RENDER.format(""")],
     ),
+    # ------------------------------------------------------------------
+    # C7 — the sequencing-trap fix. `recall@6 via the original text` was
+    # computed pre-rerank while the adopted configuration reranks.
+    # ------------------------------------------------------------------
+    (
+        # The archive is what makes this unrecoverable rather than merely
+        # wrong: every run since ruling 9 holds the pre-rerank figure.
+        "the post-rerank via-original silently overwrites the pre-rerank one",
+        [("""    result.recall_at_6_via_original_reranked = bool(
+        result.recall_at_6_accepted_reranked""",
+          """    result.recall_at_6_via_original = bool(
+        result.recall_at_6_accepted_reranked""")],
+    ),
+    (
+        # Ruling 11 lives in the second clause. Without it, a source text
+        # reached through its English counts as reached through its original —
+        # the exact inflation ruling 9's companion exists to refuse.
+        "the post-rerank predicate drops the primary-role clause",
+        [("""        result.recall_at_6_accepted_reranked
+        and not (result.collapse_entry_role == "translation"
+                 and result.collapse_primary_role == "original")""",
+          """        result.recall_at_6_accepted_reranked
+        and not (result.collapse_entry_role == "translation")""")],
+    ),
+    (
+        # A run that fell over between the collapse and the rerank would
+        # otherwise be scored on a post-rerank figure it never measured.
+        "the post-rerank unit gate reads `collapsed` instead of `reranked`",
+        [("                via_original_rr if reranked else False),",
+          "                via_original_rr if collapsed else False),")],
+    ),
+    (
+        # Printing one of the two is how the trap looked in the first place.
+        "the report prints only one of the two via-original figures",
+        [("""              f"   ->   POST-rerank "
+              f"{u['recall_at_6_via_original_reranked']:.3f} "
+              f"({u['recall_at_6_via_original_reranked_n']}/{u['units']})")""",
+          """              f"")""")],
+    ),
+    (
+        # The other half of the predicate, and the one the English-bypass guard
+        # reads. Added after the first run of this harness showed that guard had
+        # no mutation behind it: dropping the primary-role clause tightens the
+        # predicate and fires a different guard entirely, so the two clauses
+        # need two mutations. The analogue of the pre-rerank mutation "a record
+        # reached via its translation counts as via-original".
+        "the post-rerank predicate stops recognising a translation entry",
+        [("""        result.recall_at_6_accepted_reranked
+        and not (result.collapse_entry_role == "translation\"""",
+          """        result.recall_at_6_accepted_reranked
+        and not (result.collapse_entry_role == "not-a-role\"""")],
+    ),
 ]
 
 EXPECTED = [
@@ -633,6 +685,16 @@ EXPECTED = [
     "a fused gap narrower than the single-variant arm is NOT called a win",
     "the report prints per-language recall for both arms",
     "the render prompt demands the Tamil script for oty",
+    # C7 — in the same order as the four mutations appended above.
+    "the pre-rerank via-original is not overwritten by the post-rerank one",
+    # Mispaired on this harness's first C7 run, and it reported itself as list
+    # drift. It was not drift: dropping the primary-role clause removes ruling
+    # 11's exemption, which makes the predicate STRICTER, so the guard that
+    # fails is the record-with-no-source-text one.
+    "a rescued record with NO source text does count as via-original",
+    "a unit whose pairs were not all reranked is refused the post-rerank figure",
+    "the report prints BOTH via-original values, pre and post",
+    "a record rescued into the top 6 through its ENGLISH is still not via-original",
 ]
 
 

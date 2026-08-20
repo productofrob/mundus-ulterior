@@ -175,6 +175,8 @@ class UnitResult:
     recall_at_6_reranked: bool = False
     rr_at_10_reranked: float = 0.0
     coverage_n_reranked: int = 0
+    # C7. Beside `recall_at_6_via_original` above, never over it.
+    recall_at_6_via_original_reranked: bool = False
     coverage_reranked: float | None = None
     best_pair_reranked: str | None = None
 
@@ -281,6 +283,19 @@ class PairResult:
     # applied at a different depth.
     rank_accepted_reranked: int | None = None
     recall_at_6_accepted_reranked: bool = False
+    # C7. The post-rerank companion to `recall_at_6_via_original` above, under
+    # its OWN name and never over it, exactly as `rank_reranked` sits beside
+    # `rank`. Every archived run holds the pre-rerank figure; overwriting it
+    # would make the archive incomparable to itself.
+    #
+    # It is the SAME predicate — only the recall column moves. That is sound
+    # because the collapse runs BEFORE the rerank and emits one row per
+    # section, so `collapse_entry_role` is fixed at collapse time and there is
+    # exactly one member of each section left for the reranker to reorder. The
+    # reranker can rescue a record into the top 6; it cannot change which
+    # member of that record's section retrieval reached first. No new
+    # entry-role computation belongs in `apply_rerank`.
+    recall_at_6_via_original_reranked: bool = False
     # Ruling 3: reranker scores live under their own names and are NEVER
     # compared to `gap_vs_*` above, which are embedding similarities. Two
     # different quantities agreeing on a sign would not make them comparable.
@@ -824,6 +839,19 @@ def apply_rerank(result: PairResult, ordering: list, scores: dict,
         result.rank_accepted_reranked
         and result.rank_accepted_reranked <= RECALL_AT
     )
+    # C7 — the sequencing fix. `recall_at_6_via_original` is computed in
+    # `apply_collapse`, on the COLLAPSED ordering, while the adopted
+    # configuration reranks. The report therefore printed a POST-rerank recall
+    # and a PRE-rerank via-original on the same page as though they shared a
+    # measurement point. They do not. This is the same predicate evaluated
+    # against the post-rerank column, under its own name; nothing above is
+    # touched, and `recall_at_6_via_original` keeps the value the collapse gave
+    # it.
+    result.recall_at_6_via_original_reranked = bool(
+        result.recall_at_6_accepted_reranked
+        and not (result.collapse_entry_role == "translation"
+                 and result.collapse_primary_role == "original")
+    )
 
     # Scores exist for the window only. A target below it has no reranker score,
     # and None is the honest value — not 0.0, which would sort and average.
@@ -932,6 +960,10 @@ def build_units(results: list[PairResult], queries: dict | None = None
         best_rr = (min(ranked_rr, key=lambda m: m.rank_accepted_reranked)
                    if (reranked and ranked_rr) else None)
         hits_rr = sum(1 for m in members if m.recall_at_6_accepted_reranked)
+        # C7. The same "ANY acceptable target got there that way" reading as
+        # `via_original` above, on the post-rerank column.
+        via_original_rr = any(m.recall_at_6_via_original_reranked
+                              for m in members)
         units.append(UnitResult(
             unit=unit,
             query=(queries or {}).get(unit, ""),
@@ -961,6 +993,11 @@ def build_units(results: list[PairResult], queries: dict | None = None
             rr_at_10_reranked=(1.0 / best_rr.rank_accepted_reranked)
             if (best_rr and best_rr.rank_accepted_reranked <= MRR_AT) else 0.0,
             coverage_n_reranked=hits_rr if reranked else 0,
+            # Gated on `reranked`, exactly as the pre-rerank one is gated on
+            # `collapsed`. A unit with any un-reranked pair is not scored as
+            # reranked, so it cannot be scored half one way and half the other.
+            recall_at_6_via_original_reranked=(
+                via_original_rr if reranked else False),
             coverage_reranked=(hits_rr / len(members)) if reranked else None,
             best_pair_reranked=best_rr.id if best_rr else None,
         ))
@@ -985,6 +1022,21 @@ def summarise_units(units: list[UnitResult]) -> dict:
             "recall_at_6_via_original": sum(u.recall_at_6_via_original for u in units) / len(units),
             "recall_at_6_via_original_n": sum(u.recall_at_6_via_original for u in units),
         })
+        # C7, ruling 26. The post-rerank member of the pair is emitted HERE,
+        # inside the collapse block, and not in the rerank block below — the
+        # entry role it reads is a fact the COLLAPSE produces. A run that
+        # reranked WITHOUT collapsing has no entry role for the bypass clause
+        # to fire on, so the number would come out exactly equal to post-rerank
+        # recall and be published under a name that says something else.
+        # An uncollapsed run reports neither figure; an unreranked run reports
+        # the pre-rerank one alone.
+        if reranked:
+            extra.update({
+                "recall_at_6_via_original_reranked":
+                    sum(u.recall_at_6_via_original_reranked for u in units) / len(units),
+                "recall_at_6_via_original_reranked_n":
+                    sum(u.recall_at_6_via_original_reranked for u in units),
+            })
     if reranked:
         # `.update`, NOT `=`. This was `extra = {...}` until 2026-08-16, which
         # silently discarded the collapse keys added above it — so a run with
@@ -1608,7 +1660,11 @@ def _print_collapse(report: Report) -> None:
     print(f"  MRR@{MRR_AT} per unit        uncollapsed {u['mrr_at_10']:.3f}"
           f"   ->   collapsed {u['mrr_at_10_collapsed']:.3f}")
 
-    print(f"  recall@{RECALL_AT} VIA THE ORIGINAL TEXT   "
+    # C7. "PRE-rerank" is not decoration. This figure is computed on the
+    # COLLAPSED ordering, and a reranked run prints a post-rerank recall further
+    # down the same page; until the point was named, the two read as one
+    # measurement.
+    print(f"  recall@{RECALL_AT} VIA THE ORIGINAL TEXT, PRE-rerank   "
           f"{u['recall_at_6_via_original']:.3f} "
           f"({u['recall_at_6_via_original_n']}/{u['units']})"
           f"   <- ruling 9's companion; no translation-mediated fix can raise it")
@@ -1681,6 +1737,24 @@ def _print_rerank(report: Report) -> None:
     print(f"  coverage (reported, never gated)   "
           f"{u['targets_in_top_6']} -> {u['targets_in_top_6_reranked']} "
           f"of {u['targets_total']} targets in the top {RECALL_AT}")
+
+    # C7 — the sequencing fix, and the reason BOTH lines are printed together.
+    # Neither replaces the other: the pre-rerank figure is what every archived
+    # run holds and what the archive is comparable in, and the post-rerank
+    # figure is what the adopted configuration actually delivers.
+    if "recall_at_6_via_original_reranked_n" in u:
+        print(f"  recall@{RECALL_AT} VIA THE ORIGINAL TEXT   "
+              f"pre-rerank {u['recall_at_6_via_original']:.3f} "
+              f"({u['recall_at_6_via_original_n']}/{u['units']})"
+              f"   ->   POST-rerank "
+              f"{u['recall_at_6_via_original_reranked']:.3f} "
+              f"({u['recall_at_6_via_original_reranked_n']}/{u['units']})")
+        print("  These two are measured at DIFFERENT points, and they are "
+              "printed together for\n  that reason. The collapse emits one row "
+              "per section before the reranker\n  sees it, so reranking can "
+              "rescue a record into the top 6 but can never\n  change which "
+              "member of that section retrieval reached first: a record\n  "
+              "entered through its English stays out of BOTH figures.")
 
     movers = [r for r in report.pairs
               if r.reranked and r.rank_reranked != r.rank]
@@ -1779,10 +1853,12 @@ def _print_fused(report: Report) -> None:
         for label, key in (("", "recall_at_6"),
                            ("collapsed", "recall_at_6_collapsed"),
                            ("reranked", "recall_at_6_reranked"),
-                           ("via original", "recall_at_6_via_original")):
+                           ("via original, pre", "recall_at_6_via_original"),
+                           ("via original, post",
+                            "recall_at_6_via_original_reranked")):
             if f"{key}_n" not in agg:
                 continue
-            print(f"    {name:16.16s} {label:13.13s} "
+            print(f"    {name:16.16s} {label:18.18s} "
                   f"{agg[f'{key}_n']:3d}/{agg.get('units', 0):<4d} "
                   f"{agg[key]:.3f}")
 
