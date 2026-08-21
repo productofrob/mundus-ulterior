@@ -64,6 +64,7 @@ sys.path.insert(0, str(REPO))
 from ingest.places import (            # noqa: E402
     Place, SUBJECT_BLOCK, load_places, read_no_places_reason,
 )
+from ingest.loader import iter_seed_records   # noqa: E402
 from ingest import gazetteer as gz     # noqa: E402
 
 # The seed fields a chunk can be cut from. `source_field` in a run payload
@@ -89,9 +90,10 @@ def load_corpus() -> dict[str, dict]:
     than by guessing paths.
     """
     corpus: dict[str, dict] = {}
-    for path in sorted(CORPUS_DIR.rglob("*.json")):
-        if path.name in {"manifest.json"}:
-            continue
+    # Was `CORPUS_DIR.rglob("*.json")`, the one walk in the tree that disagreed
+    # with the other four - and with build_places() forty lines below it. See
+    # ingest.loader.iter_seed_records for why that mattered to D1.
+    for path in iter_seed_records(CORPUS_DIR):
         try:
             record = json.loads(path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
@@ -351,9 +353,7 @@ def build_places(corpus_dir: Path, gazetteer_path: Path) -> dict[str, Any]:
     declared_unplaceable: dict[str, str] = {}
     counts = {"pin": 0, "extent": 0, "gap": 0}
 
-    for path in sorted(corpus_dir.glob("*/*.json")):
-        if path.name == "manifest.json":
-            continue
+    for path in iter_seed_records(corpus_dir):
         record = json.loads(path.read_text(encoding="utf-8"))
         doc_id = record["id"]
         reason = read_no_places_reason(record, doc_id)

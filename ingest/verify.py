@@ -15,7 +15,7 @@ import sys
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from .loader import SEED_CORPUS_DIR, load_corpus
+from .loader import SEED_CORPUS_DIR, iter_seed_records, load_corpus
 from .places import (
     PlaceError,
     assert_no_authored_coordinates,
@@ -53,9 +53,7 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     # 1. Every chunk round-trips exactly to characters on disk. This is the
     #    load-bearing claim for citations in Part 7.
     raw_fields: dict[str, dict] = {}
-    for path in sorted(corpus_dir.glob("*/*.json")):
-        if path.name == "manifest.json":
-            continue
+    for path in iter_seed_records(corpus_dir):
         rec = json.loads(path.read_text(encoding="utf-8"))
         raw_fields[rec["id"]] = rec
 

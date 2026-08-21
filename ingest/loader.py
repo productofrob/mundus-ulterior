@@ -17,6 +17,7 @@ from .chunker import chunk_field, estimate_tokens
 from .fidelity import FIND_TYPES, classify_original, classify_translation
 
 SEED_CORPUS_DIR = Path("data/seed_corpus")
+MANIFEST_NAME = "manifest.json"
 
 # Citation keys beyond the two first-class ones; kept as jsonb so no source
 # reference is ever silently dropped.
@@ -102,11 +103,56 @@ def _relative_source_path(path: Path, corpus_dir: Path) -> str:
     return f"data/seed_corpus/{rel.as_posix()}"
 
 
+class CorpusLayoutError(Exception):
+    """A JSON file under the seed corpus that the walks would not agree about."""
+
+
+def iter_seed_records(corpus_dir: Path = SEED_CORPUS_DIR) -> list[Path]:
+    """The single definition of what a seed record is.
+
+    Before D1 the repository held FIVE independent walks of data/seed_corpus.
+    Four of them - here, `places.load_places`, `verify.run` and
+    `build_ui_data.build_places` - globbed `*/*.json`. The fifth,
+    `build_ui_data.load_corpus`, used `rglob("*.json")`, so `build_ui_data.py`
+    disagreed with ITSELF about the same directory, and the walk that
+    disagreed is the one feeding `--verify`'s span classification.
+
+    All five returned the same 24 records, and they did so by coincidence of
+    the current layout rather than by construction. A record at
+    `data/seed_corpus/a/b/c.json` is a seed record to `rglob` and invisible to
+    `glob("*/*.json")`. D1 writes a corpus digest at answer time and recomputes
+    it at verify time; if those two ends ever walk the corpus differently the
+    digests never match again - for every answer, permanently, and in the
+    direction of alarm, so everything looks changed and nothing gets read.
+    Block F takes this corpus from 24 records to 60 and is the block that would
+    introduce that file.
+
+    The layout is region/record.json. A .json anywhere else under the corpus
+    directory is REFUSED, not silently included and not silently skipped,
+    because a file that some walks see and others do not is the exact failure
+    this function exists to prevent.
+    """
+    records = sorted(
+        p for p in corpus_dir.glob("*/*.json") if p.name != MANIFEST_NAME
+    )
+    seen = set(records)
+    stray = sorted(
+        p for p in corpus_dir.rglob("*.json")
+        if p.name != MANIFEST_NAME and p not in seen
+    )
+    if stray:
+        raise CorpusLayoutError(
+            f"{len(stray)} JSON file(s) under {corpus_dir} are not at the "
+            f"region/record.json depth every seed-record walk assumes: "
+            f"{[str(p) for p in stray]}. Move them, or change this function - "
+            f"but do not leave one walk seeing them and another not."
+        )
+    return records
+
+
 def iter_record_paths(corpus_dir: Path) -> Iterator[Path]:
-    for path in sorted(corpus_dir.glob("*/*.json")):
-        if path.name == "manifest.json":
-            continue
-        yield path
+    """Kept for loader's own callers. `iter_seed_records` is the definition."""
+    yield from iter_seed_records(corpus_dir)
 
 
 def build_document(record: dict[str, Any], path: Path, corpus_dir: Path) -> Document:

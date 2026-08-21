@@ -42,6 +42,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SEED = ROOT / "data" / "seed_corpus"
 sys.path.insert(0, str(ROOT))
 from ingest.places import canonical_uri  # noqa: E402
+from ingest.loader import iter_seed_records  # noqa: E402
 
 CONFIRMED = (
     "Confirmed 2026-08-13 against the GeoNames country dump named below; the "
@@ -156,9 +157,7 @@ def main() -> int:
     args = ap.parse_args()
 
     by_id = {}
-    for path in sorted(SEED.glob("*/*.json")):
-        if path.name == "manifest.json":
-            continue
+    for path in iter_seed_records(SEED):
         by_id[json.loads(path.read_text(encoding="utf-8"))["id"]] = path
 
     changed, unchanged, missing = [], [], []

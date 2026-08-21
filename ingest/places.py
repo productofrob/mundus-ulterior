@@ -62,6 +62,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterator
 
+from .loader import iter_seed_records
+
 PLACE_BLOCKS = ("findspot_places", "origin_places", "subject_places")
 
 # A record carries place blocks OR this, never both and (at G1) never neither.
@@ -666,9 +668,7 @@ def parse_record_places(record: dict[str, Any], doc_id: str | None = None) -> li
 def load_places(corpus_dir: Path) -> dict[str, list[Place]]:
     """Every placement in the corpus, keyed by doc_id. Raises on the first bad one."""
     out: dict[str, list[Place]] = {}
-    for path in sorted(corpus_dir.glob("*/*.json")):
-        if path.name == "manifest.json":
-            continue
+    for path in iter_seed_records(corpus_dir):
         record = json.loads(path.read_text(encoding="utf-8"))
         assert_no_authored_coordinates(record)
         read_no_places_reason(record)   # raises if it contradicts the blocks

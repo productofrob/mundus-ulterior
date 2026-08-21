@@ -196,8 +196,22 @@ it on every run.
 
 Three consequences, and the third is the one that costs an afternoon:
 
-- **`.py` in this repo is CRLF except `eval/answer_eval.py`; `.md` and `.json`
-  are LF.** The tree is not uniform and nothing enforces it.
+- **CORRECTED 2026-08-21, after the claim above was committed.** The line
+  originally written here said *".py in this repo is CRLF except
+  eval/answer_eval.py"*. That was a generalisation from the seven files this
+  session happened to look at, and it is wrong. Surveyed over every tracked
+  `.py` at HEAD:
+
+  ```
+  CRLF 13    LF 58    mixed 0
+  ```
+
+  **LF is the majority by four to one.** `eval/answer_eval.py` is not an
+  anomaly in the tree — it is an anomaly *among the eight mutation-harness
+  sources*, seven of which happen to fall in the CRLF 13. That is luck, not
+  design, and it inverts the remedy: **normalising the tree to CRLF would be
+  normalising the minority.** The fix belongs in the harnesses, which must
+  read and write bytes rather than text.
 - **A restore check must compare BYTES, not normalised text.** Every one of the
   four harnesses compares text. This is the same defect family as *"a check that
   greps a heading passes against a report that prints the heading and no rows"* —

@@ -177,3 +177,79 @@ unexplainable. The plan's wording — *"the Part 9 `1 absent` span should become
 explicable rather than merely absent"* — is achievable only in the weaker sense
 that the span will be labelled **unknown-provenance** rather than silently
 lumped in with real defects.
+---
+
+# Appendix — the two anomalous spans, diagnosed (2026-08-21)
+
+`check_ui.mjs` reports `{"resolved":157,"case_folded":0,"case_only":9,"moved":1,
+"absent":1}`. Both anomalies were located by re-deriving the classification
+against the seed corpus. **They are the same run and the same record:**
+
+```
+run   20260810T124614+0000-52e5b803-recovered      archived 2026-08-10
+doc   africa-03-periplus-adulis                    the discriminator's own record
+
+moved   original_text_excerpt  [1902:1958] -> [2752:2808]
+        "Φέρεται δὲ ἀπὸ τῶν τόπων ἐλέφας καὶ χελώνη καὶ ῥινόκερως"
+absent  reference_translation  [409:628]
+        "There are imported into these places, undressed cloth made in Egypt..."
+```
+
+**A methodological note first, because it nearly became a false finding.** The
+first re-derivation used normalised equality and reported **115** broken spans
+against the harness's 2. The harness was right. `build_ui_data.py:475`
+`_same_characters` is *containment in either direction*, not equality —
+`cite.py` trims edge punctuation before recording a span, so a quotation ending
+in a comma the source lacks is a quoting convention, not a corruption. Re-run
+with the harness's own predicate, the re-derivation reproduces
+`157 / 0 / 9 / 1 / 1` exactly. **A re-derivation that disagrees with the
+instrument by two orders of magnitude is a defect in the re-derivation.**
+
+## The `moved` span IS explained by a recorded corpus edit
+
+```
+9470506  2026-08-12   original_text_excerpt  2089 chars
+bb3bef5  2026-08-16   original_text_excerpt  3001 chars   +912
+DISK                  original_text_excerpt  3001 chars   identical to bb3bef5
+```
+
+912 characters were inserted into the Greek; the span shifted by 850. The run
+predates the edit by six days. **This is exactly the case D1 is built for**, and
+with a recorded corpus hash it stops being an inference — `build_ui_data.py:546`
+currently *asserts* "the seed record was edited after this run was archived"
+without being able to know it, and here it happens to be right.
+
+## The `absent` span is NOT explained by any recorded corpus edit, and never can be
+
+```
+reference_translation   9470506 == bb3bef5 == DISK      BYTE-IDENTICAL
+```
+
+The English field has never changed in any commit. The archived quotation's
+first 67 characters sit at offset **1917** today, while the archive claims
+**[409:628]**. So the passage is present and the offsets are from a corpus state
+that **git has never seen**: the run is dated 2026-08-10 and `9470506`, the
+record's first commit, is 2026-08-12.
+
+Two explanations remain and **they cannot be separated**:
+
+- **(a)** the run quoted a pre-baseline corpus state that was never committed;
+- **(b)** the span is an artefact of reconstruction. This is a `-recovered.json`
+  file, rebuilt by `scripts/recover_answer_baseline.py` in Part 8, and
+  `build_ui_data.py:120` already warns those carry a thinner passage record.
+
+**D1 cannot distinguish (a) from (b) for this span, ever.** A corpus hash
+recorded at answer time would settle (a); nothing settles (b) except not
+reconstructing archives in the first place.
+
+## What this changes
+
+- The honest limit stated above is no longer an argument, it is a **measured
+  fact about a specific span**. D1 buys nothing for this one.
+- **Decision 5 is confirmed by the data.** `moved` here is explained and
+  `absent` here is unexplainable, and both are `africa-03-periplus-adulis` in one
+  run. A two-state `--verify` would have to put them in the same bucket and
+  would therefore be wrong about one of them whichever bucket it chose.
+- `BLOCK_D_START` names only "the Part 9 `1 absent` span". **The `absent` one is
+  the half D1 cannot help with; the `moved` one is the half it can.** The plan's
+  wording points at the wrong span.
