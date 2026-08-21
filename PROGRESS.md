@@ -11159,3 +11159,216 @@ rather than a proven mechanism.** Keep running git in PowerShell on the host
 regardless: the precaution costs nothing, and the one time the lock appeared it
 cost an hour. An intermittent hazard is the kind this repository has been worst
 at, because the run that does not reproduce it is the one that gets believed.
+
+
+# Block D — TASK 0 and TASK 1 (2026-08-21)
+
+```
+7c003a7  D TASK 0: adulis-exports, and the answer path had been dead since bff0605
+73e3c80  D1 step 1: one definition of what a seed record is
+f54c585  D1 step 2: the corpus version travels with every answer
+```
+
+Scope agreed at the start of the session: TASK 0 and TASK 1 only. Both are done.
+TASK 2 and TASK 3 are not started.
+
+## TASK 0 — the gold case was the small half
+
+`adulis-exports` was added as **data only** — no loader change, no harness
+change, no schema change — because if the instrument changed in the commit that
+turned it green, the green would not be evidence the instrument works. Its
+assertion block is COPIED from `aksum-exports`, not retyped, and verified
+byte-identical across all seven assertion keys. The only field that differs is
+the question. That identity IS the instrument: if the two ever drift, the pair
+stops discriminating between two questions and starts discriminating between two
+tests.
+
+`eval.test_answer_eval` 68+2F -> **71 passed**. The prediction written before the
+run was 70 and was wrong by one: `test_answer_eval.py:217` emits one assertion
+per NON-REFUSAL case, and its passing is the property the discriminator depends
+on — if a refusal could satisfy `adulis-exports`, both halves would be
+satisfiable by the same silence.
+
+## Then the seven unwatched suites found the real defect
+
+**The answer path had been dead for five days.**
+
+```
+answer/translate.py:377   _chat(...) -> tuple[str, int, float]   since bff0605
+answer/assemble.py:449    raw, retries = _chat(                  unchanged since 9470506
+```
+
+`_chat` gained `temperature_actually_used` in **ruling 22's own work**, which
+updated translate.py's three call sites and missed the one in the answer path.
+Every live answer call raised `ValueError` across `bff0605 -> 77d51fa`, invisible
+because Block C ran only the ranking suites. **Block E's 270-call sweep would
+have died on call one, and so would the D4 pilot that exists to prevent exactly
+that.** No archive is contaminated: the newest predates bff0605 by five days.
+
+The third value is now captured, not dropped into `_`. Ruling 22 says temperature
+is classified, recorded and opt-in, never dropped; the answer path passes no
+temperature, so the value is 0.0 today — which is precisely why it is worth
+reading.
+
+**Nothing guards that contract.** `mutate_part7b` verified 15 of 15 and not one
+is about it. The suite DIED rather than failing, and a defect that kills a suite
+has no guard by definition. A signature is a contract with as many clauses as it
+has return values, and the rule this repository already wrote for predicates was
+never applied to signatures.
+
+## The cp1252 trap did not reproduce
+
+Checked as `BLOCK_D_START` required. `mutate_part8.py:153` and
+`mutate_part7b.py:223` still lack both ends of the fix `mutate_ranking.py:756`
+carries. Both ran clean — 11 and 15 mutations, no crash. **Latent, not active:**
+no current mutation produces non-Latin failure detail. Same shape as the
+`.git/index.lock` hazard at the close of C7 — re-entered, not reproduced,
+precaution kept and recorded as a precaution.
+
+## A green mutation run is not evidence the tree was restored
+
+`mutate_part8.py` rewrote `eval/answer_eval.py` from LF to CRLF on every one of
+its 11 mutations and printed *"sources restored"*. Its restore check compares
+text after universal-newline normalisation, so it is constitutionally unable to
+see the damage. **All four harnesses compare text.**
+
+Surveyed at HEAD: **CRLF 13, LF 58, mixed 0.** An earlier note in
+`D_TASK0_RESULT.md` said the tree was CRLF except one file; that was generalised
+from seven files and is corrected there. LF is the majority four to one, so the
+remedy inverts — the fix belongs in the harnesses, which must compare and write
+BYTES.
+
+Exposure, measured:
+
+```
+mutate_part8       eval/answer_eval.py                     LF   OBSERVED
+mutate_places      ingest/places.py, ingest/gazetteer.py   LF
+mutate_ui_places   ui/build_ui_data.py                     LF
+mutate_part7b      none - all three sources CRLF
+mutate_distractors none - the .sql is read-only, both .py CRLF
+mutate_ranking     none - all eight sources CRLF
+```
+
+Three of six are exposed, and only by the accident of which files are CRLF.
+
+## TASK 1 / D1 — the corpus version travels with every answer
+
+```
+172 spans:  resolved 161  case_folded 0  case_only 9  moved 1  absent 1
+seed corpus digest 2e84436cb38a463b... (sha256-of-canonical-json-v1), 24 records
+corpus provenance:  unchanged 4   changed 0   unrecorded 168   not_in_version 0
+```
+
+Before this, *this span broke* and *this span was made against a different
+corpus* were one observation, and `classify_span` resolved the ambiguity by
+ASSERTING a cause it had no evidence for. There are now two axes, and the second
+has **three** states because two would be a lie about the 168.
+
+**Five walks of the seed corpus existed, not one.** `loader.py`, `places.py`,
+`verify.py` and `build_ui_data.build_places` globbed `*/*.json`;
+`build_ui_data.load_corpus` used `rglob("*.json")` — so that file disagreed with
+ITSELF, and the walk that disagreed is the one feeding `--verify`. All five now
+call `ingest.loader.iter_seed_records()`, and a `.json` outside
+`region/record.json` raises. No lenient flag: a corpus two walks disagree about
+is broken for everything.
+
+**`documents.content_hash` is not one quantity** — a sha256 for the 24 seed
+records, the literal string `f"{source}-{object_id}"` for the 426 distractors. A
+roll-up over both is stable under any edit to a distractor's text. Every roll-up
+is scoped to `NOT is_distractor`.
+
+**`answer_id` is unchanged**, so all 78 archived answers keep their identity.
+
+### Proven with one live chat call
+
+`20260821T100448+0000-d2403a22.json` — the first archive carrying a corpus
+version, the first live exercise of the answer path since it was unbroken, and
+`adulis-exports`. Grounded, 4 quotations all resolving to disk. The digest in the
+archive, the digest in the `answers` row and the digest computed from the FILES
+all agree; `africa-03-periplus-adulis` hashes to `0e83bf72...` by three
+independent paths. **The gold case passes live, on evidence byte-identical to the
+seven consecutive refusals of `aksum-exports`.**
+
+### The two anomalous spans, diagnosed
+
+Both are one run and one record, `africa-03-periplus-adulis`. The `moved` span IS
+explained — `bb3bef5` grew `original_text_excerpt` 2089 -> 3001 and the span
+shifted 850, six days after the run. The `absent` span **can never be
+explained**: `reference_translation` is byte-identical in every commit, and the
+offsets come from a corpus state git has never seen — the run is 08-10, the
+record's first commit is 08-12. Pre-baseline state or `-recovered`
+reconstruction artefact, and D1 cannot separate those two.
+
+`BLOCK_D_START` names the `absent` span as the one D1 makes explicable. **It is
+the half D1 cannot help with.**
+
+The 9 `case_only` spans are ONE defect: the same quotation in the same field
+across nine runs all dated 2026-08-10, the pre-C1a labeller `build_ui_data.py:505`
+already predicts. All 172 spans now have an account.
+
+### A migration cannot own a view that schema-part7.sql owns
+
+`run_answer.py:234` re-applies `scripts/schema-part7.sql` on EVERY run. The first
+`schema-d1.sql` added `content_hash` to `citable_passages` and the next run died
+with `cannot drop columns from view`. **It died loudly only because the migration
+ADDED a column** — had it removed one, part7 would have silently restored it. The
+loudness was luck. The column now lives in part7; only the `ALTER`s remain in the
+migration, because `CREATE TABLE IF NOT EXISTS` does nothing to an existing
+table.
+
+**Carried to Block E:** "change nothing between days" currently names prompt,
+corpus, retrieval and gateway. It must name **the schema file**, which is
+re-applied on every one of ~90 calls a day.
+
+## A restore command with no guard destroys what it cannot see
+
+`git checkout -- ui/build_ui_data.py`, prescribed by this block's OWN step-2
+runbook to clear line-ending churn, discarded every uncommitted D1 change in that
+file. Step 1's runbook had it right — commit before running the harnesses — and
+step 2 put the harnesses first and kept the command anyway.
+
+Recovery was byte-exact, because every edit this session was an exact-string
+replacement rather than a line-offset edit. **That rule is why this cost twenty
+minutes rather than an afternoon.**
+
+This is the same finding as the harness restore check, from the other side: the
+harnesses compare normalised text and cannot see the damage; `git checkout --`
+sees the damage and cannot see what else it takes. Both fail by comparing the
+wrong thing.
+
+## The rulings register now exists, and four were unfindable
+
+`RULINGS.md` indexes 1-26 and names the file holding each one's text. C7 recorded
+that 25 and 26 were unregistered. **It was four, not two:** rulings 20 and 21 are
+inside the 1-24 range and have no declaration section anywhere — one line each in
+`C5_START.md`'s numbered list, which every heading-based search misses. Both are
+built and mutation-verified, so **the code is the authority for them and no prose
+is.** They are not reconstructed: filing a plausible after-the-fact declaration
+is how a register stops recording what was decided and starts recording what
+someone later assumed.
+
+## The state at the close
+
+```
+tree            f54c585, clean
+corpus          24 documents / 59 chunks, digest 2e84436cb38a463b...
+index           450 / 450 / 0 pending
+archives        78 runs, ONE of them carrying a corpus version
+gold cases      6, need >= 30
+suites          eval.test_answer_eval 71 | test_ranking_check 218
+mutations       ranking 91 | part8 11 | part7b 15 | distractors 6 | places 43
+                | ui_places 3
+chat calls      1 spent this session
+```
+
+## Open, and deliberately not closed
+
+- **Nothing guards the `_chat` arity contract.**
+- **No mutation harness compares bytes on restore.** Four harnesses, one blind
+  check each; three of six have LF sources they silently rewrite.
+- **`classify_span` still asserts a cause it cannot know**, and `--verify` now
+  prints that sentence directly above a provenance line that contradicts it.
+- **Rulings 20 and 21 have no full text.**
+- **`aksum-exports` remains an open defect.** Adding the passing half did not
+  close it and was not recorded as closing it.
+- **TASK 2 and TASK 3 are not started.**
