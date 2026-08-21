@@ -11084,3 +11084,78 @@ The W2b curve still rests on **English-only padding** — seams 1 and 2 were
 dropped on a time-box, so the twelve Greek-target pairs faced no competing Greek
 at any rung, and *"flat over an eightfold index"* still means *"English-target
 retrieval survives English competition"*.
+
+---
+
+# State at the close of C7 (2026-08-20)
+
+_A separate section because of a plain ordering fact: the three Block C sections
+above were written into the commit that contains them, so none of them can name
+it. This one is written after `ccca17e` and names it._
+
+## The tree
+
+```
+ccca17e   C7: the via-original sequencing fix (21/30 pre-rerank, 22/30 post),
+          ruling 26, Block C closes
+744e57c   Block C: C5 and C6 run archives, ruling 25 documents, G2 at six of seven
+bff0605   Block C: C2 measured and rejected, rulings 12-25; frozen config for C5-C6
+```
+
+Five paths in `ccca17e`, and no others:
+
+```
+M  PROGRESS.md
+M  eval/run_ranking_check.py
+M  eval/test_ranking_check.py
+M  scripts/mutate_ranking.py
+A  eval/ranking_runs/20260820T161457+0000-...-collapsed-reranked50.json
+```
+
+Working tree clean. **The ranking path is committed and provable** — which is
+the first of the two archival hazards recorded above, closed.
+
+## The numbers a later thread will want without reading for them
+
+```
+corpus      24 documents / 59 chunks / 57 retrieval-eligible
+index       450 in retrievable_chunks_with_distractors, 450/450/0 pending
+gold set    33 pairs over 30 SCORED UNITS, 7 regions
+suites      eval.test_ranking_check  218   |   scripts\mutate_ranking.py  91
+G2          six of seven; the gap is the sole failure, ruling 25
+recall@6    29/30 = 0.967, post-rerank, per unit
+via-orig    21/30 pre-rerank and 22/30 post-rerank — both printed, both archived
+```
+
+Three ranking runs are archived from C5 onward and **only two of them are
+evidence**:
+
+```
+20260819T102211   C5   criterion 5, day one
+20260820T151200   C6   criterion 5, day two; byte-identical to C5
+20260820T161457   C7   the fix's verification, and nothing else. NOT a third
+                       day: same calendar day as C6, and a changed tree.
+```
+
+## One loose end, named here so it is not lost
+
+**Rulings 25 and 26 are not in the rulings register.** `BLOCK_C_RULINGS.md`
+carries 1-11 and `C2_RULINGS.md`'s last heading is ruling 24. Ruling 25 lives in
+`C5_3B_AND_PROTOCOL.md` and in the C5-C6 section above; ruling 26 lives in
+`C7_RESULT.md` and in the C7 section above. A thread told to read "rulings 1-24"
+in the register will read exactly that and miss the two most recent — one of
+which **pulled a kill trigger**. Register both before any Block D document
+quotes a ruling number at anything.
+
+## A trap re-tested, and not reproduced
+
+The 08-19 hazard — a `git status` from the Linux side of the device bridge
+leaving a stale `.git/index.lock` that had to be cleared by hand — was re-entered
+today by accident: one `git status --porcelain` from the mount. It returned
+clean and left no lock file.
+
+**So the hazard is not reliably reproducible, and the rule is a precaution
+rather than a proven mechanism.** Keep running git in PowerShell on the host
+regardless: the precaution costs nothing, and the one time the lock appeared it
+cost an hour. An intermittent hazard is the kind this repository has been worst
+at, because the run that does not reproduce it is the one that gets believed.
