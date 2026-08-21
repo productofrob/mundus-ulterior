@@ -43,6 +43,7 @@ curator might not have run before bundling. See `check_placement_shape` and
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import datetime as _dt
 import json
 import sys
@@ -64,7 +65,10 @@ sys.path.insert(0, str(REPO))
 from ingest.places import (            # noqa: E402
     Place, SUBJECT_BLOCK, load_places, read_no_places_reason,
 )
-from ingest.loader import iter_seed_records   # noqa: E402
+from ingest.loader import (                   # noqa: E402
+    iter_seed_records, seed_record_hashes, corpus_digest,
+    CORPUS_DIGEST_ALGORITHM,
+)
 from ingest import gazetteer as gz     # noqa: E402
 
 # The seed fields a chunk can be cut from. `source_field` in a run payload
@@ -551,6 +555,63 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
                    "stands today"}
 
 
+# D1. THREE states, and the third is the point. `moved` and `absent` say a
+# claim no longer holds; these say whether the corpus it was made against has
+# moved underneath it. They are different axes and are kept as different axes -
+# `classify_span`'s five states are not touched, exactly as `rank_reranked`
+# never overwrote `rank`.
+PROVENANCE_STATES = ("unchanged", "changed", "unrecorded", "not_in_version")
+
+
+def corpus_provenance(run: dict, span: dict, today: dict[str, str]) -> dict:
+    """Was the record this span quotes the same record it is being checked against?
+
+    | recorded and EQUAL to today's | the record did not move - an `absent` or
+    |                               | `moved` span is a real defect in the span
+    | recorded and DIFFERENT        | the record moved - the span is explained
+    | NOT recorded                  | UNKNOWN, and reported on its own line
+
+    Every archive written before D1 is in the third bucket by construction, and
+    it must never be silently counted as either of the first two. Collapsing
+    "unknown" into "unchanged" would report a span as a real defect on no
+    evidence; collapsing it into "changed" would explain away every real defect
+    the archive holds. This file already sets that precedent for the pre-C1a
+    runs in `classify_span`, and for the same reason.
+    """
+    version = run.get("corpus_version")
+    doc_id = span.get("doc_id")
+    if not version:
+        return {"state": "unrecorded",
+                "why": "this run was archived before the corpus version was "
+                       "recorded; whether the record has moved since is not "
+                       "knowable from the archive, and is not assumed either way"}
+    algorithm = version.get("algorithm")
+    if algorithm != CORPUS_DIGEST_ALGORITHM:
+        return {"state": "unrecorded",
+                "why": f"recorded under {algorithm!r}, and this build hashes "
+                       f"records as {CORPUS_DIGEST_ALGORITHM!r}. Two hashes of "
+                       f"different things cannot be compared, and a mismatch "
+                       f"between them would say nothing about the corpus"}
+    recorded = (version.get("record_hashes") or {}).get(doc_id)
+    if recorded is None:
+        return {"state": "not_in_version",
+                "why": f"the run recorded a corpus version, but {doc_id!r} is "
+                       f"not in it - the answer cited a document the corpus "
+                       f"version does not cover"}
+    now = today.get(doc_id)
+    if now is None:
+        return {"state": "changed", "recorded": recorded, "now": None,
+                "why": f"{doc_id!r} carried a hash when this run was made and "
+                       f"is not a seed record today"}
+    if recorded == now:
+        return {"state": "unchanged", "recorded": recorded, "now": now,
+                "why": "the seed record is byte-for-byte the one that made this "
+                       "answer, so a failing span here is a defect in the span"}
+    return {"state": "changed", "recorded": recorded, "now": now,
+            "why": "the seed record was edited after this run was archived - "
+                   "measured, not inferred"}
+
+
 def verify_spans(runs: list[dict], corpus: dict[str, dict]) -> dict[str, list]:
     """Classify every claimed span, annotating the runs in place.
 
@@ -560,18 +621,22 @@ def verify_spans(runs: list[dict], corpus: dict[str, dict]) -> dict[str, list]:
     """
     buckets: dict[str, list] = {"resolved": [], "case_folded": [],
                                 "case_only": [], "moved": [], "absent": []}
+    today_hashes = seed_record_hashes(CORPUS_DIR)
     for run in runs:
         for span in run.get("grounding", {}).get("quote_spans", []):
             if span.get("abs_start") is None or span.get("abs_end") is None:
                 continue                      # no span was claimed; not a defect
             resolution = classify_span(span, corpus)
+            resolution["provenance"] = corpus_provenance(run, span, today_hashes)
             span["resolution"] = resolution
             buckets[resolution["state"]].append({
                 "run": run["run_key"], "doc_id": span.get("doc_id"),
                 "field": span.get("source_field"),
                 "at": f"[{span['abs_start']}:{span['abs_end']}]",
                 "quote": (span.get("quote") or "")[:70],
-                **{k: v for k, v in resolution.items() if k != "found"},
+                "provenance": resolution["provenance"]["state"],
+                **{k: v for k, v in resolution.items()
+                   if k not in ("found", "provenance")},
             })
     return buckets
 
@@ -641,12 +706,30 @@ def main(argv: list[str] | None = None) -> int:
     for state in ("resolved", "case_folded", "case_only", "moved", "absent"):
         print(f"  {state:<12} {len(buckets[state])}")
 
+    # D1. The SECOND axis. `moved`/`absent` say a claim no longer holds; this
+    # says whether the corpus it was made against has moved underneath it.
+    # Reported separately because they are separate questions, and because
+    # collapsing them is the conflation D1 exists to end.
+    provenance = Counter(item["provenance"]
+                         for items in buckets.values() for item in items)
+    today_digest = corpus_digest(seed_record_hashes(CORPUS_DIR))
+    print(f"\nseed corpus on disk: {len(corpus)} record(s), "
+          f"digest {today_digest[:16]}... ({CORPUS_DIGEST_ALGORITHM})")
+    print("corpus provenance of those spans:")
+    for state in PROVENANCE_STATES:
+        print(f"  {state:<15} {provenance.get(state, 0)}")
+    if provenance.get("unrecorded"):
+        print(f"  note: {provenance['unrecorded']} span(s) are UNKNOWN, not "
+              f"unchanged. Their runs predate the corpus version, so whether "
+              f"the record moved is not knowable from the archive.")
+
     for state in ("moved", "absent", "case_only"):
         for item in buckets[state][:6]:
             print(f"\n  {state.upper()}  {item['doc_id']}.{item['field']}"
                   f"{item['at']}  ({item['run']})")
             print(f"    quote: {item['quote']!r}")
             print(f"    {item.get('why', '')}")
+            print(f"    corpus provenance: {item['provenance']}")
         if len(buckets[state]) > 6:
             print(f"  ... and {len(buckets[state]) - 6} more {state}")
 
@@ -656,6 +739,12 @@ def main(argv: list[str] | None = None) -> int:
     # be produced by a run archived before the third match state existed. A
     # `case_only` span on a run archived after 2026-08-14 would mean the label
     # regressed; `case_folded` is the state a new run should reach.
+    # D1 changes what is REPORTED, not what fails. A `moved` span whose record
+    # provenance is `changed` is explained rather than defective, and it is
+    # tempting to stop failing on it - but that is a policy change to the gate
+    # and it would silently weaken the check the day it was made. The
+    # decomposition is printed; the gate stays where it was until someone
+    # decides to move it on purpose, in writing.
     broken = len(buckets["moved"]) + len(buckets["absent"])
     if args.verify:
         return 1 if broken else 0

@@ -278,6 +278,12 @@ def main(argv: list[str] | None = None) -> int:
 
         model_label = translate.resolve_model_label()
 
+        # D1. Read ONCE, before the repetition loop: every repetition in this
+        # invocation is made against the same corpus by construction, and
+        # re-reading it per repetition would invite a run whose repetitions
+        # disagree about what they were measured against.
+        corpus_version = answer_store.corpus_version(conn)
+
         # The retrieval and its embedding are spent once; each repetition costs
         # one chat call. `answers` is keyed on (question, model, prompt, evidence)
         # and so holds one row however many times this loop runs — the run-to-run
@@ -299,6 +305,7 @@ def main(argv: list[str] | None = None) -> int:
 
             answer.embedding_model = embed_model
             answer.retrieval_k = args.k
+            answer.corpus_version = corpus_version
 
             stored_id = None
             if not args.no_write:
@@ -319,6 +326,10 @@ def main(argv: list[str] | None = None) -> int:
             "refused": answer.refused,
             "model": answer.model,
             "prompt_version": answer.prompt_version,
+            # D1. Beside prompt_version, because it answers the same kind of
+            # question about the answer: what was it made from. An archive
+            # WITHOUT this key predates D1 and is UNKNOWN, never "unchanged".
+            "corpus_version": answer.corpus_version,
             "embedding_model": answer.embedding_model,
             "answer_id": stored_id,
             "grounding": answer.grounding.to_dict(),

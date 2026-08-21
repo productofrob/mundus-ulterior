@@ -22,6 +22,7 @@ import os
 from pathlib import Path
 
 from answer.evidence import ChunkRecord, TranslationRecord
+from ingest.loader import CORPUS_DIGEST_ALGORITHM, corpus_digest
 
 DEFAULT_DSN = "postgresql://mundus:mundus@localhost:5432/mundus"
 SCHEMA_PATH = Path("scripts/schema-part7.sql")
@@ -40,7 +41,8 @@ def apply_schema(conn, schema_path: Path = SCHEMA_PATH) -> None:
 PASSAGE_COLUMNS = (
     "chunk_id, doc_id, role, seq, lang, text, citation, region, source_type, "
     "text_fidelity, source_field, char_start, char_end, date_text, title, "
-    "translation_source, citation_original, language_note, parallel_group"
+    "translation_source, citation_original, language_note, parallel_group, "
+    "content_hash"
 )
 
 
@@ -49,6 +51,7 @@ def _record(row) -> ChunkRecord:
         chunk_id, doc_id, role, seq, lang, text, citation, region, source_type,
         text_fidelity, source_field, char_start, char_end, date_text, title,
         translation_source, citation_original, language_note, parallel_group,
+        content_hash,
     ) = row
     return ChunkRecord(
         chunk_id=chunk_id, doc_id=doc_id, role=role, seq=seq, lang=lang,
@@ -57,7 +60,7 @@ def _record(row) -> ChunkRecord:
         char_start=char_start, char_end=char_end, date_text=date_text,
         title=title, translation_source=translation_source,
         citation_original=citation_original, language_note=language_note,
-        parallel_group=parallel_group,
+        parallel_group=parallel_group, content_hash=content_hash,
     )
 
 
@@ -100,11 +103,14 @@ UPSERT_ANSWER = """
 INSERT INTO answers (
     answer_id, question, question_lang, answer_text,
     answer_model, answer_prompt_version, embedding_model, retrieval_k,
-    grounded, grounding, notes
+    grounded, grounding, notes,
+    corpus_digest_algorithm, seed_corpus_digest, cited_record_hashes
 ) VALUES (
     %(answer_id)s, %(question)s, %(question_lang)s, %(answer_text)s,
     %(answer_model)s, %(answer_prompt_version)s, %(embedding_model)s,
-    %(retrieval_k)s, %(grounded)s, %(grounding)s::jsonb, %(notes)s
+    %(retrieval_k)s, %(grounded)s, %(grounding)s::jsonb, %(notes)s,
+    %(corpus_digest_algorithm)s, %(seed_corpus_digest)s,
+    %(cited_record_hashes)s::jsonb
 )
 ON CONFLICT (answer_id)
 DO UPDATE SET
@@ -116,7 +122,21 @@ DO UPDATE SET
     grounded = EXCLUDED.grounded,
     grounding = EXCLUDED.grounding,
     notes = EXCLUDED.notes,
+    corpus_digest_algorithm = EXCLUDED.corpus_digest_algorithm,
+    seed_corpus_digest = EXCLUDED.seed_corpus_digest,
+    cited_record_hashes = EXCLUDED.cited_record_hashes,
     created_at = now();
+"""
+
+# D1. Scoped to NOT is_distractor, and that is correctness rather than tidiness:
+# `documents.content_hash` holds a sha256 for the 24 seed records and the
+# literal string f"{source}-{object_id}" for the 426 distractors, so a digest
+# over both would be stable under any edit to a distractor's text.
+SELECT_SEED_RECORD_HASHES = """
+SELECT doc_id, content_hash
+FROM documents
+WHERE NOT is_distractor
+ORDER BY doc_id;
 """
 
 UPSERT_CITATION = """
@@ -279,6 +299,45 @@ def answer_id(
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()[:32]
 
 
+def corpus_version(conn) -> dict:
+    """The corpus this answer is being made against, as the DATABASE holds it.
+
+    Deliberately not read from the seed files. The answer is assembled from
+    `citable_passages`, so the database is the corpus that made it; if an ingest
+    is stale, that is a fact about the answer and it should be recorded as one.
+    `--verify` recomputes from the files and compares, so a stale ingest
+    surfaces as "made against a different corpus" - which is exactly what it is.
+
+    The digest itself is computed by `ingest.loader.corpus_digest`, imported
+    rather than reimplemented. The whole point of D1 is that the value written
+    at answer time and the value recomputed at verify time come from ONE
+    definition; two would guarantee they never agree again.
+    """
+    with conn.cursor() as cur:
+        cur.execute(SELECT_SEED_RECORD_HASHES)
+        hashes = {doc_id: h for doc_id, h in cur.fetchall()}
+    return {
+        "algorithm": CORPUS_DIGEST_ALGORITHM,
+        "scope": "seed records only; distractors excluded",
+        "source": "database",
+        "seed_record_count": len(hashes),
+        "seed_corpus_digest": corpus_digest(hashes),
+        "record_hashes": hashes,
+    }
+
+
+def cited_record_hashes(version: dict, doc_ids) -> dict:
+    """The subset of the corpus version the answer actually cited.
+
+    A document that was cited but is NOT in the corpus version is recorded with
+    a null hash rather than omitted. Omitting it would make "this answer cited
+    nothing from that record" and "we have no hash for that record" the same
+    absence - the exact conflation D1 exists to end, one level down.
+    """
+    return {doc_id: version.get("record_hashes", {}).get(doc_id)
+            for doc_id in sorted(set(doc_ids))}
+
+
 def write_answer(conn, record: dict, citations: list[dict]) -> str:
     """Store one answer and its citation rows. Returns the answer_id."""
     aid = record["answer_id"]
@@ -290,6 +349,16 @@ def write_answer(conn, record: dict, citations: list[dict]) -> str:
     params.setdefault("question_lang", None)
     params.setdefault("embedding_model", None)
     params.setdefault("notes", None)
+    # D1. The two text columns default to None - NULL means "no corpus version
+    # was recorded", which `--verify` reads as UNKNOWN and must never read as
+    # "unchanged". The jsonb column defaults to an EMPTY OBJECT because the
+    # column is NOT NULL, and because "cited nothing" is a different statement
+    # from "recorded nothing".
+    params.setdefault("corpus_digest_algorithm", None)
+    params.setdefault("seed_corpus_digest", None)
+    params["cited_record_hashes"] = json.dumps(
+        params.get("cited_record_hashes") or {}, ensure_ascii=False
+    )
 
     with conn.cursor() as cur:
         cur.execute(UPSERT_ANSWER, params)

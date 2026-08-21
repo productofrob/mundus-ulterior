@@ -53,7 +53,21 @@ SELECT r.chunk_id,
        d.title,
        d.translation_source,
        d.citation_original,
-       d.language_note
+       d.language_note,
+       -- D1. The seed record's content hash, so an answer can record the corpus
+       -- version it was made against.
+       --
+       -- THIS COLUMN MUST BE DEFINED HERE AND NOT IN A MIGRATION. `apply_schema`
+       -- re-applies this file on EVERY run of answer/run_answer.py, and
+       -- CREATE OR REPLACE VIEW is authoritative: a migration that adds a
+       -- column to this view is undone the next time anyone answers a
+       -- question. scripts/schema-d1.sql tried exactly that on 2026-08-21 and
+       -- the next run died with `cannot drop columns from view`.
+       --
+       -- It died loudly only because the migration ADDED a column. Had it
+       -- removed one, this file would have silently put it back and nothing
+       -- would have reported it. Any future change to this view belongs here.
+       d.content_hash
 FROM retrievable_chunks r
 JOIN chunks    c ON c.chunk_id = r.chunk_id
 JOIN documents d ON d.doc_id   = r.doc_id;
@@ -87,6 +101,15 @@ CREATE TABLE IF NOT EXISTS answers (
     grounding             jsonb       NOT NULL DEFAULT '{}'::jsonb,
 
     notes                 text,
+
+    -- D1. Present here so a FRESH database gets them, and repeated as ALTERs in
+    -- scripts/schema-d1.sql because CREATE TABLE IF NOT EXISTS does nothing to
+    -- an existing table. Both are idempotent and both are needed; neither alone
+    -- covers both cases.
+    corpus_digest_algorithm text,
+    seed_corpus_digest      text,
+    cited_record_hashes     jsonb NOT NULL DEFAULT '{}'::jsonb,
+
     created_at            timestamptz NOT NULL DEFAULT now()
 );
 

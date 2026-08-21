@@ -95,6 +95,11 @@ class ChunkRecord:
     citation_original: str | None = None
     language_note: str | None = None
     parallel_group: str | None = None
+    # D1. The hash of the SEED RECORD this chunk came from, as the database
+    # holds it - not as the files hold it today. The database is the corpus
+    # that actually made the answer, so a stale ingest shows up honestly as
+    # "made against a different corpus" rather than silently as agreement.
+    content_hash: str | None = None
 
     @property
     def is_english(self) -> bool:

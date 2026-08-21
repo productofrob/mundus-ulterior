@@ -236,6 +236,11 @@ class AssembledAnswer:
     retrieval_k: int = DEFAULT_K
     notes: list[str] = field(default_factory=list)
     raw_response: str = ""
+    # D1. Set by the caller that owns the connection, exactly as
+    # `embedding_model` and `retrieval_k` are. None means the answer was made
+    # before corpus versions existed, or by a path that did not record one -
+    # which is UNKNOWN, and must never be read as "the corpus had not changed".
+    corpus_version: dict | None = None
 
     @property
     def ok(self) -> bool:
@@ -556,6 +561,18 @@ def store(conn, answer: AssembledAnswer, question_lang: str | None = None) -> st
             "grounded": answer.grounding.ok,
             "grounding": answer.grounding.to_dict(),
             "notes": " | ".join(answer.notes) or None,
+            # D1. NULL, not "", when no version was recorded. The columns are
+            # nullable so that a row written before this existed and a row that
+            # recorded a version stay tellable apart.
+            "corpus_digest_algorithm": (answer.corpus_version or {}).get("algorithm"),
+            "seed_corpus_digest": (answer.corpus_version or {}).get("seed_corpus_digest"),
+            # A plain dict, not a JSON string: write_answer serialises it, the
+            # same way it already serialises `grounding`. assemble.py does not
+            # import json and must not start - one module owns the encoding.
+            "cited_record_hashes": answer_store.cited_record_hashes(
+                answer.corpus_version or {},
+                [p.doc_id for p in answer.passages],
+            ),
         },
         citation_rows(answer),
     )

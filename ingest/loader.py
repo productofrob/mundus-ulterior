@@ -155,8 +155,85 @@ def iter_record_paths(corpus_dir: Path) -> Iterator[Path]:
     yield from iter_seed_records(corpus_dir)
 
 
+# --------------------------------------------------------------------------
+# Corpus version (D1)
+# --------------------------------------------------------------------------
+
+# Bumped only if the canonicalisation below changes. An archived digest carries
+# this string so a future reader can tell "the corpus moved" from "the way we
+# hash the corpus moved" - two observations that would otherwise be one.
+CORPUS_DIGEST_ALGORITHM = "sha256-of-canonical-json-v1"
+
+
+def canonical_record_text(record: dict[str, Any]) -> str:
+    """The exact string a record's content_hash is taken over.
+
+    Extracted from `build_document`, which computed it inline, so that the hash
+    written at ingest time and the hash recomputed at verify time cannot drift
+    apart. Same lesson as `iter_seed_records`: two ends of a comparison must not
+    hold two definitions of the thing being compared.
+
+    Note what this is deliberately blind to. It hashes the PARSED record with
+    sorted keys, not the file's bytes, so reindenting or reordering keys in a
+    seed file does not change the hash. That is correct - the content did not
+    move - and it is written down here so nobody later "fixes" it into a hash of
+    the raw file.
+    """
+    return json.dumps(record, ensure_ascii=False, sort_keys=True)
+
+
+def record_content_hash(record: dict[str, Any]) -> str:
+    return hashlib.sha256(canonical_record_text(record).encode("utf-8")).hexdigest()
+
+
+def seed_record_hashes(corpus_dir: Path = SEED_CORPUS_DIR) -> dict[str, str]:
+    """Every seed record's content hash, keyed by doc_id.
+
+    Raises on a record with no `id` and on a duplicate `id`. Both are currently
+    impossible - all 24 records carry a distinct id - and both would otherwise
+    be SILENT: a record without an id cannot be keyed, and a duplicate id would
+    overwrite its predecessor, so in either case the digest would quietly
+    describe a corpus smaller than the one on disk.
+    """
+    out: dict[str, str] = {}
+    for path in iter_seed_records(corpus_dir):
+        record = json.loads(path.read_text(encoding="utf-8"))
+        doc_id = record.get("id")
+        if not doc_id:
+            raise CorpusLayoutError(
+                f"{path} has no 'id'. A seed record with no id cannot be keyed, "
+                f"and a corpus digest that silently omits it would describe a "
+                f"corpus that is not the one on disk."
+            )
+        if doc_id in out:
+            raise CorpusLayoutError(
+                f"{path} repeats doc_id {doc_id!r}. One of the two would "
+                f"overwrite the other and the digest would cover 23 records "
+                f"while reporting 24."
+            )
+        out[doc_id] = record_content_hash(record)
+    return out
+
+
+def corpus_digest(hashes: dict[str, str]) -> str:
+    """One value over the whole seed corpus.
+
+    Answers a different question from the per-record hashes that travel beside
+    it. The per-record hashes say *did the record this span quotes move?*; this
+    says *is this the corpus that made this answer at all?* A corpus can move
+    somewhere else entirely while every cited record is untouched, which is
+    exactly the state Block E must be able to assert did NOT happen between day
+    one and day three.
+
+    Sorted by doc_id so the value depends on the corpus and not on the order a
+    filesystem happened to yield it in. US (0x1f) separates the two fields
+    because it cannot occur in either.
+    """
+    payload = "\n".join(f"{doc_id}\x1f{h}" for doc_id, h in sorted(hashes.items()))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def build_document(record: dict[str, Any], path: Path, corpus_dir: Path) -> Document:
-    raw = json.dumps(record, ensure_ascii=False, sort_keys=True)
     extra = {k: record[k] for k in EXTRA_CITATION_KEYS if record.get(k)}
     return Document(
         doc_id=record["id"],
@@ -173,7 +250,7 @@ def build_document(record: dict[str, Any], path: Path, corpus_dir: Path) -> Docu
         translation_source=_clean(record.get("translation_source")),
         notes=_clean(record.get("notes")),
         source_path=_relative_source_path(path, corpus_dir),
-        content_hash=hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+        content_hash=record_content_hash(record),
     )
 
 
