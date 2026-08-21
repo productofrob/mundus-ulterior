@@ -30,7 +30,37 @@
         "The sources retrieved do not answer this question"
       ],
       "expect_min_resolved_quotes": 1,
-      "archived_status": "FAILS on all four archived answers — but not for the same reason, and the difference matters. v1 (grounded, 2 resolved quotations) quotes the Greek export sentence in full and says 'no English translation is available for the second passage', which was TRUE when it ran: the Adulis translation gap was closed later in Part 7. Its refusal was correct behaviour under the corpus it saw. v3-after-fix (grounded, 0 quotations) refuses with the aligned English present and states the opposite of it. The case scores both FAIL because it is written against today's corpus; separating them needs the corpus state each answer was made against, which the archives do not carry. Do not weaken the case to accommodate v1 — record the corpus version instead."
+      "archived_status": "FAILS on all four archived answers — but not for the same reason, and the difference matters. v1 (grounded, 2 resolved quotations) quotes the Greek export sentence in full and says 'no English translation is available for the second passage', which was TRUE when it ran: the Adulis translation gap was closed later in Part 7. Its refusal was correct behaviour under the corpus it saw. v3-after-fix (grounded, 0 quotations) refuses with the aligned English present and states the opposite of it. The case scores both FAIL because it is written against today's corpus; separating them needs the corpus state each answer was made against, which the archives do not carry. Do not weaken the case to accommodate v1 — record the corpus version instead.",
+      "note": "PAIRED WITH adulis-exports, which asserts the same things about the same documents and differs only in the wording of the question. Read them together or neither means anything: this half is the refusal, that half is the answer, and the discriminator is the difference between them. Still an open defect in floor.json.known_failing_cases; adding the passing half does not close it."
+    },
+    {
+      "id": "adulis-exports",
+      "question": "What was exported from Adulis?",
+      "why": "The other half of the Adulis discriminator. Its assertion block is COPIED from aksum-exports, not retyped: same documents, same content terms, same exclusion, same quotation floor. The only thing that differs between the two cases is the wording of the question. aksum-exports has been refused seven consecutive times under four prompts; this wording was answered on 2026-08-12 with two quotations resolving to characters on disk. Until both halves are in the gold set, the founding claim of this phase - that the system refused a question whose answer it was holding, and answered it when the question was reworded against byte-identical evidence - is an anecdote and not a regression test. The identical assertions ARE the deliverable: if they ever drift apart, the pair stops discriminating between two questions and starts discriminating between two tests.",
+      "expect_cited_docs": [
+        "africa-03-periplus-adulis"
+      ],
+      "expect_quoted_docs": [
+        "africa-03-periplus-adulis"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "ivory"
+        ],
+        [
+          "tortoise-shell",
+          "tortoise shell"
+        ],
+        [
+          "rhinoceros"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "PAIRED WITH aksum-exports. Neither case is readable alone and neither may be deleted alone; the pairing is prose here and becomes a loader-enforced field in D2/D3, when every case gains an explicit expected behaviour (this one: ANSWERABLE). Adding this case does NOT close the aksum-exports defect and must never be recorded as closing it - floor.json tracks that as an open defect, not a tolerated one, and a pass here says only that the corpus holds the answer, which was never in doubt. Id note: the ranking gold set carries the same discriminator under eval/gold/ranking_pairs.json, where this half is also called adulis-exports but the other half is called aksum-trade-adulis, not aksum-exports. The ids match on one half only.",
+      "archived_status": "PASSES on the one archived run of this question: 20260812T133627+0000-53afe41c.json, p7-answer-v2r, grounded, refused=false, 2 resolved quotations both from africa-03-periplus-adulis (reference_translation[3073:3155] and [1395:1462], both match=exact), 0 unverified quotes. ONE run under ONE prompt version: an observation, not a stability claim, and it is exactly the kind of single sample Block E exists to stop being read as a distribution."
     },
     {
       "id": "vimose-runes",
@@ -146,5 +176,6 @@
       "archived_status": "PASSES on v1, v2 and v3 — all three refuse and none names a date."
     }
   ],
-  "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database."
+  "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",
+  "the_adulis_discriminator": "aksum-exports and adulis-exports are one instrument in two halves. Both assert the same content against the same document; only the question differs. A run in which the first fails and the second passes says the defect is in the question-to-retrieval-to-answer path and not in the corpus. A run in which BOTH fail says the corpus or the pipeline moved, and the discriminator has stopped working - which is a louder result than either case failing alone, and is why they must never be maintained separately."
 }

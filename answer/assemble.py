@@ -446,12 +446,29 @@ def assemble(
         )
 
     evidence_block = cite.render_evidence(passages, profiles)
-    raw, retries = _chat(
+    # `_chat` returns THREE values: (text, retries, temperature_actually_used).
+    # This call site unpacked two from bff0605 (ruling 22's temperature work,
+    # which updated translate.py's three callers and missed this one) until
+    # 2026-08-21, and every live answer call raised ValueError for those five
+    # days. Nothing caught it because the answer suites were not run across
+    # Block C, and no archived run is affected: the newest predates bff0605.
+    #
+    # The third value is CAPTURED and not discarded into `_`. Ruling 22 says
+    # temperature is classified, recorded and opt-in, never dropped. This path
+    # passes no temperature and no fallback, so the value is 0.0 today - which
+    # is exactly why it is worth reading. It is a constant until someone changes
+    # it, and a silent `_` is how that change would arrive unannounced.
+    raw, retries, temperature_used = _chat(
         build_messages(question, evidence_block, version),
         model=model, client=client, max_tokens=max_tokens, sleep=sleep,
     )
     if retries:
         notes.append(f"{retries} retry/retries before the answer came back")
+    if temperature_used != 0:
+        notes.append(
+            f"temperature {temperature_used} was used, not 0 - this answer is "
+            f"NOT comparable with the greedy archive it will be filed beside"
+        )
 
     answer_text = _strip_preamble(raw or "")
     if not answer_text.strip():
