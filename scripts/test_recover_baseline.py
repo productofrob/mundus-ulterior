@@ -32,6 +32,29 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import recover_answer_baseline as rb  # noqa: E402  (scripts/ is on the path)
 from answer import run_answer  # noqa: E402
 
+# FINDING 10: this process's own stdout. On Windows `print` writes through a
+# stream whose encoding comes from the console code page, and through a PIPE or
+# a REDIRECT it falls back to the locale codec — cp1252, which cannot encode
+# Greek, Tamil, Chinese, Ge'ez or runic. It does not degrade: it raises
+# UnicodeEncodeError mid-output, with the file half written and every number in
+# it correct. Found 2026-08-22 at build_ui_data.py:730, printing the Greek behind
+# a `case_only` span into a redirect.
+#
+# Two neighbouring boundaries were already guarded and are NOT this one: a CHILD
+# process's stdout (PYTHONIOENCODING in its env) and a PARENT decoding that child
+# (subprocess encoding=). Both are about a pipe between two processes. This is
+# about where THIS process is writing, and until 2026-08-22 nothing guarded it.
+#
+# errors="replace" is deliberate. A harness that cannot encode one character
+# should print a replacement character and finish; it should never lose a run to
+# a formatting problem. A mangled character is cosmetic. A three-day sweep that
+# dies on day one is ninety chat calls.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError, OSError):
+        pass
+
 PASSED = 0
 FAILED = 0
 

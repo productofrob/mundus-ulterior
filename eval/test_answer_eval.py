@@ -23,6 +23,32 @@ from eval import answer_eval
 from eval.goldset import (ANSWER_BEHAVIOURS, ANSWER_REGIONS, GoldSetError,
                           load_answer_cases, load_floor)
 
+import sys
+
+# FINDING 10: this process's own stdout. On Windows `print` writes through a
+# stream whose encoding comes from the console code page, and through a PIPE or
+# a REDIRECT it falls back to the locale codec — cp1252, which cannot encode
+# Greek, Tamil, Chinese, Ge'ez or runic. It does not degrade: it raises
+# UnicodeEncodeError mid-output, with the file half written and every number in
+# it correct. Found 2026-08-22 at build_ui_data.py:730, printing the Greek behind
+# a `case_only` span into a redirect.
+#
+# Two neighbouring boundaries were already guarded and are NOT this one: a CHILD
+# process's stdout (PYTHONIOENCODING in its env) and a PARENT decoding that child
+# (subprocess encoding=). Both are about a pipe between two processes. This is
+# about where THIS process is writing, and until 2026-08-22 nothing anywhere
+# guarded it.
+#
+# errors="replace" is deliberate. A harness that cannot encode one character
+# should print a replacement character and finish; it should never lose a run to
+# a formatting problem. A mangled character is cosmetic. A three-day sweep that
+# dies on day one is ninety chat calls.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, ValueError, OSError):
+        pass
+
 PASSED = 0
 FAILED = 0
 
@@ -406,6 +432,48 @@ def test_the_gloss_arm_has_teeth() -> None:
                    "and is still readable as the hedge it was declared as")
         except GoldSetError as exc:
             expect(False, f"a well-formed gloss case should load ({exc})")
+
+
+def test_every_entry_point_guards_its_stdout() -> None:
+    print("\nFINDING 10: the stdout guard, in every entry point that prints")
+
+    # This check lives in a file about gold answer cases on purpose. The failure
+    # it prevents is THIS SUITE dying instead of failing: it prints failure
+    # detail carrying Greek, Tamil, Chinese, Ge'ez and runic, and redirected on
+    # Windows that raises rather than degrades. A suite that can be killed by its
+    # own output is not a suite.
+    #
+    # The guard is inlined in every entry point rather than shared, because
+    # ui/build_ui_data.py documents `python ui/build_ui_data.py` as an
+    # invocation and under that form the repository root is not on sys.path — a
+    # helper module would be unimportable for exactly the file that found the
+    # defect.
+    #
+    # THERE IS NO LIST HERE, and that is the point. A hand-written enumeration of
+    # entry points was wrong four times in one afternoon: 7, then 20, then 22,
+    # then 43. Twice from typing it out, and once because it was verified against
+    # a partial copy of the repository rather than the repository. The rule is
+    # "every file with a __main__", so the rule is what gets asserted. A list
+    # that has to be maintained is a list that will be wrong again.
+    root = Path(__file__).resolve().parent.parent
+    marker = "FINDING 10: this process's own stdout."
+    entry_points = sorted(
+        p for d in ("ui", "eval", "answer", "ingest", "scripts")
+        for p in (root / d).glob("*.py")
+        if "__main__" in p.read_text(encoding="utf-8")
+    )
+    expect(len(entry_points) >= 40,
+           f"{len(entry_points)} entry points found — if this collapsed, the "
+           f"glob stopped matching and the check below passes vacuously")
+    missing = sorted(
+        str(p.relative_to(root)).replace("\\", "/")
+        for p in entry_points
+        if marker not in p.read_text(encoding="utf-8")
+    )
+    expect(not missing,
+           f"GUARD every entry point carries the stdout guard "
+           f"({len(entry_points)} found)"
+           + (f" — missing from {missing}" if missing else ""))
 
 
 def test_the_source_text_can_be_required() -> None:
@@ -895,6 +963,7 @@ def main() -> int:
     test_expected_behaviour_is_declared()
     test_the_stratification_is_computable()
     test_the_gloss_arm_has_teeth()
+    test_every_entry_point_guards_its_stdout()
     test_the_source_text_can_be_required()
     test_a_discriminator_loads_as_one_instrument()
     test_the_real_gold_set_loads()
