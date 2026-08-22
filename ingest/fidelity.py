@@ -19,14 +19,26 @@ import unicodedata
 # ---------------------------------------------------------------------------
 # Manual overrides
 # ---------------------------------------------------------------------------
-# These five are called out in data/seed_corpus/manifest.json under
+# Called out in data/seed_corpus/manifest.json under
 # `follow_up_before_ingestion`: their original_text_excerpt is paraphrased or
 # partial rather than a verbatim transliteration. Fixing them is a separate
 # source-research pass; until then they are flagged, not trusted.
+#
+# THIS LIST MARKS SUSPICION. Nothing in the pipeline ever turned suspicion into
+# a determination, and on 2026-08-22 two of its entries were checked against
+# their sources for the first time and came back opposite ways: eastasia-01-weilue
+# was INVENTED (0 of 3 fragments present in the Sanguozhi text) and
+# eastasia-02-hou-hanshu is GENUINE (34 of 36 characters identical, one
+# traditional/simplified pair and one variant character for the same word). The
+# flag never distinguished them. FINDING 11.
+#
+# eastasia-01-weilue was REMOVED from this list on 2026-08-22 because its
+# original_text_excerpt is now 221 verbatim characters from zh.wikisource
+# 三國志/卷30 and classifies as verbatim_original on its own merits. Leaving it
+# here would have the corpus report a sourced text as paraphrased.
 PARAPHRASED_ORIGINALS: dict[str, str] = {
     "arabia-02-palmyrene-tariff": "manifest: paraphrased, not verbatim CIS II 3913 text",
-    "eastasia-01-weilue": "manifest: paraphrased, not verbatim 魏略 text",
-    "eastasia-02-hou-hanshu": "manifest: paraphrased, not verbatim 後漢書 text",
+    "eastasia-02-hou-hanshu": "manifest: paraphrased, not verbatim 後漢書 text — but VERIFIED genuine 2026-08-22, see original_text_note; the flag is now stale in the other direction",
     "southasia-03-akananuru": "manifest: paraphrased, not verbatim Akanāṉūṟu 149 text",
     "subsaharan-01-ezana-stone": "manifest: paraphrased, not verbatim Ezana Stone text",
 }
@@ -34,7 +46,7 @@ PARAPHRASED_ORIGINALS: dict[str, str] = {
 # Matched against document ids loosely, because ids in the corpus vary in shape.
 PARAPHRASE_ID_HINTS = (
     "palmyrene-tariff",
-    "weilue",
+    # "weilue" removed 2026-08-22: the record now holds verbatim Sanguozhi text.
     "hou-hanshu",
     "akananuru",
     "ezana-stone",
@@ -203,11 +215,22 @@ def classify_original(
     # 3. Original-script text present: the source's own characters.
     if nl >= 0.30:
         if is_flagged_paraphrase(doc_id) or _ELISION_RE.search(text):
-            # The manifest flags these as "paraphrased or partial". Where the
-            # original script is actually present, the wording is the source's
-            # own — it is abridged, not invented. Kept retrieval-eligible, since
-            # excluding them would remove every Chinese text from the corpus and
-            # leave the Part 5 cross-lingual test with nothing for East Asia.
+            # The manifest flags these as "paraphrased or partial".
+            #
+            # THIS COMMENT USED TO SAY "the wording is the source's own — it is
+            # abridged, not invented". That was an assumption, and on 2026-08-22
+            # it was disproved on the first record anyone checked:
+            # eastasia-01-weilue's 52 characters occurred nowhere in the Weilue.
+            # Not abridged. Invented. This branch cannot tell the difference —
+            # it sees non-Latin script and a flag, and neither is evidence about
+            # wording. FINDING 11.
+            #
+            # Still retrieval-eligible, and the reason is unchanged and still
+            # good: excluding flagged records would remove every Chinese text
+            # from the corpus and leave the Part 5 cross-lingual test with
+            # nothing for East Asia. But `partial_verbatim` means "flagged and
+            # unchecked", not "abridged", and the only thing that resolves it is
+            # someone reading the source.
             return "partial_verbatim", primary, True
         return "verbatim_original", primary, True
 
