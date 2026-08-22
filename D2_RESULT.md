@@ -1,22 +1,28 @@
 # D2 — the expected_behaviour schema (2026-08-21)
 
-*Written before the host run. Every number below was measured in a container
-holding a byte-copy of the four source files plus `eval/answer_eval.py`,
-`answer/*.py`, the 24 seed records and all 78 archives — a tree that reproduced
-the host's `71 passed, 0 failed` exactly before any edit was made. **Nothing here
-is a host measurement until the runbook below is run.***
+*Drafted in a container holding a byte-copy of the four source files plus
+`eval/answer_eval.py`, `answer/*.py`, the 24 seed records and all 78 archives —
+a tree that reproduced the host's `71 passed, 0 failed` exactly before any edit
+was made. **Every number below has since been re-measured on the host** and the
+two agree.*
 
 ```
 tree at start   f54c585, clean
+tree at close   9ea1774  D2: every case declares its expected behaviour, and
+                         the loader refuses a default
+
 files changed   eval/goldset.py            CRLF   (unchanged: still CRLF)
                 eval/gold/answer_cases.json  LF
                 eval/test_answer_eval.py     LF
                 scripts/mutate_part8.py      LF
 
-ANSWER          eval.test_answer_eval    71 -> 98   (+27 checks)
-mutations       mutate_part8             11 -> 23   (+12)
-gold cases      6, unchanged in number. All six now carry a label
+ANSWER          eval.test_answer_eval    71 -> 98   GREEN on the host
+mutations       mutate_part8             11 -> 23   all 23 verified on the host
+gold cases      6, unchanged in number. All six now carry a ruled label
 ```
+
+**No suite is red.** Both were run on the host, in that order, with the commit
+between them.
 
 D2 is the schema change and nothing else. **No new question was written**, on
 purpose: a case drafted against a permissive loader is a case nobody can be sure
@@ -122,8 +128,16 @@ doubles the number of times this harness runs. Fixed in the same file:
 - each source is written back with **its own** line ending, detected at start;
 - mixed endings inside one source are refused rather than silently picked.
 
-Verified: `sha256` of both sources identical before and after a full 23-mutation
-run, with goldset.py still CRLF and answer_eval.py still LF.
+Verified twice. In the container, `sha256` of both sources identical before and
+after a full 23-mutation run, with goldset.py still CRLF and answer_eval.py
+still LF. **On the host, `git status --short` after the 23-mutation run named no
+tracked file at all** — only the untracked `commit-d2.txt`. Before D2 that same
+command would have named `eval/answer_eval.py`, rewritten LF → CRLF by a harness
+printing *"sources restored"*.
+
+That second check is the one that matters, because the container and the host
+convert in opposite directions and only one of them is the machine this project
+is worked on.
 
 ## Also fixed: the non-Latin pipe, before D3 meets it
 
@@ -138,8 +152,39 @@ parent   subprocess.run(..., encoding="utf-8", errors="replace")
 child    env PYTHONIOENCODING=utf-8
 ```
 
-Container-verified only. **The failure mode is Windows-specific and is not proven
-fixed until the host run.**
+**Not proven, and deliberately recorded as not proven.** The host run was clean,
+but no case in the gold set currently produces non-Latin *failure detail* — the
+six that exist fail, when they fail, on English content terms. The pipe was
+therefore never asked to carry Greek, Tamil or Chinese during the 23-mutation
+run. The fix is defensive and untested; **D3 is what will test it**, on the first
+mutation run after a case carrying non-Latin script fails.
+
+## The six labels, as committed
+
+Action item #5 says the owner rules on every expected-behaviour label. These six
+went into `9ea1774`:
+
+```
+answerable            aksum-exports        paired_with adulis-exports
+answerable            adulis-exports       paired_with aksum-exports
+answerable            muziris-cargo
+answerable            chinese-da-qin
+refusable_with_gloss  vimose-runes
+correctly_refusable   antikythera-absent
+```
+
+**One of them was contested at drafting time and has since been ruled on
+explicitly.** `vimose-runes` could be read either way: the Elder Futhark
+sequences are only partly deciphered, which argues gloss, but the record does
+carry a `reference_translation`, which argues `answerable` with a hedge
+assertion attached. The label is not cosmetic — gloss says a red line means *a
+machine translation appeared*, answerable says *retrieval broke*.
+
+**RULED: it stands as `refusable_with_gloss`.** The correct output is the source
+plus its published hedged gloss, which is what the Part 6 translation case
+asserts from the other side by passing only when the round trip is refused. It
+also keeps one live example of the gloss arm on disk for D3 to pattern-match
+against, rather than leaving the third value unexercised until D3 writes one.
 
 ## What D2 did NOT do
 
