@@ -52,6 +52,10 @@ Then capture the BEFORE state into a file, so the after-comparison is against a
 record and not a memory:
 
 ```powershell
+# NOT optional, and it is TWO settings, not one. See below.
+$env:PYTHONIOENCODING = "utf-8"
+[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)
+
 docker compose up -d db
 litellm --config gateway/config.yaml --port 4000     # separate window
 
@@ -59,6 +63,37 @@ python -m ingest.run_embed --stats                   > eval\weilue-before.txt
 python -m ui.build_ui_data --verify                 >> eval\weilue-before.txt
 python -m eval.run_ranking_check --with-distractors --collapse --rerank --rerank-tpm 2000000 >> eval\weilue-before.txt
 ```
+
+**The env var is the first line for a reason, and this runbook shipped without
+it.** `build_ui_data.py --verify` prints the quotations behind its `case_only`,
+`moved` and `absent` spans, and those quotations are Greek. To a console that is
+fine. Redirected into a file on Windows, stdout falls back to cp1252 and `print`
+RAISES — `UnicodeEncodeError` at `build_ui_data.py:730`, mid-capture, with the
+before-file half written. Found on 2026-08-21 by running this runbook as written.
+
+**And the env var alone is not enough.** Setting `PYTHONIOENCODING` makes Python
+EMIT utf-8. PowerShell then DECODES that native stdout using
+`[Console]::OutputEncoding`, which defaults to the OEM code page, and re-encodes
+on the way to the file. Run on 2026-08-22 with only the env var set, the capture
+completed and every number in it is correct — and every Greek quotation in it is
+mojibake: `╬ª╬¡╧ü╬╡╧ä╬▒╬╣` where the record has `Φέρεται`. Zero replacement
+characters, so nothing looked wrong. Both ends have to be named, which is the
+same lesson the ranking harness learned at a different boundary and D2 learned
+at a third.
+
+The numbers survive because they are ASCII. If a before-capture was taken with
+only the env var set, it is still fit for the comparison and does NOT need
+re-running — but say so where it is filed, so nobody later reads those quote
+lines as evidence of anything.
+
+That is FINDING 10 and it is bigger than this step: **seven entry points print
+record text with no encoding guard.** Only `scripts/mutate_part8.py` (D2) and
+`scripts/mutate_ranking.py` (Part 7) carry one. The one that matters is
+`eval/run_answer_sweep.py` — Block E is 30 cases x 3 repetitions x 3 days, all
+of it printing answers that quote Greek, Tamil, Chinese, Ge'ez and runic, and
+anyone running a three-day sweep redirects it to a log. It would die on day one,
+on the first non-Latin quotation, after spending real API calls. The code fix is
+scheduled after this corpus change and before Block E.
 
 That ranking run is the expensive one and it is the point of the exercise: the
 two `lzh` queries' ranks BEFORE the change are the only baseline you will get.
