@@ -29,3 +29,9 @@ eval/*_last_run.json
 # built from them (data/gazetteer.json) is the asset and is tracked.
 data/pleiades-*.gz
 _to_delete/
+
+# Commit-message files for `git commit -F`. Scratch by construction: each one is
+# consumed by the commit it describes and its reasoning belongs in the session's
+# result document, not in the repository root. Ignored so `git status --short`
+# reads clean before a corpus change, where "expect: clean" has to mean it.
+commit-*.txt
