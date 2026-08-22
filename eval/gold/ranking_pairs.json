@@ -76,13 +76,13 @@
       "query": "How did Chinese sources describe the Roman empire?",
       "query_lang": "en",
       "expect_doc": "eastasia-01-weilue",
-      "expect_text_contains": "大秦國一號犂靬",
+      "expect_text_contains": "大秦國一號犁靬",
       "expect_lang": "lzh",
       "region": "east_asia",
       "provenance": "archived_answer",
       "source_ref": "eval/answer_runs/ (15 runs)",
       "observed_chunk_id": "eastasia-01-weilue::original::000",
-      "note": "The hero demo for Classical Chinese retrieval. Held back from being more than this: the record's original_text_excerpt is known corrupt against Chen Shou 1975 (PROGRESS.md, Da Qin block §4), so this pair asserts the characters that are on disk, not the characters that ought to be."
+      "note": "The hero demo for Classical Chinese retrieval. Asserts 大秦國一號犁靬, the opening of the verbatim Sanguozhi text now in original_text_excerpt. UNTIL 2026-08-22 THIS PAIR ASSERTED 大秦國一號犂靬 - 犂 not 犁 - and carried a note saying it deliberately asserted 'the characters that are on disk, not the characters that ought to be', because the record's excerpt was known corrupt against Chen Shou 1975 (PROGRESS.md, Da Qin block s4). The excerpt turned out to be not corrupt but invented: none of its three fragments occurs in the source. When it was replaced this assertion matched nothing and the pair silently left the run - pairs 33 -> 31, units 30 -> 29, and every aggregate moved because the DENOMINATOR shrank, not because retrieval changed. The workaround is retired; the assertion now tracks a sourced text."
     },
     {
       "id": "china-describes-rome-houhanshu",
@@ -157,7 +157,7 @@
       "query": "大秦國在安息西，海西之地",
       "query_lang": "lzh",
       "expect_doc": "eastasia-01-weilue",
-      "expect_text_contains": "大秦國一號犂靬",
+      "expect_text_contains": "大秦國一號犁靬",
       "expect_lang": "lzh",
       "region": "east_asia",
       "roles": [
@@ -165,7 +165,7 @@
       ],
       "provenance": "retrieval_probe",
       "source_ref": "retrieval_probes.json: chinese query -> weilue Da Qin",
-      "note": "same_language. Literary Chinese, no word spaces."
+      "note": "same_language. Literary Chinese, no word spaces. Asserts 大秦國一號犁靬 against the verbatim Sanguozhi text. Until 2026-08-22 it asserted the invented form and, when the record was corrected, dropped out of the run taking its whole unit with it - which is why units fell 30 -> 29 while nothing about retrieval had got worse."
     },
     {
       "id": "probe-tamil-akananuru",
