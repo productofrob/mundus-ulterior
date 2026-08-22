@@ -1,6 +1,7 @@
 {
   "note": "Part 8 gold answer cases. Every assertion here is a fact about strings — a substring of the answer, a doc id in the citation rows, a count of quotations that resolved to characters on disk. No judge, no model, nothing that has to be trusted. That is Part 8 decision 2, and it is the same standard Part 7's seven checks hold to.",
   "why_content_and_not_groundedness": "The six grounding checks verify that a claim carries a citation and that quoted text is really in the source cited. They cannot verify that the claim FOLLOWS FROM the passage, so a refusal is trivially grounded and citation hygiene is maximised by saying as little as possible. Four archived answers to the Aksum question refuse; one of them is scored grounded while the corpus contains the answer in English. A case asserting only `grounded` cannot fail any of them. The loader therefore REFUSES to load a case that makes no content assertion.",
+  "expected_behaviour_schema": "Every case declares expected_behaviour and the loader refuses to inherit it from a default (D2, Block D TASK 2). Three values, and they name three different failures rather than three flavours of the same one. answerable: the corpus holds it, so a red line is a retrieval or assembly failure. correctly_refusable: the corpus does not hold it, so a red line means the model invented something. refusable_with_gloss: the corpus holds it but not in a form that can be translated, so a red line means a machine translation appeared - and it arrived attached to a citation, which is the worst output this system can produce. The label must agree with expect_refusal in both directions, because only the assertion is scored: a label that disagrees with it files the case under a behaviour it does not test. A refusable_with_gloss case must additionally name the record whose published gloss the answer has to quote, and declare the hedge in expect_hedge_any.",
   "matching": "Substring matching is case-insensitive and whitespace-normalised (runs of whitespace collapse to one space) — the same tolerances cite.locate_in_text already applies, and for the same reason: a writer fitting a phrase into a sentence changes spacing and case without changing what was said. Matching is NOT punctuation-insensitive, because `tortoise-shell` and `tortoise shell` are different strings a source may or may not use, and the case should say which it will accept rather than have the matcher decide.",
   "baseline": "Expectations below were written against the 16 answers recovered into eval/answer_runs/ (p7-answer-v1, v2 and v3 x 5 questions, plus one extra v3 Aksum row from before the translation fix). `archived_status` records how the archived answers stand against each case at the time of writing. It is an observation, not an expectation — it must never be edited to make a case pass.",
   "cases": [
@@ -8,6 +9,7 @@
       "id": "aksum-exports",
       "question": "What did Rome trade with the Kingdom of Aksum?",
       "why": "The corpus contains the answer in published English. Schoff's translation of Periplus §6 reads 'There are exported from these places ivory, and tortoise-shell and rhinoceros-horn' at reference_translation[3073:3156] of subsaharan_africa/periplus-adulis.json, aligned to the Greek in original::002. Every archived answer refuses anyway, and the last v3 run refuses while stating the opposite of its own printed evidence — 'they detail what Rome exported to Aksum rather than what Rome imported from it' — and is scored grounded for it. This case exists so that answer cannot pass.",
+      "expected_behaviour": "answerable",
       "expect_cited_docs": [
         "africa-03-periplus-adulis"
       ],
@@ -30,6 +32,7 @@
         "The sources retrieved do not answer this question"
       ],
       "expect_min_resolved_quotes": 1,
+      "paired_with": "adulis-exports",
       "archived_status": "FAILS on all four archived answers — but not for the same reason, and the difference matters. v1 (grounded, 2 resolved quotations) quotes the Greek export sentence in full and says 'no English translation is available for the second passage', which was TRUE when it ran: the Adulis translation gap was closed later in Part 7. Its refusal was correct behaviour under the corpus it saw. v3-after-fix (grounded, 0 quotations) refuses with the aligned English present and states the opposite of it. The case scores both FAIL because it is written against today's corpus; separating them needs the corpus state each answer was made against, which the archives do not carry. Do not weaken the case to accommodate v1 — record the corpus version instead.",
       "note": "PAIRED WITH adulis-exports, which asserts the same things about the same documents and differs only in the wording of the question. Read them together or neither means anything: this half is the refusal, that half is the answer, and the discriminator is the difference between them. Still an open defect in floor.json.known_failing_cases; adding the passing half does not close it."
     },
@@ -37,6 +40,7 @@
       "id": "adulis-exports",
       "question": "What was exported from Adulis?",
       "why": "The other half of the Adulis discriminator. Its assertion block is COPIED from aksum-exports, not retyped: same documents, same content terms, same exclusion, same quotation floor. The only thing that differs between the two cases is the wording of the question. aksum-exports has been refused seven consecutive times under four prompts; this wording was answered on 2026-08-12 with two quotations resolving to characters on disk. Until both halves are in the gold set, the founding claim of this phase - that the system refused a question whose answer it was holding, and answered it when the question was reworded against byte-identical evidence - is an anecdote and not a regression test. The identical assertions ARE the deliverable: if they ever drift apart, the pair stops discriminating between two questions and starts discriminating between two tests.",
+      "expected_behaviour": "answerable",
       "expect_cited_docs": [
         "africa-03-periplus-adulis"
       ],
@@ -59,13 +63,15 @@
         "The sources retrieved do not answer this question"
       ],
       "expect_min_resolved_quotes": 1,
-      "note": "PAIRED WITH aksum-exports. Neither case is readable alone and neither may be deleted alone; the pairing is prose here and becomes a loader-enforced field in D2/D3, when every case gains an explicit expected behaviour (this one: ANSWERABLE). Adding this case does NOT close the aksum-exports defect and must never be recorded as closing it - floor.json tracks that as an open defect, not a tolerated one, and a pass here says only that the corpus holds the answer, which was never in doubt. Id note: the ranking gold set carries the same discriminator under eval/gold/ranking_pairs.json, where this half is also called adulis-exports but the other half is called aksum-trade-adulis, not aksum-exports. The ids match on one half only.",
-      "archived_status": "PASSES on the one archived run of this question: 20260812T133627+0000-53afe41c.json, p7-answer-v2r, grounded, refused=false, 2 resolved quotations both from africa-03-periplus-adulis (reference_translation[3073:3155] and [1395:1462], both match=exact), 0 unverified quotes. ONE run under ONE prompt version: an observation, not a stability claim, and it is exactly the kind of single sample Block E exists to stop being read as a distribution."
+      "paired_with": "aksum-exports",
+      "archived_status": "PASSES on the one archived run of this question: 20260812T133627+0000-53afe41c.json, p7-answer-v2r, grounded, refused=false, 2 resolved quotations both from africa-03-periplus-adulis (reference_translation[3073:3155] and [1395:1462], both match=exact), 0 unverified quotes. ONE run under ONE prompt version: an observation, not a stability claim, and it is exactly the kind of single sample Block E exists to stop being read as a distribution.",
+      "note": "PAIRED WITH aksum-exports. Neither case is readable alone and neither may be deleted alone; the pairing is a loader-enforced field as of D2: paired_with is symmetric, the partner must exist, and the two assertion blocks must be identical, so neither half can be deleted or drifted without a load error. Both halves are expected_behaviour ANSWERABLE, and that label is part of the block the loader compares. Adding this case does NOT close the aksum-exports defect and must never be recorded as closing it - floor.json tracks that as an open defect, not a tolerated one, and a pass here says only that the corpus holds the answer, which was never in doubt. Id note: the ranking gold set carries the same discriminator under eval/gold/ranking_pairs.json, where this half is also called adulis-exports but the other half is called aksum-trade-adulis, not aksum-exports. The ids match on one half only."
     },
     {
       "id": "vimose-runes",
       "question": "What do the Vimose runes say?",
       "why": "Case zero. Under p7-answer-v2 this produced three runic sequences with their published hedges intact and seven quotations all resolving to disk; under v1 and v3 it retreats to a sentence and quotes the record's title. All three are 'grounded' or 'not grounded' for reasons that have nothing to do with which one serves a reader. The content assertions separate them mechanically, which is what Part 8 exists to do instead of adjudicating prompt versions by hand.",
+      "expected_behaviour": "refusable_with_gloss",
       "expect_cited_docs": [
         "scandinavia-03-vimose"
       ],
@@ -82,7 +88,9 @@
         ],
         [
           "awgns"
-        ],
+        ]
+      ],
+      "expect_hedge_any": [
         [
           "likely",
           "possibly",
@@ -94,13 +102,14 @@
         "The sources retrieved do not answer this question"
       ],
       "expect_min_resolved_quotes": 3,
-      "note": "The hedge alternatives are required, not decorative. A confident English rendering of a partly undeciphered runic sequence is the worst output this system could produce, because it would arrive attached to a citation. The Part 6 translation case asserts the same thing from the other side, by passing only when the round trip is refused.",
-      "archived_status": "PASSES on v2 (7 resolved quotes, all three sequences, hedges present). FAILS on v1 and v3, both of which refuse and quote the title."
+      "archived_status": "PASSES on v2 (7 resolved quotes, all three sequences, hedges present). FAILS on v1 and v3, both of which refuse and quote the title.",
+      "note": "The hedge alternatives are required, not decorative. A confident English rendering of a partly undeciphered runic sequence is the worst output this system could produce, because it would arrive attached to a citation. The Part 6 translation case asserts the same thing from the other side, by passing only when the round trip is refused. The hedge alternatives moved from expect_answer_contains_any to expect_hedge_any in D2. The assertion is unchanged - the loader merges the group back in and the scorer sees exactly what it saw before - but the hedge is now a declared field the loader can REQUIRE of every refusable_with_gloss case, rather than one alternatives group among several that a later edit could drop without anything noticing."
     },
     {
       "id": "muziris-cargo",
       "question": "What did ships carry from Muziris?",
       "why": "The case where the pipeline already works, kept so a regression is visible. Periplus §56 is the cargo manifest and was added to the corpus in Part 4 precisely because a record titled 'Muziris and the Limyrike coast' that stopped at §54 omitted the passage documenting the trade.",
+      "expected_behaviour": "answerable",
       "expect_cited_docs": [
         "southasia-02-periplus-muziris"
       ],
@@ -132,6 +141,7 @@
       "id": "chinese-da-qin",
       "question": "How did Chinese sources describe the Roman empire?",
       "why": "The mirror of the Aksum case. All three archived answers are scored NOT grounded — an uncited opening sentence, a real catch — while all three contain accurate, well-quoted content drawn from the Weilue and the Hou Hanshu. Aksum shows groundedness passing a useless answer; this shows it failing a useful one. A harness that tracks only the exit code sees neither.",
+      "expected_behaviour": "answerable",
       "expect_cited_docs": [
         "eastasia-01-weilue"
       ],
@@ -156,15 +166,14 @@
         "The sources retrieved do not answer this question"
       ],
       "expect_min_resolved_quotes": 3,
-      "note": "'outer walls of the city made of stone' was recorded in PROGRESS.md across two runs as the corpus's one genuine fabrication. It was not: Hill's translation reads 'The outer walls of the city ARE made of stone' and the model dropped one word while compressing the quotation. Not asserted here — a case should not encode a misquotation, and unverified_quotes already catches it.",
-      "archived_status": "Content PASSES on v1, v2 and v3; all three are scored NOT grounded."
+      "archived_status": "Content PASSES on v1, v2 and v3; all three are scored NOT grounded.",
+      "note": "'outer walls of the city made of stone' was recorded in PROGRESS.md across two runs as the corpus's one genuine fabrication. It was not: Hill's translation reads 'The outer walls of the city ARE made of stone' and the model dropped one word while compressing the quotation. Not asserted here — a case should not encode a misquotation, and unverified_quotes already catches it."
     },
     {
       "id": "antikythera-absent",
       "question": "When was the Antikythera mechanism built?",
       "why": "The control. The corpus genuinely contains nothing about the Antikythera mechanism — it is a Mediterranean find, outside the seven regions — so refusal is the correct answer and must be scored as such. Without this case the harness rewards saying more, which is the mirror of the failure it was built to catch.",
-      "expect_refusal": true,
-      "refusal_is_correct_because": "No seed record concerns the Antikythera mechanism. The corpus covers Roman contact with seven regions beyond the Mediterranean; the mechanism is from a wreck off Greece and is not in scope. A confident date here would be invented, not retrieved.",
+      "expected_behaviour": "correctly_refusable",
       "expect_answer_excludes": [
         "Antikythera mechanism was built",
         "second century BC",
@@ -172,10 +181,12 @@
         "87 BC",
         "150 BC"
       ],
-      "note": "The excluded strings are the dangerous failure, not the merely wrong one: a fabricated date arriving attached to a citation. Across five live runs no answer has produced one.",
-      "archived_status": "PASSES on v1, v2 and v3 — all three refuse and none names a date."
+      "expect_refusal": true,
+      "refusal_is_correct_because": "No seed record concerns the Antikythera mechanism. The corpus covers Roman contact with seven regions beyond the Mediterranean; the mechanism is from a wreck off Greece and is not in scope. A confident date here would be invented, not retrieved.",
+      "archived_status": "PASSES on v1, v2 and v3 — all three refuse and none names a date.",
+      "note": "The excluded strings are the dangerous failure, not the merely wrong one: a fabricated date arriving attached to a citation. Across five live runs no answer has produced one."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",
-  "the_adulis_discriminator": "aksum-exports and adulis-exports are one instrument in two halves. Both assert the same content against the same document; only the question differs. A run in which the first fails and the second passes says the defect is in the question-to-retrieval-to-answer path and not in the corpus. A run in which BOTH fail says the corpus or the pipeline moved, and the discriminator has stopped working - which is a louder result than either case failing alone, and is why they must never be maintained separately."
+  "the_adulis_discriminator": "aksum-exports and adulis-exports are one instrument in two halves. Both assert the same content against the same document; only the question differs. A run in which the first fails and the second passes says the defect is in the question-to-retrieval-to-answer path and not in the corpus. A run in which BOTH fail says the corpus or the pipeline moved, and the discriminator has stopped working - which is a louder result than either case failing alone, and is why they must never be maintained separately. ENFORCED AT LOAD since D2, and no longer only here in prose: paired_with must be symmetric, the partner must exist, and the two assertion blocks must be identical. Deleting one half is now a load error rather than a silent halving of the discriminator, and drift between the two blocks is a load error rather than a pair that has quietly stopped discriminating between two questions and started discriminating between two tests."
 }

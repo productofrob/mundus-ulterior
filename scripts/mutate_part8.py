@@ -14,11 +14,19 @@ Run: python scripts/mutate_part8.py
 
 from __future__ import annotations
 
+import os
 import pathlib
 import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+
+# The child prints failure detail carrying Greek, Tamil and Chinese. Through a
+# pipe on Windows its stdout falls back to cp1252 and `print` raises; the parent
+# decodes with the locale codec and raises in the other direction. Both ends are
+# named because the ranking harness lost a run to exactly this, and this is the
+# harness pair BLOCK_D_START records as never having been checked against it.
+CHILD_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8"}
 GOLDSET = ROOT / "eval" / "goldset.py"
 EVAL = ROOT / "eval" / "answer_eval.py"
 SOURCES = (GOLDSET, EVAL)
@@ -94,6 +102,89 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         "the quotation floor is never scored",
         [("""    if case.expect_min_resolved_quotes:""", """    if False:""")],
     ),
+
+    # ----------------------------------------------------------------------
+    # D2: the expected_behaviour schema. Every clause the loader gained has a
+    # mutation here, and each is pinned by the guard for THAT clause.
+    # ----------------------------------------------------------------------
+    (
+        # TASK 2's whole rule, and the only way it can be lost quietly: not by
+        # deleting the field but by giving it a fallback. Two patches, because
+        # dropping it from _ANSWER_REQUIRED alone raises KeyError, and a
+        # mutation that crashes the suite pins nothing.
+        "a missing expected_behaviour falls back to a default",
+        [("""_ANSWER_REQUIRED = {"id", "question", "why", "expected_behaviour"}""",
+          """_ANSWER_REQUIRED = {"id", "question", "why"}"""),
+         ("""        behaviour = str(raw["expected_behaviour"]).strip()""",
+          """        behaviour = str(raw.get("expected_behaviour", "answerable")).strip()""")],
+    ),
+    (
+        "an unrecognised behaviour label is carried through",
+        [("""        if behaviour not in ANSWER_BEHAVIOURS:""", """        if False:""")],
+    ),
+    (
+        # Clause one of two. Only the assertion is scored, so when the label and
+        # the assertion disagree it is the label that is wrong -- and the label
+        # is what a reader uses to decide what a red line means.
+        "a refusable label need not assert a refusal",
+        [("""        if behaviour == BEHAVIOUR_REFUSABLE and not refusal:""",
+          """        if False:""")],
+    ),
+    (
+        "a refusal may be filed under any label at all",
+        [("""        if refusal and behaviour != BEHAVIOUR_REFUSABLE:""",
+          """        if False:""")],
+    ),
+    (
+        # A refusal contains none of the strings a case excludes, so a case
+        # built from exclusions alone is passed by silence.
+        "a speaking case may be built from exclusions alone",
+        [("""        if speaks and not positive:""", """        if False:""")],
+    ),
+    (
+        "a gloss case need not quote the source it glosses",
+        [("""            if not raw.get("expect_quoted_docs"):
+                raise GoldSetError(""",
+          """            if False:
+                raise GoldSetError(""")],
+    ),
+    (
+        # The hedge is the entire assertion on this arm. Without it a confident
+        # English rendering of a partly undeciphered text passes, and it arrives
+        # attached to a citation.
+        "the hedge requirement is dropped from the gloss arm",
+        [("""            if not hedge:""", """            if False:""")],
+    ),
+    (
+        "a hedge may be declared on a case that is not a gloss case",
+        [("""        elif hedge:""", """        elif False:""")],
+    ),
+    (
+        "a case may pair with itself",
+        [("""        if partner_id == case_id:""", """        if False:""")],
+    ),
+    (
+        # `continue` rather than `if False:`, because falling through to
+        # partner.get() on None crashes the suite instead of failing the guard.
+        "a pairing may name a case that is not in the file",
+        [("""        if partner is None:
+            raise GoldSetError(""",
+          """        if partner is None:
+            continue
+        if False:
+            raise GoldSetError(""")],
+    ),
+    (
+        "a pairing need not be symmetric",
+        [("""        if back != case_id:""", """        if False:""")],
+    ),
+    (
+        # The one the handoff singles out: once the two assertion blocks drift,
+        # the pair stops discriminating between two QUESTIONS and starts
+        # discriminating between two TESTS, while still reading like the first.
+        "two halves of a discriminator may assert different things",
+        [("""        if mine != theirs:""", """        if False:""")],
+    ),
 ]
 
 EXPECTED = [
@@ -119,6 +210,20 @@ EXPECTED = [
     # the second time a mutation has shown a verdict cannot pin a single
     # assertion, and both times the naming check was the one doing the work.
     "the failure names the missing quotation, not the content",
+
+    # D2, in the order above.
+    "GUARD a case with no expected_behaviour is refused",
+    "GUARD an unrecognised expected_behaviour is refused",
+    "GUARD a refusable label with no expect_refusal is refused",
+    "GUARD an expect_refusal filed under another label is refused",
+    "GUARD a speaking case built only from exclusions is refused",
+    "GUARD a gloss case with no quoted document is refused",
+    "GUARD a gloss case with no declared hedge is refused",
+    "GUARD a hedge on a non-gloss case is refused",
+    "GUARD a paired case naming itself is refused",
+    "GUARD a paired case whose partner is absent is refused",
+    "GUARD an asymmetric pairing is refused",
+    "GUARD paired cases whose assertions differ are refused",
 ]
 
 
@@ -130,8 +235,35 @@ def failures_from(output: str) -> set[str]:
     }
 
 
+def _newline_of(raw: bytes) -> str:
+    """The file's own line ending, so a mutation run does not change it.
+
+    SOURCES do not agree: eval/goldset.py is CRLF and eval/answer_eval.py is LF.
+    Writing both with the platform's ending converts one of them on every run,
+    in whichever direction the machine prefers.
+    """
+    crlf = raw.count(b"\r\n")
+    if crlf and raw.count(b"\n") - crlf:
+        raise SystemExit(
+            "a mutation source has MIXED line endings. Resolve that by hand "
+            "before running this harness, which would otherwise pick one."
+        )
+    return "\r\n" if crlf else "\n"
+
+
+def _write(path: pathlib.Path, text: str, newline: str) -> None:
+    path.write_bytes(text.replace("\n", newline).encode("utf-8"))
+
+
 def main() -> int:
-    originals = {f: f.read_text(encoding="utf-8") for f in SOURCES}
+    # Bytes are what gets restored; the normalised text is only for matching
+    # the mutation targets, which are written with \n whatever the file uses.
+    original_bytes = {f: f.read_bytes() for f in SOURCES}
+    newlines = {f: _newline_of(original_bytes[f]) for f in SOURCES}
+    originals = {
+        f: original_bytes[f].decode("utf-8").replace("\r\n", "\n")
+        for f in SOURCES
+    }
     problems: list[str] = []
     try:
         for (label, patches), guard in zip(MUTATIONS, EXPECTED):
@@ -148,11 +280,12 @@ def main() -> int:
                 target = next(f for f in SOURCES if old in edited[f])
                 edited[target] = edited[target].replace(old, new, 1)
             for f in SOURCES:
-                f.write_text(edited[f], encoding="utf-8")
+                _write(f, edited[f], newlines[f])
 
             result = subprocess.run(
                 [sys.executable, "-m", "eval.test_answer_eval"],
                 cwd=ROOT, capture_output=True, text=True,
+                encoding="utf-8", errors="replace", env=CHILD_ENV,
             )
             failed = failures_from(result.stdout)
             if guard in failed:
@@ -171,7 +304,7 @@ def main() -> int:
                 print(f"  MISS {label}")
     finally:
         for f in SOURCES:
-            f.write_text(originals[f], encoding="utf-8")
+            f.write_bytes(original_bytes[f])
 
     # Two different failures, kept apart. Collapsing them is how a real finding
     # spent an afternoon looking like a corrupted working tree: on 2026-08-12
@@ -180,9 +313,13 @@ def main() -> int:
     # answer run with no gold case. Same defect family as Part 4's Voyage rate
     # limit reported as a dead gateway: the check matched too broadly and the
     # message named the wrong cause.
+    # BYTES, not text. The previous version compared read_text() to
+    # read_text(), so a line-ending rewrite passed it as "sources restored" --
+    # which is what this harness was doing to eval/goldset.py on every run, and
+    # what a green mutation run therefore could not be read as ruling out.
     unrestored = [
         f.name for f in SOURCES
-        if f.read_text(encoding="utf-8") != originals[f]
+        if f.read_bytes() != original_bytes[f]
     ]
     if unrestored:
         problems.append(
@@ -193,6 +330,7 @@ def main() -> int:
     check = subprocess.run(
         [sys.executable, "-m", "eval.test_answer_eval"],
         cwd=ROOT, capture_output=True, text=True,
+        encoding="utf-8", errors="replace", env=CHILD_ENV,
     )
     if check.returncode != 0:
         problems.append(
@@ -208,7 +346,8 @@ def main() -> int:
         for problem in problems:
             print(f"  - {problem}")
         return 1
-    print(f"all {len(MUTATIONS)} mutations verified; sources restored")
+    print(f"all {len(MUTATIONS)} mutations verified; "
+          f"sources restored byte for byte")
     return 0
 
 

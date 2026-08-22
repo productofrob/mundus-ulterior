@@ -282,6 +282,19 @@ class AnswerCase:
     id: str
     question: str
     why: str
+    # What this case exists to observe, declared per case and never inherited
+    # from a default. Three behaviours, and they name three different failures:
+    #   answerable            the corpus holds it, so a red line is a retrieval
+    #                         or assembly failure
+    #   correctly_refusable   the corpus does not hold it, so a red line means
+    #                         the model invented something
+    #   refusable_with_gloss  the corpus holds it but not in a form that can be
+    #                         translated, so a red line means a machine
+    #                         translation appeared -- attached to a citation,
+    #                         which is the worst output this system can produce
+    # Without the label a red line says only "this case failed", and those three
+    # are not the same piece of news.
+    expected_behaviour: str
     expect_cited_docs: list[str] = field(default_factory=list)
     expect_cited_chunks: list[str] = field(default_factory=list)
     # Documents from which at least one quotation must resolve to characters on
@@ -297,6 +310,13 @@ class AnswerCase:
     # `[["tortoise-shell", "tortoise shell"]]` accepts either spelling; two
     # separate entries would demand both.
     expect_answer_contains_any: list[list[str]] = field(default_factory=list)
+    # The hedge a refusable_with_gloss case must find in the answer, declared
+    # apart from ordinary content so the loader can REQUIRE it rather than hope
+    # one of the alternatives groups happens to be hedges. It is merged into
+    # expect_answer_contains_any at construction, so the scorer sees one more
+    # alternatives group and nothing about scoring changes. The separation
+    # exists at the only place the rule is enforced, which is load time.
+    expect_hedge_any: list[list[str]] = field(default_factory=list)
     expect_answer_excludes: list[str] = field(default_factory=list)
     expect_min_resolved_quotes: int = 0
     # Recorded, never sufficient. See _has_content_assertion.
@@ -306,17 +326,25 @@ class AnswerCase:
     # claim about the corpus and must be justified in the file, not inherited.
     expect_refusal: bool = False
     refusal_is_correct_because: str = ""
+    # The other half of a discriminator. Symmetric and enforced at load rather
+    # than described in a note: see _check_pairs.
+    paired_with: str = ""
     archived_status: str = ""
     note: str = ""
 
 
-_ANSWER_REQUIRED = {"id", "question", "why"}
+BEHAVIOUR_ANSWERABLE = "answerable"
+BEHAVIOUR_REFUSABLE = "correctly_refusable"
+BEHAVIOUR_GLOSS = "refusable_with_gloss"
+ANSWER_BEHAVIOURS = (BEHAVIOUR_ANSWERABLE, BEHAVIOUR_REFUSABLE, BEHAVIOUR_GLOSS)
+
+_ANSWER_REQUIRED = {"id", "question", "why", "expected_behaviour"}
 _ANSWER_OPTIONAL = {
     "expect_cited_docs", "expect_cited_chunks", "expect_quoted_docs",
     "expect_answer_contains",
-    "expect_answer_contains_any", "expect_answer_excludes",
+    "expect_answer_contains_any", "expect_hedge_any", "expect_answer_excludes",
     "expect_min_resolved_quotes", "expect_grounded", "expect_refusal",
-    "refusal_is_correct_because", "archived_status", "note",
+    "refusal_is_correct_because", "paired_with", "archived_status", "note",
 }
 
 # The assertions that say something about what the answer SAYS, as opposed to
@@ -325,10 +353,39 @@ _ANSWER_OPTIONAL = {
 _CONTENT_KEYS = (
     "expect_answer_contains",
     "expect_answer_contains_any",
+    "expect_hedge_any",
     "expect_answer_excludes",
     "expect_cited_docs",
     "expect_cited_chunks",
     "expect_quoted_docs",
+)
+
+# The assertions that require the answer to SAY something. An exclusion is not
+# among them: a refusal contains none of the strings a case excludes, so a case
+# built from exclusions alone is passed by silence. That is only tolerable when
+# silence is the declared expected behaviour.
+_POSITIVE_KEYS = (
+    "expect_answer_contains",
+    "expect_answer_contains_any",
+    "expect_hedge_any",
+)
+
+# The keys that ARE the test, as written in the file. Two halves of a
+# discriminator must agree on every one of them; id, question, why, note,
+# archived_status and paired_with are deliberately not here, because the
+# QUESTION is the only thing the two halves are allowed to differ on.
+_ASSERTION_KEYS = (
+    "expected_behaviour",
+    "expect_cited_docs",
+    "expect_cited_chunks",
+    "expect_quoted_docs",
+    "expect_answer_contains",
+    "expect_answer_contains_any",
+    "expect_hedge_any",
+    "expect_answer_excludes",
+    "expect_min_resolved_quotes",
+    "expect_grounded",
+    "expect_refusal",
 )
 
 
@@ -336,6 +393,73 @@ def _has_content_assertion(raw: dict) -> bool:
     if any(raw.get(key) for key in _CONTENT_KEYS):
         return True
     return int(raw.get("expect_min_resolved_quotes", 0) or 0) > 0
+
+
+def _assertion_block(raw: dict) -> dict:
+    """The part of a case that IS the test, exactly as written in the file."""
+    return {key: raw[key] for key in _ASSERTION_KEYS if key in raw}
+
+
+def _check_pairs(raws: dict[str, dict], path: Path) -> None:
+    """A discriminator is one instrument in two halves, and it loads as one.
+
+    `aksum-exports` and `adulis-exports` assert the same things about the same
+    document and differ only in the wording of the question. A run in which the
+    first fails and the second passes says the defect is in the
+    question-to-retrieval-to-answer path and not in the corpus. That reading
+    survives only while the two halves stay identical, so both facts are
+    enforced here instead of being described in a note that nothing reads:
+
+    * the partner exists and names this case back, so deleting one half is a
+      load error rather than a silent halving of the discriminator;
+    * the two assertion blocks are the same, so the pair never quietly stops
+      discriminating between two QUESTIONS and starts discriminating between
+      two tests.
+    """
+    for case_id, raw in raws.items():
+        partner_id = str(raw.get("paired_with", "") or "").strip()
+        if not partner_id:
+            continue
+        where = f"{path.name} case {case_id!r}"
+
+        if partner_id == case_id:
+            raise GoldSetError(
+                f"{where}: paired_with names the case itself. A discriminator "
+                f"is two questions against one assertion block; one question "
+                f"discriminates nothing."
+            )
+
+        partner = raws.get(partner_id)
+        if partner is None:
+            raise GoldSetError(
+                f"{where}: paired_with names {partner_id!r}, which is not in "
+                f"this file. Half a discriminator measures nothing and reads "
+                f"exactly like a whole one."
+            )
+
+        back = str(partner.get("paired_with", "") or "").strip()
+        if back != case_id:
+            raise GoldSetError(
+                f"{where}: the pairing is not symmetric - {case_id!r} names "
+                f"{partner_id!r}, which names {back or 'nothing'}. Enforced "
+                f"from both ends, because otherwise deleting the half that "
+                f"does not point back is silent."
+            )
+
+        mine, theirs = _assertion_block(raw), _assertion_block(partner)
+        if mine != theirs:
+            differing = sorted(
+                key for key in set(mine) | set(theirs)
+                if mine.get(key) != theirs.get(key)
+            )
+            raise GoldSetError(
+                f"{where}: the assertion blocks of {case_id!r} and "
+                f"{partner_id!r} differ on {differing}. The pair exists to "
+                f"discriminate between two questions against identical "
+                f"assertions; the moment the assertions differ it discriminates "
+                f"between two tests instead, and its result stops meaning what "
+                f"it is read as meaning."
+            )
 
 
 def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
@@ -354,12 +478,24 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
        cannot answer a question is a claim about the corpus. It gets written
        out in `refusal_is_correct_because`, or it does not get made — the same
        rule `expect_untranslatable` follows, for the same reason.
+
+    3. **`expected_behaviour` is declared per case and never inherited.** It is
+       a required key, so a case that omits it is a load error rather than a
+       case quietly filed under whatever the majority happens to be. The label
+       must also agree with `expect_refusal` in BOTH directions: only the
+       assertion is scored, so a label that disagrees with it files the case
+       under a behaviour it does not test.
+
+    4. **A discriminator loads as one instrument or not at all.** Cases joined
+       by `paired_with` must name each other and must assert the same things.
+       See `_check_pairs`.
     """
     path = path or GOLD_DIR / "answer_cases.json"
     data = _read(path)
 
     cases: list[AnswerCase] = []
     seen: set[str] = set()
+    raws: dict[str, dict] = {}
     for i, raw in enumerate(data.get("cases", [])):
         where = f"{path.name} case[{i}]"
         _check_keys(raw, _ANSWER_REQUIRED, _ANSWER_OPTIONAL, where)
@@ -367,6 +503,7 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
         if raw["id"] in seen:
             raise GoldSetError(f"{where}: duplicate case id {raw['id']!r}")
         seen.add(raw["id"])
+        raws[raw["id"]] = raw
 
         if not str(raw["why"]).strip():
             raise GoldSetError(
@@ -387,16 +524,21 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
         # An empty alternatives list passes vacuously — the silent-weakening
         # failure this gold set exists to prevent, one level deeper than a
         # misspelled key.
-        for j, group in enumerate(raw.get("expect_answer_contains_any", [])):
+        alternatives = [
+            (key, j, group)
+            for key in ("expect_answer_contains_any", "expect_hedge_any")
+            for j, group in enumerate(raw.get(key, []))
+        ]
+        for key, j, group in alternatives:
             if not isinstance(group, list) or not group:
                 raise GoldSetError(
-                    f"{where}: expect_answer_contains_any[{j}] must be a "
+                    f"{where}: {key}[{j}] must be a "
                     f"non-empty list of acceptable wordings. An empty group "
                     f"would be satisfied by any answer at all."
                 )
             if any(not str(item).strip() for item in group):
                 raise GoldSetError(
-                    f"{where}: expect_answer_contains_any[{j}] contains an "
+                    f"{where}: {key}[{j}] contains an "
                     f"empty string, which every answer contains."
                 )
         for key in ("expect_answer_contains", "expect_answer_excludes"):
@@ -427,6 +569,7 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
             contradictory = [
                 key for key in
                 ("expect_answer_contains", "expect_answer_contains_any",
+                 "expect_hedge_any",
                  "expect_cited_chunks", "expect_quoted_docs")
                 if raw.get(key)
             ]
@@ -444,27 +587,95 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
                 f"the file explaining a rule that is not in force."
             )
 
+        behaviour = str(raw["expected_behaviour"]).strip()
+        if behaviour not in ANSWER_BEHAVIOURS:
+            raise GoldSetError(
+                f"{where}: expected_behaviour {behaviour!r} is not one of "
+                f"{list(ANSWER_BEHAVIOURS)}. An unrecognised label would be "
+                f"carried around as a string nothing acts on, which is a case "
+                f"declaring an expectation no part of the harness reads."
+            )
+
+        # Two clauses, written as two on purpose. The first catches a case
+        # labelled refusable that does not assert a refusal; the second catches
+        # a case that asserts a refusal under some other label. Either clause
+        # alone leaves half the contradiction expressible, and only the
+        # assertion is scored - so the label is the half that would be wrong.
+        if behaviour == BEHAVIOUR_REFUSABLE and not refusal:
+            raise GoldSetError(
+                f"{where}: expected_behaviour is {BEHAVIOUR_REFUSABLE!r} but "
+                f"expect_refusal is not true. The label says the corpus cannot "
+                f"answer this and the assertion says nothing of the kind."
+            )
+        if refusal and behaviour != BEHAVIOUR_REFUSABLE:
+            raise GoldSetError(
+                f"{where}: expect_refusal is true but expected_behaviour is "
+                f"{behaviour!r}. A case that passes only when the pipeline "
+                f"declines to answer is a {BEHAVIOUR_REFUSABLE!r} case whatever "
+                f"the label says."
+            )
+
+        positive = any(raw.get(key) for key in _POSITIVE_KEYS) or minimum > 0
+        speaks = not refusal and behaviour != BEHAVIOUR_REFUSABLE
+        if speaks and not positive:
+            raise GoldSetError(
+                f"{where}: expected_behaviour is {behaviour!r}, so the answer "
+                f"is meant to speak - but this case only says what the answer "
+                f"must NOT contain, and a refusal contains none of it. Add one "
+                f"of {list(_POSITIVE_KEYS)}, or expect_min_resolved_quotes > 0."
+            )
+
+        hedge = list(raw.get("expect_hedge_any", []))
+        if behaviour == BEHAVIOUR_GLOSS:
+            if not raw.get("expect_quoted_docs"):
+                raise GoldSetError(
+                    f"{where}: expected_behaviour is {BEHAVIOUR_GLOSS!r}, so "
+                    f"the answer has to show the source's own published gloss. "
+                    f"Name the record it must quote in expect_quoted_docs - "
+                    f"citing a document is a proxy, quoting it is the thing."
+                )
+            if not hedge:
+                raise GoldSetError(
+                    f"{where}: expected_behaviour is {BEHAVIOUR_GLOSS!r} and no "
+                    f"expect_hedge_any is declared. The hedge IS the assertion "
+                    f"here: a confident English rendering of a partly "
+                    f"undeciphered text is the worst output this system can "
+                    f"produce, because it arrives attached to a citation."
+                )
+        elif hedge:
+            raise GoldSetError(
+                f"{where}: expect_hedge_any is set but expected_behaviour is "
+                f"{behaviour!r}. The hedge requirement belongs to "
+                f"{BEHAVIOUR_GLOSS!r}; anywhere else it sits in the file "
+                f"looking like a rule that is in force."
+            )
+
         cases.append(
             AnswerCase(
                 id=raw["id"],
                 question=raw["question"],
                 why=raw["why"],
+                expected_behaviour=behaviour,
                 expect_cited_docs=list(raw.get("expect_cited_docs", [])),
                 expect_cited_chunks=list(raw.get("expect_cited_chunks", [])),
                 expect_quoted_docs=list(raw.get("expect_quoted_docs", [])),
                 expect_answer_contains=list(raw.get("expect_answer_contains", [])),
                 expect_answer_contains_any=[
                     list(group) for group in raw.get("expect_answer_contains_any", [])
-                ],
+                ] + [list(group) for group in hedge],
+                expect_hedge_any=[list(group) for group in hedge],
                 expect_answer_excludes=list(raw.get("expect_answer_excludes", [])),
                 expect_min_resolved_quotes=minimum,
                 expect_grounded=raw.get("expect_grounded"),
                 expect_refusal=refusal,
                 refusal_is_correct_because=raw.get("refusal_is_correct_because", ""),
+                paired_with=str(raw.get("paired_with", "") or "").strip(),
                 archived_status=raw.get("archived_status", ""),
                 note=raw.get("note", ""),
             )
         )
+
+    _check_pairs(raws, path)
 
     if not cases:
         raise GoldSetError(f"{path}: no answer cases defined")

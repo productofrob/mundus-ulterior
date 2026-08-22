@@ -20,7 +20,8 @@ import tempfile
 from pathlib import Path
 
 from eval import answer_eval
-from eval.goldset import GoldSetError, load_answer_cases, load_floor
+from eval.goldset import (ANSWER_BEHAVIOURS, GoldSetError, load_answer_cases,
+                          load_floor)
 
 PASSED = 0
 FAILED = 0
@@ -61,11 +62,54 @@ def expect_rejected(raw_case: dict, label: str, because: str = "") -> None:
         print(f"          {detail}")
 
 
+def expect_set_rejected(raw_cases: list[dict], label: str,
+                        because: str = "") -> None:
+    """Same contract as expect_rejected, for a rule that spans two cases.
+
+    The pairing rules cannot be exercised one case at a time, which is the
+    point of them: a discriminator is refused because of what its OTHER half
+    says, or does not say, or no longer says.
+    """
+    detail = ""
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "answer_cases.json"
+        path.write_text(json.dumps({"cases": raw_cases}), encoding="utf-8")
+        try:
+            load_answer_cases(path)
+            ok, detail = False, "the loader ACCEPTED it"
+        except GoldSetError as exc:
+            ok = because.casefold() in str(exc).casefold() if because else True
+            if not ok:
+                detail = f"rejected, but for another reason: {exc}"
+    expect(ok, label)
+    if detail:
+        print(f"          {detail}")
+
+
+def _discriminator(**b_overrides) -> list[dict]:
+    """Two halves of a discriminator: one assertion block, two questions."""
+    block = {
+        "expected_behaviour": "answerable",
+        "expect_quoted_docs": ["africa-03-periplus-adulis"],
+        "expect_answer_contains": ["ivory"],
+    }
+    a = {"id": "half-a", "question": "the wording that refuses?", "why": "w",
+         "paired_with": "half-b", **block}
+    b = {"id": "half-b", "question": "the wording that answers?", "why": "w",
+         "paired_with": "half-a", **block}
+    b.update(b_overrides)
+    return [a, b]
+
+
 def _valid_case(**overrides) -> dict:
     case = {
         "id": "c1",
         "question": "q?",
         "why": "because",
+        # Required since D2, so every fixture below carries it. A fixture that
+        # omitted it would be refused for the wrong reason, and expect_rejected
+        # matches on the reason.
+        "expected_behaviour": "answerable",
         "expect_answer_contains": ["ivory"],
     }
     case.update(overrides)
@@ -80,12 +124,14 @@ def test_loader_rejects_the_easy_version() -> None:
     # GUARD, and the reason this file exists. A case asserting only that the
     # answer was grounded cannot fail a refusal, and every Aksum answer refuses.
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w", "expect_grounded": True},
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "answerable", "expect_grounded": True},
         "GUARD a case asserting only groundedness is refused",
         because="makes no assertion about what the answer says",
     )
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w"},
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "answerable"},
         "GUARD a case asserting nothing at all is refused",
         because="makes no assertion about what the answer says",
     )
@@ -101,6 +147,7 @@ def test_loader_rejects_the_easy_version() -> None:
         path = Path(tmp) / "answer_cases.json"
         path.write_text(json.dumps({"cases": [
             {"id": "c1", "question": "q?", "why": "w",
+             "expected_behaviour": "answerable",
              "expect_min_resolved_quotes": 2}
         ]}), encoding="utf-8")
         try:
@@ -165,20 +212,23 @@ def test_refusal_must_justify_itself() -> None:
     print("\ndeclaring a question unanswerable is a claim, not a default")
 
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w", "expect_refusal": True,
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "correctly_refusable", "expect_refusal": True,
          "expect_answer_excludes": ["150 BC"]},
         "GUARD expect_refusal with no justification is refused",
         because="refusal_is_correct_because",
     )
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w", "expect_refusal": True,
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "correctly_refusable", "expect_refusal": True,
          "refusal_is_correct_because": "not in corpus",
          "expect_answer_contains": ["ivory"]},
         "GUARD a case cannot demand both a refusal and content",
         because="refuse and speak",
     )
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w", "expect_refusal": True,
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "correctly_refusable", "expect_refusal": True,
          "refusal_is_correct_because": "not in corpus",
          "expect_min_resolved_quotes": 1},
         "GUARD a refusal case cannot demand resolved quotations",
@@ -200,6 +250,24 @@ def test_the_real_gold_set_loads() -> None:
     for wanted in ("aksum-exports", "vimose-runes", "antikythera-absent"):
         expect(wanted in ids, f"{wanted} is present")
 
+    # G4 wants >= 30 cases balanced across the three behaviours. The count is
+    # D3's business; that all three arms exist at all is checked from here on,
+    # so a gold set that grows into one shape is visible while it is happening.
+    behaviours: dict[str, list[str]] = {}
+    for case in cases:
+        expect(case.expected_behaviour in ANSWER_BEHAVIOURS,
+               f"{case.id}: declares {case.expected_behaviour!r}")
+        behaviours.setdefault(case.expected_behaviour, []).append(case.id)
+    for behaviour in ANSWER_BEHAVIOURS:
+        held = behaviours.get(behaviour, [])
+        expect(bool(held),
+               f"the gold set exercises {behaviour} ({len(held)} case(s))")
+
+    by_id = {c.id: c for c in cases}
+    expect(by_id["aksum-exports"].paired_with == "adulis-exports"
+           and by_id["adulis-exports"].paired_with == "aksum-exports",
+           "GUARD the Adulis discriminator is paired from both ends")
+
     # Every case must be able to fail a refusal, or it is not testing the
     # failure mode Part 8 was created to measure. The one exception declares
     # itself and says why.
@@ -216,6 +284,158 @@ def test_the_real_gold_set_loads() -> None:
         )
         expect(can_fail_refusal,
                f"GUARD {case.id}: a refusal cannot satisfy this case")
+
+
+def test_expected_behaviour_is_declared() -> None:
+    print("\nevery case declares what it expects, and nothing infers it")
+
+    # The rule TASK 2 is built around. A default here would silently relabel
+    # every case nobody thought about, and the label is what says whether a red
+    # line means retrieval broke, the model invented something, or a machine
+    # translation appeared attached to a citation.
+    expect_rejected(
+        {"id": "c1", "question": "q?", "why": "w",
+         "expect_answer_contains": ["ivory"]},
+        "GUARD a case with no expected_behaviour is refused",
+        because="expected_behaviour",
+    )
+    expect_rejected(
+        _valid_case(expected_behaviour="probably_fine"),
+        "GUARD an unrecognised expected_behaviour is refused",
+        because="is not one of",
+    )
+
+    # Two clauses, two guards. Only the assertion is scored, so a label that
+    # disagrees with it files the case under a behaviour it does not test.
+    expect_rejected(
+        _valid_case(expected_behaviour="correctly_refusable"),
+        "GUARD a refusable label with no expect_refusal is refused",
+        because="expect_refusal is not true",
+    )
+    expect_rejected(
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "answerable", "expect_refusal": True,
+         "refusal_is_correct_because": "not in corpus",
+         "expect_answer_excludes": ["150 BC"]},
+        "GUARD an expect_refusal filed under another label is refused",
+        because="whatever the label says",
+    )
+
+    # A refusal contains none of the strings a case excludes, so a case built
+    # from exclusions alone is passed by silence.
+    expect_rejected(
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "answerable",
+         "expect_answer_excludes": [
+             "The sources retrieved do not answer this question"]},
+        "GUARD a speaking case built only from exclusions is refused",
+        because="meant to speak",
+    )
+
+
+def test_the_gloss_arm_has_teeth() -> None:
+    print("\nrefusable_with_gloss: show the published gloss, and hedge it")
+
+    expect_rejected(
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "refusable_with_gloss",
+         "expect_answer_contains": ["harja"],
+         "expect_hedge_any": [["likely", "uncertain"]]},
+        "GUARD a gloss case with no quoted document is refused",
+        because="published gloss",
+    )
+    # The hedge is the whole assertion on this arm: a confident English
+    # rendering of a partly undeciphered runic sequence is the worst output
+    # this system can produce, because it arrives attached to a citation.
+    expect_rejected(
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "refusable_with_gloss",
+         "expect_quoted_docs": ["scandinavia-03-vimose"],
+         "expect_answer_contains": ["harja"]},
+        "GUARD a gloss case with no declared hedge is refused",
+        because="hedge IS the assertion",
+    )
+    expect_rejected(
+        _valid_case(expect_hedge_any=[["likely"]]),
+        "GUARD a hedge on a non-gloss case is refused",
+        because="belongs to",
+    )
+    expect_rejected(
+        {"id": "c1", "question": "q?", "why": "w",
+         "expected_behaviour": "refusable_with_gloss",
+         "expect_quoted_docs": ["scandinavia-03-vimose"],
+         "expect_hedge_any": [[]]},
+        "GUARD an empty hedge group is refused like any other",
+        because="non-empty list",
+    )
+
+    # The hedge is merged into the scored alternatives, so declaring it changes
+    # where the rule is enforced and nothing about what is measured.
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "answer_cases.json"
+        path.write_text(json.dumps({"cases": [
+            {"id": "c1", "question": "q?", "why": "w",
+             "expected_behaviour": "refusable_with_gloss",
+             "expect_quoted_docs": ["scandinavia-03-vimose"],
+             "expect_answer_contains_any": [["harja"]],
+             "expect_hedge_any": [["likely", "uncertain"]]}
+        ]}), encoding="utf-8")
+        try:
+            case = load_answer_cases(path)[0]
+            expect(case.expect_answer_contains_any
+                   == [["harja"], ["likely", "uncertain"]],
+                   "the declared hedge is scored as one more alternatives group")
+            expect(case.expect_hedge_any == [["likely", "uncertain"]],
+                   "and is still readable as the hedge it was declared as")
+        except GoldSetError as exc:
+            expect(False, f"a well-formed gloss case should load ({exc})")
+
+
+def test_a_discriminator_loads_as_one_instrument() -> None:
+    print("\nthe pairing is a load-time rule, not a note")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "answer_cases.json"
+        path.write_text(json.dumps({"cases": _discriminator()}),
+                        encoding="utf-8")
+        try:
+            pair = load_answer_cases(path)
+            expect(len(pair) == 2 and pair[0].paired_with == "half-b",
+                   "a symmetric pair with identical assertions loads")
+        except GoldSetError as exc:
+            expect(False, f"a well-formed pair should load ({exc})")
+
+    expect_set_rejected(
+        [dict(_discriminator()[0], paired_with="half-a")],
+        "GUARD a paired case naming itself is refused",
+        because="names the case itself",
+    )
+    # Deleting one half is the failure this replaces prose with: half a
+    # discriminator measures nothing and reads exactly like a whole one.
+    expect_set_rejected(
+        [_discriminator()[0]],
+        "GUARD a paired case whose partner is absent is refused",
+        because="which is not in",
+    )
+    expect_set_rejected(
+        _discriminator(paired_with=""),
+        "GUARD an asymmetric pairing is refused",
+        because="not symmetric",
+    )
+    # The one the handoff singles out: if the two blocks drift the pair stops
+    # discriminating between two questions and starts discriminating between
+    # two tests.
+    expect_set_rejected(
+        _discriminator(expect_answer_contains=["ivory", "rhinoceros"]),
+        "GUARD paired cases whose assertions differ are refused",
+        because="differ on",
+    )
+    expect_set_rejected(
+        _discriminator(expected_behaviour="refusable_with_gloss",
+                       expect_hedge_any=[["likely"]]),
+        "GUARD a pair relabelled on one side only is refused",
+        because="differ on",
+    )
 
 
 def test_matching_tolerances() -> None:
@@ -570,6 +790,9 @@ def main() -> int:
     test_loader_rejects_the_easy_version()
     test_loader_rejects_vacuous_assertions()
     test_refusal_must_justify_itself()
+    test_expected_behaviour_is_declared()
+    test_the_gloss_arm_has_teeth()
+    test_a_discriminator_loads_as_one_instrument()
     test_the_real_gold_set_loads()
     test_matching_tolerances()
     test_the_aksum_answer_fails()
