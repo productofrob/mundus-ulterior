@@ -241,6 +241,31 @@ def score_payload(case: AnswerCase, payload: dict, source: str = "") -> CaseResu
             if doc_id not in quoted_docs else "",
         ))
 
+    # FINDING 13, 2026-08-22. The check above passes on a quotation from EITHER
+    # of a record's chunks. Across 16 archived runs of chinese-da-qin, 45 of 45
+    # resolved spans came from reference_translation — while the Chinese chunk
+    # was [S1], top of the block, at similarity 0.576. Prompt rule 3 permits the
+    # SOURCE TEXT or the ENGLISH and requires neither, so the English wins every
+    # time and nothing in the gold set could ever say otherwise.
+    #
+    # The span carries its own doc_id in both the archived and the live shape;
+    # the marker map is kept as a fallback because Part 8 has already been caught
+    # once assuming a key only the archives carry.
+    quoted_from_original = {
+        span.get("doc_id") or doc_by_marker.get(span.get("marker"))
+        for span in (payload.get("grounding") or {}).get("quote_spans") or []
+        if span.get("abs_start") is not None
+        and span.get("source_field") == "original_text_excerpt"
+    }
+    for doc_id in case.expect_quoted_from_original:
+        add(Assertion(
+            f"quotes {doc_id} in its own language, not only in translation",
+            doc_id in quoted_from_original,
+            f"resolved quotations came from: "
+            f"{sorted(d for d in quoted_from_original if d) or 'no source-text field'}"
+            if doc_id not in quoted_from_original else "",
+        ))
+
     if case.expect_min_resolved_quotes:
         add(Assertion(
             f"resolves at least {case.expect_min_resolved_quotes} quotation(s) "

@@ -954,6 +954,39 @@
       ],
       "expect_min_resolved_quotes": 1,
       "note": "The record hedges twice in its own words - 'holding stick or sceptre' and 'holding branch (?) or stick' - and neither hedge is required, because under ruling 28 an uncertain identification of a depicted object is ordinary content and this case already asserts enough content without it. Recorded so the omission reads as a decision. 'wheat-stalks' is required as an exact substring with its hyphen: it is the record's spelling, it is the detail that identifies THIS coin rather than Aksumite gold in general, and matching is not punctuation-insensitive."
+    },
+    {
+      "id": "weilue-chinese-quotation",
+      "question": "In the Weilüe's own Classical Chinese, how is Da Qin described?",
+      "why": "FINDING 13, made into a standing detector instead of a paragraph. Across 16 archived runs of chinese-da-qin, 45 of 45 resolved quotations came from reference_translation and none from original_text_excerpt — while the Chinese chunk was [S1], top of the evidence block, at similarity 0.576. Retrieval was never the obstacle. Prompt rule 3 permits a quotation from 'the SOURCE TEXT or the ENGLISH' and requires neither, so the English wins every time, and until expect_quoted_from_original existed no case in the gold set could say otherwise. The question names Classical Chinese outright, which gives the pipeline every chance: if it still answers in English quotations only, the defect is not that the model misread the question.",
+      "expected_behaviour": "answerable",
+      "region": "East Asia",
+      "expect_cited_docs": [
+        "eastasia-01-weilue"
+      ],
+      "expect_quoted_docs": [
+        "eastasia-01-weilue"
+      ],
+      "expect_quoted_from_original": [
+        "eastasia-01-weilue"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "大秦"
+        ],
+        [
+          "四百餘",
+          "四百余",
+          "以石爲城郭",
+          "犁靬"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "EXPECTED TO FAIL, and recorded as expected before it was ever run. No archived answer has quoted this record's Chinese; the count is 45 of 45 from the English across 16 runs. It is a deliberate known failure in the shape of aksum-exports: tracked in floor.json.known_failing_cases as an OPEN DEFECT, never as a tolerated one, and deliberately kept out of required_cases so that a floor pass can never be read as 'the system quotes source texts'.",
+      "note": "The question is deliberately NOT 'How did Chinese sources describe the Roman empire?'. That is chinese-da-qin's question, and match_case returns the FIRST case whose question matches — a second case sharing it would be silently shadowed and would never score against an archive at all. Two cases, two questions, one record, and the difference between them is the difference between quoting a source and quoting its translation."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

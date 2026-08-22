@@ -305,6 +305,13 @@ class AnswerCase:
     # term from India and China, cite the Aksum record once for something else,
     # and pass. Citing a document is a proxy; quoting it is the thing.
     expect_quoted_docs: list[str] = field(default_factory=list)
+    # Documents from which a quotation must resolve into ORIGINAL_TEXT_EXCERPT
+    # specifically — the record's own language, not its published English.
+    # expect_quoted_docs cannot express this: it is satisfied by either chunk,
+    # and FINDING 13 is that the English is always the one chosen. Prompt rule 3
+    # permits either and nothing requires the source text, so a case that wants
+    # the source text has to say so.
+    expect_quoted_from_original: list[str] = field(default_factory=list)
     expect_answer_contains: list[str] = field(default_factory=list)
     # Each inner list is a set of acceptable wordings, one of which must appear.
     # `[["tortoise-shell", "tortoise shell"]]` accepts either spelling; two
@@ -362,6 +369,7 @@ ANSWER_BEHAVIOURS = (BEHAVIOUR_ANSWERABLE, BEHAVIOUR_REFUSABLE, BEHAVIOUR_GLOSS)
 _ANSWER_REQUIRED = {"id", "question", "why", "expected_behaviour"}
 _ANSWER_OPTIONAL = {
     "expect_cited_docs", "expect_cited_chunks", "expect_quoted_docs",
+    "expect_quoted_from_original",
     "expect_answer_contains",
     "expect_answer_contains_any", "expect_hedge_any", "expect_answer_excludes",
     "expect_min_resolved_quotes", "expect_grounded", "expect_refusal",
@@ -373,6 +381,7 @@ _ANSWER_OPTIONAL = {
 # whether it was tidy about citing. A case built only from the latter cannot
 # fail a refusal, and a refusal is trivially grounded.
 _CONTENT_KEYS = (
+    "expect_quoted_from_original",
     "expect_answer_contains",
     "expect_answer_contains_any",
     "expect_hedge_any",
@@ -401,6 +410,7 @@ _ASSERTION_KEYS = (
     "expect_cited_docs",
     "expect_cited_chunks",
     "expect_quoted_docs",
+    "expect_quoted_from_original",
     "expect_answer_contains",
     "expect_answer_contains_any",
     "expect_hedge_any",
@@ -592,7 +602,8 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
                 key for key in
                 ("expect_answer_contains", "expect_answer_contains_any",
                  "expect_hedge_any",
-                 "expect_cited_chunks", "expect_quoted_docs")
+                 "expect_cited_chunks", "expect_quoted_docs",
+                 "expect_quoted_from_original")
                 if raw.get(key)
             ]
             if contradictory or minimum > 0:
@@ -703,6 +714,8 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
                 expect_cited_docs=list(raw.get("expect_cited_docs", [])),
                 expect_cited_chunks=list(raw.get("expect_cited_chunks", [])),
                 expect_quoted_docs=list(raw.get("expect_quoted_docs", [])),
+                expect_quoted_from_original=list(
+                    raw.get("expect_quoted_from_original", [])),
                 expect_answer_contains=list(raw.get("expect_answer_contains", [])),
                 expect_answer_contains_any=[
                     list(group) for group in raw.get("expect_answer_contains_any", [])

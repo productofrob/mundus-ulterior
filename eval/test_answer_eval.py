@@ -408,6 +408,55 @@ def test_the_gloss_arm_has_teeth() -> None:
             expect(False, f"a well-formed gloss case should load ({exc})")
 
 
+def test_the_source_text_can_be_required() -> None:
+    print("\nFINDING 13: quoting a record and quoting its LANGUAGE are two claims")
+
+    payload = _payload(
+        "The Weilue says Da Qin has more than four hundred cities. [S1]",
+        grounded=True,
+    )
+    payload["passages"] = [{"marker": "S1", "doc_id": "eastasia-01-weilue"}]
+
+    def spans(*fields):
+        return [{"marker": "S1", "doc_id": "eastasia-01-weilue",
+                 "abs_start": 0, "abs_end": 10, "source_field": f} for f in fields]
+
+    case = {
+        "id": "c1", "question": "q?", "why": "w",
+        "expected_behaviour": "answerable", "region": "East Asia",
+        "expect_quoted_docs": ["eastasia-01-weilue"],
+        "expect_quoted_from_original": ["eastasia-01-weilue"],
+        "expect_answer_contains": ["four hundred"],
+    }
+
+    def score(fields):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "answer_cases.json"
+            path.write_text(json.dumps({"cases": [case]}), encoding="utf-8")
+            loaded = load_answer_cases(path)[0]
+        payload["grounding"]["quote_spans"] = spans(*fields)
+        return answer_eval.score_payload(loaded, payload)
+
+    # The exact shape of every archived Weilue answer: the record IS quoted, and
+    # the quotation is the English. expect_quoted_docs passes; this must not.
+    only_english = score(["reference_translation"])
+    expect(not only_english.ok,
+           "GUARD quoting only the translation FAILS a source-text case")
+    named = " ".join(a.detail for a in only_english.assertions if not a.ok)
+    expect("no source-text field" in named,
+           "the failure names WHY: no quotation came from the source text")
+    expect(any(a.ok and "quotes eastasia-01-weilue, resolving" in a.label
+               for a in only_english.assertions),
+           "GUARD the weaker expect_quoted_docs still passes on the same payload "
+           "— which is the whole reason the new key exists")
+
+    expect(score(["original_text_excerpt"]).ok,
+           "a quotation from the source text satisfies it")
+    expect(score(["reference_translation", "original_text_excerpt"]).ok,
+           "quoting both satisfies it — the case asks for the source text, not "
+           "for the absence of English")
+
+
 def test_a_discriminator_loads_as_one_instrument() -> None:
     print("\nthe pairing is a load-time rule, not a note")
 
@@ -846,6 +895,7 @@ def main() -> int:
     test_expected_behaviour_is_declared()
     test_the_stratification_is_computable()
     test_the_gloss_arm_has_teeth()
+    test_the_source_text_can_be_required()
     test_a_discriminator_loads_as_one_instrument()
     test_the_real_gold_set_loads()
     test_matching_tolerances()

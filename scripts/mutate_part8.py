@@ -202,6 +202,23 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("""        if not region and not (raw.get("expect_cited_docs")""",
           """        if False and not (raw.get("expect_cited_docs")""")],
     ),
+    (
+        # FINDING 13. Without this the source-text assertion is never scored and
+        # a case demanding the Chinese passes on the English -- which is the
+        # exact hole the key was added to close.
+        "the source-text assertion is never scored",
+        [("""    for doc_id in case.expect_quoted_from_original:""",
+          """    for doc_id in []:""")],
+    ),
+    (
+        # The field is what distinguishes the two chunks. Ignoring it makes the
+        # new key a synonym for expect_quoted_docs.
+        "the source-text assertion accepts a quotation from any field",
+        [("""        and span.get("source_field") == "original_text_excerpt"
+    }""",
+          """        and span.get("source_field") is not None
+    }""")],
+    ),
 ]
 
 EXPECTED = [
@@ -245,6 +262,10 @@ EXPECTED = [
     # D3, in the order above.
     "GUARD an unrecognised region is refused",
     "GUARD a case naming no document must declare a region",
+
+    # FINDING 13.
+    "GUARD quoting only the translation FAILS a source-text case",
+    "GUARD quoting only the translation FAILS a source-text case",
 ]
 
 
