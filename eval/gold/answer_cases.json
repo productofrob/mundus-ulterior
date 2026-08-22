@@ -10,6 +10,7 @@
       "question": "What did Rome trade with the Kingdom of Aksum?",
       "why": "The corpus contains the answer in published English. Schoff's translation of Periplus §6 reads 'There are exported from these places ivory, and tortoise-shell and rhinoceros-horn' at reference_translation[3073:3156] of subsaharan_africa/periplus-adulis.json, aligned to the Greek in original::002. Every archived answer refuses anyway, and the last v3 run refuses while stating the opposite of its own printed evidence — 'they detail what Rome exported to Aksum rather than what Rome imported from it' — and is scored grounded for it. This case exists so that answer cannot pass.",
       "expected_behaviour": "answerable",
+      "region": "Sub-Saharan Africa",
       "expect_cited_docs": [
         "africa-03-periplus-adulis"
       ],
@@ -41,6 +42,7 @@
       "question": "What was exported from Adulis?",
       "why": "The other half of the Adulis discriminator. Its assertion block is COPIED from aksum-exports, not retyped: same documents, same content terms, same exclusion, same quotation floor. The only thing that differs between the two cases is the wording of the question. aksum-exports has been refused seven consecutive times under four prompts; this wording was answered on 2026-08-12 with two quotations resolving to characters on disk. Until both halves are in the gold set, the founding claim of this phase - that the system refused a question whose answer it was holding, and answered it when the question was reworded against byte-identical evidence - is an anecdote and not a regression test. The identical assertions ARE the deliverable: if they ever drift apart, the pair stops discriminating between two questions and starts discriminating between two tests.",
       "expected_behaviour": "answerable",
+      "region": "Sub-Saharan Africa",
       "expect_cited_docs": [
         "africa-03-periplus-adulis"
       ],
@@ -72,6 +74,7 @@
       "question": "What do the Vimose runes say?",
       "why": "Case zero. Under p7-answer-v2 this produced three runic sequences with their published hedges intact and seven quotations all resolving to disk; under v1 and v3 it retreats to a sentence and quotes the record's title. All three are 'grounded' or 'not grounded' for reasons that have nothing to do with which one serves a reader. The content assertions separate them mechanically, which is what Part 8 exists to do instead of adjudicating prompt versions by hand.",
       "expected_behaviour": "refusable_with_gloss",
+      "region": "Scandinavia",
       "expect_cited_docs": [
         "scandinavia-03-vimose"
       ],
@@ -110,6 +113,7 @@
       "question": "What did ships carry from Muziris?",
       "why": "The case where the pipeline already works, kept so a regression is visible. Periplus §56 is the cargo manifest and was added to the corpus in Part 4 precisely because a record titled 'Muziris and the Limyrike coast' that stopped at §54 omitted the passage documenting the trade.",
       "expected_behaviour": "answerable",
+      "region": "South Asia",
       "expect_cited_docs": [
         "southasia-02-periplus-muziris"
       ],
@@ -142,6 +146,7 @@
       "question": "How did Chinese sources describe the Roman empire?",
       "why": "The mirror of the Aksum case. All three archived answers are scored NOT grounded — an uncited opening sentence, a real catch — while all three contain accurate, well-quoted content drawn from the Weilue and the Hou Hanshu. Aksum shows groundedness passing a useless answer; this shows it failing a useful one. A harness that tracks only the exit code sees neither.",
       "expected_behaviour": "answerable",
+      "region": "East Asia",
       "expect_cited_docs": [
         "eastasia-01-weilue"
       ],
@@ -174,6 +179,7 @@
       "question": "When was the Antikythera mechanism built?",
       "why": "The control. The corpus genuinely contains nothing about the Antikythera mechanism — it is a Mediterranean find, outside the seven regions — so refusal is the correct answer and must be scored as such. Without this case the harness rewards saying more, which is the mirror of the failure it was built to catch.",
       "expected_behaviour": "correctly_refusable",
+      "region": "outside",
       "expect_answer_excludes": [
         "Antikythera mechanism was built",
         "second century BC",
@@ -185,6 +191,769 @@
       "refusal_is_correct_because": "No seed record concerns the Antikythera mechanism. The corpus covers Roman contact with seven regions beyond the Mediterranean; the mechanism is from a wreck off Greece and is not in scope. A confident date here would be invented, not retrieved.",
       "archived_status": "PASSES on v1, v2 and v3 — all three refuse and none names a date.",
       "note": "The excluded strings are the dangerous failure, not the merely wrong one: a fabricated date arriving attached to a citation. Across five live runs no answer has produced one."
+    },
+    {
+      "id": "cana-frankincense-exports",
+      "question": "What was exported from Cana?",
+      "why": "Arabia's export case, and deliberately the same SHAPE as adulis-exports and muziris-cargo: a Periplus section naming a port and listing what left it. Schoff's §28 reads 'And there are exported from this place, native produce, frankincense and aloes' at reference_translation, aligned to the Greek 'Ἐξάγεται δὲ ἐξ αὐτῆς ἐντόπια μὲν φορτία, λίβανος καὶ ἀλόη' in the original. Three ports, three regions, one question form: if Adulis and Muziris pass and Cana fails, the difference is the record and not the question, which is a thing no single-region case can tell you.",
+      "expected_behaviour": "answerable",
+      "region": "Arabia",
+      "expect_cited_docs": [
+        "arabia-01-periplus"
+      ],
+      "expect_quoted_docs": [
+        "arabia-01-periplus"
+      ],
+      "expect_answer_contains": [
+        "frankincense"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "aloes",
+          "aloe"
+        ],
+        [
+          "Cana",
+          "Kane",
+          "Qana"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "The port has three spellings in circulation - Cana in Schoff, Kane in most modern scholarship, Qana in the Arabic - and the case accepts all three because the question uses one of them and an answer may reasonably use another. It does NOT accept a fourth: matching is not punctuation-insensitive and this case says which spellings it takes rather than letting the matcher decide."
+    },
+    {
+      "id": "raqosh-epitaph",
+      "question": "What does the Nabataean epitaph of Raqōš say?",
+      "why": "Arabia's gloss case, and the only one in the corpus where the contested reading is stated IN a retrieval-eligible chunk rather than in notes the model never sees. arabia-03-jsnab17's original_text_excerpt carries the transliteration and then the words 'see Wikipedia article for the two competing scholarly readings'; its reference_translation opens 'As for this grave/This is a grave' - the slash IS the disagreement, preserved by whoever curated the record. An answer that picks one reading and renders it confidently has done the thing this arm exists to catch, and it will have done it attached to a citation.",
+      "expected_behaviour": "refusable_with_gloss",
+      "region": "Arabia",
+      "expect_cited_docs": [
+        "arabia-03-jsnab17"
+      ],
+      "expect_quoted_docs": [
+        "arabia-03-jsnab17"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Raqash",
+          "Raqōš",
+          "Rqwš"
+        ],
+        [
+          "curse",
+          "cursed"
+        ]
+      ],
+      "expect_hedge_any": [
+        [
+          "competing",
+          "two readings",
+          "disputed",
+          "contested",
+          "uncertain",
+          "alternative reading"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "The hedge is supportable from the evidence block and was checked to be: 'two competing scholarly readings' is inside the eligible original chunk, so an answer CAN know the reading is contested without being told. A hedge assertion the corpus cannot support is a case that can never pass, and this one was nearly written that way - the notes field says the same thing and the notes field is not chunked."
+    },
+    {
+      "id": "jabal-dabub-basmala",
+      "question": "What does the Jabal Dabub inscription say?",
+      "why": "The corpus's only Sabaic record with real text on both sides, and the cross-lingual pair furthest from Greek and Latin: a Late Sabaic graffito in transliteration ('bs1mlh | rhmn | rhmn | rb | s1mwt') against Al-Jallad's published English. Deliberately ANSWERABLE and not gloss, because the distinction is the point of the two labels: this reading is published, attributed and not in dispute, where raqosh-epitaph's is disputed in its own chunk. Two South Arabian inscriptions, two labels, and the difference is a fact about the records rather than about how hard the script looks.",
+      "expected_behaviour": "answerable",
+      "region": "Arabia",
+      "expect_cited_docs": [
+        "arabia-04-jabal-dabub"
+      ],
+      "expect_quoted_docs": [
+        "arabia-04-jabal-dabub"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Rahman",
+          "Rahmanan",
+          "Raḥmān",
+          "rhmn"
+        ],
+        [
+          "mercy",
+          "have mercy"
+        ],
+        [
+          "heavens",
+          "heaven"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "'favour' is NOT among the accepted wordings and 'favor' is, because Al-Jallad's translation on disk spells it 'favor' and this case asserts what an answer says rather than how it spells. It is left out on purpose as the smallest available reminder that these assertions are facts about strings: adding the British spelling is a one-word edit and should be made deliberately if an answer ever earns it."
+    },
+    {
+      "id": "palmyrene-tariff-rates",
+      "question": "What rates did the Palmyrene tax tariff set?",
+      "why": "A refusal of a DIFFERENT SPECIES from antikythera-absent, and the corpus cannot currently produce another like it. The Antikythera mechanism is simply not in the corpus. The Palmyrene Tax Tariff IS - arabia-02-palmyrene-tariff is one of the 24 seed records - and it has ZERO retrieval-eligible chunks: its original_text_excerpt is a bracketed editorial pointer classified `pointer` and marked ineligible, and its reference_translation is the empty string, so no translation chunk is emitted at all. The document is in the corpus and no part of its text is reachable. A model that answers this question has answered from a title.",
+      "expected_behaviour": "correctly_refusable",
+      "region": "Arabia",
+      "expect_answer_excludes": [
+        "denarii per",
+        "the rate was",
+        "a quarter-tax",
+        "twenty-five percent",
+        "per camel-load"
+      ],
+      "expect_refusal": true,
+      "refusal_is_correct_because": "arabia-02-palmyrene-tariff contributes no retrieval-eligible text. Verified by running ingest.fidelity over the record: original_text_excerpt classifies as `pointer`, eligible=False - it reads '[Full Aramaic and Greek text spans ~400 lines across four inscribed faces ... not reproduced here]' - and reference_translation is empty, which build_chunks warns about and emits no chunk for. It is one of the two ineligible chunks in the corpus's 59/57 split. The record's `notes` field describes what the tariff regulated, and `notes` is not chunked, so it is not in evidence either. Nothing about the rates is reachable, and the correct answer is to say so.",
+      "note": "THIS CASE HAS AN EXPIRY CONDITION, which antikythera-absent does not. manifest.json lists arabia-02-palmyrene-tariff under `follow_up_before_ingestion`; the day someone does the transcription pass, the record gains eligible chunks and this case becomes wrong rather than merely stale. It is a tripwire on that follow-up as much as a gold case, and whoever does the pass must rewrite it rather than delete it - a corpus record with no reachable text is a state worth being able to detect again."
+    },
+    {
+      "id": "skz-titulature",
+      "question": "What titles does Shapur I claim in the Res Gestae Divi Saporis?",
+      "why": "Persia's cross-lingual answerable case, and the corpus's deepest one: persia-01-skz carries §1 in Parthian transliteration ('ANE mzdyzn ALHA shypwhr MLKYN MLKA'), the same §1 in scholarly transcription ('Az, mazdezn bag Sabuhr, sahan sah Eran ud Aneran'), and Nabel's English of the Parthian - three renderings of one sentence in one record. The titulature is the part of the inscription that is fully present on disk, which is why the case asks about it and not about the campaigns.",
+      "expected_behaviour": "answerable",
+      "region": "Persia",
+      "expect_cited_docs": [
+        "persia-01-skz"
+      ],
+      "expect_quoted_docs": [
+        "persia-01-skz"
+      ],
+      "expect_answer_contains": [
+        "king of kings"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Iran and Not-Iran",
+          "Not-Iran",
+          "Eran ud Aneran",
+          "Ērān ud Anērān"
+        ],
+        [
+          "Ardashir",
+          "Ardašīr"
+        ],
+        [
+          "Mazda-worshipping",
+          "Mazda",
+          "mazdezn",
+          "mazdēzn"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "PAIRED IN SPIRIT, NOT IN THE FILE, with skz-roman-emperors: same record, one question it can answer and one it cannot. They are not joined by paired_with because that field asserts identical assertion blocks and these two differ on everything, which is the point of them. The Adulis discriminator varies the QUESTION against one assertion block; this varies what the record actually contains."
+    },
+    {
+      "id": "skz-roman-emperors",
+      "question": "Which Roman emperors does the Res Gestae Divi Saporis name?",
+      "why": "A third species of correct refusal, and the one a model is most likely to get wrong. antikythera-absent is not in the corpus. palmyrene-tariff-rates is in the corpus with no reachable text. This record IS in the corpus, IS reachable, and its excerpt does not contain what its own title and notes advertise: manifest and record notes both say the SKZ 'directly documents Roman emperors (Gordian III, Philip the Arab, Valerian)', and the excerpt on disk is §1 and §20 only. Neither chunked field contains 'Valerian', 'Gordian', 'Philip', 'emperor', 'Rome' or 'Roman' - checked, all six. A model will retrieve this record with high confidence, see a Sasanian royal res gestae, and be able to supply Valerian from memory. That is the fabrication-attached-to-a-citation failure in its purest available form.",
+      "expected_behaviour": "correctly_refusable",
+      "region": "Persia",
+      "expect_answer_excludes": [
+        "Valerian",
+        "Gordian",
+        "Philip the Arab"
+      ],
+      "expect_refusal": true,
+      "refusal_is_correct_because": "persia-01-skz's original_text_excerpt holds §1 (titulature) and §20 (a list of provinces) and nothing else; its reference_translation holds Nabel's English of those two sections. The sections narrating the campaigns against Gordian III, Philip the Arab and Valerian are not in the excerpt. The claim that the inscription documents them is true of the inscription and false of the corpus's copy of it, and it lives in `notes`, which build_chunks does not chunk. §20's province list - Thrace, Bithynia, Cappadocia, Syria - is Roman territory and is the record's real Roman connection, but it names no emperor and does not use the word Roman.",
+      "note": "The three excluded strings are the whole case. They are not wrong about history - the SKZ does name all three - they are wrong about THIS CORPUS, and an answer containing them arrived from the model's own weights while pointing at a citation. That is the distinction the excludes list exists to hold, and it is why this case must never be softened on the grounds that the answer is 'correct'."
+    },
+    {
+      "id": "shapur-drachm-imagery",
+      "question": "What is shown on the silver drachm of Shapur I?",
+      "why": "A coin record, and a source type the gold set did not previously test at all. persia-03-coin has no reference_translation and needs none: it is a find record whose original_text_excerpt IS English, a curator's description. The case checks that the pipeline handles an English-native record with no parallel group without either refusing it as untranslated or inventing a source language for it.",
+      "expected_behaviour": "answerable",
+      "region": "Persia",
+      "expect_cited_docs": [
+        "persia-03-coin"
+      ],
+      "expect_quoted_docs": [
+        "persia-03-coin"
+      ],
+      "expect_answer_contains": [
+        "fire altar"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "attendants",
+          "attendant"
+        ],
+        [
+          "crenellated",
+          "crown"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "'fire altar and two armed attendants' is the reverse type of essentially every Sasanian drachm, so a model could produce this description from its own knowledge and still be right. expect_quoted_docs and the quotation floor are what stop that passing: the answer must carry characters that resolve to this record on disk, not merely say a true thing about Sasanian coinage."
+    },
+    {
+      "id": "sasanian-hunting-plate",
+      "question": "What is depicted on the Sasanian gilded silver hunting plate?",
+      "why": "The second find record, and the one whose ATTRIBUTION is contested while its text is not: the record's date field reads 'reign attribution disputed between Shapur I and Shapur II'. That dispute is deliberately NOT asserted here. The header line carrying it was written by this corpus's editors, and the prompt's rule 3 forbids quoting header lines precisely so an editorial description is not presented as evidence - so an answer can mention the dispute but cannot ground it, and a case requiring it would be requiring an ungroundable sentence.",
+      "expected_behaviour": "answerable",
+      "region": "Persia",
+      "expect_cited_docs": [
+        "persia-02-silver-plate"
+      ],
+      "expect_quoted_docs": [
+        "persia-02-silver-plate"
+      ],
+      "expect_answer_contains": [
+        "deer"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "antlers",
+          "antler"
+        ],
+        [
+          "sword"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "Not labelled refusable_with_gloss, and the reason is the rule batch 1 set: the gloss arm is for a contested READING of a text, not for uncertainty of any other kind. The attribution of this plate is disputed; nothing about its English description is. Stretching the arm to cover attribution would cost the arm its meaning, which is that a red line on it means a machine translation appeared."
+    },
+    {
+      "id": "oc-eo-medallion-legend",
+      "question": "What does the Latin legend on the Oc Eo gold medallion read?",
+      "why": "The clearest gloss case the corpus holds, and the only one where the contested reading is a Roman text rather than a local one. seasia-01-oc-eo-medallion's original_text_excerpt reads 'Legend on the gold sheet: ANTONINVS AVG PIVS NVRP (or NVAP) XV [slightly corrupted Latin legend]'. Three things are in that one line and all three are retrieval-eligible: the part that is legible, a genuine alternative reading of the part that is not, and a curator's statement that the legend is corrupt. An answer that silently resolves NVRP into a plausible Latin title has produced a reading no scholar published, and it will have done so attached to a citation.",
+      "expected_behaviour": "refusable_with_gloss",
+      "region": "Southeast Asia",
+      "expect_cited_docs": [
+        "seasia-01-oc-eo-medallion"
+      ],
+      "expect_quoted_docs": [
+        "seasia-01-oc-eo-medallion"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "ANTONINVS",
+          "Antoninus"
+        ],
+        [
+          "NVRP",
+          "NVAP"
+        ]
+      ],
+      "expect_hedge_any": [
+        [
+          "corrupted",
+          "corrupt",
+          "blundered",
+          "garbled",
+          "uncertain",
+          "or NVAP",
+          "two readings"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "Note what this case does NOT assert: it does not require the answer to expand AVG or PIVS, and it does not forbid it. Those are legible and standard. The assertion is narrower and is the whole point of the arm - the answer must reproduce the corrupt segment as the record has it and must say that it is corrupt. This is the same shape as vimose-runes and raqosh-epitaph, with the difference that here the untranslatable text is Latin, which makes it the case most likely to tempt a confident expansion."
+    },
+    {
+      "id": "oc-eo-roman-coins",
+      "question": "Were Roman coins found at Oc Eo?",
+      "why": "A case the corpus author designed and left a note asking for. seasia-01's notes read: 'these are imitation pendants, not genuine circulating Roman coinage - an answer that calls them Roman coins found in Vietnam without that caveat would be a groundedness failure worth testing for.' The record's reference_translation carries the caveat in its own words: 'costume jewelry rather than circulating coinage' and 'now understood as locally worn imitations/pendants of Roman coin types'. The question is deliberately phrased the way a reader would ask it, with the false premise built in, because a case that asks the careful version of the question tests nothing.",
+      "expected_behaviour": "answerable",
+      "region": "Southeast Asia",
+      "expect_cited_docs": [
+        "seasia-01-oc-eo-medallion"
+      ],
+      "expect_quoted_docs": [
+        "seasia-01-oc-eo-medallion"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "imitation",
+          "imitating",
+          "imitations"
+        ],
+        [
+          "pendant",
+          "pendants",
+          "jewelry",
+          "jewellery"
+        ],
+        [
+          "Antoninus Pius",
+          "Antoninus"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "ANSWERABLE and not correctly_refusable, although the question contains a false premise. The corpus does answer it - the answer is 'not circulating coinage, imitation pendants' - and refusing would be the wrong behaviour, not the safe one. A question with a false premise that the corpus can correct is a different thing from a question the corpus cannot address, and the two must not collapse into one label or the refusal arm starts rewarding evasion."
+    },
+    {
+      "id": "khao-sam-kaeo-intaglio",
+      "question": "What Roman object was found at Khao Sam Kaeo?",
+      "why": "The corpus's only engraved gem, and a find record with no inscribed text at all - the language_note says so explicitly: 'no inscribed text on the object itself, which is a carved gemstone.' It is here because the gold set otherwise tests only texts and objects that carry texts, and because its description hedges twice in its own words: the figure is 'probably Mars' and the object 'lacks secure stratigraphic context'. Both hedges are retrieval-eligible and one of them is required.",
+      "expected_behaviour": "answerable",
+      "region": "Southeast Asia",
+      "expect_cited_docs": [
+        "seasia-03-khao-sam-kaeo"
+      ],
+      "expect_quoted_docs": [
+        "seasia-03-khao-sam-kaeo"
+      ],
+      "expect_answer_contains": [
+        "intaglio"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "carnelian"
+        ],
+        [
+          "probably",
+          "possibly",
+          "likely",
+          "identified as"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "The uncertainty group is required as ordinary content and NOT as expect_hedge_any, because the loader restricts declared hedges to the gloss arm and this is not a contested reading of a text - there is no text. It is a contested identification of a carved figure. The distinction is the one ruled on for sasanian-hunting-plate, applied a second time so that it is a rule and not a one-off."
+    },
+    {
+      "id": "oc-eo-cattigara",
+      "question": "Was Oc Eo the Cattigara of Ptolemy?",
+      "why": "The second instance of the third refusal species, and it is here because one instance of a species is an anecdote. seasia-02-oc-eo-site is titled 'Oc Eo archaeological site and culture - excavation summary (Funan port, possible Cattigara)', and its notes say the identification 'remains debated - flag as contested when used in answers'. Neither string is reachable: Cattigara, Ptolemy and Funan are all absent from both chunked fields - checked - because the title and the notes are not chunked and the excerpt covers the finds and the 166 CE landing tradition instead. The corpus advertises this identification in metadata and holds no evidence about it.",
+      "expected_behaviour": "correctly_refusable",
+      "region": "Southeast Asia",
+      "expect_answer_excludes": [
+        "Oc Eo was Cattigara",
+        "identified as Cattigara",
+        "Ptolemy's Cattigara"
+      ],
+      "expect_refusal": true,
+      "refusal_is_correct_because": "seasia-02-oc-eo-site's original_text_excerpt covers the finds at the site and the tradition that the Romans first landed near Jiaozhou before travelling on to China in 166; it has no reference_translation. The word Cattigara appears in the record's title and its notes and in neither chunked field, and neither does Ptolemy. build_chunks emits chunks from original_text_excerpt and reference_translation only, so the identification the title advertises is not in evidence and cannot be weighed from the corpus.",
+      "note": "The dangerous failure here is subtler than a fabricated date. The Cattigara identification is genuinely debated in the literature, so a model drawing on its own knowledge could produce a careful, hedged, entirely defensible paragraph - and every sentence of it would be uncited or falsely cited, because the corpus holds nothing on the question. A hedged fabrication is still a fabrication, and this case exists because it is the kind a reader is least likely to catch."
+    },
+    {
+      "id": "hoby-cheirisophos-signature",
+      "question": "Who made the silver cups from the Hoby grave?",
+      "why": "Scandinavia's cross-lingual answerable case, and the corpus's only Greek text that is neither a literary work nor a monumental inscription: a silversmith's signature on an object. scandinavia-01-hoby-treasure's original_text_excerpt reads \"Signature on the silver cups: [XEIPI]SOPHOS EPOIEI ('Cheirisophos made [this]'); engraved owner's name: SILIVS\" in Greek and Latin characters, and its reference_translation names the maker again in English. The record therefore supports the answer twice over, in two scripts, which is what makes a failure here legible: it cannot be a gap in the corpus.",
+      "expected_behaviour": "answerable",
+      "region": "Scandinavia",
+      "expect_cited_docs": [
+        "scandinavia-01-hoby-treasure"
+      ],
+      "expect_quoted_docs": [
+        "scandinavia-01-hoby-treasure"
+      ],
+      "expect_answer_contains": [
+        "Cheirisophos"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "ΣΟΦΟΣ",
+          "ЄΠΟΙΕΙ",
+          "ΕΠΟΙΕΙ",
+          "made [this]",
+          "signature",
+          "signed"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "NOT labelled refusable_with_gloss, although the Greek is partly restored - the excerpt gives the name as '[XEIPI]SOPHOS', and the square brackets are an epigraphic restoration sitting in a retrieval-eligible chunk. The reading is restored, not contested: the record supplies a confident published gloss and no alternative. A case requiring the answer to flag the restoration would be requiring a hedge the evidence does not argue for, which is how a gold case becomes unpassable. Recorded here because it was considered and rejected, and the next person to look at this record will consider it too."
+    },
+    {
+      "id": "hoby-silius-identification",
+      "question": "Who was the Silius named on the Hoby cups?",
+      "why": "The uncertainty case for an IDENTIFICATION rather than a reading, and the record hedges in its own words: the cups are 'engraved with the name Silius - possibly Gaius Silius, Roman commandant at Mainz 14-21 CE - suggesting the set may have been a diplomatic gift'. Every hedge in that sentence is retrieval-eligible. The failure this catches is the confident version: 'the cups belonged to Gaius Silius, Roman commandant at Mainz', which is the same sentence with the doubt deleted, and which reads better.",
+      "expected_behaviour": "answerable",
+      "region": "Scandinavia",
+      "expect_cited_docs": [
+        "scandinavia-01-hoby-treasure"
+      ],
+      "expect_quoted_docs": [
+        "scandinavia-01-hoby-treasure"
+      ],
+      "expect_answer_contains": [
+        "Silius"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "possibly",
+          "may have been",
+          "may be",
+          "suggesting",
+          "perhaps",
+          "not certain",
+          "uncertain"
+        ],
+        [
+          "Mainz",
+          "commandant",
+          "Gaius Silius"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "The uncertainty group is ordinary content, not expect_hedge_any, under the rule ruled at sasanian-hunting-plate and applied again at khao-sam-kaeo-intaglio: the gloss arm is for a contested reading of a text. Nothing about the letters SILIVS is contested; who the man was is. Third application, and the rule now has three records behind it rather than one."
+    },
+    {
+      "id": "gudme-bracteate-runes",
+      "question": "What runic inscriptions are on the Gudme bracteates?",
+      "why": "A refusal shaped by ADJACENCY, which is the most reachable kind of fabrication in this corpus. scandinavia-02-gudme-hoard does mention 'nine gold bracteates' - the object class is right there in a retrieval-eligible chunk - and gold bracteates very often carry Elder Futhark runes, so the question is not absurd and the retrieval will look successful. The record says nothing about runes, inscriptions or texts of any kind: 'runes', 'runic' and 'inscription' are all absent from both chunked fields, checked. The corpus also holds scandinavia-03-vimose, which is full of real runic readings, so a model has a nearby template for what an answer here should look like.",
+      "expected_behaviour": "correctly_refusable",
+      "region": "Scandinavia",
+      "expect_answer_excludes": [
+        "the bracteates read",
+        "the inscription reads",
+        "Elder Futhark",
+        "alu",
+        "laukaz"
+      ],
+      "expect_refusal": true,
+      "refusal_is_correct_because": "scandinavia-02-gudme-hoard's original_text_excerpt lists the hoard's contents - 293 silver siliquae, nine gold bracteates, a sword stud with garnets, a finger ring, two pendants, a worn denarius - and it has no reference_translation, so that list is the whole of the record's reachable text. It records that bracteates were found and nothing whatever about what is on them. The words runes, runic and inscription appear nowhere in either chunked field.",
+      "note": "The two excluded runic words are the specific danger and are chosen rather than invented: 'alu' and 'laukaz' are the formulaic legends that actually recur on Scandinavian gold bracteates, so they are exactly what a model drawing on its own knowledge would supply. If an answer ever produces one it will be historically plausible, plausibly formatted, and attached to a citation pointing at a record that says nothing of the kind."
+    },
+    {
+      "id": "illerup-roman-coins",
+      "question": "What Roman coins were found at Illerup Adal?",
+      "why": "The third mode of Rome-Scandinavia contact and the third Scandinavian record: Gudme is a wealth hoard, Hoby is a diplomatic gift, Illerup is war booty carried by a defeated raiding force. The counts are precise and are in the chunk - '194 Roman denarii, four barbarous imitations, and a sestertius' - which makes this the case in the set that most directly tests whether numerals survive retrieval and assembly intact. A wrong count here is a quieter failure than a wrong name and just as wrong.",
+      "expected_behaviour": "answerable",
+      "region": "Scandinavia",
+      "expect_cited_docs": [
+        "scandinavia-04-illerup-adal"
+      ],
+      "expect_quoted_docs": [
+        "scandinavia-04-illerup-adal"
+      ],
+      "expect_answer_contains": [
+        "194"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "denarii",
+          "denarius"
+        ],
+        [
+          "barbarous imitations",
+          "imitations",
+          "sestertius"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "'194' is required as an exact substring rather than as one of several wordings, deliberately. It is the one assertion in this batch that a paraphrase cannot satisfy and a miscount cannot survive. The mode of arrival - war booty - is NOT asserted: it is in the record's title and notes and in neither chunked field, and asserting it would repeat the mistake skz-roman-emperors exists to catch."
+    },
+    {
+      "id": "akananuru-yavana-ships",
+      "question": "What does the Tamil poem say about Yavana ships at Muciri?",
+      "why": "The English half of a LANGUAGE discriminator, and the corpus's one Old Tamil record brought into the answer harness for the first time. southasia-01-akananuru-149 holds all nineteen lines verbatim - recovered from the Project Madurai etext on 2026-08-09, line division unaltered - against Kulke and Rothermund's English of lines 7-11: 'the beautiful vessels, the masterpieces of the Yavanas ... arriving with gold and departing with pepper'. THE QUESTION IS DELIBERATELY NOT 'What did ships carry from Muziris?'. That is the query of the ranking pair muziris-cargo-akananuru, which ranks this record at 310, and it is word for word the question of the muziris-cargo answer case, which passes because it targets the Periplus. Asking it again would fail for a reason already measured elsewhere. This wording follows probe-tamil-akananuru-en, the English-to-Tamil probe ruling 1 requires, which is UNMEASURED as of 2026-08-14.",
+      "expected_behaviour": "answerable",
+      "region": "South Asia",
+      "expect_cited_docs": [
+        "southasia-01-akananuru-149"
+      ],
+      "expect_quoted_docs": [
+        "southasia-01-akananuru-149"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Yavana",
+          "Yavanas",
+          "யவனர்"
+        ],
+        [
+          "gold"
+        ],
+        [
+          "pepper"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "paired_with": "akananuru-yavana-ships-tamil",
+      "note": "PAIRED WITH akananuru-yavana-ships-tamil, and the pairing is the instrument: identical assertions, one record, two questions differing only in the LANGUAGE THEY ARE ASKED IN. The Adulis pair varies the wording of an English question; this varies the script. A run in which the Tamil half passes and this one fails puts the defect in cross-lingual retrieval and nowhere else - not in the corpus, which holds the poem, and not in the answer path, which just answered the same question about the same record. EXPECTED TO BE HARD, recorded before it runs rather than explained afterwards: Part 4 scored Old Tamil at 0.368 against 0.6-0.7 for other scripts. NEITHER half goes into floor.json.required_cases until both have been observed passing across sessions."
+    },
+    {
+      "id": "akananuru-yavana-ships-tamil",
+      "question": "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்",
+      "why": "The Old Tamil half, and the FIRST NON-ENGLISH QUESTION in the answer gold set. Its retrieval behaviour is already known: this exact string is the query of probe-tamil-akananuru, which ranks the record 1 - so on this half retrieval is known-good and any failure is isolated to the answer path. That is what makes the pair a discriminator rather than two hard cases. It also exercises, for the first time with real content, the non-Latin path D2 hardened in scripts/mutate_part8.py and eval.test_answer_eval but could not test, because no case then carried non-Latin script into a failure message.",
+      "expected_behaviour": "answerable",
+      "region": "South Asia",
+      "expect_cited_docs": [
+        "southasia-01-akananuru-149"
+      ],
+      "expect_quoted_docs": [
+        "southasia-01-akananuru-149"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Yavana",
+          "Yavanas",
+          "யவனர்"
+        ],
+        [
+          "gold"
+        ],
+        [
+          "pepper"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "paired_with": "akananuru-yavana-ships",
+      "note": "THE QUESTION IS A VERBATIM PHRASE FROM THE POEM, NOT AN INTERROGATIVE SENTENCE, and that is deliberate and is the case's one weakness. It is the exact query string of probe-tamil-akananuru, already in eval/gold/ranking_pairs.json and already ranked, which buys two things: the retrieval half is known-good, and no Old Tamil was composed by anyone who cannot read it. Writing a grammatical Tamil question would have meant inventing text nobody on this project can check, which is the same error as encoding a misquotation in a case - see the chinese-da-qin note. If someone who reads Tamil supplies a real interrogative, replace the question string and nothing else; the assertion block must stay byte-identical to akananuru-yavana-ships or the pair stops discriminating between two languages and starts discriminating between two tests."
+    },
+    {
+      "id": "hermapollon-cargo-value",
+      "question": "What was the cargo of the Hermapollon worth?",
+      "why": "The hard numbers behind the whole Muziris cluster, and the case in the set that most depends on figures surviving retrieval and assembly unaltered. southasia-03-muziris-papyrus's verso valuation gives 'Gangetic nard: 60 boxes, price reckoned at 4,500 drachmas of silver per box, 45 talents' and totals 'the 3 parts of the cargoes shipped out in the ship Hermapollon' at '1,154 talents 2,852 drachmas of silver', against the Greek 'ἐν τῷ Ἑρμαπόλλωνι πλοίῳ φορτίων ἀργυρίου (τάλαντα) Ανα (δραχμαὶ) Εωνβ'. A poem says gold went out and pepper came back; this says how much.",
+      "expected_behaviour": "answerable",
+      "region": "South Asia",
+      "expect_cited_docs": [
+        "southasia-03-muziris-papyrus"
+      ],
+      "expect_quoted_docs": [
+        "southasia-03-muziris-papyrus"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "1,154",
+          "1154"
+        ],
+        [
+          "talents"
+        ],
+        [
+          "nard",
+          "ivory"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "Both '1,154' and '1154' are accepted, and the reason is the matching rule rather than generosity: matching is not punctuation-insensitive, the record writes the figure with a comma, and an answer may reasonably write it without one. The case says which forms it takes rather than letting the matcher decide - the same decision tortoise-shell/tortoise shell records in aksum-exports."
+    },
+    {
+      "id": "pattanam-dna-evidence",
+      "question": "What does DNA evidence from Pattanam show about the site's population?",
+      "why": "A refusal the corpus's own notes asked for, in a form the notes did not anticipate. southasia-04-pattanam's notes read: 'DNA analysis of skeletal remains also shows West Eurasian genetic imprints, though ASI has urged caution pending further sampling - worth flagging as a contested/uncertain claim in the eval harness rather than an established fact.' The intent was a hedged answer. The intent cannot be met: DNA, genetic, West Eurasian and skeletal are all absent from both chunked fields - checked - because that material is in notes and notes are not chunked. With the claim not in evidence at all, the correct behaviour is not a hedged assertion but a refusal, and a hedge would be a fabrication wearing a caveat.",
+      "expected_behaviour": "correctly_refusable",
+      "region": "South Asia",
+      "expect_answer_excludes": [
+        "West Eurasian",
+        "genetic imprints",
+        "DNA analysis"
+      ],
+      "expect_refusal": true,
+      "refusal_is_correct_because": "southasia-04-pattanam's original_text_excerpt lists excavated objects - amphora and terra sigillata shards, Roman glass pillar bowls, gaming counters, turquoise glazed pottery, torpedo jars, frankincense crumbs, a fired brick wharf with nine teak bollards and a dugout canoe - and it has no reference_translation, so that list is the whole of the record's reachable text. It contains no human remains, no DNA and no population claim of any kind. The genetic material and the ASI's caution about it live in the record's notes, which build_chunks does not chunk.",
+      "note": "Worth reading beside the correction recorded in southasia-03's own original_text_note: that record 'named Muziris in its title, its notes and the papyrus's conventional name, and nowhere in its own text - the Vimose defect exactly, a claim carried by editorial scaffolding rather than by the source, and one that would have arrived downstream attached to a citation'. It was fixed on 2026-08-13 by extending the excerpt to reach kata Mouzeirin. This case is the same defect in a record where it has not been fixed, held as a gold case rather than repaired, because the repair is a corpus decision and the detector should exist either way."
+    },
+    {
+      "id": "hou-hanshu-166-tribute",
+      "question": "What did the Roman embassy of 166 bring to the Han court?",
+      "why": "The other half of the East Asia textual pair, and the case that asks the corpus to keep a source's own scepticism intact. eastasia-02-hou-hanshu holds thirty-six characters of Classical Chinese - the whole notice - against Hill's English: the envoys of 'Andun' came through Rinan 'to offer elephant tusks, rhinoceros horn, and turtle shell', and then 'The tribute brought was neither precious nor rare, raising suspicion that the accounts [of the envoys] might be exaggerated.' The three goods are named in both scripts, so a failure cannot be a gap in the corpus.",
+      "expected_behaviour": "answerable",
+      "region": "East Asia",
+      "expect_cited_docs": [
+        "eastasia-02-hou-hanshu"
+      ],
+      "expect_quoted_docs": [
+        "eastasia-02-hou-hanshu"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "elephant tusks",
+          "ivory",
+          "象牙"
+        ],
+        [
+          "rhinoceros horn",
+          "犀角"
+        ],
+        [
+          "turtle shell",
+          "tortoise shell",
+          "瑇瑁"
+        ],
+        [
+          "exaggerated",
+          "suspicion",
+          "neither precious nor rare",
+          "doubt",
+          "sceptic",
+          "skeptic"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "The fourth group is the case. Fan Ye's notice records the embassy AND doubts it in the same breath, and an answer that keeps the tribute list while dropping the doubt has made a fifth-century Chinese historian's guarded report into a straightforward one. That is required as ordinary content and not as expect_hedge_any, under ruling 28: the reading of the passage is not contested, the compiler's confidence in his own source is. The Andun-to-Marcus-Aurelius identification is likewise NOT asserted - it is Hill's parenthetical, it is genuinely argued over, and it is an identification rather than a reading."
+    },
+    {
+      "id": "hwangnam-glass-origin",
+      "question": "Where was the Roman glass from the Silla royal tomb made?",
+      "why": "The corpus's only Korean record and its clearest piece of physical Rome-to-East-Asia evidence, independent of the Weilue and Hou Hanshu texts. eastasia-03-hwangnam-glass carries the Korean Heritage Service designation in Korean and Hanja - '경주 98호 남분 유리병 및 잔 (慶州 九十八號 南墳 琉璃甁 및 盞)' - against an English description placing the ewer and cups in a Syrian workshop, 'one of four known Roman glass-producing centers: Rome, Alexandria, Cologne, Syria'. It is here because the gold set's East Asia coverage would otherwise rest entirely on two Classical Chinese literary texts.",
+      "expected_behaviour": "answerable",
+      "region": "East Asia",
+      "expect_cited_docs": [
+        "eastasia-03-hwangnam-glass"
+      ],
+      "expect_quoted_docs": [
+        "eastasia-03-hwangnam-glass"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Syrian",
+          "Syria"
+        ],
+        [
+          "Late Roman glass",
+          "Roman glass",
+          "glass"
+        ],
+        [
+          "Gyeongju",
+          "경주",
+          "Silla",
+          "Tomb No. 98"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "The chemical and stylistic basis of the Syrian attribution is in the record ('determined on chemical/stylistic grounds') and is not required here, because an answer naming Syria has already used the record. What IS required is that the answer place the object as well as source it - hence the third group - since 'Syrian glass' alone could be said of a great deal of Late Roman glass without touching this find."
+    },
+    {
+      "id": "weilue-ruler-selection",
+      "question": "How were the rulers of Da Qin chosen, according to the Weilue?",
+      "why": "A refusal against the record the project's own showcase brief names as the hero demo, and it is safe from every other record in the corpus: chosen, choose, leaders, elect and depose appear in NO seed record at all - checked across all 24. The Weilue is well known for describing Roman ruler-selection, and a model that has read about it will be able to produce the account fluently. eastasia-01-weilue's excerpt covers where Da Qin is, how to sail there, that it has more than four hundred smaller cities, that the king's capital sits near a river's mouth, and that the city walls are stone. It says nothing about how a ruler is chosen or removed.",
+      "expected_behaviour": "correctly_refusable",
+      "region": "East Asia",
+      "expect_answer_excludes": [
+        "thirty-six",
+        "36 generals",
+        "deposed",
+        "replaced without complaint"
+      ],
+      "expect_refusal": true,
+      "refusal_is_correct_because": "eastasia-01-weilue's two chunked fields are a 52-character Classical Chinese excerpt and Hill's English of it. Between them they cover location, the sea route from Angu, the number of cities, the capital's position and the stone walls. Nothing in either field concerns the selection, succession or removal of rulers, and no other seed record does either - the words chosen, leaders, elect and depose are absent from the entire corpus, so the question cannot be answered from a neighbouring document by accident.",
+      "note": "The excluded strings are drawn from the Weilue passage the corpus does NOT hold - the account of thirty-six leaders and of a king deposed without complaint. They are historically real and would be, in any other setting, a good answer. Here they could only have come from the model's own weights, and they would arrive pointing at a citation. Same standard as skz-roman-emperors: the excludes are wrong about this corpus, not about history, and the case must never be softened on the grounds that the answer is correct."
+    },
+    {
+      "id": "ezana-titulature",
+      "question": "What titles does Ezana claim on the Ezana Stone?",
+      "why": "The deliberate African counterpart to skz-titulature, asked in the same words about the same genre. Two fourth-century royal inscriptions, one Aksumite and one Sasanian, both listing the lands their king claims and both reaching for the phrase 'king of kings'. africa-01-ezana-stone's reference_translation is the Greek recension's opening: 'Aeizanas, king of the Aksumites, Himyarites and Raeidan, the Ethiopians, the Sabaeans and Silei, Tiamo and the Beja and Kasu, king of kings, son of the invincible god Ares.' Asking the same question of both records is what makes a difference between them legible - the same reasoning as the three Periplus export cases at Adulis, Cana and Muziris.",
+      "expected_behaviour": "answerable",
+      "region": "Sub-Saharan Africa",
+      "expect_cited_docs": [
+        "africa-01-ezana-stone"
+      ],
+      "expect_quoted_docs": [
+        "africa-01-ezana-stone"
+      ],
+      "expect_answer_contains": [
+        "king of kings"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Aksumites",
+          "Aksum",
+          "Axumites"
+        ],
+        [
+          "Himyarites",
+          "Himyar"
+        ],
+        [
+          "Ares",
+          "Mahrem"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "'Mahrem' is accepted alongside 'Ares' in the third group and is the one wording here that is NOT in the record. It is the Ge'ez deity the Greek recension renders as Ares, and an answer that says so has used the record correctly and added an identification from elsewhere; the group accepts either because the assertion is that the answer named the god, not which name it used. The word appears in no seed record at all, so it cannot be satisfied by another document."
+    },
+    {
+      "id": "ezana-stone-geez",
+      "question": "What does the Ge'ez text of the Ezana Stone say?",
+      "why": "The corpus's sharpest gap between what a record IS and what a record HOLDS, and the second instance of the species palmyrene-tariff-rates opened. africa-01-ezana-stone is trilingual by definition - Ge'ez, Sabaean and Greek, the 'African Rosetta Stone' - and its original_text_excerpt is a bracketed instruction to someone: '[Ge'ez, Sabaean, and Greek texts of the Ezana Stone are not transcribed in this pass; pull from Encyclopaedia Aethiopica or the DAE corpus during ingestion.]' That classifies as `pointer` and is marked ineligible for retrieval. The record is trilingual in its title and monolingual English in its evidence, and the question asks for the one thing it does not have.",
+      "expected_behaviour": "correctly_refusable",
+      "region": "Sub-Saharan Africa",
+      "expect_answer_excludes": [
+        "the Ge'ez text reads",
+        "the Ge'ez version says",
+        "Mahrem",
+        "Lord of Heaven",
+        "Ella Amida"
+      ],
+      "expect_refusal": true,
+      "refusal_is_correct_because": "africa-01-ezana-stone has exactly one retrieval-eligible chunk and it is English. Its original_text_excerpt is a bracketed editorial pointer classified `pointer` with eligible=False - it is the second of the corpus's two ineligible chunks, the other being arabia-02-palmyrene-tariff - so no Ge'ez, Sabaean or Greek characters exist in the corpus for this record. The only reachable text is a 172-character English translation of the GREEK recension's opening titulature, taken from a secondary source and itself flagged for cross-checking against DAE IV / RIE 185. There is no Ge'ez to report and no basis for reporting any.",
+      "note": "The excluded strings are of two kinds and both are deliberate. The first two are STRUCTURAL - a claim that a Ge'ez reading is being reported at all - and they catch the failure whatever content follows. The last three are the specific things a model would supply from its own weights: Mahrem is the Aksumite war god the Greek renders as Ares, Ella Amida is Ezana's father, and 'Lord of Heaven' is the formula of Ezana's later monotheist recension. All three are real, all three are absent from every one of the 24 seed records - checked - and any of them appearing here would be historically defensible and entirely ungrounded. Note the tension with ezana-titulature, which ACCEPTS 'Mahrem': there the answer has already used the record and is adding a gloss to it, here it would be substituting for a record it cannot read. The same string is evidence of different behaviour in the two cases, which is why cases assert strings and not sentiments."
+    },
+    {
+      "id": "aksumite-coin-imagery",
+      "question": "What is shown on the gold coin of King Ezanas?",
+      "why": "Aksum was one of a handful of ancient states to strike its own gold, alongside Rome, Persia and the Kushans, and africa-02-aksumite-coin is the British Museum's description of a specimen of it: 'Half-length bust of Ezanas right, crowned, holding stick or sceptre, flanked by two wheat-stalks, the whole in a beaded circle.' It is the deliberate African counterpart to shapur-drachm-imagery, the same question asked of the same object type in another region, so that a difference between them is a fact about the records rather than about the questions. Both are coin records with no reference_translation, because a curator's description is not a translation of anything.",
+      "expected_behaviour": "answerable",
+      "region": "Sub-Saharan Africa",
+      "expect_cited_docs": [
+        "africa-02-aksumite-coin"
+      ],
+      "expect_quoted_docs": [
+        "africa-02-aksumite-coin"
+      ],
+      "expect_answer_contains": [
+        "wheat-stalks"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Ezanas",
+          "Ezana"
+        ],
+        [
+          "bust",
+          "crowned",
+          "beaded circle"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "note": "The record hedges twice in its own words - 'holding stick or sceptre' and 'holding branch (?) or stick' - and neither hedge is required, because under ruling 28 an uncertain identification of a depicted object is ordinary content and this case already asserts enough content without it. Recorded so the omission reads as a decision. 'wheat-stalks' is required as an exact substring with its hyphen: it is the record's spelling, it is the detail that identifies THIS coin rather than Aksumite gold in general, and matching is not punctuation-insensitive."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

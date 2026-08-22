@@ -20,8 +20,8 @@ import tempfile
 from pathlib import Path
 
 from eval import answer_eval
-from eval.goldset import (ANSWER_BEHAVIOURS, GoldSetError, load_answer_cases,
-                          load_floor)
+from eval.goldset import (ANSWER_BEHAVIOURS, ANSWER_REGIONS, GoldSetError,
+                          load_answer_cases, load_floor)
 
 PASSED = 0
 FAILED = 0
@@ -93,9 +93,9 @@ def _discriminator(**b_overrides) -> list[dict]:
         "expect_quoted_docs": ["africa-03-periplus-adulis"],
         "expect_answer_contains": ["ivory"],
     }
-    a = {"id": "half-a", "question": "the wording that refuses?", "why": "w",
+    a = {"id": "half-a", "question": "the wording that refuses?", "why": "w", "region": "Arabia",
          "paired_with": "half-b", **block}
-    b = {"id": "half-b", "question": "the wording that answers?", "why": "w",
+    b = {"id": "half-b", "question": "the wording that answers?", "why": "w", "region": "Arabia",
          "paired_with": "half-a", **block}
     b.update(b_overrides)
     return [a, b]
@@ -106,6 +106,8 @@ def _valid_case(**overrides) -> dict:
         "id": "c1",
         "question": "q?",
         "why": "because",
+        # Required on a case naming no document; see load_answer_cases.
+        "region": "Arabia",
         # Required since D2, so every fixture below carries it. A fixture that
         # omitted it would be refused for the wrong reason, and expect_rejected
         # matches on the reason.
@@ -124,13 +126,13 @@ def test_loader_rejects_the_easy_version() -> None:
     # GUARD, and the reason this file exists. A case asserting only that the
     # answer was grounded cannot fail a refusal, and every Aksum answer refuses.
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "answerable", "expect_grounded": True},
         "GUARD a case asserting only groundedness is refused",
         because="makes no assertion about what the answer says",
     )
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "answerable"},
         "GUARD a case asserting nothing at all is refused",
         because="makes no assertion about what the answer says",
@@ -146,7 +148,7 @@ def test_loader_rejects_the_easy_version() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "answer_cases.json"
         path.write_text(json.dumps({"cases": [
-            {"id": "c1", "question": "q?", "why": "w",
+            {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
              "expected_behaviour": "answerable",
              "expect_min_resolved_quotes": 2}
         ]}), encoding="utf-8")
@@ -212,14 +214,14 @@ def test_refusal_must_justify_itself() -> None:
     print("\ndeclaring a question unanswerable is a claim, not a default")
 
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "correctly_refusable", "expect_refusal": True,
          "expect_answer_excludes": ["150 BC"]},
         "GUARD expect_refusal with no justification is refused",
         because="refusal_is_correct_because",
     )
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "correctly_refusable", "expect_refusal": True,
          "refusal_is_correct_because": "not in corpus",
          "expect_answer_contains": ["ivory"]},
@@ -227,7 +229,7 @@ def test_refusal_must_justify_itself() -> None:
         because="refuse and speak",
     )
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "correctly_refusable", "expect_refusal": True,
          "refusal_is_correct_because": "not in corpus",
          "expect_min_resolved_quotes": 1},
@@ -263,6 +265,21 @@ def test_the_real_gold_set_loads() -> None:
         expect(bool(held),
                f"the gold set exercises {behaviour} ({len(held)} case(s))")
 
+    # G4: ">=30 cases meeting the stratification" - >=3 per region across seven
+    # regions, >=6 source languages. The count is done here rather than left as
+    # a claim in a document, because a gate checked against prose is a gate
+    # checked against whoever wrote the prose.
+    per_region: dict[str, int] = {}
+    for case in cases:
+        expect(case.region in ANSWER_REGIONS,
+               f"{case.id}: declares region {case.region!r}")
+        per_region[case.region] = per_region.get(case.region, 0) + 1
+    for region in ANSWER_REGIONS:
+        if region == "outside":
+            continue
+        held = per_region.get(region, 0)
+        expect(held >= 3, f"{region}: {held} case(s), G4 wants >= 3")
+
     by_id = {c.id: c for c in cases}
     expect(by_id["aksum-exports"].paired_with == "adulis-exports"
            and by_id["adulis-exports"].paired_with == "aksum-exports",
@@ -294,7 +311,7 @@ def test_expected_behaviour_is_declared() -> None:
     # line means retrieval broke, the model invented something, or a machine
     # translation appeared attached to a citation.
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expect_answer_contains": ["ivory"]},
         "GUARD a case with no expected_behaviour is refused",
         because="expected_behaviour",
@@ -313,7 +330,7 @@ def test_expected_behaviour_is_declared() -> None:
         because="expect_refusal is not true",
     )
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "answerable", "expect_refusal": True,
          "refusal_is_correct_because": "not in corpus",
          "expect_answer_excludes": ["150 BC"]},
@@ -324,7 +341,7 @@ def test_expected_behaviour_is_declared() -> None:
     # A refusal contains none of the strings a case excludes, so a case built
     # from exclusions alone is passed by silence.
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "answerable",
          "expect_answer_excludes": [
              "The sources retrieved do not answer this question"]},
@@ -337,7 +354,7 @@ def test_the_gloss_arm_has_teeth() -> None:
     print("\nrefusable_with_gloss: show the published gloss, and hedge it")
 
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "refusable_with_gloss",
          "expect_answer_contains": ["harja"],
          "expect_hedge_any": [["likely", "uncertain"]]},
@@ -348,7 +365,7 @@ def test_the_gloss_arm_has_teeth() -> None:
     # rendering of a partly undeciphered runic sequence is the worst output
     # this system can produce, because it arrives attached to a citation.
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "refusable_with_gloss",
          "expect_quoted_docs": ["scandinavia-03-vimose"],
          "expect_answer_contains": ["harja"]},
@@ -361,7 +378,7 @@ def test_the_gloss_arm_has_teeth() -> None:
         because="belongs to",
     )
     expect_rejected(
-        {"id": "c1", "question": "q?", "why": "w",
+        {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
          "expected_behaviour": "refusable_with_gloss",
          "expect_quoted_docs": ["scandinavia-03-vimose"],
          "expect_hedge_any": [[]]},
@@ -374,7 +391,7 @@ def test_the_gloss_arm_has_teeth() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         path = Path(tmp) / "answer_cases.json"
         path.write_text(json.dumps({"cases": [
-            {"id": "c1", "question": "q?", "why": "w",
+            {"id": "c1", "question": "q?", "why": "w", "region": "Arabia",
              "expected_behaviour": "refusable_with_gloss",
              "expect_quoted_docs": ["scandinavia-03-vimose"],
              "expect_answer_contains_any": [["harja"]],
@@ -436,6 +453,42 @@ def test_a_discriminator_loads_as_one_instrument() -> None:
         "GUARD a pair relabelled on one side only is refused",
         because="differ on",
     )
+
+
+def test_the_stratification_is_computable() -> None:
+    print("\nG4 counts cases per region, so every case must be attributable")
+
+    expect_rejected(
+        _valid_case(region="Mesopotamia"),
+        "GUARD an unrecognised region is refused",
+        because="is not one of",
+    )
+    # The eight refusal cases name no document, because expect_quoted_docs is
+    # refused on a refusal - so nothing can be looked up and the case must say.
+    expect_rejected(
+        {"id": "c1", "question": "q?", "why": "no document named here",
+         "expected_behaviour": "answerable",
+         "expect_answer_contains": ["ivory"]},
+        "GUARD a case naming no document must declare a region",
+        because="must declare one",
+    )
+    # A case that names a document does not have to: the region is derivable
+    # from the doc id, and requiring it anyway would be a second place for the
+    # same fact to be wrong.
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "answer_cases.json"
+        path.write_text(json.dumps({"cases": [
+            {"id": "c1", "question": "q?", "why": "names a document",
+             "expected_behaviour": "answerable",
+             "expect_quoted_docs": ["africa-03-periplus-adulis"],
+             "expect_answer_contains": ["ivory"]}
+        ]}), encoding="utf-8")
+        try:
+            case = load_answer_cases(path)[0]
+            expect(case.region == "",
+                   "a case naming a document may leave region derivable")
+        except GoldSetError as exc:
+            expect(False, f"a doc-bearing case should load without region ({exc})")
 
 
 def test_matching_tolerances() -> None:
@@ -791,6 +844,7 @@ def main() -> int:
     test_loader_rejects_vacuous_assertions()
     test_refusal_must_justify_itself()
     test_expected_behaviour_is_declared()
+    test_the_stratification_is_computable()
     test_the_gloss_arm_has_teeth()
     test_a_discriminator_loads_as_one_instrument()
     test_the_real_gold_set_loads()

@@ -1,6 +1,9 @@
-# Rulings register — 1 to 26
+# Rulings register — 1 to 31
 
-*Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1.*
+*Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
+same day with 27-31, declared during TASK 2 (D2's schema change and D3's case
+work) and written up as they were made rather than afterwards — see the note on
+rulings 20 and 21 at the foot of this file for why that matters.*
 
 **This file is an INDEX, not the text.** Each ruling's authoritative wording
 lives in the file named beside it, and that file is what to read before quoting
@@ -26,6 +29,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 22-24       C2_RULINGS.md             full text, "## Ruling N" headings
 25          C5_3B_AND_PROTOCOL.md §6  full text
 26          C7_RESULT.md              full text
+27-31       D3_RULINGS.md             full text, "## Ruling N" headings
 ```
 
 ## The register
@@ -64,6 +68,19 @@ section anywhere — they exist only as one-line entries in a numbered list in
 24  the verdict is derived on read, never trusted from disk
 25  RULED 3a. G2's gap criterion has FAILED. Kill trigger 1 pulled.
 26  the two via-original keys are emitted from the COLLAPSE block
+27  every case declares its expected behaviour, and the loader refuses to
+    inherit it; expect_refusal is kept, not derived, and the two must agree in
+    both directions
+28  the gloss arm is for a contested READING of a text and nothing else;
+    attribution, dating and identification doubts are ordinary content on an
+    answerable case
+29  a false premise the corpus can correct is ANSWERABLE; the refusal arm never
+    means "the question was badly posed"
+30  behaviour balance is held to the definitions and the shortfall recorded,
+    never reached by widening a label
+31  a discriminator loads as one instrument: paired_with is symmetric and the
+    two assertion blocks must be identical, and it is NOT for two cases that
+    merely share a record
 ```
 
 ## The two that pulled or nearly pulled something
@@ -116,5 +133,16 @@ as the ruling is how a register stops being a record of what was decided and
 becomes a record of what someone later assumed. If a full text is wanted,
 someone who was there should write it — and until then this entry says so.
 
-**Do not renumber.** Twenty-six numbers are quoted across `PROGRESS.md` and
-seven session documents.
+**Do not renumber.** Twenty-six numbers were already quoted across `PROGRESS.md`
+and seven session documents before 27-31 were added, and 27-31 are quoted across
+`D2_RESULT.md`, `D3_RULINGS.md` and the D3 batch commits.
+
+## What 27-31 were written to avoid
+
+Rulings 27 to 31 were declared and written up in the same session that made
+them, with full text in `D3_RULINGS.md` and index lines above. That is a direct
+response to what this file records about 20 and 21: a ruling that exists only as
+a line in a summary list is a ruling nobody can quote, check, or argue with
+later. The cost of writing the declaration at the time is a few paragraphs. The
+cost of not writing it is that the code becomes the only authority for what was
+decided, and code says what a thing does rather than why it was chosen.

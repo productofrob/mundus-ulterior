@@ -329,9 +329,30 @@ class AnswerCase:
     # The other half of a discriminator. Symmetric and enforced at load rather
     # than described in a note: see _check_pairs.
     paired_with: str = ""
+    # Which of the corpus's seven regions this case exercises. Optional where a
+    # doc id makes it derivable, required where nothing does -- see
+    # load_answer_cases. G4 asks for ">=30 cases meeting the stratification" and
+    # the stratification is per-region, so it has to be a number anyone can
+    # compute from this file rather than a mapping someone reconstructs by hand.
+    region: str = ""
     archived_status: str = ""
     note: str = ""
 
+
+# The seven regions the corpus covers, spelled as the seed records spell them,
+# plus one value for a case that is deliberately outside all of them. The
+# Antikythera control is outside on purpose: it is a Mediterranean wreck, and
+# that is the entire reason it is the right question to refuse.
+ANSWER_REGIONS = (
+    "Arabia",
+    "East Asia",
+    "Persia",
+    "Scandinavia",
+    "South Asia",
+    "Southeast Asia",
+    "Sub-Saharan Africa",
+    "outside",
+)
 
 BEHAVIOUR_ANSWERABLE = "answerable"
 BEHAVIOUR_REFUSABLE = "correctly_refusable"
@@ -344,7 +365,8 @@ _ANSWER_OPTIONAL = {
     "expect_answer_contains",
     "expect_answer_contains_any", "expect_hedge_any", "expect_answer_excludes",
     "expect_min_resolved_quotes", "expect_grounded", "expect_refusal",
-    "refusal_is_correct_because", "paired_with", "archived_status", "note",
+    "refusal_is_correct_because", "paired_with", "region",
+    "archived_status", "note",
 }
 
 # The assertions that say something about what the answer SAYS, as opposed to
@@ -625,6 +647,28 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
                 f"of {list(_POSITIVE_KEYS)}, or expect_min_resolved_quotes > 0."
             )
 
+        region = str(raw.get("region", "") or "").strip()
+        if region and region not in ANSWER_REGIONS:
+            raise GoldSetError(
+                f"{where}: region {region!r} is not one of "
+                f"{list(ANSWER_REGIONS)}. The stratification is counted by "
+                f"these names, so a near-miss spelling would drop the case out "
+                f"of the count without dropping it out of the file."
+            )
+        # Derivable or declared, never absent. A case naming a document can be
+        # attributed by looking that document up; a refusal names none, because
+        # expect_quoted_docs is refused on a refusal case, so there is nothing
+        # to look up and the case must say.
+        if not region and not (raw.get("expect_cited_docs")
+                               or raw.get("expect_quoted_docs")):
+            raise GoldSetError(
+                f"{where}: this case names no document, so its region cannot be "
+                f"derived, so it must declare one. Without it the case is "
+                f"invisible to the per-region stratification G4 is checked "
+                f"against while still counting toward the total, which is the "
+                f"shape of error that passes a gate on arithmetic nobody redid."
+            )
+
         hedge = list(raw.get("expect_hedge_any", []))
         if behaviour == BEHAVIOUR_GLOSS:
             if not raw.get("expect_quoted_docs"):
@@ -670,6 +714,7 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
                 expect_refusal=refusal,
                 refusal_is_correct_because=raw.get("refusal_is_correct_because", ""),
                 paired_with=str(raw.get("paired_with", "") or "").strip(),
+                region=region,
                 archived_status=raw.get("archived_status", ""),
                 note=raw.get("note", ""),
             )

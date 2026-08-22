@@ -185,6 +185,23 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         "two halves of a discriminator may assert different things",
         [("""        if mine != theirs:""", """        if False:""")],
     ),
+
+    # ----------------------------------------------------------------------
+    # D3: the region field, so G4's stratification is a number and not a claim.
+    # ----------------------------------------------------------------------
+    (
+        "an unrecognised region is carried through",
+        [("""        if region and region not in ANSWER_REGIONS:""",
+          """        if False:""")],
+    ),
+    (
+        # Eight of the thirty-two cases name no document. Without this clause
+        # they count toward the total and vanish from the per-region count,
+        # which is a gate passed on arithmetic nobody redid.
+        "a case naming no document need not declare a region",
+        [("""        if not region and not (raw.get("expect_cited_docs")""",
+          """        if False and not (raw.get("expect_cited_docs")""")],
+    ),
 ]
 
 EXPECTED = [
@@ -224,6 +241,10 @@ EXPECTED = [
     "GUARD a paired case whose partner is absent is refused",
     "GUARD an asymmetric pairing is refused",
     "GUARD paired cases whose assertions differ are refused",
+
+    # D3, in the order above.
+    "GUARD an unrecognised region is refused",
+    "GUARD a case naming no document must declare a region",
 ]
 
 
