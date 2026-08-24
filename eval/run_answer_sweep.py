@@ -109,6 +109,22 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
     results: list[dict] = []
     evidence_report: list[dict] = []
 
+    # FINDING 14, 2026-08-24. D1 made run_answer record the corpus version in
+    # the answers row and the per-run archive, and this file was never given
+    # the same treatment: it builds its own payload, never set
+    # answer.corpus_version, and so wrote NULL into seed_corpus_digest and no
+    # key into the archive. Zero of the sixty sweep runs on disk carry one.
+    #
+    # That is the whole of TASK 1 missing from the harness TASK 1 was for:
+    # "Block E's whole claim is that the corpus did not move under the sweep,
+    # and right now nothing in an archive would say if it had." Block E is
+    # ~270 calls and every one of them comes through here.
+    #
+    # Read once before the loop, exactly as run_answer does, so that every run
+    # in this sweep is made against one corpus BY CONSTRUCTION rather than by
+    # hope. It is read again after the last call — see below.
+    corpus_version = answer_store.corpus_version(conn)
+
     for case in cases:
         try:
             query_vector = embed_query(case.question)
@@ -166,6 +182,10 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                 )
                 answer.embedding_model = embed_model
                 answer.retrieval_k = k
+                # FINDING 14. Without this line assemble.store writes NULL to
+                # seed_corpus_digest and to cited_record_hashes, because it
+                # reads `(answer.corpus_version or {})`.
+                answer.corpus_version = corpus_version
 
                 stored_id = assemble.store(conn, answer) if write else None
                 payload = {
@@ -190,6 +210,12 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                     # run whose session lived only in the summary would lose it
                     # the first time a sweep was re-scored from the archives.
                     "session": session,
+                    # FINDING 14. The same key run_answer writes, so that a
+                    # sweep run and a single run can be read by one reader —
+                    # ui/build_ui_data.py already does `run.get(
+                    # "corpus_version")` and until now got None for every
+                    # sweep-archived answer there has ever been.
+                    "corpus_version": corpus_version,
                 }
                 archived = _archive(payload) if write else None
 
@@ -221,7 +247,25 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                 if pause:
                     time.sleep(pause)
 
-    return {"results": results, "evidence": evidence_report}
+    # FINDING 14, the second half. A version captured only at the start records
+    # what the sweep BEGAN against, which is a different sentence from the one
+    # Block E needs to be able to say. Re-read after the last chat call, and
+    # compared: a corpus that moved under a half-hour sweep splits it into two
+    # measurements of two different corpora, and on 2026-08-22 the digest moved
+    # three times in one day.
+    #
+    # Cheap: one query over the seed record hashes, twice, against ~90 chat
+    # calls.
+    corpus_version_after = answer_store.corpus_version(conn) if not dry_run \
+        else corpus_version
+    return {
+        "results": results,
+        "evidence": evidence_report,
+        "corpus_version": corpus_version,
+        "corpus_version_after": corpus_version_after,
+        "corpus_moved": answer_eval.corpus_moved(corpus_version,
+                                                 corpus_version_after),
+    }
 
 
 # --------------------------------------------------------------------------
@@ -415,6 +459,11 @@ def main(argv: list[str] | None = None) -> int:
 
     if "error" in outcome:
         return 2
+    version = outcome.get("corpus_version") or {}
+    print(f"\ncorpus: {version.get('seed_record_count', '?')} seed record(s), "
+          f"digest {(version.get('seed_corpus_digest') or '?')[:16]}… "
+          f"({version.get('source', '?')})")
+
     if args.dry_run:
         print("\ndry run — no chat call made, nothing written")
         if args.json:
@@ -443,6 +492,13 @@ def main(argv: list[str] | None = None) -> int:
         path.write_text(json.dumps(
             {"prompt_versions": versions, "repeat": args.repeat,
              "session": session,
+             # FINDING 14. Both ends, and the verdict, in the sweep file as
+             # well as in every per-run archive — so that "the corpus did not
+             # move under this sweep" is a fact the archive states rather than
+             # one a reader reconstructs from ninety files.
+             "corpus_version": outcome.get("corpus_version"),
+             "corpus_version_after": outcome.get("corpus_version_after"),
+             "corpus_moved": outcome.get("corpus_moved"),
              "results": results, "summary": summary,
              "floor": verdicts},
             indent=2, ensure_ascii=False), encoding="utf-8")
@@ -460,6 +516,19 @@ def main(argv: list[str] | None = None) -> int:
         # archived sweeps came to be read as a calibrated floor.
         answer_eval.print_stability(answer_eval.stability(results))
         answer_eval.print_floor(verdicts)
+
+    # FINDING 14. AFTER the archive is written and after the report is printed,
+    # for the reason run_ranking_check archives before printing: on 2026-08-16 a
+    # KeyError in a printer destroyed a twenty-six-minute run. The archived run
+    # IS the evidence. So this returns non-zero on a sweep whose corpus moved
+    # rather than raising — the runs are real, they are archived, they say so,
+    # and they are not comparable to each other.
+    moved = outcome.get("corpus_moved")
+    if moved:
+        print("\n" + "=" * 72)
+        print(moved)
+        print("=" * 72)
+        return 2
 
     return 0 if all(v["meets_floor"] for v in verdicts.values()) else 1
 

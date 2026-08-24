@@ -1130,6 +1130,86 @@ def test_the_two_stability_numbers() -> None:
            "GUARD rows with no session are counted in NEITHER number")
 
 
+def test_the_sweep_records_the_corpus_it_was_made_against() -> None:
+    """FINDING 14, 2026-08-24.
+
+    D1 made `run_answer` record the corpus version in the `answers` row and in
+    the per-run archive. `eval/run_answer_sweep.py` builds its own payload,
+    never set `answer.corpus_version`, and so wrote NULL into
+    `seed_corpus_digest` and no key into the archive — for all sixty
+    sweep-archived runs on disk, and for every one of Block E's ~270.
+
+    TASK 1's own justification was *"Block E's whole claim is that the corpus
+    did not move under the sweep, and right now nothing in an archive would say
+    if it had"*. The fix landed in the path that writes about one of those
+    archives and not in the path that writes the other 270.
+    """
+    print("\nFINDING 14: the corpus a sweep was made against")
+
+    def version(digest, hashes, count=None):
+        return {"algorithm": "sha256-of-canonical-json-v1",
+                "source": "database",
+                "seed_record_count": count if count is not None else len(hashes),
+                "seed_corpus_digest": digest, "record_hashes": hashes}
+
+    steady = version("aaaa1111", {"eastasia-01-weilue": "h1",
+                                  "africa-03-periplus-adulis": "h2"})
+    expect(answer_eval.corpus_moved(steady, steady) is None,
+           "a corpus that did not move says nothing")
+
+    # The 2026-08-22 shape: one record edited, digest changes, everything else
+    # identical. It happened three times that day.
+    edited = version("bbbb2222", {"eastasia-01-weilue": "CHANGED",
+                                  "africa-03-periplus-adulis": "h2"})
+    moved = answer_eval.corpus_moved(steady, edited)
+    expect(moved is not None,
+           "GUARD a corpus that moved under the sweep is detected")
+    expect(bool(moved) and "eastasia-01-weilue" in moved,
+           "the record that changed is NAMED, not counted")
+    expect(bool(moved) and "africa-03-periplus-adulis" not in moved,
+           "a record that did not change is not named")
+
+    grown = version("cccc3333", {"eastasia-01-weilue": "h1",
+                                 "africa-03-periplus-adulis": "h2",
+                                 "persia-09-new": "h3"})
+    appeared = answer_eval.corpus_moved(steady, grown)
+    expect(bool(appeared) and "appeared" in appeared
+           and "persia-09-new" in appeared,
+           "a record that appeared mid-sweep is named as having appeared")
+
+    shrunk = answer_eval.corpus_moved(
+        steady, version("dddd4444", {"eastasia-01-weilue": "h1"}))
+    expect(bool(shrunk) and "vanished" in shrunk
+           and "africa-03-periplus-adulis" in shrunk,
+           "a record that vanished mid-sweep is named as having vanished")
+
+    # The digest covers sorted (doc_id, hash) pairs, so it cannot move while
+    # every pair is identical. If it does, that is a finding about the digest.
+    impossible = answer_eval.corpus_moved(
+        steady, version("eeee5555", dict(steady["record_hashes"])))
+    expect(bool(impossible) and "finding about corpus_digest itself" in impossible,
+           "GUARD a digest that moves while no record differs says so")
+
+    # Asserted against the source TEXT, not against an imported module: this
+    # suite has no database and no gateway, and `eval.run_answer_sweep` imports
+    # `answer` and `ingest` at module level. Reading the file keeps the check
+    # where it belongs — in the offline suite — and both of these defects were
+    # invisible to every behavioural test that does not have a database behind
+    # it, which is why they survived D1.
+    source = (Path(__file__).resolve().parent
+              / "run_answer_sweep.py").read_text(encoding="utf-8")
+    expect("answer.corpus_version = corpus_version" in source,
+           "GUARD the sweep sets answer.corpus_version before storing — "
+           "without it assemble.store writes NULL")
+    expect('"corpus_version": corpus_version,' in source,
+           "GUARD the sweep writes corpus_version into every per-run archive")
+    read_at_start = source.find("corpus_version = answer_store.corpus_version(conn)")
+    read_at_end = source.find("corpus_version_after = answer_store.corpus_version(conn)")
+    expect(0 < read_at_start < read_at_end,
+           "GUARD the corpus version is read again AFTER the last chat call, "
+           "not only before the first")
+
+
 def test_calibration_refuses_too_few_days() -> None:
     """D4, item 2. The floor refuses to call itself calibrated.
 
@@ -1224,6 +1304,7 @@ def main() -> int:
     test_a_duplicate_question_cannot_shadow_a_case()
     test_a_session_is_recorded_and_is_not_a_date()
     test_the_two_stability_numbers()
+    test_the_sweep_records_the_corpus_it_was_made_against()
     test_calibration_refuses_too_few_days()
     test_the_floor()
     print(f"\n{PASSED} passed, {FAILED} failed")

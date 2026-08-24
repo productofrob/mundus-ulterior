@@ -449,6 +449,39 @@ def _has_content_assertion(raw: dict) -> bool:""")],
         "the floor may permit calibration from a single day",
         [("""    if int(data["min_distinct_dates"]) < 2:""", """    if False:""")],
     ),
+    # ----------------------------------------------------------------------
+    # FINDING 14 — did the corpus move underneath the sweep?
+    # ----------------------------------------------------------------------
+    (
+        "a corpus that moved under the sweep is not detected",
+        [("""    if before.get("seed_corpus_digest") == after.get("seed_corpus_digest"):
+        return None""",
+          """    if True:
+        return None""")],
+    ),
+    (
+        # On 2026-08-22 the digest moved three times in one day. "the digest
+        # changed" is a fact; "eastasia-01-weilue changed" is something a
+        # person can act on.
+        "the records that changed are counted rather than named",
+        [("""    changed = sorted(d for d in set(was) & set(now) if was[d] != now[d])""",
+          """    changed = []""")],
+    ),
+    (
+        "a record that appeared mid-sweep is not reported",
+        [("""    appeared = sorted(set(now) - set(was))""", """    appeared = []""")],
+    ),
+    (
+        "a record that vanished mid-sweep is not reported",
+        [("""    vanished = sorted(set(was) - set(now))""", """    vanished = []""")],
+    ),
+    (
+        # The digest covers sorted (doc_id, hash) pairs and cannot move while
+        # every pair is identical. Reporting that as an empty list of changes
+        # would hide a finding about corpus_digest itself.
+        "a digest that moves while no record differs is reported as nothing",
+        [("""    if not (changed or vanished or appeared):""", """    if False:""")],
+    ),
 ]
 
 EXPECTED = [
@@ -518,6 +551,13 @@ EXPECTED = [
     "being counted as a date",
     "GUARD three dates of single shots cannot calibrate either",
     "GUARD a floor permitting calibration from a single day is refused",
+
+    # FINDING 14, in the order above.
+    "GUARD a corpus that moved under the sweep is detected",
+    "the record that changed is NAMED, not counted",
+    "a record that appeared mid-sweep is named as having appeared",
+    "a record that vanished mid-sweep is named as having vanished",
+    "GUARD a digest that moves while no record differs says so",
 ]
 
 

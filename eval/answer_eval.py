@@ -645,6 +645,70 @@ def print_stability(numbers: dict) -> None:
 
 
 # --------------------------------------------------------------------------
+# FINDING 14 — did the corpus move underneath the sweep?
+# --------------------------------------------------------------------------
+
+def corpus_moved(before: dict, after: dict) -> str | None:
+    """What changed in the corpus while a sweep was running, or None.
+
+    Pure. `before` and `after` are `answer_store.corpus_version(conn)` dicts.
+
+    FINDING 14, 2026-08-24. D1 made `run_answer` record the corpus version in
+    the `answers` row and the per-run archive. `eval/run_answer_sweep.py`
+    builds its own payload, never set `answer.corpus_version`, and therefore
+    wrote NULL into `seed_corpus_digest` and no key into the archive — for
+    every one of the 60 sweep runs on disk, and for every one of Block E's
+    ~270. The fix landed in the path that writes about one archive and not in
+    the path that writes the other 270. Same shape as FINDING 10's half fix.
+
+    Reading it ONCE, as `run_answer` does before its repetition loop, is right
+    for one question and not enough here. A day of Block E is ~90 chat calls
+    and well over half an hour, and the claim being made is precisely that the
+    corpus did not move during it. A version captured only at the start records
+    what the sweep BEGAN against, which is a different sentence.
+
+    So: named, never counted. "the digest changed" is a fact; "these two
+    records changed and this one appeared" is something a person can act on,
+    and on 2026-08-22 the digest changed three times in one day.
+    """
+    if not before or not after:
+        return None
+    if before.get("seed_corpus_digest") == after.get("seed_corpus_digest"):
+        return None
+
+    was = before.get("record_hashes") or {}
+    now = after.get("record_hashes") or {}
+    changed = sorted(d for d in set(was) & set(now) if was[d] != now[d])
+    vanished = sorted(set(was) - set(now))
+    appeared = sorted(set(now) - set(was))
+
+    lines = [
+        "THE CORPUS MOVED WHILE THIS SWEEP WAS RUNNING.",
+        f"  digest {before.get('seed_corpus_digest', '?')[:16]}… -> "
+        f"{after.get('seed_corpus_digest', '?')[:16]}…",
+        f"  records {before.get('seed_record_count')} -> "
+        f"{after.get('seed_record_count')}",
+    ]
+    for label, ids in (("changed", changed), ("vanished", vanished),
+                       ("appeared", appeared)):
+        if ids:
+            lines.append(f"  {label}: {', '.join(ids)}")
+    if not (changed or vanished or appeared):
+        # The digest covers sorted (doc_id, hash) pairs, so it cannot move
+        # while every pair is identical. Said out loud rather than reported as
+        # an empty list, because an unexplained digest change is a finding
+        # about the digest.
+        lines.append("  no record differs, yet the digest moved — that is a "
+                     "finding about corpus_digest itself, not about the corpus")
+    lines.append(
+        "  Every answer before the change and every answer after it were made "
+        "against different corpora. The runs are archived and are not "
+        "comparable to each other."
+    )
+    return "\n".join(lines)
+
+
+# --------------------------------------------------------------------------
 # D4 — calibration refuses to be written from too few days
 # --------------------------------------------------------------------------
 
