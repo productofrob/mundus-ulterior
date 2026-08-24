@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -83,6 +84,29 @@ TRANSLATE = ROOT / "answer" / "translate.py"
 SOURCES = (CHECK, GOLDSET, SEARCH, RERANK, COLLAPSE, RENDER, TRANSLATE, FUSE)
 
 SUITE = "eval.test_ranking_check"
+
+
+def _purge_bytecode() -> None:
+    """FINDING 16, 2026-08-24. The other half of what -B forecloses.
+
+    The note beside `-B` below describes the mechanism and says it "is not
+    credited with fixing anything, because nothing here measured it". On
+    2026-08-24 scripts/mutate_part8.py — which never got the flag — measured
+    it: two consecutive mutations produced the same file size within one
+    mtime second, the second ran the first's bytecode, and a working guard
+    was reported as unwatched. The suspicion is now a finding, and -B is
+    credited.
+
+    One correction to the model in that note: the dangerous case is not a
+    mutation that preserves the ORIGINAL's size, it is two CONSECUTIVE
+    mutations that produce the same size as each other.
+
+    -B stops this process's children WRITING a cache. It does not stop them
+    READING one an ordinary `python -m eval.test_ranking_check` left behind.
+    Both, always.
+    """
+    for source in SOURCES:
+        shutil.rmtree(source.parent / "__pycache__", ignore_errors=True)
 
 MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     (
@@ -840,6 +864,7 @@ def run_suite() -> set[str]:
     # FAIL lines out of that pipe, so it saw a crash where there was a caught
     # failure, and reported a working mutation as unwatched. Both ends are
     # fixed: the child is told to write UTF-8, and the parent to read it.
+    _purge_bytecode()
     result = subprocess.run(
         [sys.executable, "-B", "-m", SUITE], cwd=ROOT, capture_output=True,
         text=True, encoding="utf-8", errors="replace",
@@ -955,6 +980,7 @@ def main() -> int:
             + " — restore from version control before running anything else"
         )
 
+    _purge_bytecode()
     check = subprocess.run(
         [sys.executable, "-B", "-m", SUITE], cwd=ROOT, capture_output=True, text=True
     )

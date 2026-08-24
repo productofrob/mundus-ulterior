@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import os
 import pathlib
+import shutil
 import subprocess
 import sys
 
@@ -50,10 +51,55 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # decodes with the locale codec and raises in the other direction. Both ends are
 # named because the ranking harness lost a run to exactly this, and this is the
 # harness pair BLOCK_D_START records as never having been checked against it.
-CHILD_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8"}
+CHILD_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8",
+             # FINDING 16, and see `_purge_bytecode` below for what it cost.
+             "PYTHONDONTWRITEBYTECODE": "1"}
 GOLDSET = ROOT / "eval" / "goldset.py"
 EVAL = ROOT / "eval" / "answer_eval.py"
 SOURCES = (GOLDSET, EVAL)
+
+
+def _purge_bytecode() -> None:
+    """FINDING 16, 2026-08-24. CPython validated a mutation away.
+
+    A cached `.pyc` is keyed on its source's mtime SECOND and its source's
+    SIZE. Two mutations that produce the same file size, written inside the
+    same second, therefore share a cache key — and the second one runs the
+    first one's bytecode.
+
+    That is not hypothetical here. `scripts/mutate_ranking.py` has carried
+    `-B` since 2026-08-16 with a note describing this exact mechanism as
+    "a real mechanism" that "-B forecloses", and adding that it "is not
+    credited with fixing anything, because nothing here measured it". This
+    harness never got the flag.
+
+    On 2026-08-24 it measured it. Mutations 39 and 40 —
+
+        distinct dates are counted from session ids        (-2 bytes)
+        a sweep with no session identity stops blocking …  (-2 bytes)
+
+    — are the ONLY consecutive pair in this file with an identical size
+    delta. Mutation 40 ran mutation 39's bytecode, reported mutation 39's
+    failures, and was recorded as a MISS: a working guard reported as
+    unwatched. The other direction is worse and equally available — a
+    mutation whose guard genuinely does not fire, reported as verified
+    because the previous mutation's failures arrived attached to it, which
+    is precisely what 2026-08-16 saw and could not explain.
+
+    So the comment's model needs one correction: the dangerous case is not a
+    mutation that preserves the ORIGINAL's size. It is two CONSECUTIVE
+    mutations that produce the same size as each other. That is far more
+    common — mutating `["date"]` to `["id"]` and `undated` to `False` both
+    remove two bytes — and nothing about it looks unusual.
+
+    `-B` stops this process's children WRITING a cache. It does not stop them
+    READING one an ordinary `python -m eval.test_answer_eval` left behind, so
+    the directory is removed as well. Both, always: the flag alone is half a
+    fix, which is a sentence this repository has now written three times.
+    """
+    for source in SOURCES:
+        shutil.rmtree(source.parent / "__pycache__", ignore_errors=True)
+
 
 MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     (
@@ -568,8 +614,9 @@ def main() -> int:
             for f in SOURCES:
                 _write(f, edited[f], newlines[f])
 
+            _purge_bytecode()
             result = subprocess.run(
-                [sys.executable, "-m", "eval.test_answer_eval"],
+                [sys.executable, "-B", "-m", "eval.test_answer_eval"],
                 cwd=ROOT, capture_output=True, text=True,
                 encoding="utf-8", errors="replace", env=CHILD_ENV,
             )
@@ -613,8 +660,9 @@ def main() -> int:
             + " — restore from version control before running anything else"
         )
 
+    _purge_bytecode()
     check = subprocess.run(
-        [sys.executable, "-m", "eval.test_answer_eval"],
+        [sys.executable, "-B", "-m", "eval.test_answer_eval"],
         cwd=ROOT, capture_output=True, text=True,
         encoding="utf-8", errors="replace", env=CHILD_ENV,
     )
