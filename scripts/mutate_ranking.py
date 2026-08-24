@@ -612,6 +612,46 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           """        result.recall_at_6_accepted_reranked
         and not (result.collapse_entry_role == "not-a-role\"""")],
     ),
+
+    # ----------------------------------------------------------------------
+    # FINDING 12 — the denominator is a fact about the gold file.
+    #
+    # Four clauses, four mutations. The guard exists because the fault WAS
+    # already being recorded on 2026-08-22 — archived in `unresolvable`,
+    # printed under a NOT MEASURED heading — thirty lines below aggregates
+    # computed over the shrunken denominator, under exit code 0. So each
+    # mutation here breaks the run DYING, never the fault being noticed.
+    # ----------------------------------------------------------------------
+    (
+        "a lost gold pair is noticed and waved through",
+        [("""    if not unnamed and not stale:
+        return None""",
+          """    if True:
+        return None""")],
+    ),
+    (
+        # Reading the denominator off `unresolvable` misses a pair that left
+        # `resolved` for a reason resolve_targets never classified: it is then
+        # absent from both lists at once. Deliberately does NOT break the
+        # ordinary case, so it pins the silent one and nothing else.
+        "the missing pairs are read from the unresolvable list, not the gold file",
+        [("""    missing = [p.id for p in pairs if p.id not in resolved]""",
+          """    missing = [u["id"] for u in unresolvable]""")],
+    ),
+    (
+        # An allowance nobody removed is a standing permission for the next
+        # pair to vanish quietly — this defect wearing the uniform of its fix.
+        "a stale allowance is tolerated",
+        [("""    stale = sorted(allowed - set(missing))""",
+          """    stale = []""")],
+    ),
+    (
+        # The 2026-08-22 harness DID say two pairs had gone. What it did not
+        # say was which, or why, and that is the half a reader needs.
+        "the message stops naming which pair went and why",
+        [("""            lines.append(f"  {pair_id}: {why.get(pair_id, 'did not resolve')}")""",
+          """            lines.append("  (a pair did not resolve)")""")],
+    ),
 ]
 
 EXPECTED = [
@@ -719,6 +759,12 @@ EXPECTED = [
     "a unit whose pairs were not all reranked is refused the post-rerank figure",
     "the report prints BOTH via-original values, pre and post",
     "a record rescued into the top 6 through its ENGLISH is still not via-original",
+
+    # FINDING 12 — in the same order as the four mutations appended above.
+    "GUARD a gold pair that stops resolving kills the run",
+    "GUARD a pair missing from the unresolvable list still kills the run",
+    "GUARD an allowance naming a pair that resolves is itself refused",
+    "the killed run names the pair and why it did not resolve",
 ]
 
 

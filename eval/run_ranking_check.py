@@ -375,6 +375,10 @@ class Report:
     units: list[UnitResult] = field(default_factory=list)
     aggregate_units: dict = field(default_factory=dict)
     unresolvable: list[dict] = field(default_factory=list)
+    # FINDING 12. Every id here was named on the command line by a person who
+    # knew the pair would not resolve. An empty list is the only state in which
+    # this run's aggregates share a denominator with the runs before it.
+    allowed_unresolvable: list[str] = field(default_factory=list)
     chunk_id_drift: list[dict] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
     # Block C3. The window is a PARAMETER: a different window is a different
@@ -586,6 +590,80 @@ def resolve_targets(conn, pairs, view: str) -> tuple[dict, list[dict]]:
                 continue
             resolved[p.id] = (chunk_id, text)
     return resolved, unresolvable
+
+
+# --------------------------------------------------------------------------
+# FINDING 12 — the denominator is a fact about the gold file
+# --------------------------------------------------------------------------
+
+def unresolved_pair_problem(pairs, resolved: dict, unresolvable: list[dict],
+                            allowed: set[str]) -> str | None:
+    """The message this run must die on, or None if every pair is accounted for.
+
+    Pure — no database, no index — so `eval/test_ranking_check.py` exercises it
+    offline and `scripts/mutate_ranking.py` can break it.
+
+    FINDING 12, 2026-08-22. Both Weilue ranking pairs asserted the FABRICATED
+    characters the record used to hold. When the record was corrected the
+    assertions matched nothing, both pairs left the run, and the harness said
+    only:
+
+        "31 pairs, 29 distinct query text(s) embedded in 1 request(s)"
+
+    A count line. Every headline number then moved because the DENOMINATOR had
+    shrunk — recall@6 via original, reranked, read `22/30 -> 21/29`, which
+    reads like a small regression and is a measurement that lost a pair. The
+    `unresolvable` list was archived correctly and the NOT MEASURED block WAS
+    printed — thirty lines below the aggregates, after the exit code was
+    already zero. **Recording a fault under a heading nobody reaches is not a
+    guard.** `eval/ranking_runs/20260822T160349…json` is committed deliberately
+    as the exhibit of what that looks like from the inside.
+
+    Two rules, and the second matters as much as the first:
+
+    * a pair that does not resolve and is NOT named in `--allow-unresolvable`
+      kills the run — before the batched embedding request and before the
+      twenty-six-minute rerank, because a measurement that cannot be compared
+      should not be paid for;
+    * an allowance naming a pair that DOES resolve also kills the run. A stale
+      allowance is a standing permission for the next pair to vanish quietly,
+      which is this very defect wearing the uniform of the fix.
+
+    The denominator is read from the loaded pairs, never from `unresolvable`.
+    A pair that fell out for a reason `resolve_targets` never classified would
+    otherwise be missing from both lists at once.
+    """
+    missing = [p.id for p in pairs if p.id not in resolved]
+    why = {u["id"]: u["reason"] for u in unresolvable}
+
+    unnamed = [pair_id for pair_id in missing if pair_id not in allowed]
+    stale = sorted(allowed - set(missing))
+    if not unnamed and not stale:
+        return None
+
+    lines: list[str] = []
+    if unnamed:
+        lines.append(
+            f"{len(unnamed)} of {len(pairs)} gold pair(s) did not resolve and "
+            f"were not named in --allow-unresolvable. Every aggregate this run "
+            f"would print is computed over a denominator that silently shrank:"
+        )
+        for pair_id in unnamed:
+            lines.append(f"  {pair_id}: {why.get(pair_id, 'did not resolve')}")
+    if stale:
+        lines.append(
+            "--allow-unresolvable names pair(s) that resolve perfectly well: "
+            + ", ".join(stale)
+            + ". An allowance nobody removed is a standing permission for the "
+              "next pair to disappear without a word."
+        )
+    lines.append(
+        "The pair count is a fact about eval/gold/ranking_pairs.json and not "
+        "about what happened to resolve today. Fix the pair, or retire it from "
+        "the gold file, or name it — and a run carrying any allowance is "
+        "archived as NOT COMPARABLE to one that carries none."
+    )
+    return "\n".join(lines)
 
 
 # --------------------------------------------------------------------------
@@ -1123,7 +1201,8 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
         collapse_sections: bool = False,
         rerank: bool = False, rerank_window: int | None = None,
         rerank_model: str | None = None, rerank_pace: float = 0.0,
-        rerank_tpm: float = 0.0, fuse_renderings: str | None = None) -> Report:
+        rerank_tpm: float = 0.0, fuse_renderings: str | None = None,
+        allow_unresolvable: set[str] | None = None) -> Report:
     from eval.goldset import load_ranking_pairs
     from retrieve.search import search
 
@@ -1170,6 +1249,16 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
                                            + unreachable))
 
         resolved, unresolvable = resolve_targets(conn, pairs, view)
+
+        # FINDING 12, and it fires HERE — before resolve_alternates, before the
+        # batched embedding request, before the rerank. A run whose denominator
+        # has moved cannot be compared to the runs before it, and the cheapest
+        # moment to say so is the one where nothing has been spent yet.
+        allowed = set(allow_unresolvable or ())
+        problem = unresolved_pair_problem(pairs, resolved, unresolvable, allowed)
+        if problem:
+            raise SystemExit(problem)
+
         alternates = resolve_alternates(conn, pairs, view, resolved)
 
         section_of: dict = {}
@@ -1207,7 +1296,15 @@ def run(view: str, dry_run: bool = False, skip_check: bool = False,
             embedding_models=models,
             query_embedding_model="",
             unresolvable=unresolvable,
+            allowed_unresolvable=sorted(allowed),
         )
+        if allowed:
+            report.notes.append(
+                "RAN WITH --allow-unresolvable " + ", ".join(sorted(allowed))
+                + ": these gold pairs were knowingly left out, so this run's "
+                "denominator is smaller than that of a run carrying no "
+                "allowance. NOT COMPARABLE to one. (FINDING 12.)"
+            )
         if collapse_sections:
             report.collapsed = True
             report.collapse_sections = len(canonical)
@@ -1633,6 +1730,15 @@ def print_report(report: Report) -> None:
             print(f"  {u['id']}: {u['reason']}")
             if u["chunks"]:
                 print(f"      {u['chunks']}")
+        # FINDING 12. Since the guard, reaching this block at all means every
+        # id in it was named on the command line: an unnamed one would have
+        # killed the run before a single query was embedded. Said here because
+        # this block used to print under a green exit code, thirty lines below
+        # aggregates computed over the shrunken denominator.
+        print(f"  All of these were named in --allow-unresolvable. The "
+              f"aggregates above are over {len(report.pairs)} pairs, NOT over "
+              f"the gold file's full count, and are not comparable to a run "
+              f"carrying no allowance.")
 
     if report.chunk_id_drift:
         print(f"\n{len(report.chunk_id_drift)} archived chunk_id(s) no longer name "
@@ -1995,6 +2101,14 @@ def main(argv=None) -> int:
                          "Reads eval/gold/query_renderings.json unless a path "
                          "is given; the file's content hash is archived with "
                          "the run.")
+    ap.add_argument("--allow-unresolvable", action="append", default=[],
+                    metavar="PAIR_ID",
+                    help="FINDING 12: proceed even though this gold pair does "
+                         "not resolve against the index. Repeatable, and each "
+                         "pair must be named — an unnamed one kills the run "
+                         "before anything is embedded. Naming any pair archives "
+                         "the run as NOT COMPARABLE, and naming a pair that "
+                         "does resolve is itself an error.")
     ap.add_argument("--json", action="store_true", help="machine-readable output")
     args = ap.parse_args(argv)
 
@@ -2010,7 +2124,8 @@ def main(argv=None) -> int:
                  collapse_sections=args.collapse,
                  rerank=args.rerank, rerank_window=args.rerank_window,
                  rerank_model=args.rerank_model, rerank_pace=args.rerank_pace,
-                 rerank_tpm=args.rerank_tpm, fuse_renderings=args.fuse)
+                 rerank_tpm=args.rerank_tpm, fuse_renderings=args.fuse,
+                 allow_unresolvable=set(args.allow_unresolvable))
 
     # ARCHIVE FIRST, then print. On 2026-08-16 a KeyError in `print_report`
     # killed the process before `archive()` ran and a twenty-six-minute run —

@@ -1882,6 +1882,88 @@ def test_the_two_arm_report_cannot_kill_a_run() -> None:
           "an aggregate win that loses Chinese is a loss")
 
 
+def test_a_lost_gold_pair_kills_the_run() -> None:
+    """FINDING 12, guarded. The denominator is a fact about the gold file.
+
+    On 2026-08-22 both Weilue pairs stopped resolving, left the run, and the
+    harness reported it as `"31 pairs, 29 distinct query text(s) embedded"`.
+    Every aggregate then moved because the denominator had shrunk — via-original
+    reranked read `22/30 -> 21/29`, which reads like a regression and is a lost
+    pair. The `unresolvable` list was archived correctly and the NOT MEASURED
+    block WAS printed, thirty lines below the aggregates, under exit code 0.
+
+    So the assertions here are about the RUN DYING, not about the fault being
+    recorded. Recording it was never the part that was missing.
+    """
+    print("\nFINDING 12: a gold pair that stops resolving")
+
+    from eval.run_ranking_check import unresolved_pair_problem
+
+    # The ids are distinctive on purpose. A stub called "c" would be found in
+    # every sentence of the message by `in`, so a message that stopped naming
+    # the pair would still pass — the fixture-where-the-max-is-the-last-value
+    # trap, one layer down.
+    GONE = "china-describes-rome-weilue"
+    pairs = [StubPair(id="alpha"), StubPair(id="beta"), StubPair(id=GONE)]
+    everything = {p.id: (f"{p.id}::0", "t") for p in pairs}
+    lost = {"alpha": ("alpha::0", "t"), "beta": ("beta::0", "t")}
+    because = [{"id": GONE, "chunks": [],
+                "reason": "the index holds no chunk containing this pair's "
+                          "characters"}]
+
+    check("a run in which every gold pair resolves is not disturbed",
+          unresolved_pair_problem(pairs, everything, [], set()) is None)
+
+    problem = unresolved_pair_problem(pairs, lost, because, set())
+    check("GUARD a gold pair that stops resolving kills the run",
+          problem is not None,
+          "the 21/29 archive is what this looks like when it does not")
+
+    # Naming it is the whole guard. "2 pairs did not resolve" is roughly what
+    # the harness printed on 2026-08-22 and it is not something a reader can
+    # act on. The message has to say WHICH pair and WHY.
+    check("the killed run names the pair and why it did not resolve",
+          bool(problem) and GONE in problem and "no chunk containing" in problem,
+          problem or "")
+    # 3, not 2. Denominated in the gold file, because the number the reader is
+    # being warned about is the one that moved underneath them.
+    check("the message counts against the gold file, not against what resolved",
+          bool(problem) and "of 3 gold pair(s)" in problem,
+          problem or "")
+
+    check("a pair named in --allow-unresolvable is allowed through",
+          unresolved_pair_problem(pairs, lost, because, {GONE}) is None)
+
+    # The second rule, and it is not decoration. An allowance nobody removed is
+    # a standing permission for the NEXT pair to vanish quietly — this defect
+    # wearing the uniform of its own fix.
+    stale = unresolved_pair_problem(pairs, everything, [], {GONE})
+    check("GUARD an allowance naming a pair that resolves is itself refused",
+          stale is not None and GONE in (stale or ""),
+          stale or "the allowance was accepted against a pair that resolved")
+
+    # A pair can leave `resolved` without `resolve_targets` classifying why.
+    # Reading the denominator off `unresolvable` would miss such a pair in both
+    # lists at once — the same blindness, one level down.
+    silent = unresolved_pair_problem(pairs, lost, [], set())
+    check("GUARD a pair missing from the unresolvable list still kills the run",
+          silent is not None and GONE in (silent or ""),
+          silent or "")
+
+    # WHERE it fires, asserted against the source rather than described in a
+    # comment. Dying after the batched embedding and the twenty-six-minute
+    # rerank would still be a guard; it would just be one that costs the run it
+    # refuses to publish. A rule, checked at check time, because an enumeration
+    # maintained by hand will be wrong.
+    source = (Path(__file__).resolve().parent / "run_ranking_check.py").read_text(
+        encoding="utf-8")
+    guard_at = source.find("problem = unresolved_pair_problem(")
+    embed_at = source.find("embedded = embed_texts(")
+    check("the guard fires BEFORE anything is embedded",
+          0 < guard_at < embed_at,
+          f"guard at {guard_at}, embedding at {embed_at}")
+
+
 def main() -> int:
     test_gold_set()
     test_loader_is_strict()
@@ -1901,6 +1983,7 @@ def main() -> int:
     test_the_query_rendering_rule_cannot_see_the_answer()
     test_the_fusion_is_a_max_and_says_what_won()
     test_the_two_arm_report_cannot_kill_a_run()
+    test_a_lost_gold_pair_kills_the_run()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     if FAIL:
         for name in FAIL:
