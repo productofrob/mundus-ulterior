@@ -243,6 +243,148 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           """        and span.get("source_field") is not None
     }""")],
     ),
+
+    # ----------------------------------------------------------------------
+    # D4: a duplicate question cannot shadow a case. Four clauses, and the
+    # last two are about the loader and the matcher being ONE rule rather than
+    # two that currently agree.
+    # ----------------------------------------------------------------------
+    (
+        "two cases may ask the same question",
+        [("""        key = question_key(raw["question"])
+        if key in asked:""",
+          """        key = question_key(raw["question"])
+        if False:""")],
+    ),
+    (
+        # Refusing only byte-identical questions is a guard that looks
+        # complete. The matcher folds case and collapses whitespace, so two
+        # questions differing by a double space shadow each other exactly as a
+        # byte-identical pair does.
+        "the same question is only the same when it is byte-identical",
+        [("""    return re.sub(r"\\s+", " ", text).strip().casefold()
+
+
+def _has_content_assertion(raw: dict) -> bool:""",
+          """    return text
+
+
+def _has_content_assertion(raw: dict) -> bool:""")],
+    ),
+    (
+        # The original defect, restored exactly: return the first match.
+        "match_case picks the first of two cases instead of refusing",
+        [("""    if len(hits) > 1:""", """    if False:""")],
+    ),
+    (
+        # The two functions agree today. A matcher with its OWN copy of the
+        # rule can stop agreeing, and the case the loader refused to admit is
+        # then findable again with nothing saying so.
+        "the matcher keeps its own copy of what the same question means",
+        [("""    question = question_key(payload.get("question") or "")
+    hits = [case for case in cases if question_key(case.question) == question]""",
+          """    question = normalise(payload.get("question") or "")
+    hits = [case for case in cases if normalise(case.question) == question]""")],
+    ),
+
+    # ----------------------------------------------------------------------
+    # D4: session identity, the two stability numbers, and the calibration
+    # refusal. TASK 3 items 1-3.
+    # ----------------------------------------------------------------------
+    (
+        # Two sweeps an hour apart on one afternoon are TWO sessions and one
+        # date. An id that could not tell them apart is the blindness that
+        # invalidated the floor, reintroduced.
+        "every invocation reports the same session id",
+        [("""        "id": uuid.uuid4().hex,""", """        "id": "one-session",""")],
+    ),
+    (
+        "a session that ran past midnight UTC does not say so",
+        [("""        "crossed_midnight_utc": now.strftime("%Y-%m-%d") != session["date"],""",
+          """        "crossed_midnight_utc": False,""")],
+    ),
+    (
+        # A session that changed its own date halfway through would be
+        # uncountable, and a two-day sweep whose day 2 ran late could present
+        # itself as three dates.
+        "a session that crossed midnight adopts the new date",
+        [("""    return {
+        **session,
+        "finished_at": now.isoformat(timespec="seconds"),""",
+          """    return {
+        **session,
+        "date": now.strftime("%Y-%m-%d"),
+        "finished_at": now.isoformat(timespec="seconds"),""")],
+    ),
+    (
+        # `split` is the condition floor.json refuses outright under
+        # max_unstable_content_cells: the floor stops being MEASURABLE before
+        # it stops being met. Folding it into `fail` hides exactly that.
+        "a cell that splits across its repetitions is called a failure",
+        [("""    if passed == 0:
+        return "fail"
+    return "split\"""",
+          """    return "fail\"""")],
+    ),
+    (
+        # A cell of one repetition is unanimous with itself. Counting it
+        # raises the figure with observations that cannot disagree.
+        "an unrepeated cell counts toward per-case stability",
+        [("""    repeated = {k: v for k, v in by_cell.items() if len(v) > 1}""",
+          """    repeated = by_cell""")],
+    ),
+    (
+        # The whole of item 3. With this, the 2026-08-10 observation reports
+        # 100% per case and 100% per session, and the finding disappears.
+        "per-session stability stops comparing the sessions",
+        [("""    agreeing = sum(1 for verdicts in across.values()
+                   if len(set(verdicts.values())) == 1)""",
+          """    agreeing = len(across)""")],
+    ),
+    (
+        # Folding pre-D4 rows into one anonymous session returns a
+        # per-session number computed over a session that never existed.
+        "rows with no session are folded into one anonymous session",
+        [("""        session_id = row.get("session_id")
+        if not session_id:
+            without += 1
+            continue""",
+          """        session_id = row.get("session_id") or "unknown"
+        if False:
+            without += 1
+            continue""")],
+    ),
+    (
+        "the distinct-date threshold is not applied",
+        [("""    if len(dates) < minimum:""", """    if False:""")],
+    ),
+    (
+        # Counting sessions where the floor says dates lets one afternoon of
+        # three sweeps calibrate — which is the 2026-08-10 shape exactly.
+        "distinct dates are counted from session ids",
+        [("""    dates = sorted({(s.get("session") or {})["date"] for s in dated})""",
+          """    dates = sorted({(s.get("session") or {})["id"] for s in dated})""")],
+    ),
+    (
+        # A date assigned to a pre-D4 archive after the fact is the
+        # calibration floor.json already records as invalid.
+        "a sweep with no session identity stops blocking calibration",
+        [("""    if undated:
+        refusals.append(""",
+          """    if False:
+        refusals.append(""")],
+    ),
+    (
+        "three dates of single shots may calibrate",
+        [("""    thin = [s for s in dated if int(s.get("repeat", 0)) < reps_needed]""",
+          """    thin = []""")],
+    ),
+    (
+        # The threshold lives in the floor FILE so that loosening it is a
+        # diff. There is still a value below which the term means nothing.
+        "the floor may permit calibration from a single day",
+        [("""    if int(data["min_distinct_dates"]) < 2:""", """    if False:""")],
+    ),
 ]
 
 EXPECTED = [
@@ -290,6 +432,28 @@ EXPECTED = [
     # FINDING 13.
     "GUARD quoting only the translation FAILS a source-text case",
     "GUARD quoting only the translation FAILS a source-text case",
+
+    # D4, in the order above.
+    "GUARD two cases asking the same question are refused",
+    "GUARD two questions differing only in spacing and case are refused",
+    "GUARD match_case refuses to choose between two cases",
+    "GUARD match_case matches on the loader's key, not a copy of it",
+
+    # D4 items 1-3, in the order above.
+    "GUARD two invocations are two sessions, not one",
+    "GUARD a session that ran past midnight UTC records that it did",
+    "GUARD a session that crossed midnight keeps the date it began on",
+    "GUARD a cell splitting across its own repetitions is unstable per case",
+    "GUARD an unrepeated cell is NOT MEASURED, never 100%",
+    "GUARD and 0% stable PER SESSION — which is the finding, and what one "
+    "number would have shown as a flaky 50%",
+    "GUARD rows with no session are counted in NEITHER number",
+    "GUARD two distinct dates cannot calibrate",
+    "GUARD three sessions on one day are still one date and cannot calibrate",
+    "GUARD a sweep with no session identity blocks calibration rather than "
+    "being counted as a date",
+    "GUARD three dates of single shots cannot calibrate either",
+    "GUARD a floor permitting calibration from a single day is refused",
 ]
 
 

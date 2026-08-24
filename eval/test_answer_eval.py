@@ -15,6 +15,7 @@ Run:  python -m eval.test_answer_eval
 
 from __future__ import annotations
 
+import datetime as _dt
 import json
 import tempfile
 from pathlib import Path
@@ -889,6 +890,73 @@ def test_scoring_an_archive() -> None:
            "grounded — the disagreement pointing the other way")
 
 
+def test_a_duplicate_question_cannot_shadow_a_case() -> None:
+    """A case that never runs, in a gold set that counts it.
+
+    `match_case` returned the FIRST case whose question matched. A second case
+    asking the same question was therefore never scored against any archive,
+    while still counting toward the 33 and toward the per-region tally G4 is
+    checked on. Avoided by hand in `weilue-chinese-quotation`; unguarded until
+    D4. Same family as FINDING 12 and quieter than it — Finding 12 at least
+    moved the numbers.
+    """
+    print("\na duplicate question cannot shadow a case")
+
+    import inspect
+
+    from eval import goldset
+
+    expect_set_rejected(
+        [_valid_case(id="first", question="What was exported from Adulis?"),
+         _valid_case(id="second", question="What was exported from Adulis?")],
+        "GUARD two cases asking the same question are refused",
+        because="asks the same question",
+    )
+
+    # Refusing only byte-identical questions would be a guard that looks
+    # complete: the matcher collapses whitespace and folds case, so these two
+    # shadow each other exactly as a byte-identical pair does.
+    expect_set_rejected(
+        [_valid_case(id="first", question="What was exported from Adulis?"),
+         _valid_case(id="second", question="what  was exported   from adulis?")],
+        "GUARD two questions differing only in spacing and case are refused",
+        because="asks the same question",
+    )
+
+    # The loader guards the gold FILE. This guards every other route in — a
+    # hand-built list, a filtered subset, two files concatenated. Either alone
+    # leaves the other door open.
+    twins = [
+        goldset.AnswerCase(id="a", question="Who?", why="w",
+                           expected_behaviour="answerable"),
+        goldset.AnswerCase(id="b", question="who?", why="w",
+                           expected_behaviour="answerable"),
+    ]
+    try:
+        answer_eval.match_case(twins, {"question": "Who?"})
+        refused = False
+    except GoldSetError as exc:
+        refused = "cannot pick one" in str(exc)
+    expect(refused, "GUARD match_case refuses to choose between two cases")
+
+    one = [goldset.AnswerCase(id="a", question="Who ruled?", why="w",
+                              expected_behaviour="answerable")]
+    expect(answer_eval.match_case(one, {"question": "  WHO   RULED? "}) is not None,
+           "match_case still matches one case across spacing and case")
+    expect(answer_eval.match_case(one, {"question": "who else?"}) is None,
+           "a question no case asks still matches nothing")
+
+    # The rule that ADMITS a case and the rule that FINDS it have to be one
+    # rule. A matcher with its own copy could recognise a duplicate the loader
+    # did not, which puts the shadowed case back with nothing saying so — the
+    # argument answer_eval already makes for importing REFUSAL_SENTENCE rather
+    # than copying it. Asserted against the source, because two functions that
+    # agree today are not the same function.
+    source = inspect.getsource(answer_eval.match_case)
+    expect("question_key(" in source,
+           "GUARD match_case matches on the loader's key, not a copy of it")
+
+
 def test_the_floor() -> None:
     print("\nthe hard floor")
 
@@ -955,6 +1023,186 @@ def test_the_floor() -> None:
            "the known failure is reported even on a passing sweep")
 
 
+def test_a_session_is_recorded_and_is_not_a_date() -> None:
+    """D4, item 1. Two fields, and the second is not decoration.
+
+    All three archived sweeps are within-session and nothing in any of them
+    says so. Block E's ~270 calls are worth nothing if the archives cannot tell
+    a session from a repetition.
+    """
+    print("\nsession identity")
+
+    session = answer_eval.session_identity("D4 pilot day 1")
+    for key in ("id", "date", "date_basis", "started_at", "label"):
+        expect(bool(session.get(key)), f"a session records its {key}")
+    expect(session["date_basis"] == "UTC",
+           "the date is UTC, and the archive says which basis it is")
+    expect(len(session["date"]) == 10 and session["date"].count("-") == 2,
+           f"the date is a plain YYYY-MM-DD, not a timestamp "
+           f"({session['date']})")
+
+    # Per INVOCATION. Two sweeps an hour apart on one afternoon are two
+    # sessions and one date — which is precisely the 2026-08-10 pair — so an
+    # id derived from the date would be the blindness this exists to remove.
+    expect(answer_eval.session_identity()["id"]
+           != answer_eval.session_identity()["id"],
+           "GUARD two invocations are two sessions, not one")
+
+    closed = answer_eval.close_session(session)
+    expect(closed["date"] == session["date"] and closed["id"] == session["id"],
+           "closing a session does not change what it is")
+    expect(closed["crossed_midnight_utc"] is False,
+           "a session that did not cross midnight says so")
+
+    # A day of Block E is ~90 chat calls and well over half an hour. Begun at
+    # 23:50 UTC it finishes on the next date, and it is still ONE session,
+    # counted under the date it began — otherwise a two-day sweep whose
+    # second day ran late could present itself as three.
+    yesterday = (_dt.datetime.now(_dt.timezone.utc)
+                 - _dt.timedelta(days=1)).strftime("%Y-%m-%d")
+    late = answer_eval.close_session({**session, "date": yesterday})
+    expect(late["crossed_midnight_utc"] is True,
+           "GUARD a session that ran past midnight UTC records that it did")
+    expect(late["date"] == yesterday,
+           "GUARD a session that crossed midnight keeps the date it began on")
+
+
+def test_the_two_stability_numbers() -> None:
+    """D4, item 3. One number cannot say which of the two is moving.
+
+    Built on the 2026-08-10 observation itself, because that is the case the
+    numbers exist to describe and a fixture that merely resembled it would
+    prove nothing about the case that mattered.
+    """
+    print("\nper-case and per-session stability")
+
+    def runs(case_id, version, session, outcomes):
+        return [{"case": case_id, "prompt_version": version,
+                 "session_id": session, "session_date": "2026-08-10",
+                 "content_ok": ok} for ok in outcomes]
+
+    # vimose-runes: 3/3 in one session, 0/3 in the next, evidence block
+    # byte-identical, temperature 0.
+    observed = (runs("vimose-runes", "p7-answer-v2r", "A", [True] * 3)
+                + runs("vimose-runes", "p7-answer-v2r", "B", [False] * 3))
+    numbers = answer_eval.stability(observed)
+
+    expect(numbers["per_case"]["rate"] == 1.0,
+           "the 2026-08-10 case is 100% stable PER CASE — each session was "
+           "internally unanimous, so the sampler is not what moved")
+    expect(numbers["per_session"]["rate"] == 0.0,
+           "GUARD and 0% stable PER SESSION — which is the finding, and what "
+           "one number would have shown as a flaky 50%")
+    expect(numbers["per_case"]["cells"] == 2
+           and numbers["per_session"]["pairs"] == 1,
+           "both numbers report their own denominator")
+    named = numbers["disagreeing_across_sessions"]
+    expect(len(named) == 1 and named[0]["case"] == "vimose-runes"
+           and set(named[0]["verdicts"].values()) == {"pass", "fail"},
+           "the disagreement is NAMED, not only counted")
+
+    # A cell that lands differently across its own repetitions is a third
+    # thing, and folding it into pass or fail would hide the condition
+    # floor.json refuses outright under max_unstable_content_cells.
+    split = answer_eval.stability(
+        runs("x", "v", "A", [True, False, True])
+        + runs("x", "v", "B", [True, True, True]))
+    expect(split["per_case"]["rate"] == 0.5,
+           "GUARD a cell splitting across its own repetitions is unstable "
+           "per case")
+
+    # A cell of one repetition is unanimous with itself. Counting it would
+    # raise the figure by adding observations that cannot disagree.
+    single = answer_eval.stability(runs("x", "v", "A", [True])
+                                   + runs("y", "v", "A", [False]))
+    expect(single["per_case"]["cells"] == 0
+           and single["per_case"]["rate"] is None,
+           "GUARD an unrepeated cell is NOT MEASURED, never 100%")
+
+    # Pre-D4 archives. Folding them into one anonymous session would return a
+    # per-session number computed over a session that never existed.
+    old = [{"case": "x", "prompt_version": "v", "content_ok": True}
+           for _ in range(6)]
+    orphans = answer_eval.stability(old)
+    expect(orphans["rows_without_session"] == 6
+           and orphans["per_case"]["rate"] is None
+           and orphans["per_session"]["rate"] is None,
+           "GUARD rows with no session are counted in NEITHER number")
+
+
+def test_calibration_refuses_too_few_days() -> None:
+    """D4, item 2. The floor refuses to call itself calibrated.
+
+    On 2026-08-10 nothing stopped `calibrated: true` being written except a
+    person deciding to write it, and nothing would have stopped it being
+    written again the same way.
+    """
+    print("\ncalibration refuses too few days")
+
+    floor = load_floor()
+    expect(floor["min_distinct_dates"] >= 3,
+           f"the floor requires at least three distinct dates "
+           f"({floor['min_distinct_dates']})")
+
+    def sweep(date, session_id, repeat=3):
+        return {"repeat": repeat,
+                "session": {"id": session_id, "date": date,
+                            "date_basis": "UTC"}}
+
+    three_days = [sweep("2026-08-24", "a"), sweep("2026-08-25", "b"),
+                  sweep("2026-08-26", "c")]
+    good = answer_eval.calibration_eligibility(three_days, floor)
+    expect(good["may_calibrate"],
+           "three dates, three repetitions each, may calibrate")
+
+    two_days = answer_eval.calibration_eligibility(three_days[:2], floor)
+    expect(not two_days["may_calibrate"],
+           "GUARD two distinct dates cannot calibrate")
+
+    # The 2026-08-10 shape exactly: two sweeps, hours apart, ONE date.
+    one_day = [sweep("2026-08-10", "a"), sweep("2026-08-10", "b"),
+               sweep("2026-08-10", "c")]
+    same = answer_eval.calibration_eligibility(one_day, floor)
+    expect(not same["may_calibrate"],
+           "GUARD three sessions on one day are still one date and cannot "
+           "calibrate")
+    expect(same["distinct_sessions"] == 3 and same["distinct_dates"] == 1,
+           "sessions and dates are counted separately and both are reported")
+    expect(same["dates_with_more_than_one_session"] == ["2026-08-10"],
+           "a date carrying more than one session is named — that pair is "
+           "what invalidated this floor")
+
+    # The three sweeps already on disk have no session block at all.
+    orphaned = answer_eval.calibration_eligibility(
+        three_days + [{"repeat": 3}], floor)
+    expect(not orphaned["may_calibrate"],
+           "GUARD a sweep with no session identity blocks calibration rather "
+           "than being counted as a date")
+    expect(orphaned["sweeps_without_session"] == 1,
+           "the sweep with no session identity is counted and reported")
+
+    thin = answer_eval.calibration_eligibility(
+        [sweep("2026-08-24", "a"), sweep("2026-08-25", "b"),
+         sweep("2026-08-26", "c", repeat=1)], floor)
+    expect(not thin["may_calibrate"],
+           "GUARD three dates of single shots cannot calibrate either")
+
+    # The threshold lives in the floor FILE, where loosening it is a diff —
+    # and there is a floor below which the term stops meaning anything. One
+    # day is the value that would reproduce 2026-08-10 exactly.
+    refused = False
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "floor.json"
+        path.write_text(json.dumps({**floor, "min_distinct_dates": 1}),
+                        encoding="utf-8")
+        try:
+            load_floor(path)
+        except GoldSetError as exc:
+            refused = "single day" in str(exc)
+    expect(refused,
+           "GUARD a floor permitting calibration from a single day is refused")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -973,6 +1221,10 @@ def main() -> int:
     test_the_live_payload_shape()
     test_a_refusal_case_is_not_passed_by_verbosity()
     test_scoring_an_archive()
+    test_a_duplicate_question_cannot_shadow_a_case()
+    test_a_session_is_recorded_and_is_not_a_date()
+    test_the_two_stability_numbers()
+    test_calibration_refuses_too_few_days()
     test_the_floor()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0

@@ -101,12 +101,23 @@ def rescore(sweep: dict, cases_by_id: dict) -> list[dict]:
             continue
 
         result = answer_eval.score_payload(case, payload, source=row.get("archived") or "")
-        rescored.append({
+        row = {
             **row,
             "content_ok": result.ok,
             "failures": [a.label for a in result.failures],
             "rescored": True,
-        })
+        }
+        # D4. A sweep archived before session identity existed has no
+        # session on its rows, but the per-run archive it is being rebuilt
+        # from may carry one. Recovered here — read out of the archive,
+        # never invented. A row that cannot be given a session keeps none,
+        # and eval/calibrate_floor.py refuses to count it as a date.
+        session = payload.get("session") or {}
+        if session.get("id") and not row.get("session_id"):
+            row["session_id"] = session["id"]
+            row["session_date"] = session.get("date")
+            row["session_recovered_from_archive"] = True
+        rescored.append(row)
     return rescored
 
 
@@ -136,8 +147,18 @@ def main(argv: list[str] | None = None) -> int:
     missing = [r for r in results if not r.get("rescored")]
 
     print(f"re-scored {path.name}")
-    print(f"  {len(results)} run(s), {len(results) - len(missing)} re-scored, "
-          f"{len(missing)} carried through unscored")
+    session = sweep.get("session") or {}
+    if session.get("id"):
+        print(f"  session {session['id'][:12]}  {session.get('date')} "
+              f"({session.get('date_basis', 'UTC')})"
+              + (f"  {session['label']}" if session.get("label") else ""))
+    else:
+        recovered = {r.get("session_id") for r in results if r.get("session_id")}
+        print("  this sweep carries NO session identity — archived before D4. "
+              + (f"{len(recovered)} session(s) recovered from the per-run "
+                 f"archives." if recovered else
+                 "Nothing to recover from the per-run archives either, so it "
+                 "counts toward no date and can calibrate nothing."))
     print(f"  content pass: {before} -> {after}")
     if missing:
         print("  cells with no archived run (verdict unchanged, treat as stale):")
@@ -151,6 +172,7 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(summary, indent=2, ensure_ascii=False))
     else:
         print_summary(summary)
+        answer_eval.print_stability(answer_eval.stability(results))
         answer_eval.print_floor(verdicts)
 
     if args.write:

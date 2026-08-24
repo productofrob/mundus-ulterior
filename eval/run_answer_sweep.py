@@ -58,6 +58,8 @@ from pathlib import Path
 from answer import answer_store, assemble, translate
 from answer.run_answer import _archive
 from eval import answer_eval
+from eval.answer_eval import (SESSION_DATE_BASIS, close_session,
+                              session_identity)
 from eval.goldset import (GoldSetError, load_answer_cases,
                           load_floor, load_profiles)
 
@@ -87,6 +89,11 @@ for _stream in (sys.stdout, sys.stderr):
 
 SWEEP_DIR = Path(__file__).resolve().parent / "sweeps"
 
+# D4's session identity lives in eval/answer_eval.py, not here. It is pure, it
+# is what eval/calibrate_floor.py counts dates from, and this module imports
+# `answer` and `ingest` — so a check on it that lived here could not run in the
+# offline suite that has no database and no gateway.
+
 
 def _resolved(answer) -> int:
     return sum(1 for s in answer.grounding.quote_spans if s.abs_start is not None)
@@ -94,7 +101,7 @@ def _resolved(answer) -> int:
 
 def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
               k: int, max_sources: int, profiles: dict, pause: float,
-              dry_run: bool, write: bool) -> dict:
+              dry_run: bool, write: bool, session: dict) -> dict:
     from ingest.embed import EmbeddingError, embed_query, resolve_model_label
 
     model_label = translate.resolve_model_label()
@@ -177,6 +184,12 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                     "sources_block": answer.sources_block,
                     "sweep": {"case": case.id, "repetition": attempt,
                               "of": repeat},
+                    # D4. In the PER-RUN archive as well as the sweep file,
+                    # because eval/answer_runs/ is the durable evidence — the
+                    # sweep summary is rebuilt from it by rescore_sweep, and a
+                    # run whose session lived only in the summary would lose it
+                    # the first time a sweep was re-scored from the archives.
+                    "session": session,
                 }
                 archived = _archive(payload) if write else None
 
@@ -187,6 +200,12 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                     "case": case.id,
                     "prompt_version": version,
                     "repetition": attempt,
+                    # Denormalised onto the row on purpose: `summarise` groups
+                    # by it, and a summary that had to look the session up
+                    # elsewhere could be built over rows from two sessions
+                    # without noticing.
+                    "session_id": session["id"],
+                    "session_date": session["date"],
                     "content_ok": scored.ok,
                     "grounded": answer.grounding.ok,
                     "refused": answer.refused,
@@ -340,6 +359,10 @@ def main(argv: list[str] | None = None) -> int:
                         help="embed and retrieve, make no chat call")
     parser.add_argument("--no-write", action="store_true",
                         help="do not store answers or archive runs")
+    parser.add_argument("--session-label", default="",
+                        help="a note attached to this session's identity, e.g. "
+                             "'D4 pilot day 1'. The session id and UTC date "
+                             "are recorded whether or not this is given.")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
@@ -359,12 +382,17 @@ def main(argv: list[str] | None = None) -> int:
             print("no matching case ids", file=sys.stderr)
             return 2
 
+    session = session_identity(args.session_label)
+
     chat_calls = 0 if args.dry_run else len(cases) * len(versions) * args.repeat
     print(f"{len(cases)} question(s) x {len(versions)} prompt version(s) x "
           f"{args.repeat} repetition(s)")
     print(f"cost: {len(cases)} embedding request(s), {chat_calls} chat call(s)")
     if versions:
         print(f"prompts: {', '.join(versions)}")
+    print(f"session: {session['id'][:12]}  {session['date']} "
+          f"({SESSION_DATE_BASIS})"
+          + (f"  {session['label']}" if session["label"] else ""))
 
     import psycopg
 
@@ -382,6 +410,7 @@ def main(argv: list[str] | None = None) -> int:
         outcome = run_sweep(
             conn, cases, versions, args.repeat, args.k, args.max_sources,
             profiles, args.pause, args.dry_run, write=not args.no_write,
+            session=session,
         )
 
     if "error" in outcome:
@@ -400,12 +429,20 @@ def main(argv: list[str] | None = None) -> int:
     summary = summarise(results)
     verdicts = answer_eval.check_floor(summary, load_floor(), args.repeat)
 
+    session = close_session(session)
+    if session["crossed_midnight_utc"]:
+        print(f"\n  NOTE: this session began on {session['date']} "
+              f"{SESSION_DATE_BASIS} and finished on the next date. It is one "
+              f"session and is counted under the date it began — recorded so "
+              f"that a sweep spanning midnight cannot be read as two days.")
+
     if not args.no_write:
         SWEEP_DIR.mkdir(parents=True, exist_ok=True)
         stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%S")
         path = SWEEP_DIR / f"{stamp}-{'_'.join(versions)}-r{args.repeat}.json"
         path.write_text(json.dumps(
             {"prompt_versions": versions, "repeat": args.repeat,
+             "session": session,
              "results": results, "summary": summary,
              "floor": verdicts},
             indent=2, ensure_ascii=False), encoding="utf-8")
@@ -415,6 +452,13 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(summary, indent=2, ensure_ascii=False))
     else:
         print_summary(summary)
+        # One sweep is one session, so the per-session number here is always
+        # NOT MEASURED and says so rather than printing 100%. It becomes a
+        # number under `python -m eval.calibrate_floor`, which reads every
+        # archive. Printed anyway, because a sweep that showed only a
+        # within-session figure with nothing naming it as such is how three
+        # archived sweeps came to be read as a calibrated floor.
+        answer_eval.print_stability(answer_eval.stability(results))
         answer_eval.print_floor(verdicts)
 
     return 0 if all(v["meets_floor"] for v in verdicts.values()) else 1

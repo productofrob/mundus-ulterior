@@ -46,13 +46,16 @@ Costs nothing: no gateway, no database, no embeddings. Reads files.
 from __future__ import annotations
 
 import argparse
+import datetime as _dt
 import json
 import re
 import sys
+import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from eval.goldset import AnswerCase, GoldSetError, load_answer_cases
+from eval.goldset import (AnswerCase, GoldSetError, load_answer_cases,
+                          question_key)
 
 # FINDING 10: this process's own stdout. On Windows `print` writes through a
 # stream whose encoding comes from the console code page, and through a PIPE or
@@ -327,11 +330,33 @@ def load_archives(runs_dir: Path | None = None) -> list[tuple[dict, str]]:
 
 
 def match_case(cases: list[AnswerCase], payload: dict) -> AnswerCase | None:
-    question = normalise(payload.get("question") or "")
-    for case in cases:
-        if normalise(case.question) == question:
-            return case
-    return None
+    """The one gold case this archived run is scored against, or None.
+
+    It used to return the FIRST case whose question matched, and that is the
+    defect: a second case asking the same question would sit in the gold file
+    looking like a test, counting toward every total, and never running
+    against a single archive. Same family as FINDING 12 — a fault the harness
+    was in a position to notice and reported as nothing at all — and quieter,
+    because Finding 12 at least moved the numbers.
+
+    Two guards, and they are not the same guard. `load_answer_cases` refuses a
+    gold FILE that contains a collision, which is where the real set comes
+    from. This refuses to CHOOSE when handed a colliding list by any other
+    route — a hand-built list in a test, a filtered subset, a caller that
+    concatenated two files. Either alone leaves the other door open.
+
+    `question_key` is imported from the loader rather than reimplemented here,
+    so the rule that admits a case and the rule that finds it are one rule.
+    """
+    question = question_key(payload.get("question") or "")
+    hits = [case for case in cases if question_key(case.question) == question]
+    if len(hits) > 1:
+        raise GoldSetError(
+            f"{len(hits)} gold cases ask this question — "
+            f"{sorted(c.id for c in hits)}. Scoring cannot pick one, and "
+            f"picking the first is how a case is never scored at all."
+        )
+    return hits[0] if hits else None
 
 
 def score_archives(cases: list[AnswerCase],
@@ -398,6 +423,326 @@ def _print_grid(results: list[CaseResult]) -> None:
             direction = ("grounded but says nothing useful"
                          if r.grounded else "useful but scored not grounded")
             print(f"    {r.case_id:<20} {r.prompt_version:<14} {direction}")
+
+
+# --------------------------------------------------------------------------
+# D4 — session identity
+# --------------------------------------------------------------------------
+#
+# `eval/run_answer_sweep.py` took --prompt-version --repeat --case --k
+# --max-sources --pause --dry-run --no-write --json. There was no session flag
+# and no archive carried a date. All three archived sweeps are within-session,
+# and nothing in any of them says so.
+#
+# That is not a tidiness problem. floor.json records `calibration_invalidated:
+# "2026-08-10, hours after being set."` — the vimose-runes evidence block was
+# byte-identical (sha256, across all six archived runs) and one session
+# produced 3/3 with seven resolved quotations while the next produced 0/3 with
+# none. Same prompt version, same model, same evidence, temperature 0. Block
+# E's ~270 calls are worth nothing if the archives cannot tell a SESSION from a
+# REPETITION.
+#
+# TWO fields, not one, and the distinction is the whole point. TASK 3 specifies
+# calibration on distinct DATES, and dates are what `eval/calibrate_floor.py`
+# gates on. But the observation that invalidated the floor was two sweeps
+# HOURS APART ON ONE DAY: the thing that moved was a session, not a date. A
+# date-only archive cannot tell those two sweeps apart, which is the exact
+# blindness this exists to remove — so the session id is recorded beside the
+# date, and same-date-different-session pairs are reported as their own number.
+
+SESSION_DATE_BASIS = "UTC"
+
+
+def session_identity(label: str = "") -> dict:
+    """One session, named once, at the moment it starts.
+
+    The id is per INVOCATION. Two sweeps run an hour apart on one afternoon are
+    two sessions and one date, and both facts are recorded rather than one
+    being inferred from the other later.
+    """
+    now = _dt.datetime.now(_dt.timezone.utc)
+    return {
+        "id": uuid.uuid4().hex,
+        "date": now.strftime("%Y-%m-%d"),
+        "date_basis": SESSION_DATE_BASIS,
+        "started_at": now.isoformat(timespec="seconds"),
+        "label": label,
+    }
+
+
+def close_session(session: dict) -> dict:
+    """The same session, with what happened to it while it ran.
+
+    A day of Block E is ~90 chat calls, which is well over half an hour. A
+    sweep begun at 23:50 UTC finishes on the next UTC date, and the session is
+    still ONE session — `date` stays the date it STARTED, because that is what
+    a session is denominated in and a session that changed its own date
+    halfway through would be uncountable.
+
+    `crossed_midnight_utc` records that it happened, so nobody has to work it
+    out from two timestamps later, and so a three-day sweep whose day 2 and day
+    3 are really one long day-2 cannot look like three dates.
+    """
+    now = _dt.datetime.now(_dt.timezone.utc)
+    return {
+        **session,
+        "finished_at": now.isoformat(timespec="seconds"),
+        "crossed_midnight_utc": now.strftime("%Y-%m-%d") != session["date"],
+    }
+
+
+# --------------------------------------------------------------------------
+# D4 — per-case stability and per-session stability, as two numbers
+# --------------------------------------------------------------------------
+#
+# One number cannot say which of the two is moving, and on 2026-08-10 they
+# moved in opposite directions on the same case. `vimose-runes`, evidence block
+# byte-identical across all six archived runs, temperature 0:
+#
+#     session A   3/3 pass, seven resolved quotations
+#     session B   0/3 pass, none
+#
+# Read as ONE stability number that is 50% and looks like a flaky sampler. Read
+# as two it is exact and says the opposite: PER-CASE stability 2 cells of 2,
+# because each session was internally unanimous — the sampler is not the
+# problem — and PER-SESSION stability 0 of 1, because the two sessions
+# disagreed completely. `floor.json`'s session_caveat says it in prose:
+# "repetitions within one session are correlated and are not independent
+# samples". These are that sentence as arithmetic.
+
+SESSION_VERDICTS = ("pass", "fail", "split")
+
+
+def _cell_verdict(rows: list[dict]) -> str:
+    """What one (case, prompt version, session) cell did, in one word.
+
+    `split` is not a rounding of the other two and must never be collapsed into
+    them: a cell that lands differently across its own repetitions is the
+    condition floor.json refuses outright under max_unstable_content_cells,
+    because the floor stops being MEASURABLE before it stops being met.
+    """
+    passed = sum(1 for r in rows if r["content_ok"])
+    if passed == len(rows):
+        return "pass"
+    if passed == 0:
+        return "fail"
+    return "split"
+
+
+def stability(rows: list[dict]) -> dict:
+    """The two numbers, with their denominators, from any set of result rows.
+
+    Pure. Takes rows from one sweep or from every sweep ever archived; the
+    grouping is what makes them two numbers rather than one.
+
+      per_case      within ONE session, across repetitions of one cell.
+                    Measures the sampler.
+      per_session   across SESSIONS, comparing each session's whole verdict for
+                    one (case, prompt version). Measures the day.
+
+    Rows carrying no `session_id` are counted in neither and are reported in
+    `rows_without_session`. They are not folded into one anonymous session:
+    doing that would put every pre-D4 archive into a single made-up session and
+    return a per-session number computed over a session that never existed.
+    """
+    by_cell: dict[tuple, list[dict]] = {}
+    without = 0
+    for row in rows:
+        session_id = row.get("session_id")
+        if not session_id:
+            without += 1
+            continue
+        by_cell.setdefault(
+            (row["case"], row["prompt_version"], session_id), []).append(row)
+
+    # Per case: only cells that were actually repeated. A cell of one
+    # repetition is unanimous with itself, and counting it would raise the
+    # stability figure by adding observations that cannot disagree.
+    repeated = {k: v for k, v in by_cell.items() if len(v) > 1}
+    stable_cells = sum(1 for rows_ in repeated.values()
+                       if _cell_verdict(rows_) != "split")
+
+    # Per session: only (case, prompt version) seen in more than one session.
+    by_pair: dict[tuple, dict[str, str]] = {}
+    for (case_id, version, session_id), rows_ in by_cell.items():
+        by_pair.setdefault((case_id, version), {})[session_id] = \
+            _cell_verdict(rows_)
+    across = {k: v for k, v in by_pair.items() if len(v) > 1}
+    agreeing = sum(1 for verdicts in across.values()
+                   if len(set(verdicts.values())) == 1)
+
+    return {
+        "per_case": {
+            "stable": stable_cells,
+            "cells": len(repeated),
+            "rate": (stable_cells / len(repeated)) if repeated else None,
+            "measures": "the sampler, within one session",
+        },
+        "per_session": {
+            "agreeing": agreeing,
+            "pairs": len(across),
+            "rate": (agreeing / len(across)) if across else None,
+            "measures": "the day, across sessions",
+        },
+        # Named, not counted. "per-session stability 0.67" is a number; "this
+        # case passed 3/3 in one session and 0/3 in the next" is something a
+        # person can act on, and it is the only form in which the 2026-08-10
+        # observation was ever legible.
+        "disagreeing_across_sessions": [
+            {"case": case_id, "prompt_version": version,
+             "verdicts": dict(sorted(verdicts.items()))}
+            for (case_id, version), verdicts in sorted(across.items())
+            if len(set(verdicts.values())) > 1
+        ],
+        "sessions": sorted({row["session_id"] for row in rows
+                            if row.get("session_id")}),
+        "rows_without_session": without,
+    }
+
+
+def print_stability(numbers: dict) -> None:
+    print("\n" + "=" * 72)
+    print("stability — TWO numbers, because one cannot say which is moving")
+    print("=" * 72)
+    for key, label, nothing in (
+        ("per_case", "per-case   ", "no cell was repeated"),
+        ("per_session", "per-session", "no case was seen in two sessions"),
+    ):
+        block = numbers[key]
+        n = block["cells"] if key == "per_case" else block["pairs"]
+        got = block["stable"] if key == "per_case" else block["agreeing"]
+        if not n:
+            # NOT MEASURED, never 0% and never 100%. An empty denominator
+            # printed as a rate is the vacuous pass this repository keeps
+            # paying for.
+            print(f"  {label}  NOT MEASURED — {nothing}")
+            continue
+        print(f"  {label}  {got}/{n} = {block['rate']:.0%}   "
+              f"({block['measures']})")
+    if numbers["rows_without_session"]:
+        print(f"\n  {numbers['rows_without_session']} row(s) carry no session "
+              f"identity and are counted in NEITHER number. They are pre-D4 "
+              f"archives, not an anonymous session.")
+    for row in numbers["disagreeing_across_sessions"]:
+        print(f"\n  {row['case']} / {row['prompt_version']} disagreed across "
+              f"sessions:")
+        for session_id, verdict in row["verdicts"].items():
+            print(f"    {session_id[:12]}  {verdict}")
+    if numbers["per_session"]["pairs"]:
+        print(
+            "\n  A high per-case number beside a low per-session one is not "
+            "noise: it is\n  every session being internally unanimous and the "
+            "sessions disagreeing with\n  each other. That is the 2026-08-10 "
+            "observation, and it is what invalidated\n  the floor."
+        )
+    else:
+        print(
+            "\n  Until a case has been seen in two sessions, the per-session "
+            "number does not\n  exist and the per-case number is a "
+            "within-session figure. That is the state\n  every archived sweep "
+            "before D4 is in."
+        )
+
+
+# --------------------------------------------------------------------------
+# D4 — calibration refuses to be written from too few days
+# --------------------------------------------------------------------------
+
+def calibration_eligibility(sweeps: list[dict], floor: dict) -> dict:
+    """May `calibrated: true` be written from these sweeps? Pure; no I/O.
+
+    TASK 3, item 2. `floor.json` has said `calibrated: false` since 2026-08-10,
+    with `calibration_invalidated` recording that the stability which justified
+    it was itself a single sample. The threshold lives in the floor FILE and
+    not in this module, for the reason load_floor already gives about
+    confidence_profiles: a threshold in Python invites the opposite move —
+    quietly loosening it until the run passes — where in a data file loosening
+    it is a diff.
+
+    Dates, not sessions, per TASK 3 as written on 2026-08-20. Three sessions in
+    one afternoon are three sessions and ONE date, and they cannot calibrate
+    anything: that afternoon is exactly the shape of the 2026-08-10 pair of
+    sweeps. Sessions are counted and reported beside the dates because they are
+    the finer observation, and because a run with three dates and three
+    sessions is a different thing from one with three dates and nine.
+    """
+    minimum = int(floor["min_distinct_dates"])
+    reps_needed = int(floor["min_repetitions"])
+
+    dated, undated = [], []
+    for sweep in sweeps:
+        session = sweep.get("session") or {}
+        (dated if session.get("id") and session.get("date")
+         else undated).append(sweep)
+
+    dates = sorted({(s.get("session") or {})["date"] for s in dated})
+    sessions = sorted({(s.get("session") or {})["id"] for s in dated})
+    per_date: dict[str, int] = {}
+    for sweep in dated:
+        per_date[(sweep.get("session") or {})["date"]] = per_date.get(
+            (sweep.get("session") or {})["date"], 0) + 1
+
+    refusals: list[str] = []
+    if len(dates) < minimum:
+        refusals.append(
+            f"{len(dates)} distinct date(s), and the floor requires "
+            f"{minimum}. Repetitions within one session are correlated and "
+            f"are not independent samples — a floor calibrated from fewer is "
+            f"a within-session regression gate wearing the word 'calibrated'."
+        )
+    thin = [s for s in dated if int(s.get("repeat", 0)) < reps_needed]
+    if thin:
+        refusals.append(
+            f"{len(thin)} sweep(s) ran fewer than {reps_needed} repetitions. "
+            f"A single shot is one sample of a distribution nobody has looked "
+            f"at."
+        )
+    if undated:
+        refusals.append(
+            f"{len(undated)} sweep(s) carry no session identity and count "
+            f"toward no date. They were archived before D4 and cannot be "
+            f"given one now: a date assigned after the fact is the "
+            f"calibration this file already records as invalid."
+        )
+
+    return {
+        "may_calibrate": not refusals,
+        "refusals": refusals,
+        "min_distinct_dates": minimum,
+        "distinct_dates": len(dates),
+        "dates": dates,
+        "distinct_sessions": len(sessions),
+        "sessions_per_date": dict(sorted(per_date.items())),
+        # The finer observation, named because it is the one that broke the
+        # floor: two sweeps, one day, opposite results.
+        "dates_with_more_than_one_session": sorted(
+            date for date, n in per_date.items() if n > 1),
+        "sweeps_without_session": len(undated),
+    }
+
+
+def print_calibration(verdict: dict) -> None:
+    print("\n" + "=" * 72)
+    print("calibration eligibility")
+    print("=" * 72)
+    print(f"  distinct dates     {verdict['distinct_dates']} "
+          f"(floor requires {verdict['min_distinct_dates']}): "
+          f"{', '.join(verdict['dates']) or 'none'}")
+    print(f"  distinct sessions  {verdict['distinct_sessions']}")
+    for date, n in verdict["sessions_per_date"].items():
+        print(f"    {date}  {n} session(s)")
+    if verdict["dates_with_more_than_one_session"]:
+        print(f"  more than one session on: "
+              f"{', '.join(verdict['dates_with_more_than_one_session'])} — "
+              f"counted as one date each, and worth reading beside the "
+              f"per-session stability number")
+    if verdict["may_calibrate"]:
+        print("\n  ELIGIBLE. `calibrated: true` may be written from these "
+              "sweeps.")
+    else:
+        print("\n  REFUSED. `calibrated: true` may NOT be written:")
+        for refusal in verdict["refusals"]:
+            print(f"    - {refusal}")
 
 
 def check_floor(summary: dict, floor: dict, repetitions: int) -> dict:

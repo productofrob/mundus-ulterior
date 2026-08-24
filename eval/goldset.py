@@ -11,6 +11,7 @@ loud error at load time, not a weaker test at run time.
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -421,6 +422,22 @@ _ASSERTION_KEYS = (
 )
 
 
+def question_key(text: str) -> str:
+    """The string under which two cases are THE SAME QUESTION.
+
+    Defined here, and imported by `eval/answer_eval.py:match_case`, so that the
+    rule the loader enforces and the rule the matcher applies cannot be two
+    rules. The same argument as `answer_eval` importing `REFUSAL_SENTENCE`
+    rather than copying it: a matcher that recognised a duplicate the loader
+    did not would put the shadowed case back, and nothing would say so.
+
+    Whitespace and case, and deliberately not punctuation — the same tolerances
+    `answer_eval.normalise` applies, because an archived question and a gold
+    question differ by the spacing a writer used, never by a comma.
+    """
+    return re.sub(r"\s+", " ", text).strip().casefold()
+
+
 def _has_content_assertion(raw: dict) -> bool:
     if any(raw.get(key) for key in _CONTENT_KEYS):
         return True
@@ -527,6 +544,7 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
 
     cases: list[AnswerCase] = []
     seen: set[str] = set()
+    asked: dict[str, str] = {}
     raws: dict[str, dict] = {}
     for i, raw in enumerate(data.get("cases", [])):
         where = f"{path.name} case[{i}]"
@@ -536,6 +554,31 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
             raise GoldSetError(f"{where}: duplicate case id {raw['id']!r}")
         seen.add(raw["id"])
         raws[raw["id"]] = raw
+
+        # Same family as FINDING 12, and quieter. `answer_eval.match_case`
+        # returns the FIRST case whose question matches, so a second case
+        # asking the same question is never scored against any archive — it
+        # sits in the gold file looking exactly like a test, is counted in
+        # every total and every per-region tally, and runs never. Avoided by
+        # hand in `weilue-chinese-quotation` on 2026-08-22, unguarded until
+        # now.
+        #
+        # Keyed with `question_key`, which is the matcher's own rule: two
+        # questions differing only in spacing or letter case shadow each other
+        # exactly as a byte-identical pair does, and refusing only the
+        # byte-identical ones would be a guard that looks complete.
+        key = question_key(raw["question"])
+        if key in asked:
+            raise GoldSetError(
+                f"{where}: {raw['id']!r} asks the same question as "
+                f"{asked[key]!r}. Scoring matches an archived run to the FIRST "
+                f"case whose question matches, so the second would never be "
+                f"scored against anything while still counting toward the "
+                f"total and the per-region stratification. Two cases against "
+                f"one record differ in the WORDING of the question — that is "
+                f"what `paired_with` is for."
+            )
+        asked[key] = raw["id"]
 
         if not str(raw["why"]).strip():
             raise GoldSetError(
@@ -969,7 +1012,12 @@ def load_ranking_pairs(path: Path | None = None) -> list[RankingPair]:
 # --------------------------------------------------------------------------
 
 _FLOOR_REQUIRED = {"required_cases", "max_refusal_rate",
-                   "max_unstable_content_cells", "min_repetitions"}
+                   "max_unstable_content_cells", "min_repetitions",
+                   # D4. Required rather than optional-with-a-default: a floor
+                   # file that omitted it would calibrate from one day and the
+                   # default would be the only thing saying otherwise, which
+                   # is a threshold in Python by another route.
+                   "min_distinct_dates"}
 
 
 def load_floor(path: Path | None = None) -> dict:
@@ -999,6 +1047,14 @@ def load_floor(path: Path | None = None) -> dict:
         raise GoldSetError(
             f"{path.name}: {sorted(overlap)} listed as both required and known "
             f"failing. A case cannot be a floor term and an exemption."
+        )
+    if int(data["min_distinct_dates"]) < 2:
+        raise GoldSetError(
+            f"{path.name}: min_distinct_dates is "
+            f"{data['min_distinct_dates']}. Below two, a floor can be "
+            f"calibrated from a single day — which is what "
+            f"calibration_invalidated in this same file records happening on "
+            f"2026-08-10, and the reason the term exists."
         )
     for case_id, reason in (data.get("known_failing_cases") or {}).items():
         if not str(reason).strip():
