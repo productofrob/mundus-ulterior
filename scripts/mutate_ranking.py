@@ -277,7 +277,13 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "the rate-limit backoff waits no time at all",
-        [("                sleep(RATE_LIMIT_BACKOFF_SECONDS)", "                sleep(0)")],
+        # ANCHORED on the `)` above it. The bare call appears in
+        # answer/translate.py too, and SOURCES order was the only thing
+        # keeping this mutation on the reranker.
+        [("""                )
+                sleep(RATE_LIMIT_BACKOFF_SECONDS)""",
+          """                )
+                sleep(0)""")],
     ),
     (
         "pacing never happens, so a throttled account is rediscovered every call",
@@ -343,8 +349,15 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         # can raise. Counting a translation entry as an original entry is
         # exactly the inflation it exists to refuse.
         "a record reached via its translation counts as via-original",
-        [('        and not (result.collapse_entry_role == "translation"\n                 and result.collapse_primary_role == "original")',
-          '        and not (result.collapse_entry_role == "not-a-role"\n                 and result.collapse_primary_role == "original")')],
+        # ANCHORED on recall_at_6_accepted_collapsed. The predicate appears
+        # twice, pre-rerank and post-rerank, and the bare form took the
+        # pre-rerank one by luck of ordering rather than by saying so.
+        [("""        result.recall_at_6_accepted_collapsed
+        and not (result.collapse_entry_role == "translation"
+                 and result.collapse_primary_role == "original")""",
+          """        result.recall_at_6_accepted_collapsed
+        and not (result.collapse_entry_role == "not-a-role"
+                 and result.collapse_primary_role == "original")""")],
     ),
     (
         "every record's primary text is its original",
@@ -358,8 +371,12 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         'the via-original companion ignores whether a record HAS a source text',
-        [('        and not (result.collapse_entry_role == "translation"\n                 and result.collapse_primary_role == "original")',
-          '        and not (result.collapse_entry_role == "translation")')],
+        # ANCHORED on recall_at_6_accepted_collapsed, as above.
+        [("""        result.recall_at_6_accepted_collapsed
+        and not (result.collapse_entry_role == "translation"
+                 and result.collapse_primary_role == "original")""",
+          """        result.recall_at_6_accepted_collapsed
+        and not (result.collapse_entry_role == "translation")""")],
     ),
     (
         "the rerank summary reassigns its dict and drops the collapse keys",
@@ -851,6 +868,44 @@ def main() -> int:
             if missing:
                 problems.append(f"{label}: mutation target not found in any source")
                 print(f"  MISS {label} (target not found)")
+                continue
+
+            # D4, 2026-08-24. A target occurring in more than one place is
+            # resolved twice over in silence: `next(f for f in SOURCES if old
+            # in edited[f])` takes the FIRST source, and `.replace(old, new,
+            # 1)` takes the FIRST occurrence within it. Neither says so.
+            #
+            # Three targets here were ambiguous when this check was written
+            # and all three happened to be landing where they were meant to:
+            # `sleep(RATE_LIMIT_BACKOFF_SECONDS)` occurs in both retrieve/
+            # rerank.py and answer/translate.py, and the two via-original
+            # predicate mutations both matched a two-line form that occurs at
+            # the pre-rerank AND the post-rerank site. Luck of ordering, in a
+            # file whose EXPECTED list already carries a note about a mutation
+            # that once reported itself as list drift and was not.
+            #
+            # The sibling harness was not so lucky: on the same day
+            # goldset.question_key was given a body byte-identical to
+            # answer_eval.normalise and mutate_part8's punctuation mutation
+            # moved onto it, leaving a working guard unwatched.
+            ambiguous = [
+                (old, sum(originals[f].count(old) for f in SOURCES))
+                for old, _ in patches
+            ]
+            ambiguous = [(old, n) for old, n in ambiguous if n > 1]
+            if ambiguous:
+                problems.append(
+                    f"{label}: mutation target is AMBIGUOUS — "
+                    + "; ".join(
+                        f"{n} occurrences of "
+                        f"{old.splitlines()[0].strip()[:60]!r}"
+                        for old, n in ambiguous
+                    )
+                    + ". The first is chosen silently, so this mutation may be "
+                      "pointing at code it was not written for. Anchor it with "
+                      "surrounding lines until it is unique."
+                )
+                print(f"  MISS {label} (ambiguous target)")
                 continue
             for old, new in patches:
                 target = next(f for f in SOURCES if old in edited[f])

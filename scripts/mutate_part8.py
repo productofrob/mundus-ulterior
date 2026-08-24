@@ -95,8 +95,19 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         # the mutation did not mutate. Replacing punctuation with a space is the
         # tolerance a well-meaning author would actually add.
         "matching becomes punctuation-insensitive",
-        [("""    return re.sub(r"\\s+", " ", text).strip().casefold()""",
-          """    return re.sub(r"\\s+", " ", re.sub(r"[^\\w\\s]", " ", text)).strip().casefold()""")],
+        # ANCHORED on `def contains` below it. The bare line is not unique:
+        # eval/goldset.py's question_key() has a byte-identical body, goldset
+        # comes first in SOURCES, and on 2026-08-24 this mutation silently
+        # moved there and left its guard unwatched. See the ambiguity check in
+        # main().
+        [("""    return re.sub(r"\\s+", " ", text).strip().casefold()
+
+
+def contains(haystack: str, needle: str) -> bool:""",
+          """    return re.sub(r"\\s+", " ", re.sub(r"[^\\w\\s]", " ", text)).strip().casefold()
+
+
+def contains(haystack: str, needle: str) -> bool:""")],
     ),
     (
         "the refusal sentence is no longer recognised",
@@ -105,8 +116,11 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "the alternatives assertion is never scored",
-        [("""    for group in case.expect_answer_contains_any:""",
-          """    for group in []:""")],
+        # ANCHORED. The bare line appears again in the --list CLI branch.
+        [("""    for group in case.expect_answer_contains_any:
+        hit = next((item for item in group if contains(answer_text, item)), None)""",
+          """    for group in []:
+        hit = next((item for item in group if contains(answer_text, item)), None)""")],
     ),
     (
         # The hole a dry run of the sweep found: expect_cited_docs says the model
@@ -124,7 +138,11 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "the quotation floor is never scored",
-        [("""    if case.expect_min_resolved_quotes:""", """    if False:""")],
+        # ANCHORED. The bare line appears again in the --list CLI branch.
+        [("""    if case.expect_min_resolved_quotes:
+        add(Assertion(""",
+          """    if False:
+        add(Assertion(""")],
     ),
 
     # ----------------------------------------------------------------------
@@ -505,6 +523,44 @@ def main() -> int:
             if missing:
                 problems.append(f"{label}: mutation target not found")
                 print(f"  MISS {label} (target not found)")
+                continue
+
+            # D4, 2026-08-24. A target that occurs in more than one place is
+            # resolved twice over in silence: `next(f for f in SOURCES if old
+            # in edited[f])` takes the FIRST source, and `.replace(old, new,
+            # 1)` takes the FIRST occurrence within it. Neither says so.
+            #
+            # It bit on the day it was written. `eval/goldset.py`'s
+            # `question_key` was given a body byte-identical to
+            # `answer_eval.normalise`; goldset comes first in SOURCES; the
+            # punctuation mutation silently moved onto the new function, and
+            # `GUARD matching is NOT punctuation-insensitive` was left
+            # unwatched while this harness reported only that its guard had
+            # not failed. The report was true and the diagnosis it invited —
+            # "the guard is broken, or the lists have drifted" — was wrong,
+            # and BLOCK_D_START already warns about exactly that misreading.
+            #
+            # So: pick-the-first-and-say-nothing, inside the instrument this
+            # project built to catch pick-the-first-and-say-nothing. Anchor
+            # the target with surrounding lines until it is unique.
+            ambiguous = [
+                (old, sum(originals[f].count(old) for f in SOURCES))
+                for old, _ in patches
+            ]
+            ambiguous = [(old, n) for old, n in ambiguous if n > 1]
+            if ambiguous:
+                problems.append(
+                    f"{label}: mutation target is AMBIGUOUS — "
+                    + "; ".join(
+                        f"{n} occurrences of "
+                        f"{old.splitlines()[0].strip()[:60]!r}"
+                        for old, n in ambiguous
+                    )
+                    + ". The first is chosen silently, so this mutation may be "
+                      "pointing at code it was not written for. Anchor it with "
+                      "surrounding lines until it is unique."
+                )
+                print(f"  MISS {label} (ambiguous target)")
                 continue
             for old, new in patches:
                 target = next(f for f in SOURCES if old in edited[f])
