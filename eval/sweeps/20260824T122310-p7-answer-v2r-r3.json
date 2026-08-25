@@ -1,0 +1,487 @@
+{
+  "prompt_versions": [
+    "p7-answer-v2r"
+  ],
+  "repeat": 3,
+  "session": {
+    "id": "792202e7ac5847ea962e5829750d8fa2",
+    "date": "2026-08-24",
+    "date_basis": "UTC",
+    "started_at": "2026-08-24T12:21:08+00:00",
+    "label": "D4 pilot day 1",
+    "finished_at": "2026-08-24T12:23:10+00:00",
+    "crossed_midnight_utc": false
+  },
+  "corpus_version": {
+    "algorithm": "sha256-of-canonical-json-v1",
+    "scope": "seed records only; distractors excluded",
+    "source": "database",
+    "seed_record_count": 24,
+    "seed_corpus_digest": "26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28",
+    "record_hashes": {
+      "africa-01-ezana-stone": "02f34bf4dfcdcec8163b7f3e9ecd3f2d6d0b43eedc31ec15feb8a2949d6859b2",
+      "africa-02-aksumite-coin": "6059f3389690db904c68d414bea131bcfee90204c8e20458e1db5e00f0d4d584",
+      "africa-03-periplus-adulis": "0e83bf72dbdf421bff0665dac9057fbffbb4416696f6180cb744507234e43a12",
+      "arabia-01-periplus": "2de22094d87de53babeccc6e150651ae9b49c3ca3d615923dd289bba329bec70",
+      "arabia-02-palmyrene-tariff": "91c4de9c363868410a6e1330fac0905d65ae855fb4d668cb2d3ae354aa5d2438",
+      "arabia-03-jsnab17": "8682c3c16a4d02128b3fd9a1ad02be18ddf18e587dd6a9fedaa689b5a2bfc2dc",
+      "arabia-04-jabal-dabub": "c6c0749dbdae91590da1736d6afb5b92a440a3fafb0d75c3847472cad76d0812",
+      "eastasia-01-weilue": "3eff69e3f9d898ce5e4e84aa120efd2d3a79df1ba5eb95310d5a82a2dc272fac",
+      "eastasia-02-hou-hanshu": "a37becaa697167918e8631c672f665877be0cca0eab0be7a8845d04b9840ade4",
+      "eastasia-03-hwangnam-glass": "d65ded06235c2ebfa6598cfae49df8b3d2a1878b76bc6eaeff9052f551cb7790",
+      "persia-01-skz": "289faeaca5276887d894b8b86ea96ac3b881e9e914cac3ede7eb4053d5c5912b",
+      "persia-02-silver-plate": "a4e819fcbca587174bd8d1d59624c979340a4d57d504094b5c283c4642f41b40",
+      "persia-03-coin": "ac4f5a907a56cb81a417de71d24ab42bf15dec6cb993515992b9d10971f4a61b",
+      "scandinavia-01-hoby-treasure": "c359ea6ac4c03fd8553de2d4187558496ba27d44f3c2e95ccbecfd1db52ea4b5",
+      "scandinavia-02-gudme-hoard": "483c36b36a6372e20048705703bb72d24d0139602860fff022ab7021f3007c8d",
+      "scandinavia-03-vimose": "0de086025bacda4ef2a61b92bdf4695fbf37546df367a77dc9e6fa1441ee4acb",
+      "scandinavia-04-illerup-adal": "d2707cae56a5338e6ace1d6501033c55f3abc39b47925dc2a7da7e33023c767f",
+      "seasia-01-oc-eo-medallion": "db0d7a9f56d47e983add739a8e45ec5ebebd5d0a89b20ae33ddf71818af27543",
+      "seasia-02-oc-eo-site": "cf210152193f4fe1c7934b72cd0bb0f57fdbc1be293c0528bf955935a81fb0a6",
+      "seasia-03-khao-sam-kaeo": "f64a0e2c9b31eda224e15b10d17d95d0a81a68cdbf4dc91759fa723457b33704",
+      "southasia-01-akananuru-149": "9f6dd5aba184dd01806962d2d0f674a9ea03ce6e56b0da3586e8d795d1545e0c",
+      "southasia-02-periplus-muziris": "0791a6e2396566f0e54b7e47ec802ceaa68d2a5dee07758efb5cc24dcd965807",
+      "southasia-03-muziris-papyrus": "9a2eefaff5a37db2feccc48aa8d981ff42ed90bcea053d9d497eeca3013321f0",
+      "southasia-04-pattanam": "ede696189658686ae314d4435ef2e8ee9c917a276d26350fc60dd9fd901a9728"
+    }
+  },
+  "corpus_version_after": {
+    "algorithm": "sha256-of-canonical-json-v1",
+    "scope": "seed records only; distractors excluded",
+    "source": "database",
+    "seed_record_count": 24,
+    "seed_corpus_digest": "26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28",
+    "record_hashes": {
+      "africa-01-ezana-stone": "02f34bf4dfcdcec8163b7f3e9ecd3f2d6d0b43eedc31ec15feb8a2949d6859b2",
+      "africa-02-aksumite-coin": "6059f3389690db904c68d414bea131bcfee90204c8e20458e1db5e00f0d4d584",
+      "africa-03-periplus-adulis": "0e83bf72dbdf421bff0665dac9057fbffbb4416696f6180cb744507234e43a12",
+      "arabia-01-periplus": "2de22094d87de53babeccc6e150651ae9b49c3ca3d615923dd289bba329bec70",
+      "arabia-02-palmyrene-tariff": "91c4de9c363868410a6e1330fac0905d65ae855fb4d668cb2d3ae354aa5d2438",
+      "arabia-03-jsnab17": "8682c3c16a4d02128b3fd9a1ad02be18ddf18e587dd6a9fedaa689b5a2bfc2dc",
+      "arabia-04-jabal-dabub": "c6c0749dbdae91590da1736d6afb5b92a440a3fafb0d75c3847472cad76d0812",
+      "eastasia-01-weilue": "3eff69e3f9d898ce5e4e84aa120efd2d3a79df1ba5eb95310d5a82a2dc272fac",
+      "eastasia-02-hou-hanshu": "a37becaa697167918e8631c672f665877be0cca0eab0be7a8845d04b9840ade4",
+      "eastasia-03-hwangnam-glass": "d65ded06235c2ebfa6598cfae49df8b3d2a1878b76bc6eaeff9052f551cb7790",
+      "persia-01-skz": "289faeaca5276887d894b8b86ea96ac3b881e9e914cac3ede7eb4053d5c5912b",
+      "persia-02-silver-plate": "a4e819fcbca587174bd8d1d59624c979340a4d57d504094b5c283c4642f41b40",
+      "persia-03-coin": "ac4f5a907a56cb81a417de71d24ab42bf15dec6cb993515992b9d10971f4a61b",
+      "scandinavia-01-hoby-treasure": "c359ea6ac4c03fd8553de2d4187558496ba27d44f3c2e95ccbecfd1db52ea4b5",
+      "scandinavia-02-gudme-hoard": "483c36b36a6372e20048705703bb72d24d0139602860fff022ab7021f3007c8d",
+      "scandinavia-03-vimose": "0de086025bacda4ef2a61b92bdf4695fbf37546df367a77dc9e6fa1441ee4acb",
+      "scandinavia-04-illerup-adal": "d2707cae56a5338e6ace1d6501033c55f3abc39b47925dc2a7da7e33023c767f",
+      "seasia-01-oc-eo-medallion": "db0d7a9f56d47e983add739a8e45ec5ebebd5d0a89b20ae33ddf71818af27543",
+      "seasia-02-oc-eo-site": "cf210152193f4fe1c7934b72cd0bb0f57fdbc1be293c0528bf955935a81fb0a6",
+      "seasia-03-khao-sam-kaeo": "f64a0e2c9b31eda224e15b10d17d95d0a81a68cdbf4dc91759fa723457b33704",
+      "southasia-01-akananuru-149": "9f6dd5aba184dd01806962d2d0f674a9ea03ce6e56b0da3586e8d795d1545e0c",
+      "southasia-02-periplus-muziris": "0791a6e2396566f0e54b7e47ec802ceaa68d2a5dee07758efb5cc24dcd965807",
+      "southasia-03-muziris-papyrus": "9a2eefaff5a37db2feccc48aa8d981ff42ed90bcea053d9d497eeca3013321f0",
+      "southasia-04-pattanam": "ede696189658686ae314d4435ef2e8ee9c917a276d26350fc60dd9fd901a9728"
+    }
+  },
+  "corpus_moved": null,
+  "results": [
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with Adulis in the Kingdom of Aksum (also called the kingdom of Zoskales), but they detail what Rome imported from Aksum rather than what Rome traded to it [S1][S5].",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122118+0000-121f941b.json"
+    },
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with Adulis in the Kingdom of Aksum (also called the kingdom of Zoskales), but they detail what Rome imported from Aksum rather than what Rome traded to it [S1][S5].",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122123+0000-121f941b.json"
+    },
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with Adulis in the Kingdom of Aksum (also called the kingdom of Zoskales), but they detail what Rome imported from Aksum rather than what Rome traded to it [S1][S5].",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122127+0000-121f941b.json"
+    },
+    {
+      "case": "adulis-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "answer": "According to the Periplus of the Erythraean Sea, \"There are exported from these places ivory, and tortoise-shell and rhinoceros-horn.\" [S3] The text specifies that \"all the ivory is brought from the country beyond the Nile through the district called Cyeneum, and thence to Adulis.\" [S1] Additionally, tortoise-shell was brought to Adulis's market \"by the Fish-Eaters\" from \"a great many little sandy islands called Alalaei.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122134+0000-d2403a22.json"
+    },
+    {
+      "case": "adulis-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "answer": "According to the Periplus of the Erythraean Sea, \"There are exported from these places ivory, and tortoise-shell and rhinoceros-horn.\" [S3] The text specifies that \"all the ivory is brought from the country beyond the Nile through the district called Cyeneum, and thence to Adulis.\" [S1] Additionally, tortoise-shell was brought to Adulis's market \"by the Fish-Eaters\" from \"a great many little sandy islands called Alalaei.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122139+0000-d2403a22.json"
+    },
+    {
+      "case": "adulis-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "answer": "According to the Periplus of the Erythraean Sea, \"There are exported from these places ivory, and tortoise-shell and rhinoceros-horn.\" [S3] The text specifies that \"all the ivory is brought from the country beyond the Nile through the district called Cyeneum, and thence to Adulis.\" [S1] Additionally, \"tortoise-shell, which is brought to market there by the Fish-Eaters\" from nearby islands called the Alalaei was exported from Adulis. [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122143+0000-d2403a22.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": false,
+      "grounded": false,
+      "refused": true,
+      "resolved_quotes": 1,
+      "answer": "The sources retrieved do not answer this question. The sources do include information about the Vimose inscriptions, which are \"earliest datable Elder Futhark runic texts\" from Scandinavia dated to c. 160-300 CE, but the English translation provided states only that \"Several inscriptions remain only partially deciphered\" and offers only tentative interpretations of individual words rather than a complete reading of what the inscriptions say. [S3]",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122150+0000-467d3b0a.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": false,
+      "grounded": false,
+      "refused": true,
+      "resolved_quotes": 1,
+      "answer": "The sources retrieved do not answer this question. The sources do include information about the Vimose inscriptions, which are \"earliest datable Elder Futhark runic texts\" from Scandinavia dated to c. 160-300 CE, but the English translation provided states only that \"Several inscriptions remain only partially deciphered\" and offers only tentative interpretations of individual words rather than a complete reading of what the inscriptions say. [S3]",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122155+0000-467d3b0a.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": false,
+      "grounded": false,
+      "refused": true,
+      "resolved_quotes": 1,
+      "answer": "The sources retrieved do not answer this question. The sources do include information about the Vimose inscriptions, which are \"earliest datable Elder Futhark runic texts\" from Scandinavia dated to c. 160-300 CE, but the English translation provided states only that \"Several inscriptions remain only partially deciphered\" and offers only tentative interpretations of individual words rather than a complete reading of what the inscriptions say. [S3]",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122200+0000-467d3b0a.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source confirms this trade pattern, describing \"the city where the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans], stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper.\" [S5]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122209+0000-1c9b90c3.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source confirms this trade pattern, describing \"the city where the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans], stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper.\" [S5]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122216+0000-1c9b90c3.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source confirms this trade pattern, describing \"the city where the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans], stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper.\" [S5]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122222+0000-1c9b90c3.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, describes the Roman Empire (Da Qin) as a distant kingdom located west of Parthia and the Great Sea, accessible by sea voyage from Parthia in as little as two months with favorable winds, though the journey could take up to three years without wind. [S1] According to this source, the Roman Empire \"has more than four hundred smaller cities and towns\" and \"extends several thousand li in all directions,\" with its capital located near a river and surrounded by stone walls. [S1] A later Chinese historical text records that in 166 CE, the king of Da Qin sent envoys bearing elephant tusks, rhinoceros horn, and turtle shell, marking what the Chinese source describes as \"the very first time there was [direct] communication\" between the two countries. [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122239+0000-5b688b51.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 8,
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, describes the Roman Empire (Da Qin) as a distant kingdom located \"west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea,\" accessible by sea from Parthian territory in a journey that could take anywhere from two months to three years depending on wind conditions. [S1] According to this source, the Roman Empire \"has more than four hundred smaller cities and towns\" and \"extends several thousand li in all directions,\" with its capital located \"close to the mouth of a river\" and surrounded by \"outer walls of the city\" made of stone. [S1] A later Chinese historical record, the Hou Hanshu, documents that in 166 CE \"the king of Da Qin (the Roman Empire), Andun (Marcus Aurelius Antoninus), sent envoys\" to the Chinese court bearing \"elephant tusks, rhinoceros horn, and turtle shell,\" and notes that \"this was the very first time there was [direct] communication [between the two countries].\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122245+0000-5b688b51.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, describes the Roman Empire (Da Qin) as a distant kingdom located west of Parthia and the Great Sea, accessible by sea voyage from Parthia in as little as two months with favorable winds, though the journey could take up to three years without wind. [S1] According to this source, the Roman Empire \"has more than four hundred smaller cities and towns\" and \"extends several thousand li in all directions,\" with its capital located near a river and surrounded by stone walls. [S1] A later Chinese historical text records that in 166 CE, the king of Da Qin sent envoys bearing elephant tusks, rhinoceros horn, and turtle shell, which the Chinese source notes were \"neither precious nor rare,\" suggesting skepticism about the account. [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122255+0000-5b688b51.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources provided contain information about Roman contact with regions beyond the Mediterranean world, including South Asia, Scandinavia, and East Asia, but they do not discuss the Antikythera mechanism or when it was built. [S1][S2][S3][S4][S5][S6]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122302+0000-56fb5151.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources provided contain information about Roman contact with regions beyond the Mediterranean world, including South Asia, Scandinavia, and East Asia, but they do not discuss the Antikythera mechanism or when it was built. [S1][S2][S3][S4][S5][S6]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122306+0000-56fb5151.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "792202e7ac5847ea962e5829750d8fa2",
+      "session_date": "2026-08-24",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "answer": "The sources retrieved do not answer this question. The sources provided contain information about Roman contact with regions beyond the Mediterranean world, including South Asia, Scandinavia, and East Asia, but they do not discuss the Antikythera mechanism or when it was built. [S1][S2][S3][S4][S5][S6]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260824T122310+0000-56fb5151.json"
+    }
+  ],
+  "summary": {
+    "cells": [
+      {
+        "case": "adulis-exports",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 2,
+        "quotes_min": 3,
+        "quotes_max": 4,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "aksum-exports",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "antikythera-absent",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "chinese-da-qin",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 3,
+        "quotes_min": 3,
+        "quotes_max": 8,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "muziris-cargo",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 4,
+        "quotes_max": 4,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "vimose-runes",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 1.0
+      }
+    ],
+    "by_version": {
+      "p7-answer-v2r": {
+        "cases": 6,
+        "runs": 18,
+        "content_pass_rate": 0.6666666666666666,
+        "grounded_rate": 0.8333333333333334,
+        "refusal_rate": 0.5,
+        "unstable_content_cells": 0,
+        "unstable_grounded_cells": 0,
+        "mean_resolved_quotes": 2.2222222222222223
+      }
+    }
+  },
+  "floor": {
+    "p7-answer-v2r": {
+      "meets_floor": false,
+      "problems": [
+        "vimose-runes: 0/3 — a required case must pass every repetition"
+      ],
+      "known_failing": {
+        "aksum-exports": {
+          "observed": "0/3",
+          "reason": "Fails 0/3 under BOTH prompt versions, and 4/4 across the archived Part 7 runs — seven consecutive failures under four prompts. The corpus contains the answer in published English, aligned by section, verified present in the evidence block by the sweep's dry run. This is not a prompt defect and must not be folded into the floor as tolerated; it is an open defect tracked separately so that a floor pass can never be read as 'the system answers these questions'."
+        },
+        "weilue-chinese-quotation": {
+          "observed": "not run",
+          "reason": "FINDING 13, 2026-08-22. Fails because nothing in the answer path ever asks for a non-English source text to be quoted: prompt rule 3 permits 'the SOURCE TEXT or the ENGLISH' and requires neither. Measured at 45 of 45 resolved quotations from reference_translation across 16 archived runs of chinese-da-qin, with the Chinese chunk retrieved at [S1] every time. NOT a retrieval defect and NOT a corpus defect — the corpus text was corrected on 2026-08-22 and nothing moved. Tracked as an open defect rather than tolerated, on the aksum-exports precedent, so that a floor pass can never be read as 'the system quotes source texts'. Closing it means changing the prompt, which cannot happen before Block E without invalidating every archived number."
+        }
+      }
+    }
+  }
+}

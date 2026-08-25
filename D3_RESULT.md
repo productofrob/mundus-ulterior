@@ -137,7 +137,7 @@ tolerated ones**, and both are kept out of `required_cases` so that a floor pass
 can never be read as *"the system does this"*.
 
 - **`aksum-exports`** — unchanged from Phase 1. Seven consecutive refusals under
-  four prompts, against evidence byte-identical to the passing `adulis-exports`.
+  four prompts, against evidence overlapping that of the passing `adulis-exports` in four of six passages. **CORRECTED 2026-08-25, FINDING 17 — the phrase here was "byte-identical" and the archives never supported it; the ASSERTION blocks are byte-identical, the EVIDENCE is not. See `FINDINGS_14_TO_18.md`.**
 - **`weilue-chinese-quotation`** — added 2026-08-22. Fails because nothing in the
   answer path ever asks for a non-English source text to be quoted. See
   `FINDINGS_9_TO_13.md`, finding 13.

@@ -30,6 +30,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 25          C5_3B_AND_PROTOCOL.md §6  full text
 26          C7_RESULT.md              full text
 27-31       D3_RULINGS.md             full text, "## Ruling N" headings
+32-35       D4_RULINGS.md             full text, "## Ruling N" headings
 ```
 
 ## The register
@@ -80,7 +81,16 @@ section anywhere — they exist only as one-line entries in a numbered list in
     never reached by widening a label
 31  a discriminator loads as one instrument: paired_with is symmetric and the
     two assertion blocks must be identical, and it is NOT for two cases that
-    merely share a record
+    merely share a record32  a lost gold pair kills the run; the only way past it is --allow-unresolvable
+    naming the pair, and an allowance that has gone stale is itself refused
+33  DATES gate calibration (three distinct UTC dates); sessions are recorded and
+    named beside them and gate nothing; a sweep with no session identity blocks
+    calibration permanently rather than being given a date after the fact
+34  a mutation target must be unique across SOURCES and is refused when it is
+    not; the child runs with -B AND the bytecode cache is purged before it
+35  per-session stability is a statement about VERDICTS and may not be quoted as
+    a statement about behaviour; behaviour is distinct_texts and the answer
+    hashes, reported separately
 ```
 
 ## The two that pulled or nearly pulled something
@@ -133,7 +143,9 @@ as the ruling is how a register stops being a record of what was decided and
 becomes a record of what someone later assumed. If a full text is wanted,
 someone who was there should write it — and until then this entry says so.
 
-**Do not renumber.** Twenty-six numbers were already quoted across `PROGRESS.md`
+**Do not renumber.** Thirty-one numbers were quoted across `PROGRESS.md` and a
+dozen session documents before 32-35 were added on 2026-08-25. Originally:
+Twenty-six numbers were already quoted across `PROGRESS.md`
 and seven session documents before 27-31 were added, and 27-31 are quoted across
 `D2_RESULT.md`, `D3_RULINGS.md` and the D3 batch commits.
 
@@ -146,3 +158,9 @@ a line in a summary list is a ruling nobody can quote, check, or argue with
 later. The cost of writing the declaration at the time is a few paragraphs. The
 cost of not writing it is that the code becomes the only authority for what was
 decided, and code says what a thing does rather than why it was chosen.
+
+## 32-35, declared in TASK 3
+
+Full text in `D4_RULINGS.md`, written in the session that made them, for the
+reason this file gives about 20 and 21. Ruling 35 is the one to read before
+quoting a stability number: it constrains prose and adds no code.

@@ -18,6 +18,7 @@ repository has done that twice.
 cd "C:\Users\chemi\Documents\Claude\Museums Project Number 1\mundus-ulterior"
 .venv\Scripts\Activate.ps1
 
+# FIVE encoding boundaries, not four. See the table at the foot of this file.
 # Both, always. PYTHONIOENCODING makes Python emit UTF-8; [Console]::OutputEncoding
 # decides how PowerShell decodes it. Set only the first and you get a capture
 # whose numbers are all correct and whose every Greek quotation is mojibake,
@@ -122,12 +123,29 @@ in it and no traceback:
 
 ```powershell
 Select-String -Path eval\d4-pilot-day1.txt -Pattern 'Traceback|UnicodeEncodeError'
-(Get-Content eval\d4-pilot-day1.txt -Raw) -match '[^\u0000-\u024F]'
+(Get-Content eval\d4-pilot-day1.txt -Raw).Length
 ```
 
-The second must be `True`. A green run that printed only `ok` lines in English
-proves nothing about non-Latin output — that is the vacuous proof from
-FINDING 10, and it cost an hour once already.
+**CORRECTED 2026-08-25.** This block previously ended with
+
+```powershell
+(Get-Content eval\d4-pilot-day1.txt -Raw) -match '[^\u0000-\u024F]'   # WRONG
+```
+
+and said the result must be `True`. **That check is vacuous and it is the trap
+it quotes.** `run_answer_sweep.py` prints PASS/FAIL lines and summary tables and
+never prints an answer or a quotation; the only characters above U+024F in the
+capture are the harness's own `—` and `…`.
+
+**Do not replace it with `eval.answer_eval --archives -v` either.** That was the
+proposed fix on 2026-08-24 and it is vacuous for a deeper reason: 140,312 bytes
+captured on 2026-08-25 contained **zero** characters above U+024F. The answer
+path has never quoted a non-English source text — 45 of 45 resolved spans came
+from the English — so there is nothing non-Latin for it to print, on any flag.
+
+The encoding guard is proven on a harness that handles source text by
+construction, and nowhere on the answer path. See FINDING 18's corollary in
+`FINDINGS_14_TO_18.md`.
 
 Expected in the report:
 
@@ -233,3 +251,27 @@ from the English while the Chinese chunk sat at `[S1]`.
 The pilot measures none of those. It measures whether this harness can tell a
 session from a repetition, which is the one thing Block E's 270 calls cannot be
 believed without.
+
+
+---
+
+## The trap list: encoding has FIVE boundaries on Windows, not four
+
+Added 2026-08-25. FINDING 10 named the first four. The fifth was found by
+reading the capture this runbook told you to take.
+
+```
+1  a CHILD process's stdout            PYTHONIOENCODING
+2  a PARENT decoding that child        subprocess(encoding=)
+3  THIS process's own stdout           reconfigure(), 44 entry points   FINDING 10
+4  PowerShell DECODING a child         [Console]::OutputEncoding
+5  PowerShell WRITING a redirect       UTF-16LE in PS 5.1. NOT settable by 4
+```
+
+**PowerShell 5.1's `*>` writes UTF-16LE with a BOM whatever
+`[Console]::OutputEncoding` is set to** — that setting governs how PowerShell
+DECODES a child's stdout, not how it ENCODES a file. `eval/d4-pilot-day1.txt`
+and `eval/d4-pilot-day2.txt` both open with `ff fe` and decode with zero
+replacement characters, so nothing was lost. But **every capture ever taken this
+way is UTF-16, and anything that reads one as UTF-8 gets garbage.** Read a
+capture by sniffing its BOM, never by assuming.
