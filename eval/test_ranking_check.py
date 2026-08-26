@@ -1663,6 +1663,77 @@ def test_the_query_rendering_rule_cannot_see_the_answer() -> None:
           is None,
           f"{inspect.signature(_chat).parameters['temperature_fallback'].default!r}")
 
+    # ---- Block E decision 3: which stack served the call -----------------
+    #
+    # FINDING 18: five of six cases changed their answer text completely
+    # between two dates at temperature 0, and nothing in the archive could
+    # distinguish provider drift from sampling variance. `model` is the alias
+    # this repository SENT and cannot move. These guards protect the field
+    # that can.
+    from answer.translate import _serving_stack  # noqa: E402
+
+    class _Response:
+        def __init__(self, **kwargs):
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+
+    stack = _serving_stack(_Response(id="chatcmpl-9", model="claude-x",
+                                     system_fingerprint=None,
+                                     service_tier=None))
+    check("GUARD a serving-stack key the gateway did not populate is OMITTED, "
+          "never written as null",
+          stack == {"id": "chatcmpl-9", "model": "claude-x"},
+          "a column reading null on all 270 calls is the fourth vacuous proof "
+          "in five days")
+    populated = _serving_stack(_Response(id="c", model="m",
+                                         system_fingerprint="fp_abc",
+                                         service_tier="standard"))
+    check("a serving-stack key the gateway DID populate is recorded",
+          populated.get("system_fingerprint") == "fp_abc"
+          and populated.get("service_tier") == "standard")
+    hidden = _serving_stack(_Response(
+        id="c", model="m",
+        _hidden_params={"model_id": "abc123", "custom_llm_provider": "anthropic",
+                        "response_ms": 812}))
+    check("LiteLLM's own resolved model id is recorded, and its timing is not",
+          hidden.get("model_id") == "abc123"
+          and hidden.get("custom_llm_provider") == "anthropic"
+          and "response_ms" not in hidden,
+          "response_ms moves on every call and is not provenance")
+
+    class _Plain:
+        """Answers once, carrying a fingerprint."""
+        def __init__(self):
+            self.chat = self
+
+        @property
+        def completions(self):
+            return self
+
+        def create(self, **kwargs):
+            class R:
+                id = "chatcmpl-7"
+                model = "claude-haiku-4-5-20251001"
+                system_fingerprint = "fp_seen"
+                choices = [type("C", (), {"message": type(
+                    "M", (), {"content": "ok"})()})()]
+            return R()
+
+    seen: dict = {}
+    _chat([], model="m", client=_Plain(), sleep=lambda _s: None,
+          provenance=seen)
+    check("GUARD _chat fills the serving-stack out-parameter it was given",
+          seen.get("system_fingerprint") == "fp_seen"
+          and seen.get("id") == "chatcmpl-7",
+          "an out-parameter and not a fourth return value: the last time this "
+          "function's arity moved, one of four call sites was missed and every "
+          "live answer call raised ValueError for five days")
+    # The five callers that do not want it must be untouched, or Block E's
+    # freeze is standing on a change nobody checked.
+    check("the serving-stack out-parameter defaults to off",
+          inspect.signature(_chat).parameters["provenance"].default is None,
+          f"{inspect.signature(_chat).parameters['provenance'].default!r}")
+
     # ---- ruling 24: the reader re-derives the verdict, never trusts it ----
     # The file below claims ok:true for a rendering the CURRENT guard refuses,
     # exactly as eval/gold/query_renderings.json did on 2026-08-16: the row had

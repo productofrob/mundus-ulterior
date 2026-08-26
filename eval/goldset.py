@@ -1063,6 +1063,56 @@ def load_floor(path: Path | None = None) -> dict:
                 f"An unexplained known failure is an exemption, and exemptions "
                 f"accumulate."
             )
+    # Block E, 2026-08-26. A demotion is admissible in this file only with
+    # evidence from more than one date, a diagnosis, and a written condition
+    # for return. required_cases_note says removing a case because the model
+    # had a bad session is how a floor is quietly lowered to whatever is
+    # currently passing; this is that sentence with teeth. The three fields
+    # are what separate the two acts, and nothing else does.
+    for case_id, record in (data.get("demotions") or {}).items():
+        if case_id in set(data["required_cases"]):
+            raise GoldSetError(
+                f"{path.name}: {case_id} is listed as demoted and is still in "
+                f"required_cases."
+            )
+        if case_id not in (data.get("known_failing_cases") or {}):
+            raise GoldSetError(
+                f"{path.name}: {case_id} is demoted but is not tracked in "
+                f"known_failing_cases. A demotion that stops being REPORTED "
+                f"is a deletion, and a floor pass would then read as 'the "
+                f"system answers this question'."
+            )
+        if not isinstance(record, dict):
+            raise GoldSetError(
+                f"{path.name}: demotions[{case_id}] is not a record.")
+        thin = [key for key in ("evidence", "diagnosis", "reinstated_when")
+                if not str(record.get(key, "")).strip()]
+        if thin:
+            raise GoldSetError(
+                f"{path.name}: demotions[{case_id}] omits {sorted(thin)}. A "
+                f"demotion without evidence, a diagnosis and a written "
+                f"condition for return is not a demotion — it is the floor "
+                f"lowered to whatever is currently passing, which is the move "
+                f"required_cases_note forbids."
+            )
+
+    # The scope rule that decides which archived sweeps may calibrate. An
+    # exclusion with no reason beside it is a file moved out of the way.
+    scope = data.get("calibration_scope") or {}
+    if scope:
+        if int(scope.get("min_cases_per_sweep") or 0) < 1:
+            raise GoldSetError(
+                f"{path.name}: calibration_scope.min_cases_per_sweep is "
+                f"{scope.get('min_cases_per_sweep')!r}. A scope that admits a "
+                f"sweep of no cases is not a scope."
+            )
+        for name, reason in (scope.get("excluded_by_rule") or {}).items():
+            if not str(reason).strip():
+                raise GoldSetError(
+                    f"{path.name}: calibration_scope.excluded_by_rule[{name}] "
+                    f"has no reason. An unexplained exclusion is a file moved "
+                    f"out of the way with extra steps."
+                )
     return data
 
 

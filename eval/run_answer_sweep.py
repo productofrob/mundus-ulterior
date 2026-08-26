@@ -196,6 +196,11 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                     "grounded": answer.grounding.ok,
                     "refused": answer.refused,
                     "model": answer.model,
+                    # Block E decision 3. `model` is the alias this repository
+                    # SENT and cannot move; this is what the gateway said it
+                    # served. Absent keys are omitted rather than written null,
+                    # so an empty dict here is itself the finding.
+                    "serving_stack": answer.serving_stack,
                     "prompt_version": answer.prompt_version,
                     "embedding_model": answer.embedding_model,
                     "answer_id": stored_id,
@@ -236,6 +241,12 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                     "grounded": answer.grounding.ok,
                     "refused": answer.refused,
                     "resolved_quotes": _resolved(answer),
+                    # On the ROW as well as in the per-run archive, because the
+                    # variance decomposition reads rows. A stack that changed
+                    # between day 1 and day 3 is the difference between "the
+                    # session term is the day" and "the session term is a
+                    # deployment", and only a per-row value can say which.
+                    "serving_stack": answer.serving_stack,
                     "answer": answer.answer_text,
                     "failures": [a.label for a in scored.failures],
                     "archived": archived,
@@ -258,8 +269,15 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
     # calls.
     corpus_version_after = answer_store.corpus_version(conn) if not dry_run \
         else corpus_version
+    # Distinct, sorted, and named — the same treatment corpus_version gets at
+    # both ends of the sweep, and for the same reason: the claim Block E makes
+    # is that nothing moved underneath it.
+    stacks = sorted({json.dumps(row["serving_stack"], sort_keys=True,
+                                ensure_ascii=False)
+                     for row in results if row.get("serving_stack")})
     return {
         "results": results,
+        "serving_stacks": [json.loads(s) for s in stacks],
         "evidence": evidence_report,
         "corpus_version": corpus_version,
         "corpus_version_after": corpus_version_after,
@@ -464,6 +482,25 @@ def main(argv: list[str] | None = None) -> int:
           f"digest {(version.get('seed_corpus_digest') or '?')[:16]}… "
           f"({version.get('source', '?')})")
 
+    stacks = outcome.get("serving_stacks") or []
+    if not args.dry_run:
+        if not stacks:
+            print("serving stack: the gateway returned nothing distinguishing "
+                  "beside the model alias.\n  Recorded as absent. Provider "
+                  "drift and sampling variance remain indistinguishable\n  in "
+                  "these archives, and that is a stated limit rather than an "
+                  "oversight.")
+        elif len(stacks) == 1:
+            print(f"serving stack: one, unchanged across the sweep - "
+                  f"{json.dumps(stacks[0], ensure_ascii=False)}")
+        else:
+            # Not an error, and not silently averaged. A sweep served by two
+            # stacks is two measurements, and the reader has to be told.
+            print(f"serving stack: {len(stacks)} DISTINCT stacks served this "
+                  f"sweep:")
+            for stack in stacks:
+                print(f"    {json.dumps(stack, ensure_ascii=False)}")
+
     if args.dry_run:
         print("\ndry run — no chat call made, nothing written")
         if args.json:
@@ -496,6 +533,7 @@ def main(argv: list[str] | None = None) -> int:
              # well as in every per-run archive — so that "the corpus did not
              # move under this sweep" is a fact the archive states rather than
              # one a reader reconstructs from ninety files.
+             "serving_stacks": outcome.get("serving_stacks"),
              "corpus_version": outcome.get("corpus_version"),
              "corpus_version_after": outcome.get("corpus_version_after"),
              "corpus_moved": outcome.get("corpus_moved"),

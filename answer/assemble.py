@@ -241,6 +241,9 @@ class AssembledAnswer:
     # before corpus versions existed, or by a path that did not record one -
     # which is UNKNOWN, and must never be read as "the corpus had not changed".
     corpus_version: dict | None = None
+    # Block E decision 3, 2026-08-26. What the gateway said about which stack
+    # served the call, as distinct from `model`, which is the alias sent.
+    serving_stack: dict = field(default_factory=dict)
 
     @property
     def ok(self) -> bool:
@@ -463,9 +466,13 @@ def assemble(
     # passes no temperature and no fallback, so the value is 0.0 today - which
     # is exactly why it is worth reading. It is a constant until someone changes
     # it, and a silent `_` is how that change would arrive unannounced.
+    # Block E decision 3. An OUT-parameter rather than a fourth return value,
+    # for exactly the reason the paragraph above gives about this call site.
+    serving_stack: dict = {}
     raw, retries, temperature_used = _chat(
         build_messages(question, evidence_block, version),
         model=model, client=client, max_tokens=max_tokens, sleep=sleep,
+        provenance=serving_stack,
     )
     if retries:
         notes.append(f"{retries} retry/retries before the answer came back")
@@ -495,6 +502,11 @@ def assemble(
         prompt_version=version,
         notes=notes,
         raw_response=raw or "",
+        # An empty dict, never None, when the gateway returns nothing
+        # distinguishing. The difference between "this call was never asked"
+        # and "this call was asked and the gateway said nothing" is the whole
+        # value of the field.
+        serving_stack=serving_stack,
     )
 
 

@@ -693,6 +693,24 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("""            lines.append(f"  {pair_id}: {why.get(pair_id, 'did not resolve')}")""",
           """            lines.append("  (a pair did not resolve)")""")],
     ),
+    # ----------------------------------------------------------------------
+    # Block E decision 3 — which stack served the call. answer/translate.py has
+    # been a SOURCE of this harness since ruling 22's temperature work, so the
+    # field lands where its guards can already be mutated.
+    (
+        # A key that is null on all 270 calls is the fourth vacuous proof in
+        # five days. BLOCK_E_START carries the first three as trap 4.
+        "a serving-stack key the gateway did not populate is written as null",
+        [("""        if value is not None:""", """        if True:""")],
+    ),
+    (
+        # The out-parameter is the whole recording. Silently not filling it
+        # leaves `model` — the alias this repository sent, which cannot move —
+        # as the only provenance in the archive, which is the state FINDING 18
+        # could not be answered from.
+        "_chat is given a serving-stack dict and does not fill it",
+        [("""            if provenance is not None:""", """            if False:""")],
+    ),
 ]
 
 EXPECTED = [
@@ -806,6 +824,11 @@ EXPECTED = [
     "GUARD a pair missing from the unresolvable list still kills the run",
     "GUARD an allowance naming a pair that resolves is itself refused",
     "the killed run names the pair and why it did not resolve",
+
+    # Block E decision 3, in the order above.
+    "GUARD a serving-stack key the gateway did not populate is OMITTED, never "
+    "written as null",
+    "GUARD _chat fills the serving-stack out-parameter it was given",
 ]
 
 

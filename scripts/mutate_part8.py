@@ -426,21 +426,28 @@ def _has_content_assertion(raw: dict) -> bool:""")],
         # Counting sessions where the floor says dates lets one afternoon of
         # three sweeps calibrate — which is the 2026-08-10 shape exactly.
         "distinct dates are counted from session ids",
-        [("""    dates = sorted({(s.get("session") or {})["date"] for s in dated})""",
-          """    dates = sorted({(s.get("session") or {})["id"] for s in dated})""")],
+        # Re-pointed 2026-08-26: `dated` became `eligible` when the
+        # calibration scope landed. The guard is unchanged and so is the
+        # mutation's meaning — counting sessions where the floor says dates.
+        [("""    dates = sorted({(s.get("session") or {})["date"] for s in eligible})""",
+          """    dates = sorted({(s.get("session") or {})["id"] for s in eligible})""")],
     ),
     (
         # A date assigned to a pre-D4 archive after the fact is the
         # calibration floor.json already records as invalid.
         "a sweep with no session identity stops blocking calibration",
-        [("""    if undated:
+        # Re-pointed 2026-08-26. The refusal is now raised on undated
+        # sweeps that are NOT named in calibration_scope.excluded_by_rule;
+        # an undated sweep still contributes no date either way.
+        [("""    if unnamed_undated:
         refusals.append(""",
           """    if False:
         refusals.append(""")],
     ),
     (
         "three dates of single shots may calibrate",
-        [("""    thin = [s for s in dated if int(s.get("repeat", 0)) < reps_needed]""",
+        # Re-pointed 2026-08-26: `dated` became `eligible`.
+        [("""    thin = [s for s in eligible if int(s.get("repeat", 0)) < reps_needed]""",
           """    thin = []""")],
     ),
     (
@@ -481,6 +488,101 @@ def _has_content_assertion(raw: dict) -> bool:""")],
         # would hide a finding about corpus_digest itself.
         "a digest that moves while no record differs is reported as nothing",
         [("""    if not (changed or vanished or appeared):""", """    if False:""")],
+    ),
+    # ----------------------------------------------------------------------
+    # Block E — the variance decomposition. G4's deliverable, and the first
+    # instrument in this project that was mutation-verified BEFORE the runs it
+    # was built to measure rather than after.
+    (
+        # Part 8's archived grid is two prompt versions and it is on disk.
+        "two prompt versions are pooled into one decomposition",
+        [("""    if len(versions) > 1:""", """    if False:""")],
+    ),
+    (
+        # The balanced estimators are only these expressions on a balanced
+        # grid. A day that lost one case to a rate limit is unbalanced, and
+        # the imbalance is then charged to whichever term absorbs it.
+        "an unbalanced grid is decomposed anyway",
+        [("""        elif len(sizes) > 1:""", """        elif False:""")],
+    ),
+    (
+        "a grid with a missing cell is decomposed anyway",
+        [("""        if missing:""", """        if False:""")],
+    ),
+    (
+        # Every run agreeing is the commonest outcome here. Four terms reading
+        # 0% are four numbers that add to nothing.
+        "zero total variance is reported as four zero shares rather than NOT "
+        "MEASURED",
+        [("""                   if total > _TINY else None),""",
+          """                   if total > _TINY else {k: 0.0 for k in DECOMPOSITION_TERMS}),""")],
+    ),
+    (
+        # A negative estimate is the estimator saying the term is not
+        # distinguishable from zero. Clamping it is right for a share and
+        # wrong for a finding, so both are reported.
+        "a negative component estimate is clamped in silence",
+        [("""    negative = sorted(k for k, v in raw.items() if v < -_TINY)""",
+          """    negative = []""")],
+    ),
+    (
+        # The textbook slip, and the one a careless implementation makes:
+        # var(session) = (MS_B - MS_AB) / na, NOT (MS_B - MS_E) / na. Against
+        # the residual, a crossover design returns exactly 0 for the session
+        # term and the negative estimate that says the term is not there
+        # vanishes without a trace.
+        "the session term is estimated against the residual instead of the "
+        "interaction",
+        [("""        "session": (ms_b - ms_ab) / (n * a),""",
+          """        "session": (ms_b - ms_e) / (n * a),""")],
+    ),
+    (
+        # The same refusal `stability` already makes: sixty pre-D4 rows folded
+        # into one anonymous session would decompose over a session that never
+        # existed.
+        "rows with no session identity are folded into an anonymous session",
+        [("""    dated = [r for r in rows if r.get("session_id")]""",
+          """    dated = [dict(r, session_id=r.get("session_id") or "anonymous")
+             for r in rows]""")],
+    ),
+    (
+        # If the cross-session loop also pairs a session with itself, the
+        # boundary this whole block exists to measure stops existing.
+        "same-session pairs are counted as crossing the session boundary",
+        [("""            for y in range(x + 1, len(ids)):""",
+          """            for y in range(x, len(ids)):""")],
+    ),
+    # ----------------------------------------------------------------------
+    # Block E — decisions 1 and 4. The scope that decides which archived
+    # sweeps may calibrate, and what a demotion costs to write down.
+    (
+        # Without the case-set half of the rule, a six-case pilot calibrates a
+        # thirty-case floor and the denominator changes between dates.
+        "the scope minimum is ignored and any sweep calibrates",
+        [("""        if min_cases and len(cases) < min_cases:""",
+          """        if False:""")],
+    ),
+    (
+        # The anti-loophole. Without it, excluded_by_rule is a place to put a
+        # sweep whose numbers nobody liked — which is the move calibrate_floor
+        # exists to make impossible.
+        "a sweep that satisfies the rule can be excluded by naming it",
+        [("""            if name is not None and name in named:""",
+          """            if False:""")],
+    ),
+    (
+        # required_cases_note says removing a case because the model had a bad
+        # session is how a floor is quietly lowered. These three fields are
+        # what separate a demotion from that, and nothing else is.
+        "a demotion need not say what would put the case back",
+        [("""        thin = [key for key in ("evidence", "diagnosis", "reinstated_when")
+                if not str(record.get(key, "")).strip()]""",
+          """        thin = []""")],
+    ),
+    (
+        "a demoted case need not stay reported as an open defect",
+        [("""        if case_id not in (data.get("known_failing_cases") or {}):""",
+          """        if False:""")],
     ),
 ]
 
@@ -558,6 +660,25 @@ EXPECTED = [
     "a record that appeared mid-sweep is named as having appeared",
     "a record that vanished mid-sweep is named as having vanished",
     "GUARD a digest that moves while no record differs says so",
+
+    # Block E — the variance decomposition, in the order above.
+    "GUARD a decomposition refuses to pool two prompt versions",
+    "GUARD an unbalanced grid is refused rather than decomposed",
+    "GUARD an incomplete grid is refused rather than decomposed",
+    "GUARD zero total variance is NOT MEASURED, never 0%",
+    "GUARD a negative component estimate is named, not clamped in silence",
+    "GUARD the session term is estimated against the interaction mean square, "
+    "not the residual",
+    "GUARD a row with no session identity is excluded from the decomposition "
+    "and counted",
+    "GUARD text agreement separates within-session from across-session",
+
+    # Block E — the calibration scope and the demotion, in the order above.
+    "GUARD a sweep below the scope minimum blocks calibration when it is not "
+    "named",
+    "GUARD a sweep that SATISFIES the rule cannot be excluded by name",
+    "GUARD a demotion with no written condition for return is refused",
+    "GUARD a demoted case that is not tracked as a known failure is refused",
 ]
 
 

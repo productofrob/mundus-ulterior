@@ -349,6 +349,10 @@ def main(argv: list[str] | None = None) -> int:
             "grounded": answer.grounding.ok,
             "refused": answer.refused,
             "model": answer.model,
+            # Block E decision 3. See eval/run_answer_sweep.py, and
+            # answer/translate.py `_serving_stack` for why absent keys are
+            # omitted rather than written null.
+            "serving_stack": answer.serving_stack,
             "prompt_version": answer.prompt_version,
             # D1. Beside prompt_version, because it answers the same kind of
             # question about the answer: what was it made from. An archive

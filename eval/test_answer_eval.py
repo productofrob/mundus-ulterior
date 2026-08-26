@@ -1003,7 +1003,7 @@ def test_the_floor() -> None:
     # and per repetition, not an average. An average lets a total failure on one
     # question be paid for by successes on others.
     partial = answer_eval.check_floor(
-        summary({"vimose-runes": 2}, 3, 0.2), floor, 3)["v"]
+        summary({floor["required_cases"][0]: 2}, 3, 0.2), floor, 3)["v"]
     expect(not partial["meets_floor"],
            "GUARD a required case passing 2 of 3 misses the floor")
 
@@ -1224,8 +1224,18 @@ def test_calibration_refuses_too_few_days() -> None:
            f"the floor requires at least three distinct dates "
            f"({floor['min_distinct_dates']})")
 
-    def sweep(date, session_id, repeat=3):
+    # Block E: the scope rule reads the CASE SET out of a sweep, so a fixture
+    # that is only a session block is no longer a sweep. Defaulting to the
+    # scope minimum keeps every guard below about the thing it was written
+    # about — dates, sessions, repetitions — and lets the scope be tested on
+    # its own terms rather than as a side effect of every other fixture.
+    in_scope = int((floor.get("calibration_scope") or {}).get(
+        "min_cases_per_sweep") or 0)
+
+    def sweep(date, session_id, repeat=3, cases=None):
+        n = in_scope if cases is None else cases
         return {"repeat": repeat,
+                "results": [{"case": f"case-{i}"} for i in range(n)],
                 "session": {"id": session_id, "date": date,
                             "date_basis": "UTC"}}
 
@@ -1283,6 +1293,265 @@ def test_calibration_refuses_too_few_days() -> None:
            "GUARD a floor permitting calibration from a single day is refused")
 
 
+def test_the_variance_decomposition() -> None:
+    """Block E, G4's deliverable. Built and checked BEFORE the 270 calls.
+
+    The instrument is exercised here on fixtures whose right answer is known by
+    construction, and separately on the two D4 pilot archives by
+    `python -m eval.decompose`. That ordering is deliberate: D4's own lesson is
+    that findings 14, 15 and 16 were all found by RUNNING an instrument rather
+    than reading one, and a decomposition first run on the day-3 archive would
+    be a 270-call instrument with no rehearsal.
+    """
+    def run(case, session, ok, text="t", version="p7-answer-v2r", rep=1):
+        return {"case": case, "prompt_version": version, "repetition": rep,
+                "session_id": session, "session_date": "2026-08-26",
+                "content_ok": ok, "answer": text}
+
+    def grid(spec, reps=3, texts=None):
+        """spec: {case: {session: content_ok}} -> rows, reps per cell."""
+        out = []
+        for case_id, sessions in spec.items():
+            for session_id, ok in sessions.items():
+                for k in range(1, reps + 1):
+                    text = (texts or {}).get((case_id, session_id), "t")
+                    out.append(run(case_id, session_id, ok, text, rep=k))
+        return out
+
+    # Part 8's archived grid is TWO prompt versions and it is on disk. Pooling
+    # them charges the difference between two prompts to the residual and
+    # reports the prompt decision as sampling noise.
+    mixed = grid({"a": {"s1": True, "s2": False}, "b": {"s1": True, "s2": True}})
+    mixed = mixed + [run("a", "s1", True, version="p7-answer-v4")]
+    pooled = answer_eval.decompose_verdicts(mixed)
+    expect(not pooled["may_report"]
+           and any("prompt version" in r for r in pooled["refusals"]),
+           "GUARD a decomposition refuses to pool two prompt versions")
+
+    # The balanced estimators are only these expressions on a balanced grid.
+    lopsided = grid({"a": {"s1": True, "s2": False},
+                     "b": {"s1": False, "s2": True}})
+    lopsided = [r for r in lopsided
+                if not (r["case"] == "a" and r["session_id"] == "s1"
+                        and r["repetition"] == 3)]
+    uneven = answer_eval.decompose_verdicts(lopsided)
+    expect(not uneven["may_report"]
+           and any("UNBALANCED" in r for r in uneven["refusals"]),
+           "GUARD an unbalanced grid is refused rather than decomposed")
+
+    absent = [r for r in grid({"a": {"s1": True, "s2": False},
+                               "b": {"s1": False, "s2": True}})
+              if not (r["case"] == "b" and r["session_id"] == "s2")]
+    # The `except` is not defensive padding and it was put here by a mutation.
+    # With the completeness refusal removed, this call does not return a wrong
+    # answer — it raises KeyError on the absent cell, the suite dies, and the
+    # mutation harness reports the guard as unwatched rather than as broken.
+    # That is FINDING 15's shape exactly: a true report inviting the wrong
+    # diagnosis. A crash is not a refusal, so it is caught and scored as one
+    # more way of failing to refuse.
+    try:
+        holed = answer_eval.decompose_verdicts(absent)
+    except Exception:  # noqa: BLE001 — a crash is not a refusal either
+        holed = {"may_report": True, "refusals": []}
+    expect(not holed["may_report"]
+           and any("INCOMPLETE" in r for r in holed["refusals"]),
+           "GUARD an incomplete grid is refused rather than decomposed")
+
+    # The commonest outcome in this repository: every run agreed. There is no
+    # variance to apportion, and four terms reading 0% would be four numbers
+    # that add to nothing — the vacuous pass in its purest form.
+    unanimous = answer_eval.decompose_verdicts(
+        grid({"a": {"s1": True, "s2": True}, "b": {"s1": True, "s2": True}}))
+    expect(unanimous["may_report"] and unanimous["shares"] is None,
+           "GUARD zero total variance is NOT MEASURED, never 0%")
+
+    # A crossover: each case passes in one session and fails in the other, and
+    # the two cases cross. Case means are equal, session means are equal, and
+    # ALL the structure is interaction. The case and session estimators go
+    # negative, which is this estimator saying the terms are indistinguishable
+    # from nothing — information, not an error.
+    crossover = answer_eval.decompose_verdicts(
+        grid({"a": {"s1": True, "s2": False}, "b": {"s1": False, "s2": True}}))
+    expect(crossover["may_report"]
+           and "case" in crossover["negative_estimates"],
+           "GUARD a negative component estimate is named, not clamped in "
+           "silence")
+    # (MS_B - MS_AB), not (MS_B - MS_E). Against the residual this fixture
+    # returns exactly 0 for the session term and the negative estimate — the
+    # whole signal that the term is not there — disappears without a trace.
+    expect("session" in crossover["negative_estimates"],
+           "GUARD the session term is estimated against the interaction mean "
+           "square, not the residual")
+    expect(crossover["shares"] is not None
+           and crossover["shares"]["case_x_session"] > 0.99,
+           "the crossover is charged to the interaction term")
+
+    # Rows archived before D4 carry no session and cannot be given one now.
+    # Folding them into one anonymous session would decompose over a session
+    # that never existed — the same refusal `stability` already makes.
+    orphaned = grid({"a": {"s1": True, "s2": False},
+                     "b": {"s1": False, "s2": True}})
+    orphaned = orphaned + [{"case": "a", "prompt_version": "p7-answer-v2r",
+                            "repetition": 1, "content_ok": True, "answer": "t"}]
+    excluded = answer_eval.decompose_verdicts(orphaned)
+    expect(excluded["may_report"] and excluded["rows_without_session"] == 1
+           and excluded["runs"] == 12,
+           "GUARD a row with no session identity is excluded from the "
+           "decomposition and counted")
+
+    one_session = answer_eval.decompose_verdicts(
+        grid({"a": {"s1": True}, "b": {"s1": False}}))
+    expect(not one_session["may_report"]
+           and any("session(s)." in r for r in one_session["refusals"]),
+           "GUARD one session cannot yield a session term")
+
+    single_shot = answer_eval.decompose_verdicts(
+        grid({"a": {"s1": True, "s2": False},
+              "b": {"s1": False, "s2": True}}, reps=1))
+    expect(not single_shot["may_report"]
+           and any("repetition(s) per cell" in r
+                   for r in single_shot["refusals"]),
+           "GUARD one repetition cannot separate the residual from the "
+           "interaction")
+
+    # The positive control. Both cases pass on one day and fail on the next,
+    # which is the shape of 2026-08-10 and the thing the whole block exists to
+    # be able to see.
+    by_day = answer_eval.decompose_verdicts(
+        grid({"a": {"s1": True, "s2": False}, "b": {"s1": True, "s2": False}}))
+    expect(by_day["shares"] is not None and by_day["shares"]["session"] > 0.99,
+           "GUARD the session term carries the variance when the sessions "
+           "disagree")
+
+    # FINDING 18's shape: unanimous within each session, sharing nothing across
+    # the boundary, with the verdict identical throughout.
+    same_verdict = grid(
+        {"a": {"s1": True, "s2": True}, "b": {"s1": True, "s2": True}},
+        texts={("a", "s1"): "x", ("a", "s2"): "y",
+               ("b", "s1"): "x", ("b", "s2"): "y"})
+    texts = answer_eval.decompose_texts(same_verdict)
+    expect(texts["may_report"]
+           and texts["within_session"]["rate"] == 1.0
+           and texts["across_sessions"]["rate"] == 0.0
+           and texts["agreement_lost_at_the_session_boundary"] == 1.0,
+           "GUARD text agreement separates within-session from across-session")
+    verdicts = answer_eval.decompose_verdicts(same_verdict)
+    expect(verdicts["shares"] is None and texts["across_sessions"]["rate"] == 0.0,
+           "FINDING 18 reproduced: the verdicts have no variance to decompose "
+           "while the text agrees across sessions 0% of the time")
+    # Both cases here emit the same two strings, so pairs drawn from DIFFERENT
+    # cases agree — which is what a shared refusal template looks like, and
+    # what would otherwise inflate both rates above with no sign of it.
+    expect(texts["cross_case_baseline"]["rate"] > 0.0,
+           "GUARD identical text across DIFFERENT cases is reported as a "
+           "baseline")
+
+
+def test_the_calibration_scope_and_demotions() -> None:
+    """Block E, decisions 1 and 4, both settled BEFORE day 1.
+
+    The rule between days is change nothing, so a scope or a floor term
+    settled on day 3 is one chosen after seeing the numbers. Both are data in
+    `floor.json`; these are the guards that stop the data being a formality.
+    """
+    print("\nthe calibration scope, and what a demotion costs to write")
+
+    floor = load_floor()
+    scope = floor["calibration_scope"]
+    expect(int(scope["min_cases_per_sweep"]) >= 30,
+           f"the scope admits only sweeps of >= 30 cases, which is G4's "
+           f"number ({scope['min_cases_per_sweep']})")
+
+    def sweep(date, session_id, repeat=3, cases=30):
+        return {"repeat": repeat,
+                "results": [{"case": f"case-{i}"} for i in range(cases)],
+                "session": {"id": session_id, "date": date,
+                            "date_basis": "UTC"}}
+
+    three = [sweep("2026-08-27", "a"), sweep("2026-08-29", "b"),
+             sweep("2026-08-31", "c")]
+    pilot = three + [sweep("2026-08-25", "pilot", cases=6)]
+
+    # A six-case sweep beside three thirty-case sweeps is a floor whose
+    # denominator changes between dates. Unnamed, it blocks.
+    blocked = answer_eval.calibration_eligibility(pilot, floor)
+    expect(not blocked["may_calibrate"]
+           and any("outside" in r for r in blocked["refusals"]),
+           "GUARD a sweep below the scope minimum blocks calibration when it "
+           "is not named")
+
+    with_rule = {**floor, "calibration_scope": {
+        **scope, "excluded_by_rule": {"pilot.json": "six cases, below the "
+                                                    "scope minimum"}}}
+    allowed = answer_eval.calibration_eligibility(
+        pilot, with_rule, ["a.json", "b.json", "c.json", "pilot.json"])
+    expect(allowed["may_calibrate"] and allowed["eligible_sweeps"] == 3,
+           "a sweep out of scope is excluded by a NAMED rule, and the three "
+           "in scope calibrate")
+    expect([e["sweep"] for e in allowed["excluded_by_rule"]] == ["pilot.json"],
+           "an excluded sweep is NAMED in the report, never merely subtracted")
+
+    # The anti-loophole, and the reason the list is checked rather than
+    # trusted: without this, excluded_by_rule is a place to put a sweep whose
+    # numbers nobody liked.
+    loophole = {**floor, "calibration_scope": {
+        **scope, "excluded_by_rule": {"a.json": "inconvenient"}}}
+    refused = answer_eval.calibration_eligibility(
+        three, loophole, ["a.json", "b.json", "c.json"])
+    expect(not refused["may_calibrate"]
+           and refused["wrongly_excluded"] == ["a.json"],
+           "GUARD a sweep that SATISFIES the rule cannot be excluded by name")
+
+    # Callers with no filenames — every fixture above, and every caller before
+    # Block E — can match no exclusion at all, so the old behaviour is exactly
+    # unchanged rather than approximately unchanged.
+    anonymous = answer_eval.calibration_eligibility(pilot, with_rule)
+    expect(not anonymous["may_calibrate"],
+           "GUARD an exclusion cannot apply to a sweep whose archive is not "
+           "named")
+
+    # vimose-runes, decision 1. Demoted, and still reported for ever.
+    expect("vimose-runes" not in floor["required_cases"],
+           "vimose-runes is no longer a required case")
+    expect("vimose-runes" in floor["known_failing_cases"],
+           "vimose-runes is still REPORTED as an open defect — a demotion "
+           "that stops being reported is a deletion")
+    demotion = floor["demotions"]["vimose-runes"]
+    expect(all(str(demotion.get(k, "")).strip()
+               for k in ("evidence", "diagnosis", "reinstated_when")),
+           "the demotion records evidence, a diagnosis and what would put the "
+           "case back")
+
+    def floor_with(demotions, **rest):
+        base = {**floor, "demotions": demotions, **rest}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "floor.json"
+            path.write_text(json.dumps(base), encoding="utf-8")
+            try:
+                load_floor(path)
+            except GoldSetError as exc:
+                return str(exc)
+        return ""
+
+    thin = floor_with({"vimose-runes": {"evidence": "0/3 twice",
+                                        "diagnosis": "retrieval"}})
+    expect("reinstated_when" in thin,
+           "GUARD a demotion with no written condition for return is refused")
+
+    untracked = floor_with(
+        {"muziris-cargo": {"evidence": "e", "diagnosis": "d",
+                           "reinstated_when": "r"}})
+    expect("required_cases" in untracked,
+           "GUARD a case cannot be demoted and required at the same time")
+
+    unreported = floor_with(
+        {"ghost-case": {"evidence": "e", "diagnosis": "d",
+                        "reinstated_when": "r"}})
+    expect("known_failing_cases" in unreported,
+           "GUARD a demoted case that is not tracked as a known failure is "
+           "refused")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -1304,8 +1573,10 @@ def main() -> int:
     test_a_duplicate_question_cannot_shadow_a_case()
     test_a_session_is_recorded_and_is_not_a_date()
     test_the_two_stability_numbers()
+    test_the_variance_decomposition()
     test_the_sweep_records_the_corpus_it_was_made_against()
     test_calibration_refuses_too_few_days()
+    test_the_calibration_scope_and_demotions()
     test_the_floor()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0

@@ -645,6 +645,455 @@ def print_stability(numbers: dict) -> None:
 
 
 # --------------------------------------------------------------------------
+# Block E — the variance decomposition, which is G4's actual deliverable
+# --------------------------------------------------------------------------
+#
+# D4 built two stability RATES, and ruling 35 constrains what they may be
+# called: per-session stability is a statement about VERDICTS and may not be
+# quoted as one about behaviour. G4 asks a different question — "how much is
+# session, how much is case" — and a rate cannot answer it. On 2026-08-25 both
+# rates read 100%, which is the sentence "nothing is moving", printed over six
+# cases whose every answer text had changed between the two sessions
+# (FINDING 18).
+#
+# So there are TWO decompositions here and not one, over two different response
+# variables, and neither is a summary of the other:
+#
+#   decompose_verdicts   components of variance for content_ok, case x session
+#                        crossed. Answers "when the VERDICT moves, what moved
+#                        it".
+#   decompose_texts      a partition of pairwise agreement over the answer
+#                        TEXT. Answers "when the OUTPUT moves, what moved it".
+#
+# On the D4 archives the first puts ~all the variance on the case term and none
+# on the session term, and the second reports agreement collapsing entirely at
+# the session boundary. Both are correct. A report carrying only the first says
+# the system is stable, and that is the claim FINDING 18 exists to refuse.
+#
+# Both are PURE and take rows in the shape run_answer_sweep archives them, so
+# they run in the offline suite with no database, no gateway and no chat call,
+# and they were built and mutation-verified against the two D4 pilot sweeps
+# BEFORE Block E spent 270 calls. That ordering is the point: an instrument
+# first run on the data it was built to measure has never been wrong in a way
+# anyone could see.
+
+DECOMPOSITION_TERMS = ("case", "session", "case_x_session", "residual")
+
+# Components of variance are differences of mean squares and land on exact
+# zeros constantly here — a binary response with unanimous cells makes SS_E
+# exactly 0. Compare against a tolerance rather than 0.0 so that -4e-18 is not
+# reported as a negative estimate.
+_TINY = 1e-12
+
+
+def _mean(values) -> float:
+    values = list(values)
+    return sum(values) / len(values) if values else 0.0
+
+
+def _decomposition_rows(rows: list[dict], value_key: str) -> dict:
+    """The checks both decompositions share, and their refusals.
+
+    Refusals rather than exceptions, for the reason calibration_eligibility
+    gives: the caller is a report, the report should print what is wrong with
+    its own input, and an exception in a printer destroyed a twenty-six-minute
+    run on 2026-08-16.
+    """
+    refusals: list[str] = []
+    versions = sorted({r.get("prompt_version") for r in rows})
+    dated = [r for r in rows if r.get("session_id")]
+    without = len(rows) - len(dated)
+
+    if len(versions) > 1:
+        # Pooling two prompt versions puts PROMPT VERSION into the residual
+        # term and reports it as sampling noise. Part 8's entire archived grid
+        # is two prompt versions, so this is not a hypothetical input: it is
+        # the shape of eval/sweeps/20260810T191414-*.json, which is on disk.
+        refusals.append(
+            f"{len(versions)} prompt versions in one decomposition "
+            f"({', '.join(str(v) for v in versions)}). Pooling them charges the "
+            f"difference between two prompts to the residual and reports it as "
+            f"sampling noise. Decompose each version separately."
+        )
+    if not dated:
+        refusals.append(
+            "no row carries a session identity, so there is no session term to "
+            "estimate. Rows archived before D4 cannot be given one after the "
+            "fact."
+        )
+    return {"refusals": refusals, "dated": dated,
+            "rows_without_session": without,
+            "prompt_version": versions[0] if len(versions) == 1 else None}
+
+
+def decompose_verdicts(rows: list[dict], value_key: str = "content_ok") -> dict:
+    """Components of variance for a run outcome, case x session crossed.
+
+    The model is the balanced two-way random-effects one, with interaction:
+
+        y_ijk = mu + case_i + session_j + (case x session)_ij + e_ijk
+
+    Both factors are random: the thirty cases are a sample of the questions
+    this corpus could be asked, and the three days are a sample of the days the
+    provider could serve. Expected mean squares for the balanced design give
+
+        var(residual)       = MS_E
+        var(case x session) = (MS_AB - MS_E) / n
+        var(session)        = (MS_B  - MS_AB) / (n * a)
+        var(case)           = (MS_A  - MS_AB) / (n * b)
+
+    with a cases, b sessions, n repetitions per cell.
+
+    Three things this refuses to do, each of which would produce a number that
+    looks like an answer:
+
+    1. It refuses an UNBALANCED grid. The estimators above are only these
+       expressions when every (case, session) cell holds the same n. A sweep
+       that lost a case to a rate limit on day 2 is unbalanced, and silently
+       running the balanced arithmetic over it charges the missing runs to
+       whichever term the imbalance happens to load. The refusal names the
+       cells.
+
+    2. It refuses to CLAMP a negative estimate without saying so. A negative
+       variance estimate is not a bug and not an error: it is what this
+       estimator does when the true component is near zero, and it is
+       information — it says the term is not distinguishable from nothing.
+       Clamping to 0 is right for reporting a share and wrong for reporting a
+       finding, so both are returned and `negative_estimates` names any term
+       that needed clamping.
+
+    3. It refuses to print SHARES when total variance is zero. Every run
+       agreeing is the commonest outcome here — five of six D4 cells were
+       unanimous — and 0/0 rendered as a percentage is the vacuous pass this
+       repository keeps paying for. `shares` is None and the printer says NOT
+       MEASURED.
+    """
+    shared = _decomposition_rows(rows, value_key)
+    refusals = list(shared["refusals"])
+    dated = shared["dated"]
+
+    cells: dict[tuple[str, str], list[float]] = {}
+    for row in dated:
+        cells.setdefault((row["case"], row["session_id"]), []).append(
+            float(bool(row.get(value_key))))
+
+    cases = sorted({case for case, _ in cells})
+    sessions = sorted({session for _, session in cells})
+    a, b = len(cases), len(sessions)
+
+    sizes = sorted({len(v) for v in cells.values()})
+    n = sizes[0] if sizes else 0
+    missing = [(c, s) for c in cases for s in sessions if (c, s) not in cells]
+    if dated:
+        if a < 2:
+            refusals.append(
+                f"{a} case(s). A case term cannot be estimated from one case.")
+        if b < 2:
+            refusals.append(
+                f"{b} session(s). A session term cannot be estimated from one "
+                f"session — that is the state every sweep before D4 is in, and "
+                f"it is why the per-session stability number printed NOT "
+                f"MEASURED rather than 100%.")
+        if n < 2:
+            refusals.append(
+                f"{n} repetition(s) per cell. With one run per cell the "
+                f"residual and the interaction are the same quantity and "
+                f"neither can be separated from the other.")
+        if missing:
+            refusals.append(
+                f"the grid is INCOMPLETE: {len(missing)} of {a * b} "
+                f"(case, session) cells are absent — "
+                + ", ".join(f"{c}/{s[:8]}" for c, s in missing[:6])
+                + ("…" if len(missing) > 6 else "")
+                + ". The balanced estimators are not these expressions on an "
+                  "incomplete grid.")
+        elif len(sizes) > 1:
+            uneven = sorted(
+                (f"{c}/{s[:8]}", len(v)) for (c, s), v in cells.items()
+                if len(v) != sizes[-1])
+            refusals.append(
+                f"the grid is UNBALANCED: cell sizes {sizes}. "
+                + ", ".join(f"{name} has {k}" for name, k in uneven[:6])
+                + ("…" if len(uneven) > 6 else "")
+                + ". Charging an imbalance to whichever term absorbs it is not "
+                  "a decomposition.")
+
+    out = {
+        "value": value_key,
+        "prompt_version": shared["prompt_version"],
+        "refusals": refusals,
+        "may_report": False,
+        "cases": a,
+        "sessions": b,
+        "repetitions": n,
+        "runs": len(dated),
+        "rows_without_session": shared["rows_without_session"],
+        "mean": None,
+        "mean_squares": None,
+        "components_raw": None,
+        "components": None,
+        "shares": None,
+        "negative_estimates": [],
+        "total_variance": None,
+    }
+    if refusals:
+        return out
+
+    grand = _mean(v for values in cells.values() for v in values)
+    case_mean = {c: _mean(v for s in sessions for v in cells[(c, s)])
+                 for c in cases}
+    session_mean = {s: _mean(v for c in cases for v in cells[(c, s)])
+                    for s in sessions}
+    cell_mean = {k: _mean(v) for k, v in cells.items()}
+
+    ss_a = n * b * sum((case_mean[c] - grand) ** 2 for c in cases)
+    ss_b = n * a * sum((session_mean[s] - grand) ** 2 for s in sessions)
+    ss_ab = n * sum(
+        (cell_mean[(c, s)] - case_mean[c] - session_mean[s] + grand) ** 2
+        for c in cases for s in sessions)
+    ss_e = sum((v - cell_mean[(c, s)]) ** 2
+               for c in cases for s in sessions for v in cells[(c, s)])
+
+    ms_a = ss_a / (a - 1)
+    ms_b = ss_b / (b - 1)
+    ms_ab = ss_ab / ((a - 1) * (b - 1))
+    ms_e = ss_e / (a * b * (n - 1))
+
+    raw = {
+        "case": (ms_a - ms_ab) / (n * b),
+        "session": (ms_b - ms_ab) / (n * a),
+        "case_x_session": (ms_ab - ms_e) / n,
+        "residual": ms_e,
+    }
+    negative = sorted(k for k, v in raw.items() if v < -_TINY)
+    clamped = {k: (v if v > _TINY else 0.0) for k, v in raw.items()}
+    total = sum(clamped.values())
+
+    out.update({
+        "may_report": True,
+        "mean": grand,
+        "mean_squares": {"case": ms_a, "session": ms_b,
+                         "case_x_session": ms_ab, "residual": ms_e},
+        "components_raw": raw,
+        "components": clamped,
+        "negative_estimates": negative,
+        "total_variance": total,
+        # None, not zeros. Every run agreeing is a real and common outcome and
+        # it has no decomposition: there is no variance to apportion. Saying
+        # "case 0%, session 0%" would be four numbers that add to nothing.
+        "shares": ({k: clamped[k] / total for k in DECOMPOSITION_TERMS}
+                   if total > _TINY else None),
+    })
+    return out
+
+
+def decompose_texts(rows: list[dict], text_key: str = "answer") -> dict:
+    """Where the ANSWER TEXT stops agreeing with itself: within a session, or
+    across sessions.
+
+    Not a components-of-variance model, deliberately. Answer text has no honest
+    continuous scale — chrF against what? the modal text? which is chosen by
+    the data — and inventing one to feed an ANOVA would put a modelling
+    decision underneath G4's headline number. Pairwise agreement needs no such
+    choice: two runs either produced the same text or they did not, and every
+    figure below is a count over a named denominator.
+
+    Three rates, and the third is the one that stops the other two being
+    misread:
+
+      within_session   P(same text | same case, same session)
+      across_sessions  P(same text | same case, different session)
+      cross_case       P(same text | DIFFERENT case) — the baseline. It should
+                       be ~0. If it is not, identical refusal boilerplate is
+                       being emitted for unrelated questions, and the other two
+                       rates are measuring a template rather than an answer.
+                       That is a finding, and nothing else here would show it.
+
+    `agreement_lost_at_the_session_boundary` is within_session - across_sessions.
+    It is the text-side answer to G4's question. On the D4 archives it is large:
+    five of six cases were internally unanimous and shared NOTHING across the
+    date boundary, while the verdict decomposition put nothing at all on the
+    session term.
+    """
+    shared = _decomposition_rows(rows, text_key)
+    refusals = list(shared["refusals"])
+    dated = shared["dated"]
+
+    by_case: dict[str, dict[str, list[str]]] = {}
+    for row in dated:
+        text = (row.get(text_key) or "").strip()
+        by_case.setdefault(row["case"], {}).setdefault(
+            row["session_id"], []).append(text)
+
+    within_pairs = within_agree = 0
+    cross_pairs = cross_agree = 0
+    per_case = []
+    for case_id in sorted(by_case):
+        sessions = by_case[case_id]
+        c_within = c_within_ok = c_cross = c_cross_ok = 0
+        for texts in sessions.values():
+            for i in range(len(texts)):
+                for j in range(i + 1, len(texts)):
+                    c_within += 1
+                    c_within_ok += texts[i] == texts[j]
+        ids = sorted(sessions)
+        for x in range(len(ids)):
+            for y in range(x + 1, len(ids)):
+                for left in sessions[ids[x]]:
+                    for right in sessions[ids[y]]:
+                        c_cross += 1
+                        c_cross_ok += left == right
+        within_pairs += c_within
+        within_agree += c_within_ok
+        cross_pairs += c_cross
+        cross_agree += c_cross_ok
+        per_case.append({
+            "case": case_id,
+            "sessions": len(ids),
+            "within_session": f"{c_within_ok}/{c_within}",
+            "across_sessions": f"{c_cross_ok}/{c_cross}",
+            "distinct_texts_overall": len({t for ts in sessions.values()
+                                           for t in ts}),
+            "distinct_texts_per_session": {s: len(set(ts))
+                                           for s, ts in sorted(sessions.items())},
+            # Named, not counted — the house rule. "agreement 0.33" is a
+            # number; "this case was word for word identical on both days" and
+            # "this case shared not one character across the boundary" are
+            # things a person can act on, and FINDING 18 was only ever legible
+            # in that form.
+            "identical_across_every_session": c_cross > 0 and c_cross_ok == c_cross,
+            "shared_nothing_across_sessions": c_cross > 0 and c_cross_ok == 0,
+        })
+
+    flat = [(case_id, text) for case_id, sessions in by_case.items()
+            for texts in sessions.values() for text in texts]
+    base_pairs = base_agree = 0
+    for i in range(len(flat)):
+        for j in range(i + 1, len(flat)):
+            if flat[i][0] != flat[j][0]:
+                base_pairs += 1
+                base_agree += flat[i][1] == flat[j][1]
+
+    if dated and not cross_pairs:
+        refusals.append(
+            "no case was seen in two sessions, so there is no session boundary "
+            "to measure agreement across.")
+
+    within_rate = (within_agree / within_pairs) if within_pairs else None
+    cross_rate = (cross_agree / cross_pairs) if cross_pairs else None
+    return {
+        "value": text_key,
+        "prompt_version": shared["prompt_version"],
+        "refusals": refusals,
+        "may_report": not refusals,
+        "rows_without_session": shared["rows_without_session"],
+        "runs": len(dated),
+        "within_session": {"agree": within_agree, "pairs": within_pairs,
+                           "rate": within_rate},
+        "across_sessions": {"agree": cross_agree, "pairs": cross_pairs,
+                            "rate": cross_rate},
+        "cross_case_baseline": {"agree": base_agree, "pairs": base_pairs,
+                                "rate": (base_agree / base_pairs)
+                                if base_pairs else None},
+        "agreement_lost_at_the_session_boundary": (
+            (within_rate - cross_rate)
+            if within_rate is not None and cross_rate is not None else None),
+        "per_case": per_case,
+    }
+
+
+def print_decomposition(verdicts: dict, texts: dict) -> None:
+    """Both, always, and never one without the other.
+
+    They are printed together because the pair is the finding. FINDING 18 is
+    what it looks like when the first says 'nothing moved' and the second says
+    'everything did', and a reader given only one of them would have written
+    down the opposite of what happened.
+    """
+    print("\n" + "=" * 72)
+    print("variance decomposition — G4's deliverable, over TWO response "
+          "variables")
+    print("=" * 72)
+
+    label = verdicts.get("prompt_version") or "?"
+    print(f"\n  VERDICTS ({verdicts['value']}), prompt {label}")
+    if verdicts["refusals"]:
+        print("    NOT COMPUTED:")
+        for refusal in verdicts["refusals"]:
+            print(f"      - {refusal}")
+    else:
+        print(f"    {verdicts['cases']} case(s) x {verdicts['sessions']} "
+              f"session(s) x {verdicts['repetitions']} repetition(s) = "
+              f"{verdicts['runs']} run(s), balanced")
+        print(f"    mean {verdicts['mean']:.3f}")
+        if verdicts["shares"] is None:
+            print("    total variance is zero — every run agreed. NOT "
+                  "MEASURED, and not 0%: there is no variance to apportion.")
+        else:
+            for term in DECOMPOSITION_TERMS:
+                raw = verdicts["components_raw"][term]
+                share = verdicts["shares"][term]
+                flag = "  (negative estimate, clamped)" \
+                    if term in verdicts["negative_estimates"] else ""
+                print(f"      {term:<16} {share:6.1%}   var {raw:+.5f}{flag}")
+        if verdicts["negative_estimates"]:
+            print("    A negative estimate is not an error: it is this "
+                  "estimator saying the\n    term is not distinguishable from "
+                  "zero. Reported, then clamped for the\n    share — never "
+                  "clamped silently.")
+
+    print(f"\n  ANSWER TEXT ({texts['value']}), pairwise agreement")
+    if texts["refusals"]:
+        print("    NOT COMPUTED:")
+        for refusal in texts["refusals"]:
+            print(f"      - {refusal}")
+    else:
+        for key, name in (("within_session", "within a session "),
+                          ("across_sessions", "across sessions  "),
+                          ("cross_case_baseline", "different case   ")):
+            block = texts[key]
+            if not block["pairs"]:
+                print(f"      {name} NOT MEASURED — no such pair")
+                continue
+            print(f"      {name} {block['agree']}/{block['pairs']} = "
+                  f"{block['rate']:.0%}")
+        lost = texts["agreement_lost_at_the_session_boundary"]
+        if lost is not None:
+            print(f"\n      agreement lost at the session boundary: "
+                  f"{lost:+.0%}")
+        base = texts["cross_case_baseline"]["rate"]
+        if base is not None and base > 0.01:
+            print(f"      NOTE: {base:.0%} of pairs from DIFFERENT cases are "
+                  f"byte-identical. The two\n      rates above are partly "
+                  f"measuring a shared refusal template, not an answer.")
+        identical = [c["case"] for c in texts["per_case"]
+                     if c["identical_across_every_session"]]
+        nothing = [c["case"] for c in texts["per_case"]
+                   if c["shared_nothing_across_sessions"]]
+        if identical:
+            print(f"\n      byte-identical in every session: "
+                  f"{', '.join(identical)}")
+        if nothing:
+            print(f"      shared NOTHING across sessions: "
+                  f"{', '.join(nothing)}")
+
+    if verdicts.get("may_report") and texts.get("may_report"):
+        v_session = (verdicts["shares"] or {}).get("session")
+        lost = texts["agreement_lost_at_the_session_boundary"]
+        if v_session is not None and lost is not None \
+                and v_session < 0.05 and lost > 0.5:
+            print(
+                "\n  READ THESE TOGETHER. The verdict decomposition puts "
+                f"{v_session:.0%} on the session\n  term and the text "
+                f"agreement loses {lost:.0%} at the session boundary. The "
+                "system\n  reached the same verdicts on different days by "
+                "saying different things —\n  FINDING 18, reproduced. A report "
+                "carrying only the verdict number would\n  have called this "
+                "stable."
+            )
+
+
+# --------------------------------------------------------------------------
 # FINDING 14 — did the corpus move underneath the sweep?
 # --------------------------------------------------------------------------
 
@@ -712,7 +1161,8 @@ def corpus_moved(before: dict, after: dict) -> str | None:
 # D4 — calibration refuses to be written from too few days
 # --------------------------------------------------------------------------
 
-def calibration_eligibility(sweeps: list[dict], floor: dict) -> dict:
+def calibration_eligibility(sweeps: list[dict], floor: dict,
+                            names: list[str] | None = None) -> dict:
     """May `calibrated: true` be written from these sweeps? Pure; no I/O.
 
     TASK 3, item 2. `floor.json` has said `calibrated: false` since 2026-08-10,
@@ -729,24 +1179,111 @@ def calibration_eligibility(sweeps: list[dict], floor: dict) -> dict:
     sweeps. Sessions are counted and reported beside the dates because they are
     the finer observation, and because a run with three dates and three
     sessions is a different thing from one with three dates and nine.
+
+    Block E, 2026-08-26 — the SCOPE, and why it is a rule and not a judgement
+    ------------------------------------------------------------------------
+
+    Until this was added, an undated sweep was an unconditional refusal. Three
+    such sweeps are on disk and can never be given a session identity, so
+    `calibrated: true` was unreachable at ANY number of dates — not merely
+    blocked until three. D4's report never showed this, because it refused on
+    the date count first and stopped reading.
+
+    The second problem is the pilots. Both carry real session identity, and
+    both ran SIX cases where Block E runs the full stratified set. A floor
+    calibrated across a 6-case date and a 30-case date is a floor whose
+    denominator changes between dates, which is the failure
+    min_distinct_dates_note was written to prevent one level down.
+
+    One rule handles both, and it lives in `floor.json.calibration_scope`: a
+    sweep calibrates only if it carries a session identity AND ran at least
+    `min_cases_per_sweep` cases. A sweep failing the rule blocks calibration
+    outright UNLESS it is NAMED in `excluded_by_rule`.
+
+    And the guard that stops the list being a loophole: a sweep named there
+    which SATISFIES the rule is itself a refusal. Without that check, the list
+    is a place to put a sweep whose numbers someone did not like — the exact
+    move this whole file exists to make impossible. Excluding by a recorded
+    rule is a diff. Excluding by moving files is not, and is why the rule names
+    the archives rather than the archives being deleted.
+
+    `names` is the archive filename for each sweep, positionally. Callers that
+    do not have them — every unit fixture — pass none, no sweep can then be
+    matched to the exclusion list, and the pre-Block-E behaviour is exactly
+    unchanged.
     """
     minimum = int(floor["min_distinct_dates"])
     reps_needed = int(floor["min_repetitions"])
+    scope = floor.get("calibration_scope") or {}
+    min_cases = int(scope.get("min_cases_per_sweep") or 0)
+    named = dict(scope.get("excluded_by_rule") or {})
+    if names is None:
+        names = [None] * len(sweeps)
 
-    dated, undated = [], []
-    for sweep in sweeps:
+    eligible: list[dict] = []
+    eligible_indexes: list[int] = []
+    excluded: list[dict] = []
+    blocking: list[dict] = []
+    wrongly_excluded: list[str] = []
+    undated_total = 0
+
+    for index, (sweep, name) in enumerate(zip(sweeps, names)):
         session = sweep.get("session") or {}
-        (dated if session.get("id") and session.get("date")
-         else undated).append(sweep)
+        cases = {row.get("case") for row in (sweep.get("results") or [])}
+        fails: list[str] = []
+        if not (session.get("id") and session.get("date")):
+            fails.append("carries no session identity")
+            undated_total += 1
+        if min_cases and len(cases) < min_cases:
+            fails.append(f"ran {len(cases)} case(s), below the {min_cases} "
+                         f"this floor calibrates from")
+        entry = {"sweep": name, "fails": fails}
+        if not fails:
+            # A sweep that qualifies cannot be excluded. This is the whole
+            # anti-loophole, and it is one line.
+            if name is not None and name in named:
+                wrongly_excluded.append(name)
+            eligible.append(sweep)
+            eligible_indexes.append(index)
+        elif name is not None and name in named:
+            excluded.append({**entry, "recorded_reason": named[name]})
+        else:
+            blocking.append(entry)
 
-    dates = sorted({(s.get("session") or {})["date"] for s in dated})
-    sessions = sorted({(s.get("session") or {})["id"] for s in dated})
+    dates = sorted({(s.get("session") or {})["date"] for s in eligible})
+    sessions = sorted({(s.get("session") or {})["id"] for s in eligible})
     per_date: dict[str, int] = {}
-    for sweep in dated:
-        per_date[(sweep.get("session") or {})["date"]] = per_date.get(
-            (sweep.get("session") or {})["date"], 0) + 1
+    for sweep in eligible:
+        date = (sweep.get("session") or {})["date"]
+        per_date[date] = per_date.get(date, 0) + 1
 
     refusals: list[str] = []
+    if wrongly_excluded:
+        refusals.append(
+            f"{len(wrongly_excluded)} sweep(s) named in "
+            f"calibration_scope.excluded_by_rule SATISFY the rule and may not "
+            f"be excluded by it: {', '.join(sorted(wrongly_excluded))}. A list "
+            f"that can hold a qualifying sweep is a place to put numbers "
+            f"nobody liked."
+        )
+    unnamed_undated = [b for b in blocking
+                       if "carries no session identity" in b["fails"]]
+    if unnamed_undated:
+        refusals.append(
+            f"{len(unnamed_undated)} sweep(s) carry no session identity and "
+            f"count toward no date. They were archived before D4 and cannot be "
+            f"given one now: a date assigned after the fact is the "
+            f"calibration this file already records as invalid. Exclude them "
+            f"by name in calibration_scope.excluded_by_rule, or they block."
+        )
+    out_of_scope = [b for b in blocking if b not in unnamed_undated]
+    if out_of_scope:
+        refusals.append(
+            f"{len(out_of_scope)} sweep(s) fall outside "
+            f"calibration_scope and are not named in excluded_by_rule: "
+            + "; ".join(f"{b['sweep'] or 'unnamed'} ({', '.join(b['fails'])})"
+                        for b in out_of_scope)
+        )
     if len(dates) < minimum:
         refusals.append(
             f"{len(dates)} distinct date(s), and the floor requires "
@@ -754,19 +1291,12 @@ def calibration_eligibility(sweeps: list[dict], floor: dict) -> dict:
             f"are not independent samples — a floor calibrated from fewer is "
             f"a within-session regression gate wearing the word 'calibrated'."
         )
-    thin = [s for s in dated if int(s.get("repeat", 0)) < reps_needed]
+    thin = [s for s in eligible if int(s.get("repeat", 0)) < reps_needed]
     if thin:
         refusals.append(
             f"{len(thin)} sweep(s) ran fewer than {reps_needed} repetitions. "
             f"A single shot is one sample of a distribution nobody has looked "
             f"at."
-        )
-    if undated:
-        refusals.append(
-            f"{len(undated)} sweep(s) carry no session identity and count "
-            f"toward no date. They were archived before D4 and cannot be "
-            f"given one now: a date assigned after the fact is the "
-            f"calibration this file already records as invalid."
         )
 
     return {
@@ -781,7 +1311,19 @@ def calibration_eligibility(sweeps: list[dict], floor: dict) -> dict:
         # floor: two sweeps, one day, opposite results.
         "dates_with_more_than_one_session": sorted(
             date for date, n in per_date.items() if n > 1),
-        "sweeps_without_session": len(undated),
+        "sweeps_without_session": undated_total,
+        # Named, never merely subtracted. A sweep that left the calibration
+        # silently is a sweep nobody can argue with later.
+        "eligible_sweeps": len(eligible),
+        # Positional, so a caller can recover the ROWS that calibrated the
+        # floor without matching on filenames. What gets written into
+        # floor.json must be computed over the sweeps that were allowed to
+        # write it, or `calibrated_stability` reports numbers from archives
+        # the calibration itself excluded.
+        "eligible_indexes": eligible_indexes,
+        "excluded_by_rule": excluded,
+        "wrongly_excluded": sorted(wrongly_excluded),
+        "min_cases_per_sweep": min_cases,
     }
 
 
@@ -795,6 +1337,17 @@ def print_calibration(verdict: dict) -> None:
     print(f"  distinct sessions  {verdict['distinct_sessions']}")
     for date, n in verdict["sessions_per_date"].items():
         print(f"    {date}  {n} session(s)")
+    print(f"  eligible sweeps    {verdict.get('eligible_sweeps', '?')}")
+    if verdict.get("min_cases_per_sweep"):
+        print(f"  scope: a sweep calibrates only if it carries a session "
+              f"identity AND ran\n         at least "
+              f"{verdict['min_cases_per_sweep']} cases "
+              f"(floor.json calibration_scope)")
+    for entry in verdict.get("excluded_by_rule") or []:
+        # Named, never merely subtracted. A sweep that left the calibration
+        # silently is a sweep nobody can argue with later.
+        print(f"    excluded by rule  {entry['sweep']}")
+        print(f"                      {'; '.join(entry['fails'])}")
     if verdict["dates_with_more_than_one_session"]:
         print(f"  more than one session on: "
               f"{', '.join(verdict['dates_with_more_than_one_session'])} — "

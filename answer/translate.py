@@ -374,6 +374,41 @@ def parse_translation(raw: str) -> tuple[str, list[str]]:
 # The calls
 # --------------------------------------------------------------------------
 
+def _serving_stack(response) -> dict:
+    """What the gateway says about WHICH stack served this call.
+
+    Block E decision 3, 2026-08-26. FINDING 18 asks a question the archive
+    cannot answer: five of six cases changed their answer text completely
+    between two dates at temperature 0, and nothing recorded could distinguish
+    provider-side drift from sampling variance. The archive carried `model` -
+    which is the alias this repository SENT, and therefore cannot move.
+
+    Keys whose value is None are OMITTED rather than written as null.
+    `system_fingerprint` is an OpenAI field and this gateway fronts Anthropic,
+    so it may be absent on every call; a column reading null 270 times is the
+    vacuous proof BLOCK_E_START carries as trap 4, after three of them in four
+    days. What is real is recorded; what is absent is recorded ONCE, in the
+    result document, rather than two hundred and seventy times in the
+    archives. `python scripts/probe_serving_stack.py` is what says which, and
+    it costs one chat call.
+
+    `model` is kept even though the alias is stored beside it, because they are
+    not the same fact: one is what was asked for, the other is what the
+    provider says it served.
+    """
+    out: dict = {}
+    for key in ("id", "model", "system_fingerprint", "service_tier"):
+        value = getattr(response, key, None)
+        if value is not None:
+            out[key] = value
+    hidden = getattr(response, "_hidden_params", None)
+    if isinstance(hidden, dict):
+        for key in ("model_id", "custom_llm_provider"):
+            if hidden.get(key) is not None:
+                out[key] = hidden[key]
+    return out
+
+
 def _chat(
     messages: list[dict],
     *,
@@ -383,10 +418,21 @@ def _chat(
     sleep=time.sleep,
     temperature: float = 0,
     temperature_fallback: float | None = None,
+    provenance: dict | None = None,
 ) -> tuple[str, int, float]:
     """One chat completion, with the Part 4 retry policy.
 
     Returns (text, retries, temperature_actually_used).
+
+    `provenance` is an OUT-parameter and not a fourth return value, which is a
+    choice and not laziness. `assemble.py` carries a comment about what
+    happened the last time this function's arity moved: ruling 22's
+    temperature work updated three of its four call sites, the fourth
+    unpacked two values from a three-tuple, and every live answer call raised
+    ValueError for five days with nothing catching it. There are now six call
+    sites and two test call sites, and Block E freezes this code for three
+    days across 270 chat calls. A caller that wants the serving stack passes a
+    dict; the five that do not are not touched at all.
 
     `temperature_fallback` is OPT-IN and defaults to None, so Part 6's
     translations and Part 7's answers keep sending temperature=0 and keep
@@ -412,6 +458,9 @@ def _chat(
                 temperature=used,   # a translation harness must be reproducible
                 max_tokens=max_tokens,
             )
+            if provenance is not None:
+                provenance.clear()
+                provenance.update(_serving_stack(response))
             return (response.choices[0].message.content or ""), retries, used
 
         except Exception as exc:  # noqa: BLE001 — provider errors are untyped

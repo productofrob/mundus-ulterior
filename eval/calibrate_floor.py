@@ -102,7 +102,19 @@ def main(argv: list[str] | None = None) -> int:
     rows = [row for sweep in sweeps for row in sweep.get("results", [])]
 
     numbers = answer_eval.stability(rows)
-    verdict = answer_eval.calibration_eligibility(sweeps, floor)
+    # Block E. The archive FILENAME is what floor.json's calibration_scope
+    # names, so it has to travel with the sweep. Without it no exclusion can
+    # match, which is the correct behaviour for a caller that does not know
+    # which file a sweep came from and the wrong behaviour for this one.
+    verdict = answer_eval.calibration_eligibility(
+        sweeps, floor, [name for _, name in archived])
+    # Computed over the sweeps the scope ALLOWED, not over everything on disk.
+    # `calibrated_stability` is written into floor.json as the evidence for
+    # the calibration, and evidence drawn from archives the calibration itself
+    # excluded is not evidence.
+    eligible_rows = [row for index in verdict["eligible_indexes"]
+                     for row in sweeps[index].get("results", [])]
+    eligible_numbers = answer_eval.stability(eligible_rows)
 
     if args.json:
         print(json.dumps({"stability": numbers, "calibration": verdict},
@@ -122,7 +134,19 @@ def main(argv: list[str] | None = None) -> int:
         answer_eval.print_calibration(verdict)
 
     if not args.write:
-        print("\nnothing written — re-run with --write to set calibrated: true")
+        if verdict["may_calibrate"]:
+            print("\nnothing written — re-run with --write to set "
+                  "calibrated: true")
+        else:
+            # This line used to read "re-run with --write to set calibrated:
+            # true" even when the block directly above it had just refused —
+            # a report contradicting itself in its own final sentence, and a
+            # trap BLOCK_E_START carries forward as "read the refusal block,
+            # not the last line". Closed 2026-08-26: the last line now agrees
+            # with the refusal.
+            print(f"\nnothing written, and --write would REFUSE — "
+                  f"{len(verdict['refusals'])} reason(s) above, not one of "
+                  f"which is fixed by passing --write.")
         return 0 if verdict["may_calibrate"] else 1
 
     if not verdict["may_calibrate"]:
@@ -145,12 +169,22 @@ def main(argv: list[str] | None = None) -> int:
     data["calibrated_from_dates"] = verdict["dates"]
     data["calibrated_from_sessions"] = verdict["distinct_sessions"]
     data["calibrated_stability"] = {
-        "per_case": numbers["per_case"],
-        "per_session": numbers["per_session"],
+        "per_case": eligible_numbers["per_case"],
+        "per_session": eligible_numbers["per_session"],
     }
+    data["calibrated_from_sweeps"] = [
+        archived[index][1] for index in verdict["eligible_indexes"]]
+    # Named in the floor file itself, so that "which archives is this floor
+    # standing on" is a question the file answers rather than one someone
+    # reconstructs from a scope rule and a directory listing.
+    data["calibration_excluded_sweeps"] = {
+        entry["sweep"]: entry["recorded_reason"]
+        for entry in verdict["excluded_by_rule"]}
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n",
                     encoding="utf-8")
     print(f"\ncalibrated: true written to {path}")
+    print(f"  over {verdict['eligible_sweeps']} sweep(s) in scope, "
+          f"{len(verdict['excluded_by_rule'])} excluded by rule")
     print(f"  from {verdict['distinct_dates']} dates "
           f"({', '.join(verdict['dates'])}) and "
           f"{verdict['distinct_sessions']} sessions")
