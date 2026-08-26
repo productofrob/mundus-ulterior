@@ -1,0 +1,312 @@
+{
+  "timestamp": "2026-08-26T11:55:29+00:00",
+  "question": "What does the Tamil poem say about Yavana ships at Muciri?",
+  "answer": "The Tamil poem Akananuru 149.7-11 describes Yavana ships at Muciri in several ways. [S1] The poem refers to \"the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans]\" that \"stir white foam on the Culli [Periyar], a river of the Chera.\" [S1] According to the poem, these ships arrive \"with gold and departing with pepper\" at Muciri, which is described as a city \"brimming with prosperity.\" [S1] The poem also depicts the port during a time of military conflict, noting that this prosperity occurred \"when that Muciri...was besieged by the din of war.\" [S1]",
+  "grounded": false,
+  "refused": false,
+  "model": "anthropic/claude-haiku-4-5-20251001",
+  "serving_stack": {
+    "id": "chatcmpl-23607073-cc8b-470b-947a-84ca16ce4a3a",
+    "model": "chat-default"
+  },
+  "prompt_version": "p7-answer-v2r",
+  "embedding_model": "voyage/voyage-3.5",
+  "answer_id": "b9900ca2f379f644cbfdba2f4cf8b39c",
+  "grounding": {
+    "ok": false,
+    "cited_markers": [
+      "S1"
+    ],
+    "unknown_markers": [],
+    "uncited_sentences": [],
+    "unverified_quotes": [
+      {
+        "quote": "when that Muciri...was besieged by the din of war.",
+        "cited": [
+          "S1"
+        ],
+        "sentence": "The poem also depicts the port during a time of military conflict, noting that this prosperity occurred \"when that Muciri...was besieged by the din of war.\" [S1]",
+        "reason": "this text appears in no supplied passage, in either the source language or the English. It was not copied from the evidence."
+      }
+    ],
+    "quoted_metadata": [],
+    "misattributed_quotes": [],
+    "claims_on_untranslated": [],
+    "unlabelled_machine": [],
+    "claim_sentences": 4,
+    "cited_sentences": 4,
+    "notes": [],
+    "quote_spans": [
+      {
+        "quote": "the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans]",
+        "marker": "S1",
+        "chunk_id": "southasia-01-akananuru-149::translation::000",
+        "doc_id": "southasia-01-akananuru-149",
+        "source_field": "reference_translation",
+        "abs_start": 18,
+        "abs_end": 95,
+        "match": "exact",
+        "within": "english"
+      },
+      {
+        "quote": "stir white foam on the Culli [Periyar], a river of the Chera.",
+        "marker": "S1",
+        "chunk_id": "southasia-01-akananuru-149::translation::000",
+        "doc_id": "southasia-01-akananuru-149",
+        "source_field": "reference_translation",
+        "abs_start": 98,
+        "abs_end": 158,
+        "match": "exact",
+        "within": "english"
+      },
+      {
+        "quote": "with gold and departing with pepper",
+        "marker": "S1",
+        "chunk_id": "southasia-01-akananuru-149::translation::000",
+        "doc_id": "southasia-01-akananuru-149",
+        "source_field": "reference_translation",
+        "abs_start": 169,
+        "abs_end": 204,
+        "match": "exact",
+        "within": "english"
+      },
+      {
+        "quote": "brimming with prosperity.",
+        "marker": "S1",
+        "chunk_id": "southasia-01-akananuru-149::translation::000",
+        "doc_id": "southasia-01-akananuru-149",
+        "source_field": "reference_translation",
+        "abs_start": 223,
+        "abs_end": 247,
+        "match": "exact",
+        "within": "english"
+      }
+    ],
+    "coverage": 1.0,
+    "failures": {
+      "unknown_markers": 0,
+      "uncited_sentences": 0,
+      "unverified_quotes": 1,
+      "quoted_metadata": 0,
+      "misattributed_quotes": 0,
+      "claims_on_untranslated": 0,
+      "unlabelled_machine": 0
+    }
+  },
+  "passages": [
+    {
+      "marker": "S1",
+      "chunk_id": "southasia-01-akananuru-149::original::000",
+      "doc_id": "southasia-01-akananuru-149",
+      "rank": 1,
+      "similarity": 0.5604256057485667,
+      "lang": "oty",
+      "region": "South Asia",
+      "citation": "https://en.wikipedia.org/wiki/Muziris#cite_note-Kulke1-24",
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 632,
+      "english": {
+        "kind": "published",
+        "text": "...the city where the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans], stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper—when that Muciri, brimming with prosperity, was besieged by the din of war.",
+        "ground": "index",
+        "attribution": "Kulke, Hermann & Rothermund, Dietmar, A History of India (Routledge, 2004), as reproduced on Wikipedia (Muziris).",
+        "band": null,
+        "profile": null,
+        "profile_calibrated": null,
+        "flags": [],
+        "cos_back": null,
+        "chrf_back": null,
+        "reason": null
+      },
+      "lang_note": "Old Tamil is the weakest language in this pipeline. It matched its own probe at cosine 0.368 where Greek, Literary Chinese and Parthian ran 0.61-0.68, and one machine round trip in three came back in the wrong script. Claims resting on this passage are weaker than claims resting on the Greek.",
+      "translation_member_chunk_id": "southasia-01-akananuru-149::translation::000"
+    },
+    {
+      "marker": "S2",
+      "chunk_id": "southasia-02-periplus-muziris::original::002",
+      "doc_id": "southasia-02-periplus-muziris",
+      "rank": 2,
+      "similarity": 0.3828357914490451,
+      "lang": "grc",
+      "region": "South Asia",
+      "citation": "http://depts.washington.edu/silkroad/texts/periplus/periplus.html",
+      "source_field": "original_text_excerpt",
+      "char_start": 992,
+      "char_end": 1509,
+      "english": {
+        "kind": "published",
+        "text": "55. There is another place at the mouth of this river, the village of Bacare; to which ships drop down on the outward voyage from Nelcynda, and anchor in the roadstead to take on their cargoes; because the river is full of shoals and the channels are not clear. The kings of both these market-towns live in the interior. And as a sign to those approaching these places from the sea there are serpents coming forth to meet you, black in color, but shorter, like snakes in the head, and with blood-red eyes.",
+        "ground": "section",
+        "attribution": "Wilfred H. Schoff translation (1912), University of Washington Silk Road Seattle hosted edition.",
+        "band": null,
+        "profile": null,
+        "profile_calibrated": null,
+        "flags": [],
+        "cos_back": null,
+        "chrf_back": null,
+        "reason": null
+      },
+      "lang_note": null,
+      "translation_member_chunk_id": "southasia-02-periplus-muziris::translation::002"
+    },
+    {
+      "marker": "S3",
+      "chunk_id": "southasia-02-periplus-muziris::original::001",
+      "doc_id": "southasia-02-periplus-muziris",
+      "rank": 3,
+      "similarity": 0.37701714038849143,
+      "lang": "grc",
+      "region": "South Asia",
+      "citation": "http://depts.washington.edu/silkroad/texts/periplus/periplus.html",
+      "source_field": "original_text_excerpt",
+      "char_start": 418,
+      "char_end": 990,
+      "english": {
+        "kind": "published",
+        "text": "54. Tyndis is of the Kingdom of Cerobothra; it is a village in plain sight by the sea. Muziris, of the same Kingdom, abounds in ships sent there with cargoes from Arabia, and by the Greeks; it is located on a river, distant from Tyndis by river and sea five hundred stadia, and up the river from the shore twenty stadia. Nelcynda is distant from Muziris by river and sea about five hundred stadia, and is of another Kingdom, the Pandian. This place also is situated on a river, about one hundred and twenty stadia from the sea.",
+        "ground": "section",
+        "attribution": "Wilfred H. Schoff translation (1912), University of Washington Silk Road Seattle hosted edition.",
+        "band": null,
+        "profile": null,
+        "profile_calibrated": null,
+        "flags": [],
+        "cos_back": null,
+        "chrf_back": null,
+        "reason": null
+      },
+      "lang_note": null,
+      "translation_member_chunk_id": "southasia-02-periplus-muziris::translation::001"
+    },
+    {
+      "marker": "S4",
+      "chunk_id": "southasia-02-periplus-muziris::original::000",
+      "doc_id": "southasia-02-periplus-muziris",
+      "rank": 4,
+      "similarity": 0.3419027038129603,
+      "lang": "grc",
+      "region": "South Asia",
+      "citation": "http://depts.washington.edu/silkroad/texts/periplus/periplus.html",
+      "source_field": "original_text_excerpt",
+      "char_start": 0,
+      "char_end": 416,
+      "english": {
+        "kind": "published",
+        "text": "53. Beyond Calliena there are other market-towns of this region; Semylla, Mandagora, Pala patma, Meligara, Byzantium, Togarum and Aurannohoas. Then there are the islands called Sesecrienae and that of the Aegidii, and that of the Caenitae, opposite the place called Chersonesus (and in these places there are pirates) and after this the White Island. Then come Naura and Tyndis, the first markets of Damirica, and then Muziris and Nelcynda, which are now of leading importance.",
+        "ground": "section",
+        "attribution": "Wilfred H. Schoff translation (1912), University of Washington Silk Road Seattle hosted edition.",
+        "band": null,
+        "profile": null,
+        "profile_calibrated": null,
+        "flags": [],
+        "cos_back": null,
+        "chrf_back": null,
+        "reason": null
+      },
+      "lang_note": null,
+      "translation_member_chunk_id": "southasia-02-periplus-muziris::translation::000"
+    },
+    {
+      "marker": "S5",
+      "chunk_id": "southasia-02-periplus-muziris::original::003",
+      "doc_id": "southasia-02-periplus-muziris",
+      "rank": 5,
+      "similarity": 0.33194009446383643,
+      "lang": "grc",
+      "region": "South Asia",
+      "citation": "http://depts.washington.edu/silkroad/texts/periplus/periplus.html",
+      "source_field": "original_text_excerpt",
+      "char_start": 1511,
+      "char_end": 2430,
+      "english": {
+        "kind": "published",
+        "text": "56. They send large ships to these market-towns on account of the great quantity and bulk of pepper and malabathrum. There are imported here, in the first place, a great quantity of coin; topaz, thin clothing, not much; figured linens, antimony, coral, crude glass, copper, tin, lead; wine, not much, but as much as at Barygaza; realgar and orpiment; and wheat enough for the sailors, for this is not dealt in by the merchants there. There is exported pepper, which is produced in quantity in only one region near these markets, a district called Cottonara. Besides this there are exported great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell; that from Chryse Island, and that taken among the islands along the coast of Damirica. They make the voyage to this place in a favorable season who set out from Egypt about the month of July, that is Epiphi.",
+        "ground": "section",
+        "attribution": "Wilfred H. Schoff translation (1912), University of Washington Silk Road Seattle hosted edition.",
+        "band": null,
+        "profile": null,
+        "profile_calibrated": null,
+        "flags": [],
+        "cos_back": null,
+        "chrf_back": null,
+        "reason": null
+      },
+      "lang_note": null,
+      "translation_member_chunk_id": "southasia-02-periplus-muziris::translation::003"
+    },
+    {
+      "marker": "S6",
+      "chunk_id": "africa-03-periplus-adulis::original::001",
+      "doc_id": "africa-03-periplus-adulis",
+      "rank": 6,
+      "similarity": 0.3219978213310264,
+      "lang": "grc",
+      "region": "Sub-Saharan Africa",
+      "citation": "https://topostext.org/work/491#4",
+      "source_field": "original_text_excerpt",
+      "char_start": 559,
+      "char_end": 1291,
+      "english": {
+        "kind": "published",
+        "text": "§4 Below Ptolemais of the Hunts, at a distance of about three thousand stadia, there is Adulis, a port established by law, lying at the inner end of a bay that runs in toward the south. Before the harbor lies the so-called Mountain Island, about two hundred stadia sea-ward from the very head of the bay, with the shores of the mainland close to it on both sides. Ships bound for this port now anchor here because of attacks from the land. They used formerly to anchor at the very head of the bay, by an island called Diodorus, close to the shore, which could be reached on foot from the land; by which means the barbarous natives attacked the island. Opposite Mountain Island, on the mainland twenty stadia from shore, lies Adulis, a fair-sized village, from which there is a three-days' journey to Coloe, an inland town and the first market for ivory. From that place to the city of the people called Auxumites there is a five days' journey more; to that place all the ivory is brought from the country beyond the Nile through the district called Cyeneum, and thence to Adulis. Practically the whole number of elephants and rhinoceros that are killed live in the places inland, although at rare intervals they are hunted on the seacoast even near Adulis. Before the harbor of that market-town, out at sea on the right hand, there lie a great many little sandy islands called Alalaei, yielding tortoise-shell, which is brought to market there by the Fish-Eaters.",
+        "ground": "section",
+        "attribution": "Wilfred H. Schoff translation (1912), with emendations from Lionel Casson's 1989 Princeton edition, hosted by ToposText.",
+        "band": null,
+        "profile": null,
+        "profile_calibrated": null,
+        "flags": [],
+        "cos_back": null,
+        "chrf_back": null,
+        "reason": null
+      },
+      "lang_note": null,
+      "translation_member_chunk_id": "africa-03-periplus-adulis::translation::001"
+    }
+  ],
+  "sources_block": "[S1] https://en.wikipedia.org/wiki/Muziris#cite_note-Kulke1-24\n      Akananuru 149.7-11 (Erukkattur Tayankannanar) — Yavana ships at Muciri — South Asia, oty\n      translation: Kulke, Hermann & Rothermund, Dietmar, A History of India (Routledge, 2004), as reproduced on Wikipedia (Muziris).\n      English from the published translation (Kulke, Hermann & Rothermund, Dietmar, A History of India (Routledge, 2004), as reproduced on Wikipedia (Muziris).), paired with this passage by position — both sides split into the same number of passages in the same order, which is weaker evidence than matching section numbers.\n      traceable to: original_text_excerpt [0:632] of southasia-01-akananuru-149",
+  "sweep": {
+    "case": "akananuru-yavana-ships",
+    "repetition": 2,
+    "of": 3
+  },
+  "session": {
+    "id": "0c74d52b2c2547a2bfdd604d3bca8fb1",
+    "date": "2026-08-26",
+    "date_basis": "UTC",
+    "started_at": "2026-08-26T11:48:17+00:00",
+    "label": "Block E day 1"
+  },
+  "corpus_version": {
+    "algorithm": "sha256-of-canonical-json-v1",
+    "scope": "seed records only; distractors excluded",
+    "source": "database",
+    "seed_record_count": 24,
+    "seed_corpus_digest": "26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28",
+    "record_hashes": {
+      "africa-01-ezana-stone": "02f34bf4dfcdcec8163b7f3e9ecd3f2d6d0b43eedc31ec15feb8a2949d6859b2",
+      "africa-02-aksumite-coin": "6059f3389690db904c68d414bea131bcfee90204c8e20458e1db5e00f0d4d584",
+      "africa-03-periplus-adulis": "0e83bf72dbdf421bff0665dac9057fbffbb4416696f6180cb744507234e43a12",
+      "arabia-01-periplus": "2de22094d87de53babeccc6e150651ae9b49c3ca3d615923dd289bba329bec70",
+      "arabia-02-palmyrene-tariff": "91c4de9c363868410a6e1330fac0905d65ae855fb4d668cb2d3ae354aa5d2438",
+      "arabia-03-jsnab17": "8682c3c16a4d02128b3fd9a1ad02be18ddf18e587dd6a9fedaa689b5a2bfc2dc",
+      "arabia-04-jabal-dabub": "c6c0749dbdae91590da1736d6afb5b92a440a3fafb0d75c3847472cad76d0812",
+      "eastasia-01-weilue": "3eff69e3f9d898ce5e4e84aa120efd2d3a79df1ba5eb95310d5a82a2dc272fac",
+      "eastasia-02-hou-hanshu": "a37becaa697167918e8631c672f665877be0cca0eab0be7a8845d04b9840ade4",
+      "eastasia-03-hwangnam-glass": "d65ded06235c2ebfa6598cfae49df8b3d2a1878b76bc6eaeff9052f551cb7790",
+      "persia-01-skz": "289faeaca5276887d894b8b86ea96ac3b881e9e914cac3ede7eb4053d5c5912b",
+      "persia-02-silver-plate": "a4e819fcbca587174bd8d1d59624c979340a4d57d504094b5c283c4642f41b40",
+      "persia-03-coin": "ac4f5a907a56cb81a417de71d24ab42bf15dec6cb993515992b9d10971f4a61b",
+      "scandinavia-01-hoby-treasure": "c359ea6ac4c03fd8553de2d4187558496ba27d44f3c2e95ccbecfd1db52ea4b5",
+      "scandinavia-02-gudme-hoard": "483c36b36a6372e20048705703bb72d24d0139602860fff022ab7021f3007c8d",
+      "scandinavia-03-vimose": "0de086025bacda4ef2a61b92bdf4695fbf37546df367a77dc9e6fa1441ee4acb",
+      "scandinavia-04-illerup-adal": "d2707cae56a5338e6ace1d6501033c55f3abc39b47925dc2a7da7e33023c767f",
+      "seasia-01-oc-eo-medallion": "db0d7a9f56d47e983add739a8e45ec5ebebd5d0a89b20ae33ddf71818af27543",
+      "seasia-02-oc-eo-site": "cf210152193f4fe1c7934b72cd0bb0f57fdbc1be293c0528bf955935a81fb0a6",
+      "seasia-03-khao-sam-kaeo": "f64a0e2c9b31eda224e15b10d17d95d0a81a68cdbf4dc91759fa723457b33704",
+      "southasia-01-akananuru-149": "9f6dd5aba184dd01806962d2d0f674a9ea03ce6e56b0da3586e8d795d1545e0c",
+      "southasia-02-periplus-muziris": "0791a6e2396566f0e54b7e47ec802ceaa68d2a5dee07758efb5cc24dcd965807",
+      "southasia-03-muziris-papyrus": "9a2eefaff5a37db2feccc48aa8d981ff42ed90bcea053d9d497eeca3013321f0",
+      "southasia-04-pattanam": "ede696189658686ae314d4435ef2e8ee9c917a276d26350fc60dd9fd901a9728"
+    }
+  }
+}
