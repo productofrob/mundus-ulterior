@@ -1510,6 +1510,17 @@ def test_the_calibration_scope_and_demotions() -> None:
            "GUARD an exclusion cannot apply to a sweep whose archive is not "
            "named")
 
+    # Block E, 2026-08-26. A day that lost calls has the full case set and a
+    # hole in its grid. It must not calibrate from either end.
+    holed = three[:2] + [{**sweep("2026-08-31", "c"),
+                          "incomplete": [{"case": "x", "prompt_version": "p",
+                                          "repetition": 2, "error": "boom"}]}]
+    dropped = answer_eval.calibration_eligibility(holed, floor)
+    expect(not dropped["may_calibrate"]
+           and any("INCOMPLETE" in r for r in dropped["refusals"]),
+           "GUARD a sweep archived INCOMPLETE cannot calibrate, even with the "
+           "full case set")
+
     # vimose-runes, decision 1. Demoted, and still reported for ever.
     expect("vimose-runes" not in floor["required_cases"],
            "vimose-runes is no longer a required case")
@@ -1552,6 +1563,163 @@ def test_the_calibration_scope_and_demotions() -> None:
            "refused")
 
 
+def test_a_failed_chat_call_does_not_take_the_day() -> None:
+    """Block E, 2026-08-26. One call of ninety-nine used to kill the run.
+
+    `run_sweep` caught EmbeddingError and left the chat call unguarded, so a
+    TranslationError propagated out of main() AFTER N per-run archives were
+    written and BEFORE the sweep archive that ties them together — the orphan
+    state the runbook warns about from Ctrl-C, reachable without Ctrl-C.
+    D4's 18-call pilot never went near it.
+
+    Tested behaviourally and not by reading the source, unlike the FINDING 14
+    checks above. Those assert that a LINE exists; this is control flow, and a
+    line-exists check on control flow is the vacuous proof in a new costume.
+    The module imports cleanly with no database and no gateway; everything it
+    would reach across is replaced here.
+    """
+    print("\na failed chat call does not take the day")
+
+    import contextlib
+    import io
+    from eval import run_answer_sweep as sweep_mod
+    from ingest import embed as embed_mod
+
+    class _English:
+        kind, text, ground, band = "published", "ivory and tortoise-shell", "", ""
+
+    class _Passage:
+        marker, chunk_id, similarity = "S1", "africa-03::002", 0.51
+        english = _English()
+
+        def to_dict(self):
+            return {"marker": self.marker, "chunk_id": self.chunk_id}
+
+    class _Span:
+        abs_start = 7
+
+    class _Grounding:
+        ok = True
+        quote_spans = [_Span()]
+
+        def to_dict(self):
+            return {"ok": True}
+
+    class _Answer:
+        question = "q?"
+        answer_text = "ivory and tortoise-shell [S1]"
+        grounding = _Grounding()
+        refused = False
+        model = "anthropic/claude-haiku-4-5-20251001"
+        prompt_version = "p7-answer-v2r"
+        embedding_model = None
+        retrieval_k = 0
+        corpus_version = None
+        serving_stack: dict = {}
+        passages = [_Passage()]
+        sources_block = ""
+
+    class _Scored:
+        ok, failures = True, []
+
+    class _Case:
+        def __init__(self, case_id):
+            self.id = case_id
+            self.question = f"question for {case_id}?"
+
+    cases = [_Case("alpha"), _Case("beta")]
+    session = {"id": "s" * 32, "date": "2026-08-26", "date_basis": "UTC",
+               "label": "unit", "started_at": "2026-08-26T00:00:00+00:00"}
+
+    def run(fail_on):
+        """fail_on: a mutable list of (case, repetition) that raise, popped as
+        they are consumed — so a cell can fail once and succeed on the retry."""
+        calls = []
+
+        def fake_assemble(question, passages, **kwargs):
+            calls.append(question)
+            key = (question, len([c for c in calls if c == question]))
+            if key in fail_on:
+                fail_on.remove(key)
+                raise RuntimeError("gateway said 529")
+            return _Answer()
+
+        originals = {
+            (sweep_mod.assemble, "assemble"): sweep_mod.assemble.assemble,
+            (sweep_mod.assemble, "build_evidence"): sweep_mod.assemble.build_evidence,
+            (sweep_mod.answer_store, "corpus_version"): sweep_mod.answer_store.corpus_version,
+            (sweep_mod.translate, "resolve_model_label"): sweep_mod.translate.resolve_model_label,
+            (sweep_mod.answer_eval, "score_payload"): sweep_mod.answer_eval.score_payload,
+            (embed_mod, "embed_query"): embed_mod.embed_query,
+            (embed_mod, "resolve_model_label"): embed_mod.resolve_model_label,
+        }
+        try:
+            sweep_mod.assemble.assemble = fake_assemble
+            sweep_mod.assemble.build_evidence = lambda *a, **k: [_Passage()]
+            sweep_mod.answer_store.corpus_version = lambda conn: {
+                "seed_corpus_digest": "d" * 64, "seed_record_count": 24,
+                "record_hashes": {}, "source": "unit"}
+            sweep_mod.translate.resolve_model_label = lambda *a, **k: "m"
+            sweep_mod.answer_eval.score_payload = lambda *a, **k: _Scored()
+            embed_mod.embed_query = lambda text, **k: [0.0]
+            embed_mod.resolve_model_label = lambda *a, **k: "e"
+            buffer = io.StringIO()
+            with contextlib.redirect_stdout(buffer):
+                outcome = sweep_mod.run_sweep(
+                    conn=None, cases=cases, prompt_versions=["p7-answer-v2r"],
+                    repeat=2, k=6, max_sources=6, profiles={}, pause=0.0,
+                    dry_run=False, write=False, session=session)
+            return outcome, buffer.getvalue()
+        finally:
+            for (obj, name), value in originals.items():
+                setattr(obj, name, value)
+
+    # A clean run is untouched by any of this.
+    clean, _ = run(fail_on=[])
+    expect(len(clean["results"]) == 4 and not clean["incomplete"]
+           and not clean["retried"],
+           "a sweep with no failure archives four runs and reports neither an "
+           "incomplete cell nor a retry")
+
+    # One call fails once. The retry at the end succeeds, and the day survives.
+    once, output = run(fail_on=[("question for alpha?", 2)])
+    expect(len(once["results"]) == 4 and not once["incomplete"],
+           "GUARD one failed call is retried and the sweep still completes")
+    expect(len(once["retried"]) == 1
+           and once["retried"][0]["case"] == "alpha"
+           and once["retried"][0]["repetition"] == 2,
+           "the retried cell is NAMED, not counted")
+    expect(any(row.get("retried_after_failure") for row in once["results"]),
+           "GUARD a run that had to be asked twice says so on its own row — it "
+           "is never indistinguishable from one that did not")
+    expect("529" in output,
+           "the failure that caused the retry is printed, not swallowed")
+
+    # The same cell fails twice. Note the ordinals: beta's calls are #1 (rep 1),
+    # #2 (rep 2), then #3 which is the RETRY of rep 1 — the retry happens at the
+    # end of the sweep, not in place, so rep 2 runs in between. Failing #1 and
+    # #3 is one cell failing twice; failing #1 and #2 would be two DIFFERENT
+    # cells failing once each, and both would then be rescued.
+    twice, output = run(fail_on=[("question for beta?", 1),
+                                 ("question for beta?", 3)])
+    expect(len(twice["incomplete"]) == 1
+           and twice["incomplete"][0]["case"] == "beta"
+           and "retry_error" in twice["incomplete"][0],
+           "GUARD a cell that fails twice is recorded as INCOMPLETE, with both "
+           "errors named")
+    expect(len(twice["results"]) == 3,
+           "the runs that DID complete are kept — they are real, and they are "
+           "not a shorter sweep")
+
+    # And an incomplete sweep is refused a floor verdict from both ends: here,
+    # and in calibration_eligibility.
+    source = (Path(__file__).resolve().parent
+              / "run_answer_sweep.py").read_text(encoding="utf-8")
+    expect("verdicts = ({} if incomplete" in source,
+           "GUARD no floor verdict is computed for an incomplete sweep — it "
+           "would be a floor met on a different denominator, in the same words")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -1575,6 +1743,7 @@ def main() -> int:
     test_the_two_stability_numbers()
     test_the_variance_decomposition()
     test_the_sweep_records_the_corpus_it_was_made_against()
+    test_a_failed_chat_call_does_not_take_the_day()
     test_calibration_refuses_too_few_days()
     test_the_calibration_scope_and_demotions()
     test_the_floor()

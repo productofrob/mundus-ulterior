@@ -1237,6 +1237,14 @@ def calibration_eligibility(sweeps: list[dict], floor: dict,
         if min_cases and len(cases) < min_cases:
             fails.append(f"ran {len(cases)} case(s), below the {min_cases} "
                          f"this floor calibrates from")
+        # Block E, 2026-08-26. A day that lost four of its ninety-nine calls
+        # has 33 cases and would pass the case-set test above while carrying a
+        # hole in its grid. The sweep itself already refuses to compute a floor
+        # verdict on one; this stops the same sweep calibrating the floor from
+        # the other end.
+        if sweep.get("incomplete"):
+            fails.append(f"archived INCOMPLETE: {len(sweep['incomplete'])} "
+                         f"cell(s) never returned")
         entry = {"sweep": name, "fails": fails}
         if not fails:
             # A sweep that qualifies cannot be excluded. This is the whole

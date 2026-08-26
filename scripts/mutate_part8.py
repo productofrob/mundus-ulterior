@@ -584,6 +584,13 @@ def _has_content_assertion(raw: dict) -> bool:""")],
         [("""        if case_id not in (data.get("known_failing_cases") or {}):""",
           """        if False:""")],
     ),
+    (
+        # A day that lost four of its ninety-nine calls carries the full case
+        # set and a hole in its grid. The sweep refuses it a floor verdict;
+        # this is the other end.
+        "a sweep archived incomplete calibrates the floor anyway",
+        [("""        if sweep.get("incomplete"):""", """        if False:""")],
+    ),
 ]
 
 EXPECTED = [
@@ -679,6 +686,8 @@ EXPECTED = [
     "GUARD a sweep that SATISFIES the rule cannot be excluded by name",
     "GUARD a demotion with no written condition for return is refused",
     "GUARD a demoted case that is not tracked as a known failure is refused",
+    "GUARD a sweep archived INCOMPLETE cannot calibrate, even with the full "
+    "case set",
 ]
 
 

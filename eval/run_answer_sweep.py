@@ -125,6 +125,111 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
     # hope. It is read again after the last call — see below.
     corpus_version = answer_store.corpus_version(conn)
 
+    # Block E, 2026-08-26. Extracted so that ONE call can fail without taking
+    # the day with it.
+    #
+    # `run_sweep` caught EmbeddingError and returned cleanly, and left the chat
+    # call unguarded. `_chat` gives up after MAX_RETRIES=3 — for an
+    # unclassified provider error that is 2s + 4s, so six seconds of trouble is
+    # enough — and TranslationError then propagated out of main(). It died
+    # AFTER writing N per-run archives and BEFORE writing the sweep archive
+    # that ties them together: exactly the orphan state this runbook warns
+    # about from Ctrl-C, reachable without touching Ctrl-C.
+    #
+    # D4's 18-call pilot never went near it. A Block E day is 99 calls over
+    # half an hour of continuous calling, and PHASE2_PLAN item 4 says the days
+    # are the scarce resource, not the calls.
+    def _one_run(case, passages, version, attempt) -> dict:
+        answer = assemble.assemble(
+            case.question, passages,
+            model_label=model_label, profiles=profiles,
+            prompt_version=version,
+        )
+        answer.embedding_model = embed_model
+        answer.retrieval_k = k
+        # FINDING 14. Without this line assemble.store writes NULL to
+        # seed_corpus_digest and to cited_record_hashes, because it
+        # reads `(answer.corpus_version or {})`.
+        answer.corpus_version = corpus_version
+
+        stored_id = assemble.store(conn, answer) if write else None
+        payload = {
+            "timestamp": _dt.datetime.now(_dt.timezone.utc)
+                            .isoformat(timespec="seconds"),
+            "question": answer.question,
+            "answer": answer.answer_text,
+            "grounded": answer.grounding.ok,
+            "refused": answer.refused,
+            "model": answer.model,
+            # Block E decision 3. `model` is the alias this repository
+            # SENT and cannot move; this is what the gateway said it
+            # served. Absent keys are omitted rather than written null,
+            # so an empty dict here is itself the finding.
+            "serving_stack": answer.serving_stack,
+            "prompt_version": answer.prompt_version,
+            "embedding_model": answer.embedding_model,
+            "answer_id": stored_id,
+            "grounding": answer.grounding.to_dict(),
+            "passages": [p.to_dict() for p in answer.passages],
+            "sources_block": answer.sources_block,
+            "sweep": {"case": case.id, "repetition": attempt,
+                      "of": repeat},
+            # D4. In the PER-RUN archive as well as the sweep file,
+            # because eval/answer_runs/ is the durable evidence — the
+            # sweep summary is rebuilt from it by rescore_sweep, and a
+            # run whose session lived only in the summary would lose it
+            # the first time a sweep was re-scored from the archives.
+            "session": session,
+            # FINDING 14. The same key run_answer writes, so that a
+            # sweep run and a single run can be read by one reader —
+            # ui/build_ui_data.py already does `run.get(
+            # "corpus_version")` and until now got None for every
+            # sweep-archived answer there has ever been.
+            "corpus_version": corpus_version,
+        }
+        archived = _archive(payload) if write else None
+
+        scored = answer_eval.score_payload(
+            case, payload, source=archived or f"{case.id}/{version}/{attempt}"
+        )
+        row = {
+            "case": case.id,
+            "prompt_version": version,
+            "repetition": attempt,
+            # Denormalised onto the row on purpose: `summarise` groups
+            # by it, and a summary that had to look the session up
+            # elsewhere could be built over rows from two sessions
+            # without noticing.
+            "session_id": session["id"],
+            "session_date": session["date"],
+            "content_ok": scored.ok,
+            "grounded": answer.grounding.ok,
+            "refused": answer.refused,
+            "resolved_quotes": _resolved(answer),
+            # On the ROW as well as in the per-run archive, because the
+            # variance decomposition reads rows. A stack that changed
+            # between day 1 and day 3 is the difference between "the
+            # session term is the day" and "the session term is a
+            # deployment", and only a per-row value can say which.
+            "serving_stack": answer.serving_stack,
+            "answer": answer.answer_text,
+            "failures": [a.label for a in scored.failures],
+            "archived": archived,
+        }
+        mark = "PASS" if scored.ok else "FAIL"
+        print(f"  {mark}  {version:<14} run {attempt}/{repeat}  "
+              f"grounded={answer.grounding.ok!s:<5} "
+              f"quotes={_resolved(answer)}")
+        return row
+
+    # Named, never counted. A cell that failed is a hole in the grid, and
+    # eval/answer_eval.decompose_verdicts REFUSES an incomplete grid rather
+    # than apportioning the hole to whichever term absorbs it.
+    failed: list[dict] = []
+    retried: list[dict] = []
+    evidence_by_case: dict[str, list] = {}
+    case_by_id = {c.id: c for c in cases}
+
     for case in cases:
         try:
             query_vector = embed_query(case.question)
@@ -173,90 +278,56 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
         if not passages:
             continue
 
+        evidence_by_case[case.id] = passages
         for version in prompt_versions:
             for attempt in range(1, repeat + 1):
-                answer = assemble.assemble(
-                    case.question, passages,
-                    model_label=model_label, profiles=profiles,
-                    prompt_version=version,
-                )
-                answer.embedding_model = embed_model
-                answer.retrieval_k = k
-                # FINDING 14. Without this line assemble.store writes NULL to
-                # seed_corpus_digest and to cited_record_hashes, because it
-                # reads `(answer.corpus_version or {})`.
-                answer.corpus_version = corpus_version
-
-                stored_id = assemble.store(conn, answer) if write else None
-                payload = {
-                    "timestamp": _dt.datetime.now(_dt.timezone.utc)
-                                    .isoformat(timespec="seconds"),
-                    "question": answer.question,
-                    "answer": answer.answer_text,
-                    "grounded": answer.grounding.ok,
-                    "refused": answer.refused,
-                    "model": answer.model,
-                    # Block E decision 3. `model` is the alias this repository
-                    # SENT and cannot move; this is what the gateway said it
-                    # served. Absent keys are omitted rather than written null,
-                    # so an empty dict here is itself the finding.
-                    "serving_stack": answer.serving_stack,
-                    "prompt_version": answer.prompt_version,
-                    "embedding_model": answer.embedding_model,
-                    "answer_id": stored_id,
-                    "grounding": answer.grounding.to_dict(),
-                    "passages": [p.to_dict() for p in answer.passages],
-                    "sources_block": answer.sources_block,
-                    "sweep": {"case": case.id, "repetition": attempt,
-                              "of": repeat},
-                    # D4. In the PER-RUN archive as well as the sweep file,
-                    # because eval/answer_runs/ is the durable evidence — the
-                    # sweep summary is rebuilt from it by rescore_sweep, and a
-                    # run whose session lived only in the summary would lose it
-                    # the first time a sweep was re-scored from the archives.
-                    "session": session,
-                    # FINDING 14. The same key run_answer writes, so that a
-                    # sweep run and a single run can be read by one reader —
-                    # ui/build_ui_data.py already does `run.get(
-                    # "corpus_version")` and until now got None for every
-                    # sweep-archived answer there has ever been.
-                    "corpus_version": corpus_version,
-                }
-                archived = _archive(payload) if write else None
-
-                scored = answer_eval.score_payload(
-                    case, payload, source=archived or f"{case.id}/{version}/{attempt}"
-                )
-                results.append({
-                    "case": case.id,
-                    "prompt_version": version,
-                    "repetition": attempt,
-                    # Denormalised onto the row on purpose: `summarise` groups
-                    # by it, and a summary that had to look the session up
-                    # elsewhere could be built over rows from two sessions
-                    # without noticing.
-                    "session_id": session["id"],
-                    "session_date": session["date"],
-                    "content_ok": scored.ok,
-                    "grounded": answer.grounding.ok,
-                    "refused": answer.refused,
-                    "resolved_quotes": _resolved(answer),
-                    # On the ROW as well as in the per-run archive, because the
-                    # variance decomposition reads rows. A stack that changed
-                    # between day 1 and day 3 is the difference between "the
-                    # session term is the day" and "the session term is a
-                    # deployment", and only a per-row value can say which.
-                    "serving_stack": answer.serving_stack,
-                    "answer": answer.answer_text,
-                    "failures": [a.label for a in scored.failures],
-                    "archived": archived,
-                })
-                mark = "PASS" if scored.ok else "FAIL"
-                print(f"  {mark}  {version:<14} run {attempt}/{repeat}  "
-                      f"grounded={answer.grounding.ok!s:<5} "
-                      f"quotes={_resolved(answer)}")
+                try:
+                    results.append(
+                        _one_run(case, passages, version, attempt))
+                except Exception as exc:  # noqa: BLE001 — provider errors are untyped
+                    # Not re-raised, and not swallowed. The remaining cases are
+                    # still worth measuring, and abandoning here would GUARANTEE
+                    # the loss the retry below usually prevents.
+                    failed.append({
+                        "case": case.id, "prompt_version": version,
+                        "repetition": attempt,
+                        "error": f"{type(exc).__name__}: {exc}"[:300],
+                    })
+                    # The provider's own words, truncated. "RuntimeError"
+                    # alone sends a reader to debug the harness, which is the
+                    # same misdirection FINDING 15's true-but-wrong report made.
+                    print(f"  FAILED {version:<14} run {attempt}/{repeat}  "
+                          f"{type(exc).__name__}: {str(exc)[:120]}"
+                          f" — will retry once at the end")
                 if pause:
                     time.sleep(pause)
+
+    # One retry each, at the end, over the SAME evidence block — retrieval and
+    # folding do not depend on the prompt and were built once per case, so a
+    # retry is the same measurement and not a new one. It is recorded as a
+    # retry on the row either way: a run that had to be asked twice must never
+    # be indistinguishable from one that did not.
+    #
+    # At the end rather than in place, because whatever made the call fail is
+    # likelier to have passed in ten minutes than in six seconds.
+    if failed and not dry_run:
+        print(f"\n{len(failed)} call(s) failed. Retrying each ONCE, over the "
+              f"same evidence.")
+        still: list[dict] = []
+        for item in failed:
+            case = case_by_id[item["case"]]
+            try:
+                row = _one_run(case, evidence_by_case[case.id],
+                               item["prompt_version"], item["repetition"])
+            except Exception as exc:  # noqa: BLE001
+                item["retry_error"] = f"{type(exc).__name__}: {exc}"[:300]
+                still.append(item)
+                print(f"  STILL FAILED {case.id} run {item['repetition']}")
+                continue
+            row["retried_after_failure"] = item["error"]
+            results.append(row)
+            retried.append(item)
+        failed = still
 
     # FINDING 14, the second half. A version captured only at the start records
     # what the sweep BEGAN against, which is a different sentence from the one
@@ -278,6 +349,11 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
     return {
         "results": results,
         "serving_stacks": [json.loads(s) for s in stacks],
+        # A sweep with a hole in it is not a shorter sweep. Both are NAMED so
+        # that the archive states which cells never returned rather than a
+        # reader inferring it from a row count.
+        "incomplete": failed,
+        "retried": retried,
         "evidence": evidence_report,
         "corpus_version": corpus_version,
         "corpus_version_after": corpus_version_after,
@@ -513,7 +589,15 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     summary = summarise(results)
-    verdicts = answer_eval.check_floor(summary, load_floor(), args.repeat)
+    # Block E. A floor verdict on an incomplete sweep would be a floor met on a
+    # DIFFERENT DENOMINATOR from the one it was set on, printed in the same
+    # words. So it is not computed at all — `None` in the archive, and a named
+    # refusal in the report. `max_unstable_content_cells` already refuses a
+    # floor that has stopped being measurable; this is the same rule one level
+    # up.
+    incomplete = outcome.get("incomplete") or []
+    verdicts = ({} if incomplete
+                else answer_eval.check_floor(summary, load_floor(), args.repeat))
 
     session = close_session(session)
     if session["crossed_midnight_utc"]:
@@ -538,7 +622,12 @@ def main(argv: list[str] | None = None) -> int:
              "corpus_version_after": outcome.get("corpus_version_after"),
              "corpus_moved": outcome.get("corpus_moved"),
              "results": results, "summary": summary,
-             "floor": verdicts},
+             # Named, never counted, and never absent. A later reader must be
+             # able to tell a sweep that ran clean from one that lost four
+             # calls, without recounting rows.
+             "incomplete": incomplete,
+             "retried": outcome.get("retried") or [],
+             "floor": verdicts or None},
             indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"\nsweep archived: {path}")
 
@@ -553,7 +642,33 @@ def main(argv: list[str] | None = None) -> int:
         # within-session figure with nothing naming it as such is how three
         # archived sweeps came to be read as a calibrated floor.
         answer_eval.print_stability(answer_eval.stability(results))
-        answer_eval.print_floor(verdicts)
+        retried = outcome.get("retried") or []
+        if retried:
+            print(f"\n  {len(retried)} call(s) failed once and succeeded on "
+                  f"the retry. Each carries\n  `retried_after_failure` on its "
+                  f"row — a run that had to be asked twice is\n  never "
+                  f"indistinguishable from one that did not.")
+            for item in retried:
+                print(f"    {item['case']} run {item['repetition']}: "
+                      f"{item['error'][:80]}")
+        if incomplete:
+            print("\n" + "=" * 72)
+            print(f"INCOMPLETE — {len(incomplete)} cell(s) never returned, "
+                  f"after one retry each")
+            print("=" * 72)
+            for item in incomplete:
+                print(f"  {item['case']} / {item['prompt_version']} run "
+                      f"{item['repetition']}")
+                print(f"      first  {item['error'][:100]}")
+                print(f"      retry  {item.get('retry_error', '')[:100]}")
+            print(
+                "\n  No floor verdict is printed and none is archived. The "
+                "runs that DID\n  complete are real and are archived; they are "
+                "not a shorter sweep.\n  eval.decompose will refuse this day's "
+                "grid by name for the same reason."
+            )
+        else:
+            answer_eval.print_floor(verdicts)
 
     # FINDING 14. AFTER the archive is written and after the report is printed,
     # for the reason run_ranking_check archives before printing: on 2026-08-16 a
@@ -561,6 +676,13 @@ def main(argv: list[str] | None = None) -> int:
     # IS the evidence. So this returns non-zero on a sweep whose corpus moved
     # rather than raising — the runs are real, they are archived, they say so,
     # and they are not comparable to each other.
+    # Ordered after the archive and after the report, for the reason the
+    # comment above gives. An incomplete sweep exits 2 like a moved corpus:
+    # the runs are real, they are archived, they say so, and they do not make
+    # a measurement.
+    if incomplete:
+        return 2
+
     moved = outcome.get("corpus_moved")
     if moved:
         print("\n" + "=" * 72)

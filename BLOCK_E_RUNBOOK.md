@@ -6,11 +6,13 @@ decided before any of it was run.*
 
 ---
 
-## The four decisions, settled 2026-08-26
+## The decisions, settled 2026-08-26
 
-All four were settled before day 1 for the reason `BLOCK_E_START` gives: the
-rule between days is *change nothing*, so anything unsettled on day 1 stays
-unsettled for all three days or costs the whole sweep.
+All settled before day 1 for the reason `BLOCK_E_START` gives: the rule
+between days is *change nothing*, so anything unsettled on day 1 stays
+unsettled for all three days or costs the whole sweep. Four were the decisions
+`BLOCK_E_START` named; the fifth was found by reading the sweep path against a
+99-call day.
 
 | # | decision | where it now lives |
 | :---- | :---- | :---- |
@@ -18,6 +20,7 @@ unsettled for all three days or costs the whole sweep.
 | 2 | **Two** decompositions — verdicts and answer text | `eval/answer_eval.py`, `eval/decompose.py` |
 | 3 | Serving stack: **probe first, record what is real** | `answer/translate.py` `_serving_stack`, `scripts/probe_serving_stack.py` |
 | 4 | Calibration scope: **exclude by a recorded rule**, keyed on the case set | `floor.json` `calibration_scope` |
+| 5 | One failed call is **retried once, then named** — it must not take the day | `eval/run_answer_sweep.py` |
 
 ### 1. vimose-runes
 
@@ -217,15 +220,70 @@ Today, `python -m eval.calibrate_floor` reports:
     - 0 distinct date(s), and the floor requires 3.
 ```
 
+### 5. One failed call must not take the day — added 2026-08-26, before day 1
+
+Found by reading the sweep path against a 99-call day rather than an 18-call
+one. `run_sweep` caught `EmbeddingError` and returned cleanly, and left the
+chat call **unguarded**. `_chat` gives up after `MAX_RETRIES = 3`; for an
+unclassified provider error the backoff is 2s then 4s, so **six seconds of
+trouble is enough**, and `TranslationError` then propagated out of `main()`.
+It died AFTER writing N per-run archives and BEFORE writing the sweep archive
+that ties them together — the orphan state this document already warns about
+from Ctrl-C, reachable without touching Ctrl-C. D4's two 18-call sweeps never
+went near it.
+
+`PHASE2_PLAN` item 4 decides it: *the days are the scarce resource, not the
+calls.* A guard costing forty-five minutes against a failure costing a booked
+day is not a close call.
+
+What it does now:
+
+```
+a call fails        NAMED, the sweep continues — abandoning would GUARANTEE
+                    the loss the retry usually prevents
+at the end          each failed cell is retried ONCE, over the SAME evidence
+                    block (retrieval was built once per case, so a retry is
+                    the same measurement), and at the end rather than in place
+                    because whatever failed is likelier to have passed in ten
+                    minutes than in six seconds
+it succeeds         the row carries `retried_after_failure`. A run that had to
+                    be asked twice is never indistinguishable from one that
+                    did not
+it fails again      the sweep is INCOMPLETE. Everything that completed is
+                    archived, the cells that never returned are NAMED with
+                    both errors, NO floor verdict is computed or archived, and
+                    it exits 2
+```
+
+Refused from both ends, because an incomplete day has the full case set and a
+hole in its grid:
+
+- `run_answer_sweep` computes no floor verdict — one would be a floor met on a
+  different denominator, printed in the same words;
+- `calibration_eligibility` refuses an incomplete sweep by name;
+- `decompose_verdicts` already refuses an incomplete grid and names the cells.
+
+Tested **behaviourally**, not by reading the source like the FINDING 14 checks
+above it. Those assert that a line exists; this is control flow, and a
+line-exists check on control flow is the vacuous proof in a new costume.
+
 ---
 
 ## The three dates, booked in advance
 
 ```
-day 1   Thursday  2026-08-27  (UTC)
+day 1   Wednesday 2026-08-26  (UTC)   <- amended
 day 2   Saturday  2026-08-29  (UTC)
 day 3   Monday    2026-08-31  (UTC)
 ```
+
+**Amended 2026-08-26 at 10:00 UTC, before day 1 and before any Block E call.**
+Booked earlier the same morning as 27 / 29 / 31. Moving day 1 forward gives
+gaps of three days then two — *wider* spacing than the booking it replaces —
+and no Block E number existed when it was changed, so this is a decision taken
+in advance and not a date chosen after seeing a result. Recorded here rather
+than silently edited, because a booking that can be moved without a note is
+not a booking.
 
 You are UTC+1. **A session must sit wholly inside its own UTC date**: start
 after 01:00 BST and finish before 01:00 BST the following morning. An ordinary
@@ -257,9 +315,11 @@ eval/goldset.py          refuses a demotion missing evidence / diagnosis /
 eval/gold/floor.json     vimose-runes demoted; demotions; calibration_scope
 scripts/probe_serving_stack.py  NEW. one chat call (+ the sys.path line every
                          script under scripts/ needs to import a package)
-eval/test_answer_eval.py       248 -> 274
+eval/run_answer_sweep.py one failed call is retried once and then NAMED;
+                         an incomplete sweep gets no floor verdict, exits 2
+eval/test_answer_eval.py       248 -> 283
 eval/test_ranking_check.py     226 -> 231
-scripts/mutate_part8.py         48 -> 60
+scripts/mutate_part8.py         48 -> 61
 scripts/mutate_ranking.py       95 -> 97
 ```
 
@@ -286,9 +346,9 @@ Then, in this order. **Nothing after this point changes until day 3 is
 archived.**
 
 ```powershell
-python -m eval.test_answer_eval          # expect 274 passed, 0 failed
+python -m eval.test_answer_eval          # expect 283 passed, 0 failed
 python -m eval.test_ranking_check        # expect 231 passed, 0 failed
-python scripts\mutate_part8.py           # expect all 60 mutations verified
+python scripts\mutate_part8.py           # expect all 61 mutations verified
 python scripts\mutate_ranking.py         # expect all 97 mutations verified
 
 python -m eval.decompose                 # FINDING 18, reproduced from the archives
@@ -318,6 +378,12 @@ python -m eval.run_answer_sweep --repeat 3 --session-label "Block E day N" `
   *> eval\block-e-dayN.txt
 ```
 
+**Budget 35 to 65 minutes.** The sweep makes one embedding request per case
+and Voyage's free tier is 3 per minute, so 33 cases is about **11 minutes of
+embeddings alone** — and the dry run spends the same 33 again. D4's six cases
+took two minutes, which is why this was invisible until now. The 99 chat calls
+then took between 7 and 39 minutes at D4's two observed rates.
+
 The corpus line must read `26e4a683014bdf8a…` on all three days. If it does not,
 the sweep says so and exits 2 — that is the finding, and it stops the block.
 
@@ -325,7 +391,7 @@ the sweep says so and exits 2 — that is the finding, and it stops the block.
 console looks dead for the whole run:
 
 ```powershell
-(Get-ChildItem eval\answer_runs\20260827*.json).Count
+(Get-ChildItem eval\answer_runs\20260826*.json).Count      # 99 when done
 ```
 
 33 cases x 3 repetitions = **99 chat calls per day**, about 297 across the
@@ -357,7 +423,7 @@ Gate G4, and where each box is answered:
 [x] >=30 cases, each with an explicit expected behaviour
        33 cases: 22 answerable / 3 gloss / 8 correctly_refusable
 [ ] run 3x on >=3 separate days
-       2026-08-27, 2026-08-29, 2026-08-31
+       2026-08-26, 2026-08-29, 2026-08-31
 [ ] per-case and per-session stability as separate numbers
        eval/answer_eval.py stability(), printed by every sweep
 [ ] a stated VARIANCE DECOMPOSITION, with the data archived
@@ -383,12 +449,16 @@ applies. Two to add, both learned on 2026-08-26:
   262 -> 258 passing with no obvious cause. Restore with
   `git cat-file blob HEAD:<path>`, not `git checkout` — the bridge cannot
   delete `.git/index.lock`. Run these on the host, or on a copy.
-- **A `git` command run through the bridge can leave `.git/index.lock` behind.**
-  The bridge cannot delete files, so the lock survives and every later
+- **A `git` command run through the bridge leaves `.git/index.lock` behind.**
+  Even a read-only-looking `git status` takes the index lock to refresh it,
+  the bridge cannot delete files, so the lock survives, and every later
   `git add` / `git commit` fails with *"Another git process seems to be
   running"* — with no git process running. Delete it on the host:
-  `Remove-Item .git\index.lock`. Read the working tree first, and do not run
-  git through the bridge at all where a write lock is possible.
+  `Remove-Item .git\index.lock`. **This happened twice on 2026-08-26, the
+  second time after the trap had already been written down**, which is the
+  argument for the flag rather than the discipline: `git --no-optional-locks
+  status` exists precisely for a read-only caller and takes no lock. Use it,
+  or do not run git through the bridge at all.
 - **A script under `scripts/` that imports a repository package needs
   `sys.path.insert(0, ...)` on the root.** `python scripts\x.py` puts
   `scripts/` on the path and not the root. Every other script here carries the
