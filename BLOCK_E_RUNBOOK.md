@@ -272,10 +272,14 @@ line-exists check on control flow is the vacuous proof in a new costume.
 ## The three dates, booked in advance
 
 ```
-day 1   Wednesday 2026-08-26  (UTC)   <- amended
-day 2   Saturday  2026-08-29  (UTC)
-day 3   Monday    2026-08-31  (UTC)
+day 1   Wednesday 2026-08-26  (UTC)   <- amended, and DONE
+day 2   Thursday  2026-08-27  (UTC)   <- amended
+day 3   Friday    2026-08-28  (UTC)   <- amended
 ```
+
+Days 2 and 3 amended at the close of day 1, from 29 / 31. The reasoning, the
+trade-off accepted, and why this should be the last amendment are in
+`BLOCK_E_DAY2_START.md`.
 
 **Amended 2026-08-26 at 10:00 UTC, before day 1 and before any Block E call.**
 Booked earlier the same morning as 27 / 29 / 31. Moving day 1 forward gives
@@ -423,7 +427,7 @@ Gate G4, and where each box is answered:
 [x] >=30 cases, each with an explicit expected behaviour
        33 cases: 22 answerable / 3 gloss / 8 correctly_refusable
 [ ] run 3x on >=3 separate days
-       2026-08-26, 2026-08-29, 2026-08-31
+       2026-08-26, 2026-08-27, 2026-08-28
 [ ] per-case and per-session stability as separate numbers
        eval/answer_eval.py stability(), printed by every sweep
 [ ] a stated VARIANCE DECOMPOSITION, with the data archived

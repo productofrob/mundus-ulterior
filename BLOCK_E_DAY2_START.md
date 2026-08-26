@@ -99,9 +99,27 @@ block is 297 calls of evidence that only exists because nothing moved.
 
 ```
 day 1   Wednesday 2026-08-26  DONE — two sessions, 198 runs
-day 2   Saturday  2026-08-29
-day 3   Monday    2026-08-31
+day 2   Thursday  2026-08-27
+day 3   Friday    2026-08-28
 ```
+
+**Amended 2026-08-26, at the close of day 1, from 29 / 31.** Nothing requires
+the days to be far apart: `min_distinct_dates` is 3 and its note only rules out
+compressing runs into one day. The original 29 / 31 came from a recommendation
+made before any date effect had been measured, on the guess that wider gaps
+sample more of it. Day 1 measured one, so the guess is no longer the best
+available reasoning, and three consecutive dates replicate the SMALLEST date
+crossing twice — the condition nothing has ever measured.
+
+**The trade-off, stated rather than discovered later:** with two ~24h gaps and
+no long one, this design cannot tell whether the loss keeps growing with
+separation. D4's 31-hour, +61% observation sits OUTSIDE the range being
+sampled, and day 3 will not be able to speak to it. That is accepted.
+
+**This is the second amendment and it should be the last.** A booking that moves
+twice is a schedule; one that moves three times is not a booking. Neither
+amendment was made after seeing a number that either one selects for, and both
+are recorded — but the argument only holds while that stays true.
 
 Each session must sit wholly inside its own UTC date. You are UTC+1: start after
 01:00 BST, finish before 01:00 BST the next morning. An evening run is fine.
@@ -121,14 +139,20 @@ that one comparison into a design:
 
 ```
 2026-08-26 S1 vs S2     within-day, 90 minutes      MEASURED: +11% over 33 cases
-2026-08-26 vs 08-29     across-day, 3 days          day 2 measures this
-2026-08-29 vs 08-31     across-day, 2 days          day 3 measures this
+2026-08-26 vs 08-27     across-day, ~24 hours       day 2 measures this
+2026-08-27 vs 08-28     across-day, ~24 hours       day 3 REPLICATES it
+2026-08-26 vs 08-28     across-day, ~48 hours       derived, for free
 ```
 
 If the across-day loss on 33 cases lands near +11%, the date boundary is not
 the thing and D4's +61% was its case sample. If it lands well above, the date
 boundary is real at scale and day 1's within-day figure is the floor of it.
 **Either answer is worth the 99 calls, and neither is available any other way.**
+
+Because the two gaps are the same size, day 3 is a genuine REPLICATION rather
+than a second point on a curve: two independent measurements of the smallest
+possible date crossing. That is the stronger design for deciding *whether* a
+date boundary matters, and the weaker one for deciding *how much it grows*.
 
 Three specific things to watch:
 
