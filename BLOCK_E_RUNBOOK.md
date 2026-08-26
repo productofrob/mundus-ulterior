@@ -102,6 +102,84 @@ The sweep now prints, per day, whether one stack served the whole sweep or
 several, and archives the distinct stacks beside `corpus_version` — the same
 treatment, for the same reason.
 
+### 3a. What the probe actually returned, 2026-08-26
+
+Run once before day 1, one chat call, against the gateway:
+
+```
+{
+  "id":    "chatcmpl-069dc421-2111-449c-ae1f-c40719f19cf1",
+  "model": "anthropic/claude-haiku-4-5-20251001"
+}
+```
+
+No `system_fingerprint`, no `service_tier`, no LiteLLM `model_id` or
+`custom_llm_provider`. **This is a null result and it is decision 3's answer.**
+
+Read what the two keys are worth, because it is less than it looks:
+
+- `id` is unique per call. It traces one archived answer back to one request.
+  It is **not** provenance: it says nothing about what served it.
+- `model` is the alias echoed back, byte-identical to what was sent. It
+  **cannot move**, so it cannot report drift.
+
+**So nothing in the Block E archives can distinguish provider-side drift from
+sampling variance, and FINDING 18's question cannot be answered by this block.**
+That has to be stated in the result document as a limit that was measured
+before day 1, not discovered after day 3.
+
+One thing does cut the other way and belongs beside it: `chat-default` points
+at `anthropic/claude-haiku-4-5-20251001`, a **dated** model id, not a floating
+alias. A dated id is a stronger guarantee against a silent model swap than a
+fingerprint on an undated alias would be. It does not rule out serving-stack
+changes underneath a fixed model id, and nothing available here does.
+
+### 3b. Why the answer path runs haiku and not sonnet
+
+Asked on 2026-08-26 and worth writing down, because it will be asked again.
+
+**Sonnet has never been measured on the answer path.** All 115 archived answer
+runs are `anthropic/claude-haiku-4-5-20251001`; there is no sonnet arm to
+compare against, and no such comparison exists anywhere in this repository.
+
+What *was* measured on sonnet is **Block C2's query renderings** — the
+retrieval-side translation of a query into a target language, not answer
+generation. `chat-strong` was added to `gateway/config.yaml` on 2026-08-16
+because all sixteen script-guard refusals under haiku were Old Tamil. Even
+there it is not a clean win: **ruling 23a** records the selection regime as
+uneven — Old Tamil rows were drawn twice, haiku then `chat-strong`, every other
+language once — so *"any per-language number taken from this file has to say
+so"*, and one Adulis row is the case where the sonnet draw was promoted. C2 as
+a whole moved the non-English-reachability number **down**, 21/30 to 20/30.
+
+Three reasons the alias does not move for Block E:
+
+1. **Ruling 22: `claude-sonnet-5` refuses `temperature=0`** — a bare 400,
+   *"Only temperature=1 is supported"*, found after 615 spent requests. The
+   answer path sends 0 because a measurement that cannot be reproduced cannot
+   be compared. Running Block E on sonnet means sampling at temperature 1,
+   which puts the sampler **into** the variance this block exists to
+   decompose — and 3a has just established that nothing in the archive could
+   separate it back out again.
+2. **Every archived number would become incomparable.** The floor,
+   `calibration_invalidated`, the 2026-08-10 pair, both D4 pilots and all 115
+   archived runs are haiku at temperature 0. `gateway/config.yaml` says it in
+   its own comment: repointing `chat-default` would silently make every
+   archived number incomparable, which is why `chat-strong` is a second alias
+   and not a replacement.
+3. **The corpus and retrieval are frozen for this block.** The model is part of
+   that freeze whether or not the plan spells it out.
+
+**The real question this exposes is a good one, and it is Block F's or later.**
+Nobody has asked whether the answer path is *model-limited*. `aksum-exports`
+fails 0/3 across four prompts and seven archived runs with the answer sitting
+in published English in its own evidence block, and
+`weilue-chinese-quotation` has never once quoted a source text. Both are
+attributed to prompt and retrieval. A sonnet arm at temperature 1, run
+**beside** the frozen haiku archive and never folded into it, is the experiment
+that would test that attribution. It needs its own gate and its own repetitions
+because it cannot be greedy, and it must not touch Block E.
+
 ### 4. Calibration scope
 
 The thing `BLOCK_E_START` did not know: `calibrate_floor` refused on **any**
