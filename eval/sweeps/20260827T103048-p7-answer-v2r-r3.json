@@ -1,0 +1,2827 @@
+{
+  "prompt_versions": [
+    "p7-answer-v2r"
+  ],
+  "repeat": 3,
+  "session": {
+    "id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+    "date": "2026-08-27",
+    "date_basis": "UTC",
+    "started_at": "2026-08-27T10:20:44+00:00",
+    "label": "Block E day 2",
+    "finished_at": "2026-08-27T10:30:48+00:00",
+    "crossed_midnight_utc": false
+  },
+  "serving_stacks": [
+    {
+      "id": "chatcmpl-0204924a-b763-41d3-9ef3-b96236cbf996",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-021c31fe-6b5e-4185-afa5-c12f9732d58c",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-05f83ac6-44c4-4e14-851a-c6f6c9754a07",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-07dae7d3-51d3-420b-b97a-f29f4af6daad",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-083d49bd-16c8-4fbf-954e-f1107ac82b07",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-08642d53-3e34-4692-8b1c-1ea2ac70d2aa",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-0e101367-aac2-4060-b507-a316ad088107",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-0e17505f-b2e0-4084-b7fd-86a2ce369581",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-0ee7f609-18ee-467f-b1fb-bca53df34a77",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-160e008d-e1c5-47c8-9537-2599c4e51ee0",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-1ffb20c6-0f5f-4391-ab06-4e45431523f0",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-2040de85-1d20-422e-8f70-e64b6f6d75d9",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-211e2e9b-8578-4a37-b102-34b21e94d8ed",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-27161150-e8d0-42a2-9e25-bd0ae25846d6",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-28d78ee8-125c-4efe-8eff-8a30cf7a78a6",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-2a1c97d5-c42e-4da0-a2bd-f66cc3f6a83d",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-2a8dd33b-adf4-4977-8ba7-62a0636c3045",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-32d5f3e0-bee3-443b-a78a-21c9b5dc8f22",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-39488bb0-6068-43e7-956c-e983c3d64698",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-3d915d87-fb81-4243-a190-e920588e23d0",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-41f1036b-7f3a-4756-aa0a-be63739ba49b",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-450f18d6-d22e-4c4a-b98f-c5fbd54d6fc7",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-45bdd3ae-2a56-4659-94de-12c14b394cb8",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-46a8806a-dec4-49c6-ba3b-041adcc96adc",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-46cb48d6-786d-4b7c-bc8e-9014ee5cd3ec",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-50e34f00-3237-44aa-97cd-b636ad0c65b0",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-55c2ee20-f6f0-454f-9373-c1e86e4840c7",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-56121511-436c-4624-833f-58448bb5dd4b",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-56dfbf1b-49cf-4806-bb3c-40148b797a9a",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-57acfd73-b39c-4bc1-bcfa-522ef8070cc3",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-59c6cf78-5ccc-45cf-8ea9-349a170d91cd",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-5a23a851-62b0-4551-8506-66e39e83f17f",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-5d43fd43-86fd-46e0-a475-7ea4bc3edc3b",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-65b09431-e58a-499d-8cb1-7f2186e7e1bd",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-66b323a7-8d7c-4695-a501-7661ea04c4f3",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-69486e7b-10c5-4ec2-861c-e0be04d07a93",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-6b7bce16-1a4a-413a-9b8d-9ba64eb99da9",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-6efbf5fc-204b-40d0-bb1c-1d445d127420",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-6f19dc7f-4b21-4974-82f6-89bf32914245",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-740d20e7-2807-4ac2-8efd-1acaf28b586b",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-7558ef2f-d1f0-401b-9a13-590c2755ae6e",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-7917b693-c509-473a-b254-f38388b90de7",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-7936aa75-c3b1-4f05-a59b-229a9f078ebe",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-7ea23901-aa0c-4b42-992d-95fed865531f",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-82974ee3-b58e-43bf-8732-2ba26c1df478",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-8555b69d-b76a-4cc8-9559-fa72bbf73a66",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-8a7a3f75-d1d5-4adb-9a0c-1d5aff1a91d3",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-8f279142-24ff-4670-a6f4-215e25aa669b",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-8f65ebf3-cfc2-441e-bc66-0dd60a4ee6b2",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-91eb56b0-0c95-4344-869a-9a0cd3bb5a16",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-94b8e657-0873-4821-a7f1-ced99375971b",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-96c54f99-db0a-4558-9f3f-25d5aa5dcc5e",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-97e44e2a-c311-4436-8ec0-b9e986301f2a",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-99c1e591-dea4-4407-948c-70e367839dcd",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-99f39a9a-cf9e-4546-8940-4d69fcc7c4ad",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-9babf099-6d96-42c5-8674-f95899c8ce34",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-9e53328e-63e7-4bb8-83b5-59a8edb3c93d",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-9f09d903-7dab-4f9f-8b2a-70329f6e4276",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-a27704c2-2bda-44e5-a068-5871e966dc4f",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-a4292bfc-d3b8-4723-9730-4e1d7ee8b2d4",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-a5ebb663-1d1b-41fe-9e03-507c5317ef80",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-a617dc5f-ef27-42e8-9fc9-3cba9ec53f1f",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-a7a4bcaf-f194-437f-86d9-d053dfc82c0e",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-a83ee034-0958-4039-894c-5442d5650828",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-a8db0275-d058-484e-9441-0a744371bc22",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-a8f99d92-a2ef-49f4-a740-e416f6a8e91f",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-af2fd786-1862-4243-9955-db05f75f1d8b",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-b01f9a4b-b7de-49fd-9f6f-5f15d4d3b39b",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-b1988465-ce79-4a64-adbf-16c22fd634b9",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-b31ce456-1445-4628-9f9f-c24d45f9d494",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-b71ff4e5-bf3a-417f-8066-5cbe6a16cc47",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-b95a0211-184e-492c-a556-8a4ffbce8f92",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-b9d32720-edde-4f49-b654-fa5efbca4f7a",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-bad840ee-9629-45e0-97a0-730eb329ebde",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-bb466162-c7e4-49e0-83d6-bc2e4de773ed",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-c17149af-cdb4-4525-b53e-d07d366f6d71",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-c18b0e4a-ecf6-4135-bdf9-da4a6870fe10",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-c71b6995-8c32-4246-9b90-09fe6a6ea270",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-c92b14f6-8ee2-408c-be20-13a62489e18d",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-cf43dc7a-0aaa-4c90-b845-ebf4fbbc595f",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-d17d04d9-4bf3-49f4-a441-e1901633dedc",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-d2b04b1e-b31b-41bf-ad22-510ebd9395fb",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-d2d9cd2c-5519-405e-bd06-0d80bffceeb1",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-d5473394-cb5e-4129-b62d-db4aef0131ac",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-d7de711c-b324-431a-92ec-e6381ce4a92d",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-d91dec76-3263-45f0-837c-b60f1e4fe6d2",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-e1ef4034-c213-4c40-9df3-e9e15d733149",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-e33ee7e4-cb8d-4881-87de-19e390dc3bee",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-e65dd49d-fe85-4f2f-8be4-d14b112339c2",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-ea9364d3-557e-4130-b1ca-c4690a3e5fc8",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-eb985cfe-e409-4b06-8e76-bb5055abbaed",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-ec3214a1-459e-4090-ab95-9d3f71e4d43a",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-ed14177f-ff4a-4b2c-92e9-a532e6ee9471",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-eef95ee1-2700-4458-9a8e-317ae4927a7e",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-f1705bc3-faa6-4043-b250-fe23eef84faa",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-f3807bd8-c85c-4ea8-a90e-3df522ca8b3e",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-f6607ec5-44dd-477f-a768-20ed0f8e4e36",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-f77cc422-f439-4d68-b42d-f96c2bb8f81d",
+      "model": "chat-default"
+    },
+    {
+      "id": "chatcmpl-f8fec557-18eb-4ff3-a38f-c395879a7ec9",
+      "model": "chat-default"
+    }
+  ],
+  "corpus_version": {
+    "algorithm": "sha256-of-canonical-json-v1",
+    "scope": "seed records only; distractors excluded",
+    "source": "database",
+    "seed_record_count": 24,
+    "seed_corpus_digest": "26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28",
+    "record_hashes": {
+      "africa-01-ezana-stone": "02f34bf4dfcdcec8163b7f3e9ecd3f2d6d0b43eedc31ec15feb8a2949d6859b2",
+      "africa-02-aksumite-coin": "6059f3389690db904c68d414bea131bcfee90204c8e20458e1db5e00f0d4d584",
+      "africa-03-periplus-adulis": "0e83bf72dbdf421bff0665dac9057fbffbb4416696f6180cb744507234e43a12",
+      "arabia-01-periplus": "2de22094d87de53babeccc6e150651ae9b49c3ca3d615923dd289bba329bec70",
+      "arabia-02-palmyrene-tariff": "91c4de9c363868410a6e1330fac0905d65ae855fb4d668cb2d3ae354aa5d2438",
+      "arabia-03-jsnab17": "8682c3c16a4d02128b3fd9a1ad02be18ddf18e587dd6a9fedaa689b5a2bfc2dc",
+      "arabia-04-jabal-dabub": "c6c0749dbdae91590da1736d6afb5b92a440a3fafb0d75c3847472cad76d0812",
+      "eastasia-01-weilue": "3eff69e3f9d898ce5e4e84aa120efd2d3a79df1ba5eb95310d5a82a2dc272fac",
+      "eastasia-02-hou-hanshu": "a37becaa697167918e8631c672f665877be0cca0eab0be7a8845d04b9840ade4",
+      "eastasia-03-hwangnam-glass": "d65ded06235c2ebfa6598cfae49df8b3d2a1878b76bc6eaeff9052f551cb7790",
+      "persia-01-skz": "289faeaca5276887d894b8b86ea96ac3b881e9e914cac3ede7eb4053d5c5912b",
+      "persia-02-silver-plate": "a4e819fcbca587174bd8d1d59624c979340a4d57d504094b5c283c4642f41b40",
+      "persia-03-coin": "ac4f5a907a56cb81a417de71d24ab42bf15dec6cb993515992b9d10971f4a61b",
+      "scandinavia-01-hoby-treasure": "c359ea6ac4c03fd8553de2d4187558496ba27d44f3c2e95ccbecfd1db52ea4b5",
+      "scandinavia-02-gudme-hoard": "483c36b36a6372e20048705703bb72d24d0139602860fff022ab7021f3007c8d",
+      "scandinavia-03-vimose": "0de086025bacda4ef2a61b92bdf4695fbf37546df367a77dc9e6fa1441ee4acb",
+      "scandinavia-04-illerup-adal": "d2707cae56a5338e6ace1d6501033c55f3abc39b47925dc2a7da7e33023c767f",
+      "seasia-01-oc-eo-medallion": "db0d7a9f56d47e983add739a8e45ec5ebebd5d0a89b20ae33ddf71818af27543",
+      "seasia-02-oc-eo-site": "cf210152193f4fe1c7934b72cd0bb0f57fdbc1be293c0528bf955935a81fb0a6",
+      "seasia-03-khao-sam-kaeo": "f64a0e2c9b31eda224e15b10d17d95d0a81a68cdbf4dc91759fa723457b33704",
+      "southasia-01-akananuru-149": "9f6dd5aba184dd01806962d2d0f674a9ea03ce6e56b0da3586e8d795d1545e0c",
+      "southasia-02-periplus-muziris": "0791a6e2396566f0e54b7e47ec802ceaa68d2a5dee07758efb5cc24dcd965807",
+      "southasia-03-muziris-papyrus": "9a2eefaff5a37db2feccc48aa8d981ff42ed90bcea053d9d497eeca3013321f0",
+      "southasia-04-pattanam": "ede696189658686ae314d4435ef2e8ee9c917a276d26350fc60dd9fd901a9728"
+    }
+  },
+  "corpus_version_after": {
+    "algorithm": "sha256-of-canonical-json-v1",
+    "scope": "seed records only; distractors excluded",
+    "source": "database",
+    "seed_record_count": 24,
+    "seed_corpus_digest": "26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28",
+    "record_hashes": {
+      "africa-01-ezana-stone": "02f34bf4dfcdcec8163b7f3e9ecd3f2d6d0b43eedc31ec15feb8a2949d6859b2",
+      "africa-02-aksumite-coin": "6059f3389690db904c68d414bea131bcfee90204c8e20458e1db5e00f0d4d584",
+      "africa-03-periplus-adulis": "0e83bf72dbdf421bff0665dac9057fbffbb4416696f6180cb744507234e43a12",
+      "arabia-01-periplus": "2de22094d87de53babeccc6e150651ae9b49c3ca3d615923dd289bba329bec70",
+      "arabia-02-palmyrene-tariff": "91c4de9c363868410a6e1330fac0905d65ae855fb4d668cb2d3ae354aa5d2438",
+      "arabia-03-jsnab17": "8682c3c16a4d02128b3fd9a1ad02be18ddf18e587dd6a9fedaa689b5a2bfc2dc",
+      "arabia-04-jabal-dabub": "c6c0749dbdae91590da1736d6afb5b92a440a3fafb0d75c3847472cad76d0812",
+      "eastasia-01-weilue": "3eff69e3f9d898ce5e4e84aa120efd2d3a79df1ba5eb95310d5a82a2dc272fac",
+      "eastasia-02-hou-hanshu": "a37becaa697167918e8631c672f665877be0cca0eab0be7a8845d04b9840ade4",
+      "eastasia-03-hwangnam-glass": "d65ded06235c2ebfa6598cfae49df8b3d2a1878b76bc6eaeff9052f551cb7790",
+      "persia-01-skz": "289faeaca5276887d894b8b86ea96ac3b881e9e914cac3ede7eb4053d5c5912b",
+      "persia-02-silver-plate": "a4e819fcbca587174bd8d1d59624c979340a4d57d504094b5c283c4642f41b40",
+      "persia-03-coin": "ac4f5a907a56cb81a417de71d24ab42bf15dec6cb993515992b9d10971f4a61b",
+      "scandinavia-01-hoby-treasure": "c359ea6ac4c03fd8553de2d4187558496ba27d44f3c2e95ccbecfd1db52ea4b5",
+      "scandinavia-02-gudme-hoard": "483c36b36a6372e20048705703bb72d24d0139602860fff022ab7021f3007c8d",
+      "scandinavia-03-vimose": "0de086025bacda4ef2a61b92bdf4695fbf37546df367a77dc9e6fa1441ee4acb",
+      "scandinavia-04-illerup-adal": "d2707cae56a5338e6ace1d6501033c55f3abc39b47925dc2a7da7e33023c767f",
+      "seasia-01-oc-eo-medallion": "db0d7a9f56d47e983add739a8e45ec5ebebd5d0a89b20ae33ddf71818af27543",
+      "seasia-02-oc-eo-site": "cf210152193f4fe1c7934b72cd0bb0f57fdbc1be293c0528bf955935a81fb0a6",
+      "seasia-03-khao-sam-kaeo": "f64a0e2c9b31eda224e15b10d17d95d0a81a68cdbf4dc91759fa723457b33704",
+      "southasia-01-akananuru-149": "9f6dd5aba184dd01806962d2d0f674a9ea03ce6e56b0da3586e8d795d1545e0c",
+      "southasia-02-periplus-muziris": "0791a6e2396566f0e54b7e47ec802ceaa68d2a5dee07758efb5cc24dcd965807",
+      "southasia-03-muziris-papyrus": "9a2eefaff5a37db2feccc48aa8d981ff42ed90bcea053d9d497eeca3013321f0",
+      "southasia-04-pattanam": "ede696189658686ae314d4435ef2e8ee9c917a276d26350fc60dd9fd901a9728"
+    }
+  },
+  "corpus_moved": null,
+  "results": [
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-160e008d-e1c5-47c8-9537-2599c4e51ee0",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with the port of Adulis in the Kingdom of Aksum, but they do not specify what Rome itself traded to Aksum—only what was imported into Aksum from Egypt and other regions, and what was exported from Aksum. [S1][S5]",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102055+0000-121f941b.json"
+    },
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-2a1c97d5-c42e-4da0-a2bd-f66cc3f6a83d",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with the port of Adulis in the Kingdom of Aksum, but they do not specify what Rome itself traded to Aksum—only what was imported into Aksum from Egypt and other regions, and what was exported from Aksum. [S1][S5]",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102100+0000-121f941b.json"
+    },
+    {
+      "case": "aksum-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-3d915d87-fb81-4243-a190-e920588e23d0",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources describe Roman trade with the port of Adulis in the Kingdom of Aksum, but they do not specify what Rome itself traded to Aksum—only what was imported into Aksum from Egypt and other regions, and what was exported from Aksum. [S1][S5]",
+      "failures": [
+        "says one of ['ivory']",
+        "says one of ['tortoise-shell', 'tortoise shell']",
+        "says one of ['rhinoceros']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes africa-03-periplus-adulis, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102105+0000-121f941b.json"
+    },
+    {
+      "case": "adulis-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-2a8dd33b-adf4-4977-8ba7-62a0636c3045",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, \"There are exported from these places ivory, and tortoise-shell and rhinoceros-horn.\" [S3] More specifically, \"all the ivory is brought from the country beyond the Nile through the district called Cyeneum, and thence to Adulis.\" [S1] Additionally, \"tortoise-shell, which is brought to market there by the Fish-Eaters\" from the nearby islands called Alalaei was exported from Adulis. [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102113+0000-d2403a22.json"
+    },
+    {
+      "case": "adulis-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-bb466162-c7e4-49e0-83d6-bc2e4de773ed",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, \"There are exported from these places ivory, and tortoise-shell and rhinoceros-horn.\" [S3] More specifically, \"all the ivory is brought from the country beyond the Nile through the district called Cyeneum, and thence to Adulis.\" [S1] Additionally, \"tortoise-shell, which is brought to market there by the Fish-Eaters\" from the nearby islands called Alalaei was exported from Adulis. [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102117+0000-d2403a22.json"
+    },
+    {
+      "case": "adulis-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-c92b14f6-8ee2-408c-be20-13a62489e18d",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, \"There are exported from these places ivory, and tortoise-shell and rhinoceros-horn.\" [S3] More specifically, \"all the ivory is brought from the country beyond the Nile through the district called Cyeneum, and thence to Adulis.\" [S1] Additionally, \"tortoise-shell, which is brought to market there by the Fish-Eaters\" from the nearby islands called Alalaei was exported from Adulis. [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102122+0000-d2403a22.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": true,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-c71b6995-8c32-4246-9b90-09fe6a6ea270",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources do contain information about the Vimose inscriptions, which are \"earliest datable Elder Futhark runic texts\" from Scandinavia dated to c. 160-300 CE, but the English translation provided indicates that \"Several inscriptions remain only partially deciphered\" and gives only partial and uncertain readings for individual words rather than a complete translation of what the inscriptions say. [S3]",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102131+0000-467d3b0a.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": true,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-b31ce456-1445-4628-9f9f-c24d45f9d494",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources do include information about the Vimose inscriptions, which are \"earliest datable Elder Futhark runic texts\" from Scandinavia dated to c. 160-300 CE, but the English translation provided states only that \"Several inscriptions remain only partially deciphered\" and offers only tentative interpretations of individual words rather than a complete reading of what the inscriptions say. [S3]",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102137+0000-467d3b0a.json"
+    },
+    {
+      "case": "vimose-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": true,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-0ee7f609-18ee-467f-b1fb-bca53df34a77",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources do contain information about the Vimose inscriptions, which are \"earliest datable Elder Futhark runic texts\" from Scandinavia dated to c. 160-300 CE, but the English translation provided indicates that \"Several inscriptions remain only partially deciphered\" and gives only partial and uncertain readings for individual words rather than a complete translation of what the inscriptions say. [S3]",
+      "failures": [
+        "says one of ['harja']",
+        "says one of ['mariha', 'makija']",
+        "says one of ['awgns']",
+        "does not say 'The sources retrieved do not answer this question'",
+        "resolves at least 3 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102142+0000-467d3b0a.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-05f83ac6-44c4-4e14-851a-c6f6c9754a07",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source confirms this trade pattern, describing \"the city where the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans], stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper.\" [S5]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102152+0000-1c9b90c3.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-82974ee3-b58e-43bf-8732-2ba26c1df478",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source confirms this trade pattern, describing \"the city where the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans], stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper.\" [S5]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102159+0000-1c9b90c3.json"
+    },
+    {
+      "case": "muziris-cargo",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-07dae7d3-51d3-420b-b97a-f29f4af6daad",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, ships carried pepper from Muziris, which \"is produced in quantity in only one region near these markets, a district called Cottonara.\" [S2] The text also states that \"There is exported pepper\" along with \"great quantities of fine pearls, ivory, silk cloth, spikenard from the Ganges, malabathrum from the places in the interior, transparent stones of all kinds, diamonds and sapphires, and tortoise-shell.\" [S2] A Tamil literary source confirms this trade pattern, describing \"the city where the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans], stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper.\" [S5]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102206+0000-1c9b90c3.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 7,
+      "serving_stack": {
+        "id": "chatcmpl-b95a0211-184e-492c-a556-8a4ffbce8f92",
+        "model": "chat-default"
+      },
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, described the Roman Empire (Da Qin) as a distant kingdom located \"west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea,\" accessible by sea from Parthian territory in a journey that could take anywhere from two months to three years depending on wind conditions. [S1] According to this source, the Roman Empire \"has more than four hundred smaller cities and towns\" and \"extends several thousand li in all directions,\" with its capital located \"close to the mouth of a river\" and surrounded by \"outer walls of the city\" made of stone. [S1] A later Chinese historical record, the Hou Hanshu, documented that in 166 CE \"the king of Da Qin (the Roman Empire), Andun (Marcus Aurelius Antoninus), sent envoys from beyond the frontiers through Rinan (Commandery on the central Vietnamese coast), to offer elephant tusks, rhinoceros horn, and turtle shell,\" and noted that \"This was the very first time there was [direct] communication [between the two countries].\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102217+0000-5b688b51.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 7,
+      "serving_stack": {
+        "id": "chatcmpl-b9d32720-edde-4f49-b654-fa5efbca4f7a",
+        "model": "chat-default"
+      },
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, described the Roman Empire (Da Qin) as a distant kingdom located \"west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea,\" accessible by sea from Parthian territory in a journey that could take anywhere from two months to three years depending on wind conditions. [S1] According to this source, the Roman Empire \"has more than four hundred smaller cities and towns\" and \"extends several thousand li in all directions,\" with its capital located \"close to the mouth of a river\" and surrounded by \"outer walls of the city\" made of stone. [S1] A later Chinese historical record, the Hou Hanshu, documented that in 166 CE \"the king of Da Qin (the Roman Empire), Andun (Marcus Aurelius Antoninus), sent envoys from beyond the frontiers through Rinan (Commandery on the central Vietnamese coast), to offer elephant tusks, rhinoceros horn, and turtle shell,\" and noted that \"This was the very first time there was [direct] communication [between the two countries].\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102224+0000-5b688b51.json"
+    },
+    {
+      "case": "chinese-da-qin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 7,
+      "serving_stack": {
+        "id": "chatcmpl-a83ee034-0958-4039-894c-5442d5650828",
+        "model": "chat-default"
+      },
+      "answer": "The Weilüe, a Chinese text composed in the early third century CE, described the Roman Empire (Da Qin) as a distant kingdom located \"west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea,\" accessible by sea from Parthian territory in a journey that could take anywhere from two months to three years depending on wind conditions. [S1] According to this source, the Roman Empire \"has more than four hundred smaller cities and towns\" and \"extends several thousand li in all directions,\" with its capital located \"close to the mouth of a river\" and surrounded by \"outer walls of the city\" made of stone. [S1] A later Chinese historical record, the Hou Hanshu, documented that in 166 CE \"the king of Da Qin (the Roman Empire), Andun (Marcus Aurelius Antoninus), sent envoys from beyond the frontiers through Rinan (Commandery on the central Vietnamese coast), to offer elephant tusks, rhinoceros horn, and turtle shell,\" and noted that \"This was the very first time there was [direct] communication [between the two countries].\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102232+0000-5b688b51.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-a8db0275-d058-484e-9441-0a744371bc22",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources provided contain information about Roman contact with regions in South Asia, East Asia, and Scandinavia through archaeological finds and literary records dating from approximately the 2nd to 5th centuries CE [S1][S2][S3][S4][S5][S6], but none of them discuss the Antikythera mechanism or its construction date.",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102240+0000-56fb5151.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-2040de85-1d20-422e-8f70-e64b6f6d75d9",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources provided contain information about Roman contact with regions in South Asia, Scandinavia, and East Asia through archaeological finds and literary records dating from approximately 40 CE to 450 CE [S1][S2][S3][S4][S5][S6].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102244+0000-56fb5151.json"
+    },
+    {
+      "case": "antikythera-absent",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-eb985cfe-e409-4b06-8e76-bb5055abbaed",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources provided contain information about Roman contact with regions in South Asia, Scandinavia, and East Asia through archaeological finds and literary records dating from approximately 40 CE to 450 CE [S1][S2][S3][S4][S5][S6].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102249+0000-56fb5151.json"
+    },
+    {
+      "case": "cana-frankincense-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-e65dd49d-fe85-4f2f-8be4-d14b112339c2",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, \"there are exported from this place, native produce, frankincense and aloes, and the rest of the things that enter into the trade of the other ports\" from Cana. [S2] The text further specifies that \"All the frankincense produced in the country is brought by camels to that place to be stored, and to Cana on rafts held up by inflated skins after the manner of the country, and in boats.\" [S4]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102257+0000-e223d6f1.json"
+    },
+    {
+      "case": "cana-frankincense-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-9f09d903-7dab-4f9f-8b2a-70329f6e4276",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, \"there are exported from this place, native produce, frankincense and aloes, and the rest of the things that enter into the trade of the other ports\" from Cana. [S2] The text further specifies that \"All the frankincense produced in the country is brought by camels to that place to be stored, and to Cana on rafts held up by inflated skins after the manner of the country, and in boats.\" [S4]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102302+0000-e223d6f1.json"
+    },
+    {
+      "case": "cana-frankincense-exports",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-8555b69d-b76a-4cc8-9559-fa72bbf73a66",
+        "model": "chat-default"
+      },
+      "answer": "According to the Periplus of the Erythraean Sea, \"there are exported from this place, native produce, frankincense and aloes, and the rest of the things that enter into the trade of the other ports\" from Cana. [S2] The text further specifies that \"All the frankincense produced in the country is brought by camels to that place to be stored, and to Cana on rafts held up by inflated skins after the manner of the country, and in boats.\" [S4]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102307+0000-e223d6f1.json"
+    },
+    {
+      "case": "raqosh-epitaph",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-0204924a-b763-41d3-9ef3-b96236cbf996",
+        "model": "chat-default"
+      },
+      "answer": "The Nabataean epitaph of Raqōš states that \"Ka'b bar Haritat made for Raqash daughter of 'Abd-Manat, his mother\" a grave, and that \"she died in al-Hijr, year one-hundred-sixty-two, in the month of Tammuz.\" [S1] The inscription includes a curse: \"may Mare 'Alma [the Lord of the World] curse him who alters this tomb or opens it, save for him whom he has begotten. And may he curse anyone who buries or exhumes anyone else in it.\" [S1]",
+      "failures": [
+        "says one of ['competing', 'two readings', 'disputed', 'contested', 'uncertain', 'alternative reading']"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102316+0000-1d4606aa.json"
+    },
+    {
+      "case": "raqosh-epitaph",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-c17149af-cdb4-4525-b53e-d07d366f6d71",
+        "model": "chat-default"
+      },
+      "answer": "The Nabataean epitaph of Raqōš states that \"Ka'b bar Haritat made for Raqash daughter of 'Abd-Manat, his mother\" a grave, and that \"she died in al-Hijr, year one-hundred-sixty-two, in the month of Tammuz.\" [S1] The inscription includes a curse: \"may Mare 'Alma [the Lord of the World] curse him who alters this tomb or opens it, save for him whom he has begotten. And may he curse anyone who buries or exhumes anyone else in it.\" [S1]",
+      "failures": [
+        "says one of ['competing', 'two readings', 'disputed', 'contested', 'uncertain', 'alternative reading']"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102322+0000-1d4606aa.json"
+    },
+    {
+      "case": "raqosh-epitaph",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-d2b04b1e-b31b-41bf-ad22-510ebd9395fb",
+        "model": "chat-default"
+      },
+      "answer": "The Nabataean epitaph of Raqōš states that \"Ka'b bar Haritat made for Raqash daughter of 'Abd-Manat, his mother\" a grave, and that \"she died in al-Hijr, year one-hundred-sixty-two, in the month of Tammuz.\" [S1] The inscription includes a curse: \"may Mare 'Alma [the Lord of the World] curse him who alters this tomb or opens it, save for him whom he has begotten. And may he curse anyone who buries or exhumes anyone else in it.\" [S1]",
+      "failures": [
+        "says one of ['competing', 'two readings', 'disputed', 'contested', 'uncertain', 'alternative reading']"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102328+0000-1d4606aa.json"
+    },
+    {
+      "case": "jabal-dabub-basmala",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-7917b693-c509-473a-b254-f38388b90de7",
+        "model": "chat-default"
+      },
+      "answer": "The Jabal Ḏabūb inscription says: \"In the name of Allah, the Rahman — have mercy upon us, O lord of the heavens; satisfy us by means of your favor; and grant us the essence of it at the end/gift of our days.\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102336+0000-352a60c6.json"
+    },
+    {
+      "case": "jabal-dabub-basmala",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-740d20e7-2807-4ac2-8efd-1acaf28b586b",
+        "model": "chat-default"
+      },
+      "answer": "The Jabal Ḏabūb inscription says: \"In the name of Allah, the Rahman — have mercy upon us, O lord of the heavens; satisfy us by means of your favor; and grant us the essence of it at the end/gift of our days.\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102340+0000-352a60c6.json"
+    },
+    {
+      "case": "jabal-dabub-basmala",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-bad840ee-9629-45e0-97a0-730eb329ebde",
+        "model": "chat-default"
+      },
+      "answer": "The Jabal Ḏabūb inscription says: \"In the name of Allah, the Rahman — have mercy upon us, O lord of the heavens; satisfy us by means of your favor; and grant us the essence of it at the end/gift of our days.\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102345+0000-352a60c6.json"
+    },
+    {
+      "case": "palmyrene-tariff-rates",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-9babf099-6d96-42c5-8674-f95899c8ce34",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss trade goods, ports, and shipping routes in the Roman period, but contain no information about Palmyrene tax tariff rates [S1][S2][S3][S4][S5][S6].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102352+0000-ecf13bf0.json"
+    },
+    {
+      "case": "palmyrene-tariff-rates",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-08642d53-3e34-4692-8b1c-1ea2ac70d2aa",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss trade goods, ports, and shipping routes in the Roman period, but contain no information about Palmyrene tax tariff rates [S1][S2][S3][S4][S5][S6].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102356+0000-ecf13bf0.json"
+    },
+    {
+      "case": "palmyrene-tariff-rates",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-45bdd3ae-2a56-4659-94de-12c14b394cb8",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss trade goods, ports, and shipping routes in the Roman period, but contain no information about Palmyrene tax tariff rates [S1][S2][S3][S4][S5][S6].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102400+0000-ecf13bf0.json"
+    },
+    {
+      "case": "skz-titulature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-af2fd786-1862-4243-9955-db05f75f1d8b",
+        "model": "chat-default"
+      },
+      "answer": "In the Res Gestae Divi Saporis, Shapur I claims the titles \"king of kings of Iran and Not-Iran\" and states that he is \"lord of Iran.\" [S1] He also identifies himself as \"the Mazda-worshipping god\" and describes himself as one \"whose race is of the gods.\" [S1]",
+      "failures": [
+        "says one of ['Ardashir', 'Ardašīr']"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102408+0000-289cdcec.json"
+    },
+    {
+      "case": "skz-titulature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-65b09431-e58a-499d-8cb1-7f2186e7e1bd",
+        "model": "chat-default"
+      },
+      "answer": "In the Res Gestae Divi Saporis, Shapur I claims the titles \"king of kings of Iran and Not-Iran\" and states that he is \"lord of Iran.\" [S1] He also identifies himself as \"the Mazda-worshipping god\" and describes himself as one \"whose race is of the gods.\" [S1]",
+      "failures": [
+        "says one of ['Ardashir', 'Ardašīr']"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102412+0000-289cdcec.json"
+    },
+    {
+      "case": "skz-titulature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-7936aa75-c3b1-4f05-a59b-229a9f078ebe",
+        "model": "chat-default"
+      },
+      "answer": "In the Res Gestae Divi Saporis, Shapur I claims the titles \"king of kings of Iran and Not-Iran\" and states that he is \"lord of Iran.\" [S1] He also identifies himself as \"the Mazda-worshipping god\" and describes himself as one \"whose race is of the gods.\" [S1]",
+      "failures": [
+        "says one of ['Ardashir', 'Ardašīr']"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102417+0000-289cdcec.json"
+    },
+    {
+      "case": "skz-roman-emperors",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-0e17505f-b2e0-4084-b7fd-86a2ce369581",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The Res Gestae Divi Saporis names Persian rulers (Shapur I, Ardashir, and Pabag) and lists conquered territories, but does not name any Roman emperors [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102425+0000-72bcd19d.json"
+    },
+    {
+      "case": "skz-roman-emperors",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-99f39a9a-cf9e-4546-8940-4d69fcc7c4ad",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The Res Gestae Divi Saporis names Persian rulers (Shapur I, Ardashir, and Pabag) and lists conquered territories, but does not name any Roman emperors [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102429+0000-72bcd19d.json"
+    },
+    {
+      "case": "skz-roman-emperors",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-91eb56b0-0c95-4344-869a-9a0cd3bb5a16",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The Res Gestae Divi Saporis names Persian rulers (Shapur I, Ardashir, and Pabag) and lists conquered territories, but does not name any Roman emperors [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102433+0000-72bcd19d.json"
+    },
+    {
+      "case": "shapur-drachm-imagery",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-7ea23901-aa0c-4b42-992d-95fed865531f",
+        "model": "chat-default"
+      },
+      "answer": "The silver drachm of Shapur I shows \"Bust of Shapur I right, wearing crenellated crown with earflap and diadem, globe; tied beard, large ball of hair, moustache. Fire altar and two armed attendants leaning on long staff, looking away from altar, crenellated crowns.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102441+0000-a24ac19a.json"
+    },
+    {
+      "case": "shapur-drachm-imagery",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-8f65ebf3-cfc2-441e-bc66-0dd60a4ee6b2",
+        "model": "chat-default"
+      },
+      "answer": "The silver drachm of Shapur I shows \"Bust of Shapur I right, wearing crenellated crown with earflap and diadem, globe; tied beard, large ball of hair, moustache. Fire altar and two armed attendants leaning on long staff, looking away from altar, crenellated crowns.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102446+0000-a24ac19a.json"
+    },
+    {
+      "case": "shapur-drachm-imagery",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-39488bb0-6068-43e7-956c-e983c3d64698",
+        "model": "chat-default"
+      },
+      "answer": "The silver drachm of Shapur I shows \"Bust of Shapur I right, wearing crenellated crown with earflap and diadem, globe; tied beard, large ball of hair, moustache. Fire altar and two armed attendants leaning on long staff, looking away from altar, crenellated crowns.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102451+0000-a24ac19a.json"
+    },
+    {
+      "case": "sasanian-hunting-plate",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-e33ee7e4-cb8d-4881-87de-19e390dc3bee",
+        "model": "chat-default"
+      },
+      "answer": "The Sasanian gilded silver hunting plate depicts \"a king hunting; the king sits astride a galloping fallow deer, which he grasps by the antlers with his left hand while plunging a sword into its upper neck; the king is wearing a crown with pendant, presumably pearl-drop, earrings.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102459+0000-c52f6117.json"
+    },
+    {
+      "case": "sasanian-hunting-plate",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-50e34f00-3237-44aa-97cd-b636ad0c65b0",
+        "model": "chat-default"
+      },
+      "answer": "The Sasanian gilded silver hunting plate depicts \"a king hunting; the king sits astride a galloping fallow deer, which he grasps by the antlers with his left hand while plunging a sword into its upper neck; the king is wearing a crown with pendant, presumably pearl-drop, earrings.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102503+0000-c52f6117.json"
+    },
+    {
+      "case": "sasanian-hunting-plate",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-a27704c2-2bda-44e5-a068-5871e966dc4f",
+        "model": "chat-default"
+      },
+      "answer": "The Sasanian gilded silver hunting plate depicts \"a king hunting; the king sits astride a galloping fallow deer, which he grasps by the antlers with his left hand while plunging a sword into its upper neck; the king is wearing a crown with pendant, presumably pearl-drop, earrings.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102508+0000-c52f6117.json"
+    },
+    {
+      "case": "oc-eo-medallion-legend",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-ec3214a1-459e-4090-ab95-9d3f71e4d43a",
+        "model": "chat-default"
+      },
+      "answer": "The Latin legend on the Oc Eo gold medallion reads \"ANTONINVS AVG PIVS NVRP (or NVAP) XV\" [S1]. The source notes that this is a \"slightly corrupted Latin legend\" [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102516+0000-4c0053c3.json"
+    },
+    {
+      "case": "oc-eo-medallion-legend",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-cf43dc7a-0aaa-4c90-b845-ebf4fbbc595f",
+        "model": "chat-default"
+      },
+      "answer": "The Latin legend on the Oc Eo gold medallion reads \"ANTONINVS AVG PIVS NVRP (or NVAP) XV\" [S1]. The source notes that this is a \"slightly corrupted Latin legend\" [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102520+0000-4c0053c3.json"
+    },
+    {
+      "case": "oc-eo-medallion-legend",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-56dfbf1b-49cf-4806-bb3c-40148b797a9a",
+        "model": "chat-default"
+      },
+      "answer": "The Latin legend on the Oc Eo gold medallion reads \"ANTONINVS AVG PIVS NVRP (or NVAP) XV\" [S1]. The source notes that this is a \"slightly corrupted Latin legend\" [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102524+0000-4c0053c3.json"
+    },
+    {
+      "case": "oc-eo-roman-coins",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-46a8806a-dec4-49c6-ba3b-041adcc96adc",
+        "model": "chat-default"
+      },
+      "answer": "Yes, Roman coins were found at Óc Eo. \"The remains found at Oc Eo include pottery, tools, jewelry, casts for making jewelry, coins, and religious statues.\" [S1] Additionally, \"Among the finds are gold jewellery imitating coins from the Roman Empire of the Antonine period\" [S1], including a specific gold medallion or pendant imitating a Roman coin of Antoninus Pius that was excavated in 1944. [S2]",
+      "failures": [
+        "quotes seasia-01-oc-eo-medallion, resolving to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102533+0000-27a77e07.json"
+    },
+    {
+      "case": "oc-eo-roman-coins",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-5a23a851-62b0-4551-8506-66e39e83f17f",
+        "model": "chat-default"
+      },
+      "answer": "Yes, Roman coins were found at Óc Eo. \"The remains found at Oc Eo include pottery, tools, jewelry, casts for making jewelry, coins, and religious statues.\" [S1] Additionally, \"Among the finds are gold jewellery imitating coins from the Roman Empire of the Antonine period\" [S1], and a specific gold medallion imitating a Roman coin of Antoninus Pius was excavated there in 1944. [S2]",
+      "failures": [
+        "quotes seasia-01-oc-eo-medallion, resolving to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102538+0000-27a77e07.json"
+    },
+    {
+      "case": "oc-eo-roman-coins",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-46cb48d6-786d-4b7c-bc8e-9014ee5cd3ec",
+        "model": "chat-default"
+      },
+      "answer": "Yes, Roman coins were found at Óc Eo. \"The remains found at Oc Eo include pottery, tools, jewelry, casts for making jewelry, coins, and religious statues.\" [S1] Additionally, \"Among the finds are gold jewellery imitating coins from the Roman Empire of the Antonine period\" [S1], and a specific gold medallion imitating a Roman coin of Antoninus Pius was excavated there in 1944. [S2]",
+      "failures": [
+        "quotes seasia-01-oc-eo-medallion, resolving to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102543+0000-27a77e07.json"
+    },
+    {
+      "case": "khao-sam-kaeo-intaglio",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-27161150-e8d0-42a2-9e25-bd0ae25846d6",
+        "model": "chat-default"
+      },
+      "answer": "\"A Roman intaglio, yellow carnelian, depicting a standing figure, probably Mars, dressed in military costume with a crested helmet\" was found at Khao Sam Kaeo. [S2] The object \"lacks secure stratigraphic context, but provenance from the site is not doubted.\" [S2] It dates to the \"mid-2nd to early 3rd century CE (Roman production).\" [S2]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102551+0000-2bb8722f.json"
+    },
+    {
+      "case": "khao-sam-kaeo-intaglio",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-ea9364d3-557e-4130-b1ca-c4690a3e5fc8",
+        "model": "chat-default"
+      },
+      "answer": "\"A Roman intaglio, yellow carnelian, depicting a standing figure, probably Mars, dressed in military costume with a crested helmet\" was found at Khao Sam Kaeo. [S2] The object \"lacks secure stratigraphic context, but provenance from the site is not doubted.\" [S2] It dates to the \"mid-2nd to early 3rd century CE (Roman production).\" [S2]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102555+0000-2bb8722f.json"
+    },
+    {
+      "case": "khao-sam-kaeo-intaglio",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-28d78ee8-125c-4efe-8eff-8a30cf7a78a6",
+        "model": "chat-default"
+      },
+      "answer": "\"A Roman intaglio, yellow carnelian, depicting a standing figure, probably Mars, dressed in military costume with a crested helmet\" was found at Khao Sam Kaeo. [S2] The object \"lacks secure stratigraphic context, but provenance from the site is not doubted.\" [S2] It dates to the \"mid-2nd to early 3rd century CE (Roman production).\" [S2]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102600+0000-2bb8722f.json"
+    },
+    {
+      "case": "oc-eo-cattigara",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-8a7a3f75-d1d5-4adb-9a0c-1d5aff1a91d3",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss Óc Eo as a port site in Southeast Asia with Roman-period artifacts [S1][S2], and they describe various ports mentioned in the Periplus of the Erythraean Sea including Muziris in South Asia [S6], but they contain no information about Ptolemy's Cattigara or whether it corresponds to Óc Eo.",
+      "failures": [
+        "does not say \"Ptolemy's Cattigara\""
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102609+0000-59c17b67.json"
+    },
+    {
+      "case": "oc-eo-cattigara",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-56121511-436c-4624-833f-58448bb5dd4b",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss Óc Eo as a port site in Southeast Asia with Roman-period artifacts [S1][S2], and they describe various ports mentioned in the Periplus of the Erythraean Sea including Muziris in South Asia [S6], but they contain no information about Ptolemy's Cattigara or whether it corresponds to Óc Eo.",
+      "failures": [
+        "does not say \"Ptolemy's Cattigara\""
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102613+0000-59c17b67.json"
+    },
+    {
+      "case": "oc-eo-cattigara",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-f77cc422-f439-4d68-b42d-f96c2bb8f81d",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss Óc Eo as a port site in Southeast Asia with Roman-period artifacts [S1][S2], and they describe various ports mentioned in the Periplus of the Erythraean Sea including Muziris in South Asia [S6], but they contain no information about Ptolemy's Cattigara or whether it corresponds to Óc Eo.",
+      "failures": [
+        "does not say \"Ptolemy's Cattigara\""
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102618+0000-59c17b67.json"
+    },
+    {
+      "case": "hoby-cheirisophos-signature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-6f19dc7f-4b21-4974-82f6-89bf32914245",
+        "model": "chat-default"
+      },
+      "answer": "The silver cups from the Hoby grave were made by Cheirisophos, as indicated by the signature on the cups: \"[ΧEIPI]ΣΟΦΟΣ ЄΠΟΙΕΙ ('Cheirisophos made [this]')\" [S1]. The cups were made in Italy around the start of the Common Era [S1]. The cups were later owned by someone named Silivs, whose name was engraved on them [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102626+0000-ff3a07a5.json"
+    },
+    {
+      "case": "hoby-cheirisophos-signature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-a7a4bcaf-f194-437f-86d9-d053dfc82c0e",
+        "model": "chat-default"
+      },
+      "answer": "The silver cups from the Hoby grave were made by Cheirisophos, as indicated by the signature on the cups: \"[ΧEIPI]ΣΟΦΟΣ ЄΠΟΙΕΙ ('Cheirisophos made [this]')\" [S1]. The cups were made in Italy around the start of the Common Era [S1]. The cups were later owned by someone named Silivs, whose name was engraved on them [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102631+0000-ff3a07a5.json"
+    },
+    {
+      "case": "hoby-cheirisophos-signature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-021c31fe-6b5e-4185-afa5-c12f9732d58c",
+        "model": "chat-default"
+      },
+      "answer": "The silver cups from the Hoby grave were made by Cheirisophos, as indicated by the signature on the cups: \"[ΧEIPI]ΣΟΦΟΣ ЄΠΟΙΕΙ ('Cheirisophos made [this]')\" [S1]. The cups were made in Italy around the start of the Common Era [S1]. The cups were later owned by someone named Silivs, whose name was engraved on them [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102636+0000-ff3a07a5.json"
+    },
+    {
+      "case": "hoby-silius-identification",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-a617dc5f-ef27-42e8-9fc9-3cba9ec53f1f",
+        "model": "chat-default"
+      },
+      "answer": "The Hoby cups bear the engraved owner's name \"SILIVS,\" but the sources do not identify who this person was. [S1] The sources retrieved do not answer this question, though they do record that the cups were made by Cheirisophos and owned by someone named Silius, and that they were found in a chieftain's grave in Denmark from the 1st century CE. [S1]",
+      "failures": [
+        "says one of ['possibly', 'may have been', 'may be', 'suggesting', 'perhaps', 'not certain', 'uncertain']",
+        "says one of ['Mainz', 'commandant', 'Gaius Silius']",
+        "does not say 'The sources retrieved do not answer this question'"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102645+0000-29c3963c.json"
+    },
+    {
+      "case": "hoby-silius-identification",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-6efbf5fc-204b-40d0-bb1c-1d445d127420",
+        "model": "chat-default"
+      },
+      "answer": "The Hoby cups bear the engraved owner's name \"SILIVS,\" but the sources do not identify who this person was. [S1] The sources retrieved do not answer this question, though they do record that the cups were made by Cheirisophos and owned by someone named Silius, and that they were found in a chieftain's grave in Denmark from the 1st century CE. [S1]",
+      "failures": [
+        "says one of ['possibly', 'may have been', 'may be', 'suggesting', 'perhaps', 'not certain', 'uncertain']",
+        "says one of ['Mainz', 'commandant', 'Gaius Silius']",
+        "does not say 'The sources retrieved do not answer this question'"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102649+0000-29c3963c.json"
+    },
+    {
+      "case": "hoby-silius-identification",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-d5473394-cb5e-4129-b62d-db4aef0131ac",
+        "model": "chat-default"
+      },
+      "answer": "The Hoby cups bear the engraved owner's name \"SILIVS,\" but the sources do not identify who this person was. [S1] The sources retrieved do not answer this question, though they do record that the cups were made by Cheirisophos and owned by someone named Silius, and that they were found in a chieftain's grave in Denmark from the 1st century CE. [S1]",
+      "failures": [
+        "says one of ['possibly', 'may have been', 'may be', 'suggesting', 'perhaps', 'not certain', 'uncertain']",
+        "says one of ['Mainz', 'commandant', 'Gaius Silius']",
+        "does not say 'The sources retrieved do not answer this question'"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102654+0000-29c3963c.json"
+    },
+    {
+      "case": "gudme-bracteate-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-6b7bce16-1a4a-413a-9b8d-9ba64eb99da9",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss a hoard from Gudme that included nine gold bracteates, but provide no information about runic inscriptions on those bracteates [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102701+0000-aff709c2.json"
+    },
+    {
+      "case": "gudme-bracteate-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-a5ebb663-1d1b-41fe-9e03-507c5317ef80",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss a hoard from Gudme that included nine gold bracteates, but provide no information about runic inscriptions on those bracteates [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102706+0000-aff709c2.json"
+    },
+    {
+      "case": "gudme-bracteate-runes",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-99c1e591-dea4-4407-948c-70e367839dcd",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss a hoard from Gudme that included nine gold bracteates, but provide no information about runic inscriptions on those bracteates [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102710+0000-aff709c2.json"
+    },
+    {
+      "case": "illerup-roman-coins",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-c18b0e4a-ecf6-4135-bdf9-da4a6870fe10",
+        "model": "chat-default"
+      },
+      "answer": "The deposit at Illerup Ådal contains \"194 Roman denarii, four barbarous imitations, and a sestertius.\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102717+0000-440705f2.json"
+    },
+    {
+      "case": "illerup-roman-coins",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-f3807bd8-c85c-4ea8-a90e-3df522ca8b3e",
+        "model": "chat-default"
+      },
+      "answer": "The deposit at Illerup Ådal contains \"194 Roman denarii, four barbarous imitations, and a sestertius.\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102720+0000-440705f2.json"
+    },
+    {
+      "case": "illerup-roman-coins",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-d17d04d9-4bf3-49f4-a441-e1901633dedc",
+        "model": "chat-default"
+      },
+      "answer": "The deposit at Illerup Ådal contains \"194 Roman denarii, four barbarous imitations, and a sestertius.\" [S3]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102724+0000-440705f2.json"
+    },
+    {
+      "case": "akananuru-yavana-ships",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-8f279142-24ff-4670-a6f4-215e25aa669b",
+        "model": "chat-default"
+      },
+      "answer": "The Tamil poem Akananuru 149.7-11 describes Yavana ships at Muciri in several ways. It refers to \"the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans]\" that \"stir white foam on the Culli [Periyar], a river of the Chera, arriving with gold and departing with pepper.\" [S1] The poem presents these ships as part of the prosperity of Muciri, which \"brimming with prosperity, was besieged by the din of war.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102733+0000-b9900ca2.json"
+    },
+    {
+      "case": "akananuru-yavana-ships",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-0e101367-aac2-4060-b507-a316ad088107",
+        "model": "chat-default"
+      },
+      "answer": "The Tamil poem Akananuru 149.7-11 describes Yavana ships at Muciri in several ways. It refers to \"the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans]\" that \"stir white foam on the Culli [Periyar], a river of the Chera.\" [S1] The poem indicates that these ships \"arriv[e] with gold and depart[ing] with pepper\" at Muciri, which is described as a city \"brimming with prosperity.\" [S1] The poem also depicts Muciri during a time \"when that Muciri, brimming with prosperity, was besieged by the din of war.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102739+0000-b9900ca2.json"
+    },
+    {
+      "case": "akananuru-yavana-ships",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-eef95ee1-2700-4458-9a8e-317ae4927a7e",
+        "model": "chat-default"
+      },
+      "answer": "The Tamil poem Akananuru 149.7-11 describes Yavana ships at Muciri in several ways. It refers to \"the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans]\" that \"stir white foam on the Culli [Periyar], a river of the Chera.\" [S1] The poem indicates that these ships \"arriv[e] with gold and depart[ing] with pepper\" at Muciri, which is described as a city \"brimming with prosperity.\" [S1] The poem also depicts Muciri during a time \"when that Muciri, brimming with prosperity, was besieged by the din of war.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102745+0000-b9900ca2.json"
+    },
+    {
+      "case": "akananuru-yavana-ships-tamil",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-55c2ee20-f6f0-454f-9373-c1e86e4840c7",
+        "model": "chat-default"
+      },
+      "answer": "The question asks about Yavana ships at Muciri arriving with gold and departing with pepper, which is directly addressed in the sources.\n\nAccording to the Akananuru, \"the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans]\" at Muciri were vessels that arrived \"with gold and departing with pepper\" [S1]. The same source describes Muciri as \"brimming with prosperity\" and indicates that these Yavana ships operated on the Periyar river in the Chera region [S1].\n\nThe Periplus of the Erythraean Sea confirms Roman maritime trade with the region, describing ports and trading practices on the Limyrike coast where such commerce took place [S2]. However, the Periplus does not specifically mention the gold and pepper exchange that the Tamil literary source records.",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102755+0000-060ab09a.json"
+    },
+    {
+      "case": "akananuru-yavana-ships-tamil",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 4,
+      "serving_stack": {
+        "id": "chatcmpl-a8f99d92-a2ef-49f4-a740-e416f6a8e91f",
+        "model": "chat-default"
+      },
+      "answer": "The question asks about Yavana ships at Muciri arriving with gold and departing with pepper, which is directly addressed in the sources.\n\nAccording to the Akananuru, \"the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans]\" at Muciri were vessels that arrived \"with gold and departing with pepper\" [S1]. The same source describes Muciri as \"brimming with prosperity\" and notes these Yavana vessels \"stir white foam on the Culli [Periyar], a river of the Chera\" [S1].\n\nThe Periplus of the Erythraean Sea confirms that Muziris (the Greek name for Muciri) was an active port in this period, describing nearby ports and their trade operations, though it does not specifically mention the gold and pepper trade in the passages provided [S2].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102801+0000-060ab09a.json"
+    },
+    {
+      "case": "akananuru-yavana-ships-tamil",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 3,
+      "serving_stack": {
+        "id": "chatcmpl-b01f9a4b-b7de-49fd-9f6f-5f15d4d3b39b",
+        "model": "chat-default"
+      },
+      "answer": "The question asks about Yavana ships at Muciri arriving with gold and departing with pepper, which is directly addressed in the sources.\n\nAccording to the Akananuru, \"the beautiful vessels, the masterpieces of the Yavanas [Ionians/Greeks-Romans]\" at Muciri were vessels that arrived \"with gold and departing with pepper\" [S1]. The same source describes Muciri as \"brimming with prosperity\" and indicates these Yavana ships operated on the Periyar river in the Chera region [S1].\n\nThe Periplus of the Erythraean Sea confirms that Muziris (the Greek name for Muciri) was an active port where ships engaged in maritime trade, though it does not specifically mention the gold and pepper exchange [S2]. The sources establish that contact between the Roman/Greek world and South Asian ports like Muciri involved substantial commercial activity during the first centuries of the Common Era [S1][S2].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102808+0000-060ab09a.json"
+    },
+    {
+      "case": "hermapollon-cargo-value",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-7558ef2f-d1f0-401b-9a13-590c2755ae6e",
+        "model": "chat-default"
+      },
+      "answer": "The cargo of the Hermapollon was worth \"1,154 talents 2,852 drachmas of silver\" [S1]. This valuation comprised three parts: Gangetic nard in 60 boxes valued at 45 talents, first-grade ivory weighing 78 talents with 54¾ minas, and a third component whose specific value is not separately itemized in the available text [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102816+0000-651ca38a.json"
+    },
+    {
+      "case": "hermapollon-cargo-value",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-ed14177f-ff4a-4b2c-92e9-a532e6ee9471",
+        "model": "chat-default"
+      },
+      "answer": "The cargo of the Hermapollon was worth \"1,154 talents 2,852 drachmas of silver\" [S1]. This valuation comprised three parts: Gangetic nard in 60 boxes valued at 45 talents, first-grade ivory weighing 78 talents with 54¾ minas, and a third component whose specific value is not separately itemized in the available text [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102821+0000-651ca38a.json"
+    },
+    {
+      "case": "hermapollon-cargo-value",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-a4292bfc-d3b8-4723-9730-4e1d7ee8b2d4",
+        "model": "chat-default"
+      },
+      "answer": "The cargo of the Hermapollon was worth \"1,154 talents 2,852 drachmas of silver\" [S1]. This valuation comprised three parts: Gangetic nard in 60 boxes valued at 45 talents, first-grade ivory weighing 78 talents with 54¾ minas, and a third component whose specific value is not separately itemized in the available text [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102826+0000-651ca38a.json"
+    },
+    {
+      "case": "pattanam-dna-evidence",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-211e2e9b-8578-4a37-b102-34b21e94d8ed",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss archaeological finds from Pattanam and other sites with Roman contact, including pottery, glass, coins, and other artifacts [S1][S2][S3][S4][S5][S6], but none of them contain DNA evidence or information about the genetic composition of Pattanam's population.",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102835+0000-cb2f4338.json"
+    },
+    {
+      "case": "pattanam-dna-evidence",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-66b323a7-8d7c-4695-a501-7661ea04c4f3",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss archaeological finds from Pattanam and other sites with Roman contact, including pottery, glass, coins, and other artifacts [S1][S2][S3][S4][S5], but none of them contain DNA evidence or information about the genetic composition of Pattanam's population.",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102839+0000-cb2f4338.json"
+    },
+    {
+      "case": "pattanam-dna-evidence",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-f6607ec5-44dd-477f-a768-20ed0f8e4e36",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss archaeological finds from Pattanam and other sites with Roman contact, including pottery, glass, coins, and other artifacts [S1][S2][S3][S4][S5][S6], but none of them contain DNA evidence or information about the genetic composition of Pattanam's population.",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102843+0000-cb2f4338.json"
+    },
+    {
+      "case": "hou-hanshu-166-tribute",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-59c6cf78-5ccc-45cf-8ea9-349a170d91cd",
+        "model": "chat-default"
+      },
+      "answer": "According to the Hou Hanshu, the Roman embassy of 166 CE brought \"elephant tusks, rhinoceros horn, and turtle shell\" to the Han court. [S1] The source notes that \"the tribute brought was neither precious nor rare, raising suspicion that the accounts [of the 'envoys'] might be exaggerated.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102851+0000-16f4bd06.json"
+    },
+    {
+      "case": "hou-hanshu-166-tribute",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-32d5f3e0-bee3-443b-a78a-21c9b5dc8f22",
+        "model": "chat-default"
+      },
+      "answer": "According to the Hou Hanshu, the Roman embassy of 166 CE brought \"elephant tusks, rhinoceros horn, and turtle shell\" to the Han court. [S1] The source notes that \"the tribute brought was neither precious nor rare, raising suspicion that the accounts [of the 'envoys'] might be exaggerated.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102856+0000-16f4bd06.json"
+    },
+    {
+      "case": "hou-hanshu-166-tribute",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 2,
+      "serving_stack": {
+        "id": "chatcmpl-083d49bd-16c8-4fbf-954e-f1107ac82b07",
+        "model": "chat-default"
+      },
+      "answer": "According to the Hou Hanshu, the Roman embassy of 166 CE brought \"elephant tusks, rhinoceros horn, and turtle shell\" to the Han court. [S1] The source notes that \"the tribute brought was neither precious nor rare, raising suspicion that the accounts [of the 'envoys'] might be exaggerated.\" [S1]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102900+0000-16f4bd06.json"
+    },
+    {
+      "case": "hwangnam-glass-origin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-d2d9cd2c-5519-405e-bd06-0d80bffceeb1",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss Roman glass found in a Silla royal tomb in Korea and Roman objects found at various sites around the Indian Ocean and in Scandinavia, but only one source addresses the Silla glass directly, and it indicates manufacture in Roman Syria rather than stating where it was made with certainty [S1].",
+      "failures": [
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes eastasia-03-hwangnam-glass, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102908+0000-ecddda54.json"
+    },
+    {
+      "case": "hwangnam-glass-origin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-1ffb20c6-0f5f-4391-ab06-4e45431523f0",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss Roman glass found in a Silla royal tomb in Korea and Roman objects found at various sites around the Indian Ocean and in Scandinavia, but only one source addresses the Silla glass directly, and it indicates manufacture in Roman Syria rather than specifying where it was made [S1].",
+      "failures": [
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes eastasia-03-hwangnam-glass, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102913+0000-ecddda54.json"
+    },
+    {
+      "case": "hwangnam-glass-origin",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-5d43fd43-86fd-46e0-a475-7ea4bc3edc3b",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss Roman glass found in a Silla royal tomb in Korea and Roman objects found at various sites around the Indian Ocean and in Scandinavia, but only one source addresses the Silla glass directly, and it indicates manufacture in Roman Syria rather than stating where it was made with certainty [S1].",
+      "failures": [
+        "does not say 'The sources retrieved do not answer this question'",
+        "quotes eastasia-03-hwangnam-glass, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102917+0000-ecddda54.json"
+    },
+    {
+      "case": "weilue-ruler-selection",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-b71ff4e5-bf3a-417f-8066-5cbe6a16cc47",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss the Roman Empire (Da Qin) and its rulers, but they do not explain the method by which Roman rulers were chosen according to the Weilue [S1][S2].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102925+0000-2733d3f2.json"
+    },
+    {
+      "case": "weilue-ruler-selection",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-e1ef4034-c213-4c40-9df3-e9e15d733149",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss the Roman Empire (Da Qin) and its rulers, but they do not explain the method by which Roman rulers were chosen according to the Weilue [S1][S2].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102929+0000-2733d3f2.json"
+    },
+    {
+      "case": "weilue-ruler-selection",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-f8fec557-18eb-4ff3-a38f-c395879a7ec9",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources discuss the Roman Empire (Da Qin) and its rulers, but they do not explain the method by which Roman rulers were chosen according to the Weilue [S1][S2].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102933+0000-2733d3f2.json"
+    },
+    {
+      "case": "ezana-titulature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-41f1036b-7f3a-4756-aa0a-be63739ba49b",
+        "model": "chat-default"
+      },
+      "answer": "According to the Ezana Stone, Ezana claims the following titles: \"king of the Aksumites, Himyarites and Raeidan, the Ethiopians, the Sabaeans and Silei, Tiamo and the Beja and Kasu, king of kings, son of the invincible god Ares.\" [S2]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102941+0000-9fd4d714.json"
+    },
+    {
+      "case": "ezana-titulature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-b1988465-ce79-4a64-adbf-16c22fd634b9",
+        "model": "chat-default"
+      },
+      "answer": "According to the Ezana Stone, Ezana claims the following titles: \"king of the Aksumites, Himyarites and Raeidan, the Ethiopians, the Sabaeans and Silei, Tiamo and the Beja and Kasu, king of kings, son of the invincible god Ares.\" [S2]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102946+0000-9fd4d714.json"
+    },
+    {
+      "case": "ezana-titulature",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": false,
+      "resolved_quotes": 1,
+      "serving_stack": {
+        "id": "chatcmpl-d91dec76-3263-45f0-837c-b60f1e4fe6d2",
+        "model": "chat-default"
+      },
+      "answer": "According to the Ezana Stone, Ezana claims the following titles: \"king of the Aksumites, Himyarites and Raeidan, the Ethiopians, the Sabaeans and Silei, Tiamo and the Beja and Kasu, king of kings, son of the invincible god Ares.\" [S2]",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102951+0000-9fd4d714.json"
+    },
+    {
+      "case": "ezana-stone-geez",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-96c54f99-db0a-4558-9f3f-25d5aa5dcc5e",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources include information about the Ezana Stone as a trilingual inscription and a passage in English from it, but they do not provide the Ge'ez text or a translation of what the Ge'ez portion says [S5].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T102958+0000-60bd357f.json"
+    },
+    {
+      "case": "ezana-stone-geez",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-69486e7b-10c5-4ec2-861c-e0be04d07a93",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources include information about the Ezana Stone as a trilingual inscription and a passage in English from it, but they do not provide the Ge'ez text or a translation of what the Ge'ez portion says [S5].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T103002+0000-60bd357f.json"
+    },
+    {
+      "case": "ezana-stone-geez",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": true,
+      "refused": true,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-450f18d6-d22e-4c4a-b98f-c5fbd54d6fc7",
+        "model": "chat-default"
+      },
+      "answer": "The sources retrieved do not answer this question. The sources include information about the Ezana Stone as a trilingual inscription and a passage in English from it, but they do not provide the Ge'ez text or a translation of what the Ge'ez portion says [S5].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T103006+0000-60bd357f.json"
+    },
+    {
+      "case": "aksumite-coin-imagery",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-d7de711c-b324-431a-92ec-e6381ce4a92d",
+        "model": "chat-default"
+      },
+      "answer": "The gold coin of King Ezanas shows \"a half-length bust of Ezanas right, crowned, holding stick or sceptre, flanked by two wheat-stalks, the whole in a beaded circle\" on one side [S1]. The reverse displays \"a half-length bust of Ezanas right, wearing headcloth, holding branch (?) or stick, flanked by two wheat-stalks, the whole in a beaded circle\" [S1].",
+      "failures": [
+        "quotes africa-02-aksumite-coin, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T103014+0000-b23741a6.json"
+    },
+    {
+      "case": "aksumite-coin-imagery",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-f1705bc3-faa6-4043-b250-fe23eef84faa",
+        "model": "chat-default"
+      },
+      "answer": "The gold coin of King Ezanas shows \"a half-length bust of Ezanas right, crowned, holding stick or sceptre, flanked by two wheat-stalks, the whole in a beaded circle\" on one side [S1]. The reverse displays \"a half-length bust of Ezanas right, wearing headcloth, holding branch (?) or stick, flanked by two wheat-stalks, the whole in a beaded circle\" [S1].",
+      "failures": [
+        "quotes africa-02-aksumite-coin, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T103019+0000-b23741a6.json"
+    },
+    {
+      "case": "aksumite-coin-imagery",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": false,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 0,
+      "serving_stack": {
+        "id": "chatcmpl-94b8e657-0873-4821-a7f1-ced99375971b",
+        "model": "chat-default"
+      },
+      "answer": "The gold coin of King Ezanas shows \"a half-length bust of Ezanas right, crowned, holding stick or sceptre, flanked by two wheat-stalks, the whole in a beaded circle\" on one side [S1]. The reverse displays \"a half-length bust of Ezanas right, wearing headcloth, holding branch (?) or stick, flanked by two wheat-stalks, the whole in a beaded circle\" [S1].",
+      "failures": [
+        "quotes africa-02-aksumite-coin, resolving to characters on disk",
+        "resolves at least 1 quotation(s) to characters on disk"
+      ],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T103024+0000-b23741a6.json"
+    },
+    {
+      "case": "weilue-chinese-quotation",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 1,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 6,
+      "serving_stack": {
+        "id": "chatcmpl-97e44e2a-c311-4436-8ec0-b9e986301f2a",
+        "model": "chat-default"
+      },
+      "answer": "In the Weilüe's Classical Chinese, Da Qin is described with several distinctive features. The kingdom \"is also called Lijian\" and \"is west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea\" [S1]. The text states that \"This country (the Roman Empire) has more than four hundred smaller cities and towns. It extends several thousand li in all directions\" [S1]. Regarding its capital, \"The king has his capital (that is, the city of Rome) close to the mouth of a river (the Tiber). The outer walls of the city are made of stone\" [S1]. The source text itself reads: \"大秦國一號犁靬，在安息、條支西大海之西\" and describes the kingdom as having \"以石爲城郭\" [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T103034+0000-16fc743c.json"
+    },
+    {
+      "case": "weilue-chinese-quotation",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 2,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 6,
+      "serving_stack": {
+        "id": "chatcmpl-57acfd73-b39c-4bc1-bcfa-522ef8070cc3",
+        "model": "chat-default"
+      },
+      "answer": "In the Weilüe's Classical Chinese, Da Qin is described with several distinctive features. The kingdom \"is also called Lijian\" and \"is west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea\" [S1]. The text states that \"This country (the Roman Empire) has more than four hundred smaller cities and towns. It extends several thousand li in all directions\" [S1]. Regarding its capital, \"The king has his capital (that is, the city of Rome) close to the mouth of a river (the Tiber). The outer walls of the city are made of stone\" [S1]. The source text itself reads: \"大秦國一號犁靬，在安息、條支西大海之西\" and describes the kingdom as having \"以石爲城郭\" [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T103040+0000-16fc743c.json"
+    },
+    {
+      "case": "weilue-chinese-quotation",
+      "prompt_version": "p7-answer-v2r",
+      "repetition": 3,
+      "session_id": "6715f2a3ab6b44d4b56bd20da0d3869f",
+      "session_date": "2026-08-27",
+      "content_ok": true,
+      "grounded": false,
+      "refused": false,
+      "resolved_quotes": 6,
+      "serving_stack": {
+        "id": "chatcmpl-9e53328e-63e7-4bb8-83b5-59a8edb3c93d",
+        "model": "chat-default"
+      },
+      "answer": "In the Weilüe's Classical Chinese, Da Qin is described with several distinctive features. The kingdom \"is also called Lijian\" and \"is west of Anxi (Parthia) and Tiaozhi (Characene and Susiana), and west of the Great Sea\" [S1]. The text states that \"This country (the Roman Empire) has more than four hundred smaller cities and towns. It extends several thousand li in all directions\" [S1]. Regarding its capital, \"The king has his capital (that is, the city of Rome) close to the mouth of a river (the Tiber). The outer walls of the city are made of stone\" [S1]. The source text itself reads: \"大秦國一號犁靬，在安息、條支西大海之西\" and describes the kingdom as having \"以石爲城郭\" [S1].",
+      "failures": [],
+      "archived": "C:\\Users\\chemi\\Documents\\Claude\\Museums Project Number 1\\mundus-ulterior\\eval\\answer_runs\\20260827T103048+0000-16fc743c.json"
+    }
+  ],
+  "summary": {
+    "cells": [
+      {
+        "case": "adulis-exports",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 3,
+        "quotes_max": 3,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "akananuru-yavana-ships",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 2,
+        "quotes_min": 3,
+        "quotes_max": 4,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "akananuru-yavana-ships-tamil",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 3,
+        "quotes_min": 3,
+        "quotes_max": 4,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "aksum-exports",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "aksumite-coin-imagery",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "antikythera-absent",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 2,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "cana-frankincense-exports",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 2,
+        "quotes_max": 2,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "chinese-da-qin",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 7,
+        "quotes_max": 7,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "ezana-stone-geez",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "ezana-titulature",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "gudme-bracteate-runes",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "hermapollon-cargo-value",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "hoby-cheirisophos-signature",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "hoby-silius-identification",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "hou-hanshu-166-tribute",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 2,
+        "quotes_max": 2,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "hwangnam-glass-origin",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 2,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "illerup-roman-coins",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "jabal-dabub-basmala",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "khao-sam-kaeo-intaglio",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 2,
+        "quotes_max": 2,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "muziris-cargo",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 4,
+        "quotes_max": 4,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "oc-eo-cattigara",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "oc-eo-medallion-legend",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 2,
+        "quotes_max": 2,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "oc-eo-roman-coins",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 2,
+        "quotes_min": 2,
+        "quotes_max": 2,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "palmyrene-tariff-rates",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "pattanam-dna-evidence",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 2,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "raqosh-epitaph",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 3,
+        "quotes_max": 3,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "sasanian-hunting-plate",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "shapur-drachm-imagery",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "skz-roman-emperors",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "skz-titulature",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 4,
+        "quotes_max": 4,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "vimose-runes",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 0,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 2,
+        "quotes_min": 1,
+        "quotes_max": 1,
+        "refusal_rate": 1.0
+      },
+      {
+        "case": "weilue-chinese-quotation",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 0,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 6,
+        "quotes_max": 6,
+        "refusal_rate": 0.0
+      },
+      {
+        "case": "weilue-ruler-selection",
+        "prompt_version": "p7-answer-v2r",
+        "n": 3,
+        "content_pass": 3,
+        "content_stable": true,
+        "grounded_pass": 3,
+        "grounded_stable": true,
+        "distinct_texts": 1,
+        "quotes_min": 0,
+        "quotes_max": 0,
+        "refusal_rate": 1.0
+      }
+    ],
+    "by_version": {
+      "p7-answer-v2r": {
+        "cases": 33,
+        "runs": 99,
+        "content_pass_rate": 0.7272727272727273,
+        "grounded_rate": 0.7878787878787878,
+        "refusal_rate": 0.36363636363636365,
+        "unstable_content_cells": 0,
+        "unstable_grounded_cells": 0,
+        "mean_resolved_quotes": 1.606060606060606
+      }
+    }
+  },
+  "incomplete": [],
+  "retried": [],
+  "floor": {
+    "p7-answer-v2r": {
+      "meets_floor": true,
+      "problems": [],
+      "known_failing": {
+        "aksum-exports": {
+          "observed": "0/3",
+          "reason": "Fails 0/3 under BOTH prompt versions, and 4/4 across the archived Part 7 runs — seven consecutive failures under four prompts. The corpus contains the answer in published English, aligned by section, verified present in the evidence block by the sweep's dry run. This is not a prompt defect and must not be folded into the floor as tolerated; it is an open defect tracked separately so that a floor pass can never be read as 'the system answers these questions'."
+        },
+        "weilue-chinese-quotation": {
+          "observed": "3/3",
+          "reason": "FINDING 13, 2026-08-22. Fails because nothing in the answer path ever asks for a non-English source text to be quoted: prompt rule 3 permits 'the SOURCE TEXT or the ENGLISH' and requires neither. Measured at 45 of 45 resolved quotations from reference_translation across 16 archived runs of chinese-da-qin, with the Chinese chunk retrieved at [S1] every time. NOT a retrieval defect and NOT a corpus defect — the corpus text was corrected on 2026-08-22 and nothing moved. Tracked as an open defect rather than tolerated, on the aksum-exports precedent, so that a floor pass can never be read as 'the system quotes source texts'. Closing it means changing the prompt, which cannot happen before Block E without invalidating every archived number."
+        },
+        "vimose-runes": {
+          "observed": "0/3",
+          "reason": "Demoted from required_cases on 2026-08-26, on evidence from two dates. 0/3 in the 2026-08-24 session and 0/3 in the 2026-08-25 session, corpus digest 26e4a683... asserted at both ends of both sweeps, and FINDING 18 records it as deterministic on BOTH days about a different answer - so this is not a flaky sampler. The D4 dry run locates the failure in retrieval, not generation: its own gold record scandinavia-03-vimose sits at rank 3, sim 0.384, behind arabia-04-jabal-dabub at 0.433 and arabia-03-jsnab17 at 0.401, a spread of 0.049, and no other case in the pilot has a margin like it. Tracked here rather than deleted, on the aksum-exports precedent, so that a floor pass can never be read as 'the system answers this question'. A sweep that reports it passing is a finding, not a success. What would put it back is written in demotions.vimose-runes."
+        }
+      }
+    }
+  }
+}
