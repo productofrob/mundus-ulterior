@@ -894,6 +894,25 @@ def test_scoring_an_archive() -> None:
     expect(len(greedy) >= 511,
            "GUARD and it KEEPS the greedy archive — a filter matching nothing "
            "would make every universal below vacuously true")
+    # The THREE STATES, and why the third mutation on this code found nothing
+    # to break until this line existed. Ignoring a recorded `model_alias` sends
+    # payload_arm to the serving-stack echo, and for the arm's 165 runs that
+    # echo says `chat-strong` too — so the filter still excluded them, every
+    # universal below still held, and a genuinely broken reading reported as a
+    # working guard. The echo AGREEING is exactly what makes it useless as a
+    # check on the reading. Ruling 36's whole argument, one level down: a
+    # reconstruction that agrees is still not a reading, and the difference has
+    # to be assertable or it is not recorded at all.
+    expect(all(answer_eval.payload_arm(p)["basis"] == "recorded"
+               for p, _ in foreign),
+           "GUARD a run that RECORDS its arm is READ FROM THE ROW, never "
+           "reconstructed from the serving-stack echo — an echo that agrees "
+           "is still not a reading")
+    bases = {answer_eval.payload_arm(p)["basis"] for p, _ in greedy}
+    expect(bases == {"reconstructed", "assumed"},
+           f"and the greedy archive is known two ways, both named: {sorted(bases)} "
+           f"— the echo where there is one, and the code argument where there "
+           f"is not")
     results, unmatched = answer_eval.score_archives(cases, archives=greedy)
 
     by_case: dict[str, list] = {}

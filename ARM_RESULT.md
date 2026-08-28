@@ -227,6 +227,25 @@ matching nothing makes them vacuously true, and vacuous truths are green. Both
 are named and both are mutation-verified, along with a third that ignores a
 recorded arm and reads today's runs as legacy greedy ones.
 
+**A MISS, and it is the best thing in this finding.** Three mutations were
+written against the filter and the third — *a recorded arm is ignored and every
+run is read as greedy* — reported `MISS`: it broke the code and no guard
+noticed. The reason is that ignoring a recorded `model_alias` falls through to
+the serving-stack echo, and for the arm's 165 runs **that echo says
+`chat-strong` too.** The filter still excluded them, every universal still held,
+and a genuinely broken reading looked like a working one.
+
+That is ruling 36's own argument arriving one level down and uninvited: *a
+reconstruction that agrees is still not a reading*, and the difference has to be
+ASSERTABLE or it has not been recorded. The guard that was missing asserts the
+basis rather than the outcome — the 165 runs must be read from the row, and the
+511 must be known two ways, both named. `eval.test_answer_eval` 331 → 333.
+
+**The harness earned its keep here.** A MISS is not a failure of the mutation;
+it is the harness saying a line of code has no witness. Nothing in the suite
+would ever have gone red for this, and the echo would have gone on agreeing
+until the day it did not.
+
 **Three checks stay over the whole directory on purpose**: every run must be
 scorable, and every archived question must have a gold case, whatever arm made
 it. Only the per-case universals are filtered.

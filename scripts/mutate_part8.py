@@ -959,8 +959,9 @@ EXPECTED = [
     "models",
     "GUARD and it KEEPS the greedy archive — a filter matching nothing "
     "would make every universal below vacuously true",
-    "GUARD every archived Aksum answer ON THE GREEDY ARM fails — "
-    "including those the Part 7 checks called grounded",
+    "GUARD a run that RECORDS its arm is READ FROM THE ROW, never "
+    "reconstructed from the serving-stack echo — an echo that agrees "
+    "is still not a reading",
 
     # Ruling 36 in the runner, in the order above.
     "GUARD a sweep on another ALIAS gets no floor verdict - an arm is read "
