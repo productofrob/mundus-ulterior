@@ -406,3 +406,62 @@ was reachable. `muziris-cargo-akananuru` still sits at rank 310.
 
 The clause that rode with those two since Part 7 was retired on 2026-08-26 by
 a case that had never been run. Do not carry it forward.
+
+---
+
+## CORRECTION, added 2026-08-28, hours after this document was committed. The text above is unaltered.
+
+Found while applying owed correction 4, which turned out to be larger than it
+was written. **The section "The serving stack, and the limit that was stated
+before day 1" overstates what the probe showed.**
+
+```
+sweep   assemble(..., model_label=...) with no model=  ->  _chat(model="chat-default")
+                                                       ->  response.model "chat-default"
+probe   _chat(model=resolve_model_label())
+        = _chat(model="anthropic/claude-haiku-4-5-20251001")
+                                                       ->  response.model "anthropic/claude-haiku-4-5-20251001"
+```
+
+`resolve_model_label()` reads `gateway/config.yaml` **off the local disk**. It
+never asks the gateway anything. So:
+
+- **The probe bypassed the alias.** It sent the concrete model name it had just
+  read out of a file in this repository, and the gateway echoed it back. It has
+  never once exercised the request shape a sweep makes.
+- **`scripts/probe_serving_stack.py` printed a false claim** — *"what
+  `_serving_stack` would record, and therefore what every Block E archive will
+  carry beside `model`"*. Every Block E archive carries
+  `"model": "chat-default"`.
+- **The two readings either side of the block are not evidence about the
+  serving stack.** They are two echoes of a locally-read config value, taken on
+  a path the archives were not made on.
+- The consolation recorded in runbook decision 3a — that `chat-default` points
+  at a dated model id rather than a floating alias — is a fact about a file in
+  git. It never needed a chat call, and the probe did not verify it against the
+  gateway.
+
+**This strengthens the section's conclusion rather than weakening it.** The
+limit stated before day 1 was that provider drift and sampling variance are not
+separable in these archives. That is still true, and it is now true for a
+plainer reason than the one recorded: `_serving_stack`'s `model` is the echo of
+the string sent, in every path, and cannot move unless the caller moves it.
+FINDINGS 25, 26 and 27 stand unchanged.
+
+Applied the same day: `serving_stack_identity` excludes both the per-call `id`
+and the echoed `model`, so distinct stacks are counted over what could identify
+a stack — which on this gateway is nothing, and is reported as nothing rather
+than as "one, unchanged". The projection is applied at READ time, so the 396
+runs already archived are re-read correctly without rewriting an archive. The
+probe now sends the alias.
+
+**The owed total was seven and is eight.**
+
+```
+8  process/code  scripts/probe_serving_stack.py sent the concrete model name
+                 instead of the gateway alias, so both Block E probe readings
+                 were taken on a request shape no sweep makes, and the printed
+                 claim that they show what the archives carry was false.
+                 Corrected 2026-08-28; a reading through the alias is owed
+                 while the corpus is still frozen at 26e4a683.
+```

@@ -1631,7 +1631,7 @@ def test_a_failed_chat_call_does_not_take_the_day() -> None:
     session = {"id": "s" * 32, "date": "2026-08-26", "date_basis": "UTC",
                "label": "unit", "started_at": "2026-08-26T00:00:00+00:00"}
 
-    def run(fail_on):
+    def run(fail_on, progress=False):
         """fail_on: a mutable list of (case, repetition) that raise, popped as
         they are consumed — so a cell can fail once and succeed on the retry."""
         calls = []
@@ -1664,25 +1664,28 @@ def test_a_failed_chat_call_does_not_take_the_day() -> None:
             embed_mod.embed_query = lambda text, **k: [0.0]
             embed_mod.resolve_model_label = lambda *a, **k: "e"
             buffer = io.StringIO()
-            with contextlib.redirect_stdout(buffer):
+            errors = io.StringIO()
+            with contextlib.redirect_stdout(buffer), \
+                    contextlib.redirect_stderr(errors):
                 outcome = sweep_mod.run_sweep(
                     conn=None, cases=cases, prompt_versions=["p7-answer-v2r"],
                     repeat=2, k=6, max_sources=6, profiles={}, pause=0.0,
-                    dry_run=False, write=False, session=session)
-            return outcome, buffer.getvalue()
+                    dry_run=False, write=False, session=session,
+                    progress=progress)
+            return outcome, buffer.getvalue(), errors.getvalue()
         finally:
             for (obj, name), value in originals.items():
                 setattr(obj, name, value)
 
     # A clean run is untouched by any of this.
-    clean, _ = run(fail_on=[])
+    clean, _, _ = run(fail_on=[])
     expect(len(clean["results"]) == 4 and not clean["incomplete"]
            and not clean["retried"],
            "a sweep with no failure archives four runs and reports neither an "
            "incomplete cell nor a retry")
 
     # One call fails once. The retry at the end succeeds, and the day survives.
-    once, output = run(fail_on=[("question for alpha?", 2)])
+    once, output, _ = run(fail_on=[("question for alpha?", 2)])
     expect(len(once["results"]) == 4 and not once["incomplete"],
            "GUARD one failed call is retried and the sweep still completes")
     expect(len(once["retried"]) == 1
@@ -1700,8 +1703,8 @@ def test_a_failed_chat_call_does_not_take_the_day() -> None:
     # end of the sweep, not in place, so rep 2 runs in between. Failing #1 and
     # #3 is one cell failing twice; failing #1 and #2 would be two DIFFERENT
     # cells failing once each, and both would then be rescued.
-    twice, output = run(fail_on=[("question for beta?", 1),
-                                 ("question for beta?", 3)])
+    twice, output, _ = run(fail_on=[("question for beta?", 1),
+                                    ("question for beta?", 3)])
     expect(len(twice["incomplete"]) == 1
            and twice["incomplete"][0]["case"] == "beta"
            and "retry_error" in twice["incomplete"][0],
@@ -1718,6 +1721,71 @@ def test_a_failed_chat_call_does_not_take_the_day() -> None:
     expect("verdicts = ({} if incomplete" in source,
            "GUARD no floor verdict is computed for an incomplete sweep — it "
            "would be a floor met on a different denominator, in the same words")
+
+    # ---- Block E correction 5: a ten-minute sweep must be watchable ------
+    #
+    # Days 1, 2 and 3 each ran 99 calls over about ten minutes through a `*>`
+    # redirect and showed the operator nothing at all until they exited, so all
+    # three were watched by counting archive files from a second window. The
+    # fix has to keep the capture whole: `*>` takes every stream, so progress
+    # written to STDOUT would land in the archived transcript and progress that
+    # is not flushed would arrive in one block at the end, which is the problem
+    # it is meant to solve.
+    #
+    # Behavioural, not a line-exists check. FINDING 14's checks assert that a
+    # line is present in the source; this is control flow, and a line-exists
+    # check on control flow is the vacuous proof in a new costume.
+    quiet, quiet_out, quiet_err = run(fail_on=[])
+    expect(quiet_err == "",
+           "GUARD without --progress the sweep writes nothing to stderr — a "
+           "plain run is unchanged, and days 1-3 remain comparable")
+
+    loud, loud_out, loud_err = run(fail_on=[], progress=True)
+    lines = [line for line in loud_err.splitlines() if line.strip()]
+    expect(len(lines) == 4,
+           "--progress writes ONE line per completed cell, and there were four")
+    expect(all("/4]" in line for line in lines),
+           "each line carries the cell count against the total, so a stalled "
+           "sweep is distinguishable from a slow one")
+    expect(loud_out == quiet_out,
+           "GUARD --progress does not change STDOUT — `*>` captures every "
+           "stream, and a capture that gained progress lines would not be "
+           "comparable with days 1-3")
+    expect("alpha" in loud_err and "beta" in loud_err,
+           "the line names the case, so a sweep that stops can be resumed by "
+           "a reader who knows where it stopped")
+
+    # A failed cell must tick too, or the counter silently stops advancing on
+    # exactly the run the operator is watching most closely.
+    hurt, _hurt_out, hurt_err = run(fail_on=[("question for alpha?", 2)],
+                                    progress=True)
+    # Counted on the cell marker, not on a leading bracket: the retry pass
+    # writes a "[retry]" header and that is not a cell.
+    hurt_lines = [line for line in hurt_err.splitlines() if "/4]" in line]
+    expect(len(hurt_lines) == 4 and any("FAILED" in line
+                                        for line in hurt_lines),
+           "GUARD a FAILED cell ticks as well as a successful one, and says "
+           "which it was")
+    expect(sum(1 for line in hurt_err.splitlines() if "/4]" in line) == 4,
+           "GUARD the RETRY does not tick a fifth cell — a sweep of four cells "
+           "must never report five, however many calls it took to finish them")
+    expect("[retry]" in hurt_err,
+           "the retry pass announces itself, so a sweep that appears to have "
+           "stopped at the last cell is legible")
+
+    # The flush is the point. Without it Python buffers stdout AND stderr when
+    # neither is a terminal, and ten minutes of progress arrives at once, after
+    # the thing it was meant to report on.
+    # Counted at the CALL SITES, not searched for as a bare substring. The
+    # first version of this check read `"flush=True" in source` and passed
+    # after a mutation removed the flush from both prints — because the
+    # explanatory COMMENT above `_tick` contains the words "flush=True", and a
+    # comment satisfied the check. That is the vacuous-proof family this
+    # repository keeps catching, found here by the mutation harness on
+    # 2026-08-28, which is what the harness is for.
+    expect(source.count("file=sys.stderr, flush=True") == 2
+           and "flush=False" not in source,
+           "the progress line is flushed — buffered progress is not progress")
 
 
 def main() -> int:

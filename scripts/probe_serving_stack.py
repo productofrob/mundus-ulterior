@@ -71,14 +71,32 @@ for _stream in (sys.stdout, sys.stderr):
 def main() -> int:
     from answer import translate
 
-    model = translate.resolve_model_label()
-    print(f"one chat call to {model!r} through the gateway\n")
+    # CORRECTED 2026-08-28, Block E correction 4. This sent
+    # `resolve_model_label()` — the CONCRETE model name, read by that function
+    # out of gateway/config.yaml on this disk — and so made a request no sweep
+    # has ever made. The gateway echoed the concrete name straight back, and
+    # two probe readings either side of Block E were reported as evidence that
+    # the serving stack had not moved. They were evidence about a request shape
+    # the sweeps do not use, carrying a value that came from a file in this
+    # repository rather than from the provider.
+    #
+    # A sweep calls assemble with no `model=`, so `_chat` gets DEFAULT_MODEL
+    # and every one of the 396 Block E archives carries `"model":
+    # "chat-default"`. Send that, so this probe measures the path the archives
+    # were made on. If LiteLLM ever returns the RESOLVED name through the
+    # alias, this becomes a real drift detector; if it echoes `chat-default`,
+    # the null result is confirmed where it matters.
+    alias = translate.DEFAULT_MODEL
+    resolved = translate.resolve_model_label()
+    print(f"one chat call through the gateway alias {alias!r}")
+    print(f"gateway/config.yaml on this disk points that at {resolved!r} — "
+          f"read locally, NOT confirmed by the gateway\n")
 
     provenance: dict = {}
     try:
         text, retries, temperature = translate._chat(
             [{"role": "user", "content": "Reply with the single word: ok"}],
-            model=model, max_tokens=16, provenance=provenance,
+            model=alias, max_tokens=16, provenance=provenance,
         )
     except Exception as exc:  # noqa: BLE001 — provider errors are untyped
         print(f"the call failed: {exc}", file=sys.stderr)
@@ -88,9 +106,17 @@ def main() -> int:
 
     print(f"answer      {text.strip()[:60]!r}  "
           f"(retries {retries}, temperature {temperature})")
-    print("\nwhat _serving_stack would record, and therefore what every Block "
-          "E archive\nwill carry beside `model`:\n")
+    print("\nwhat _serving_stack recorded for THIS call, made through the same "
+          "alias a sweep\nuses:\n")
     print(json.dumps(provenance, indent=2, ensure_ascii=False))
+    identity = translate.serving_stack_identity(provenance)
+    print("\nand what of that could identify a STACK, once the per-call `id` "
+          "and the echoed\n`model` are removed (Block E corrections 3 and 4):\n")
+    print(json.dumps(identity, indent=2, ensure_ascii=False))
+    if provenance and not identity:
+        print("\n  EMPTY IDENTITY. Everything the gateway returned is either "
+              "unique to this call\n  or an echo of what was sent. The sweep's "
+              "'N distinct stacks' line counts this\n  correctly as none.")
 
     if not provenance:
         print(
@@ -113,10 +139,14 @@ def main() -> int:
             "carries what there was and not what was wanted."
         )
     print(
-        "\nRun this ONCE more after day 3 and compare. Two identical readings "
-        "either side\nof the block are the only evidence available that the "
-        "stack did not move under\nit - and if a key above changes between "
-        "days, THAT is the answer FINDING 18\nasked for."
+        "\nWhat two readings either side of a block are worth, honestly: only "
+        "as much as\nthe IDENTITY above carries. If that is empty, two "
+        "identical readings are two\nidentical echoes and say nothing about "
+        "the stack - which is what happened across\nBlock E, where the probe "
+        "additionally sent the concrete model name instead of\nthe alias and "
+        "so never touched the sweep path at all (correction 4). If a key in\n"
+        "the IDENTITY ever changes between days, THAT is the answer FINDING 18 "
+        "asked for."
     )
     return 0
 

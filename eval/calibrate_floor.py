@@ -166,6 +166,18 @@ def main(argv: list[str] | None = None) -> int:
     # What it was calibrated FROM, not merely that it was. `calibrated_from`
     # already names one file; this names the dates, because the claim being
     # made is about days and not about a run.
+    # Block E correction 7, 2026-08-28. This writer added the four keys below
+    # and left `calibrated_from` alone, so after the first successful write a
+    # stale pointer at eval/sweeps/20260810T191414-*.json — the sweep whose
+    # calibration was INVALIDATED hours after being set, see
+    # calibration_invalidated — stood beside `calibrated: true` and read as
+    # this floor's provenance. Two provenance keys disagreeing, one of them
+    # naming the discredited archive, is worse than either alone. Maintained
+    # here so it cannot drift again; the archives themselves are named in
+    # calibrated_from_sweeps, which is where a reader should look.
+    data["calibrated_from"] = (
+        "see calibrated_from_sweeps — maintained by eval/calibrate_floor.py, "
+        f"last written {data['calibrated_at']}")
     data["calibrated_from_dates"] = verdict["dates"]
     data["calibrated_from_sessions"] = verdict["distinct_sessions"]
     data["calibrated_stability"] = {

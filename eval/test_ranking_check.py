@@ -1701,6 +1701,41 @@ def test_the_query_rendering_rule_cannot_see_the_answer() -> None:
           and "response_ms" not in hidden,
           "response_ms moves on every call and is not provenance")
 
+    # ---- Block E corrections 3 and 4, 2026-08-28 -------------------------
+    #
+    # What is RECORDED and what can IDENTIFY A STACK are two different sets,
+    # and Block E archived 396 runs without the distinction. `id` is a fresh
+    # uuid per call, so counting recorded stacks reported 99 distinct stacks on
+    # a 99-call day under a heading that reads like a provider changing under
+    # the run. `model` is the echo of the string SENT — the sweep sends the
+    # alias and the archives duly say `chat-default` — so it cannot move unless
+    # the caller moves it, and a key that cannot vary independently of the
+    # request is not provenance.
+    from answer.translate import serving_stack_identity  # noqa: E402
+
+    check("GUARD the per-call `id` is excluded from the stack identity",
+          "id" not in serving_stack_identity({"id": "chatcmpl-9",
+                                              "system_fingerprint": "fp"}),
+          "a uuid per call made every sweep report one distinct stack per call")
+    check("GUARD the echoed `model` is excluded from the stack identity",
+          "model" not in serving_stack_identity({"model": "chat-default",
+                                                 "system_fingerprint": "fp"}),
+          "it is the string this repository sent, echoed back, in every path")
+    check("a key that could actually identify a stack survives into the identity",
+          serving_stack_identity({"id": "c", "model": "m",
+                                  "system_fingerprint": "fp_abc",
+                                  "custom_llm_provider": "anthropic"})
+          == {"system_fingerprint": "fp_abc",
+              "custom_llm_provider": "anthropic"})
+    check("GUARD a Block E archive's recorded stack has an EMPTY identity — "
+          "which is what the 99-distinct-stacks line was counting",
+          serving_stack_identity({"id": "chatcmpl-4abe06e0",
+                                  "model": "chat-default"}) == {},
+          "decision 3a said this in words before day 1; it is now in code")
+    check("an absent stack is an empty identity, not an error",
+          serving_stack_identity(None) == {}
+          and serving_stack_identity({}) == {})
+
     class _Plain:
         """Answers once, carrying a fingerprint."""
         def __init__(self):

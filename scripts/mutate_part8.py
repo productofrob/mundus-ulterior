@@ -56,7 +56,17 @@ CHILD_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8",
              "PYTHONDONTWRITEBYTECODE": "1"}
 GOLDSET = ROOT / "eval" / "goldset.py"
 EVAL = ROOT / "eval" / "answer_eval.py"
-SOURCES = (GOLDSET, EVAL)
+# Block E correction 5, 2026-08-28. Added as a third source so that
+# --progress gets what every other piece of control flow here gets: a
+# behavioural test, and a mutation proving the test can fail. It goes LAST so
+# that nothing about the existing precedence between goldset.py and
+# answer_eval.py moves — see the note on ambiguity below, and the 2026-08-24
+# mutation that resolved into the wrong file in silence.
+#
+# It is LF where eval/goldset.py is CRLF; the harness reads and restores each
+# source under its own newline and compares BYTES, so this costs nothing.
+SWEEP = ROOT / "eval" / "run_answer_sweep.py"
+SOURCES = (GOLDSET, EVAL, SWEEP)
 
 
 def _purge_bytecode() -> None:
@@ -495,8 +505,22 @@ def _has_content_assertion(raw: dict) -> bool:""")],
     # was built to measure rather than after.
     (
         # Part 8's archived grid is two prompt versions and it is on disk.
+        # RE-ANCHORED 2026-08-28, Block E correction 5. `if len(versions) > 1:`
+        # became ambiguous the moment eval/run_answer_sweep.py joined SOURCES —
+        # it has a line of its own at run_answer_sweep.py:488, printing the
+        # two-version comparison. Left alone this is the 2026-08-24 defect
+        # exactly: first-source-wins would have moved the mutation onto the
+        # sweep's PRINTING and left the decomposition's refusal unwatched while
+        # the harness reported only that its guard had not failed. Caught by
+        # this harness's own ambiguity check, which is what it is for. Anchored
+        # on the preceding line, which is unique to answer_eval.py.
         "two prompt versions are pooled into one decomposition",
-        [("""    if len(versions) > 1:""", """    if False:""")],
+        [("""    without = len(rows) - len(dated)
+
+    if len(versions) > 1:""",
+          """    without = len(rows) - len(dated)
+
+    if False:""")],
     ),
     (
         # The balanced estimators are only these expressions on a balanced
@@ -590,6 +614,58 @@ def _has_content_assertion(raw: dict) -> bool:""")],
         # this is the other end.
         "a sweep archived incomplete calibrates the floor anyway",
         [("""        if sweep.get("incomplete"):""", """        if False:""")],
+    ),
+    # ---- Block E correction 5, 2026-08-28 --------------------------------
+    # A 99-call sweep that shows the operator nothing for ten minutes. Days 1,
+    # 2 and 3 were each watched by counting archive files from a second window,
+    # which works and should not have been necessary. Held back until day 3 was
+    # committed because `*>` was itself under observation as FINDING 10's guard
+    # on the answer path.
+    (
+        # The capture is the point. `*>` takes every stream, so progress on
+        # stdout lands in the archived transcript and makes it incomparable
+        # with days 1-3.
+        "progress is written to stdout, where the capture would swallow it",
+        [("""              f"{version} run {attempt}/{repeat}", file=sys.stderr, flush=True)""",
+          """              f"{version} run {attempt}/{repeat}", file=sys.stdout, flush=True)""")],
+    ),
+    (
+        # Unflushed progress arrives in one block when the process exits,
+        # which is precisely the failure it was added to fix.
+        "the progress line is never flushed, so it arrives all at once at the end",
+        [("""              f"{version} run {attempt}/{repeat}", file=sys.stderr, flush=True)""",
+          """              f"{version} run {attempt}/{repeat}", file=sys.stderr)"""),
+         ("""            print(f"[retry] {len(failed)} cell(s), over the same evidence",
+                  file=sys.stderr, flush=True)""",
+          """            print(f"[retry] {len(failed)} cell(s), over the same evidence",
+                  file=sys.stderr)""")],
+    ),
+    (
+        # The counter stops advancing on exactly the run being watched most
+        # closely, and a stalled sweep becomes indistinguishable from a slow one.
+        "a FAILED cell does not tick",
+        [("""                    _tick(case.id, version, attempt, "FAILED")""",
+          """                    pass""")],
+    ),
+    (
+        # --progress must be opt-in, or days 1-3 stop being comparable with
+        # everything run after this correction.
+        "progress is printed whether or not --progress was given",
+        [("""        if not progress:
+            return""",
+          """        if False:
+            return""")],
+    ),
+    (
+        # Without it a sweep that has finished its last cell and is retrying
+        # looks like a sweep that has hung.
+        "the retry pass does not announce itself",
+        [("""        if progress:
+            print(f"[retry] {len(failed)} cell(s), over the same evidence",
+                  file=sys.stderr, flush=True)""",
+          """        if False:
+            print(f"[retry] {len(failed)} cell(s), over the same evidence",
+                  file=sys.stderr, flush=True)""")],
     ),
 ]
 
@@ -688,6 +764,16 @@ EXPECTED = [
     "GUARD a demoted case that is not tracked as a known failure is refused",
     "GUARD a sweep archived INCOMPLETE cannot calibrate, even with the full "
     "case set",
+
+    # Block E correction 5, 2026-08-28 — in the order above.
+    "--progress writes ONE line per completed cell, and there were four",
+    "the progress line is flushed — buffered progress is not progress",
+    "GUARD a FAILED cell ticks as well as a successful one, and says which it "
+    "was",
+    "GUARD without --progress the sweep writes nothing to stderr — a plain run "
+    "is unchanged, and days 1-3 remain comparable",
+    "the retry pass announces itself, so a sweep that appears to have stopped "
+    "at the last cell is legible",
 ]
 
 

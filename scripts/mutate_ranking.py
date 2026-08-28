@@ -711,6 +711,33 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         "_chat is given a serving-stack dict and does not fill it",
         [("""            if provenance is not None:""", """            if False:""")],
     ),
+    # ---- Block E corrections 3 and 4, 2026-08-28 -------------------------
+    # The distinction the block archived 396 runs without: what is RECORDED
+    # versus what can IDENTIFY A STACK.
+    (
+        # This is the defect as it actually shipped: a fresh uuid per call in
+        # the identity, so a 99-call day reported 99 distinct stacks under a
+        # heading that reads like a provider changing mid-run.
+        "the per-call `id` is left in the stack identity",
+        [("""CALL_SCOPED_STACK_KEYS = ("id", "model")""",
+          """CALL_SCOPED_STACK_KEYS = ("model",)""")],
+    ),
+    (
+        # Worse than useless the other way: `model` is the string SENT, echoed
+        # back, so leaving it in makes two genuinely different stacks look
+        # identical whenever the caller sent the same alias — which is always.
+        "the echoed `model` is left in the stack identity",
+        [("""CALL_SCOPED_STACK_KEYS = ("id", "model")""",
+          """CALL_SCOPED_STACK_KEYS = ("id",)""")],
+    ),
+    (
+        # The projection stops projecting, which is the pre-correction state
+        # dressed up as a function.
+        "the identity projection returns the recorded stack unchanged",
+        [("""    return {key: value for key, value in (stack or {}).items()
+            if key not in CALL_SCOPED_STACK_KEYS}""",
+          """    return dict(stack or {})""")],
+    ),
 ]
 
 EXPECTED = [
@@ -829,6 +856,12 @@ EXPECTED = [
     "GUARD a serving-stack key the gateway did not populate is OMITTED, never "
     "written as null",
     "GUARD _chat fills the serving-stack out-parameter it was given",
+
+    # Block E corrections 3 and 4, 2026-08-28 — in the order above.
+    "GUARD the per-call `id` is excluded from the stack identity",
+    "GUARD the echoed `model` is excluded from the stack identity",
+    "GUARD a Block E archive's recorded stack has an EMPTY identity — which "
+    "is what the 99-distinct-stacks line was counting",
 ]
 
 

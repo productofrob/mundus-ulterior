@@ -392,9 +392,15 @@ def _serving_stack(response) -> dict:
     archives. `python scripts/probe_serving_stack.py` is what says which, and
     it costs one chat call.
 
-    `model` is kept even though the alias is stored beside it, because they are
-    not the same fact: one is what was asked for, the other is what the
-    provider says it served.
+    `model` is kept, but CORRECTION 4 (2026-08-28) records what it is not. It is
+    the string this repository SENT, echoed back, in every path. The sweep calls
+    assemble with no `model=`, so `_chat` gets DEFAULT_MODEL and all 396 Block E
+    archives carry `"model": "chat-default"`. `scripts/probe_serving_stack.py`
+    sent `resolve_model_label()` instead - the concrete name it had just read out
+    of gateway/config.yaml - and the gateway echoed THAT. Neither reading came
+    from the provider, and neither can move unless the caller moves it. It is
+    recorded because it states which string this call was made with; it is NOT
+    provenance, and `serving_stack_identity` excludes it for that reason.
     """
     out: dict = {}
     for key in ("id", "model", "system_fingerprint", "service_tier"):
@@ -407,6 +413,44 @@ def _serving_stack(response) -> dict:
             if hidden.get(key) is not None:
                 out[key] = hidden[key]
     return out
+
+
+# Keys unique to a CALL rather than to the stack that served it, and therefore
+# excluded from the stack IDENTITY. Block E corrections 3 and 4, 2026-08-28.
+#
+# `id` is a fresh uuid on every response. Including it in the identity made
+# every sweep report one distinct stack per call - 99 of them on a 99-call day
+# - under a heading that reads like a provider changing mid-run. It stays on
+# the row and in the per-run archive, where it traces one archived answer back
+# to one request, which is the only thing it is good for.
+#
+# `model` is the echo of the string sent; see `_serving_stack` above. A key
+# that cannot vary independently of the request is not provenance. Leaving it
+# in the identity is worse than useless: it would make two genuinely different
+# stacks look identical whenever the caller sent the same alias, which is
+# always.
+CALL_SCOPED_STACK_KEYS = ("id", "model")
+
+
+def serving_stack_identity(stack: dict | None) -> dict:
+    """The part of a recorded serving stack that could identify a STACK.
+
+    Applied when counting distinct stacks, so the count answers "did the thing
+    serving this sweep change" rather than "how many calls were made".
+
+    Applied at READ time and not at record time, deliberately: the 396 runs
+    already archived by Block E are then re-read under the same rule as
+    anything recorded after it, and no archive has to be rewritten to be
+    counted correctly.
+
+    On this gateway the result is EMPTY, and that is decision 3a's null result
+    expressed in code instead of in a sentence - nothing the gateway returns
+    distinguishes provider drift from sampling variance. An empty identity is
+    reported as "nothing distinguishing", never as one stack: a sweep served by
+    two stacks that both return nothing would otherwise read as one.
+    """
+    return {key: value for key, value in (stack or {}).items()
+            if key not in CALL_SCOPED_STACK_KEYS}
 
 
 def _chat(

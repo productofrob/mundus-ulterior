@@ -248,3 +248,40 @@ was reachable. `muziris-cargo-akananuru` still sits at rank 310.
 
 The clause that rode with those two since Part 7 was retired on 2026-08-26.
 Do not carry it forward.
+
+---
+
+## CORRECTION, added 2026-08-28. The original text above is unaltered.
+
+**The claim in "The three things day 2 was told to watch" that non-Latin
+characters survived day 2's capture is wrong on both halves.** It reads:
+*"Non-Latin characters survived the capture again. 42,316 bytes through a `*>`
+redirect on PowerShell 5.1, no `UnicodeEncodeError`."*
+
+```
+capture         bytes    non-ASCII   beyond ASCII punctuation
+day 1           42140      41   — x40, … x1                 0
+day 2           42316     120   Γ x40  Ç x40  ö x39  ª x1
+day 3           42156      40   — x39, … x1                 0
+```
+
+`ΓÇö` is UTF-8 `E2 80 94` read back as CP850 — a mangled em-dash — and `ΓÇª` is
+a mangled ellipsis. **Day 2's capture is mojibake.** Days 1 and 3 hold the same
+characters intact. No `UnicodeEncodeError` was raised on any of the three,
+which is the failure mode FINDING 10 exists for: it did not throw, it corrupted
+silently.
+
+The watch item was also miscast from the start. **No character beyond ASCII
+punctuation appears in ANY of the three captures**, because the sweep prints
+case ids, PASS/FAIL rows and serving-stack JSON and nothing else. What days 1
+and 2 confirmed was em-dashes, not Chinese, Tamil or runes. The Chinese in
+`weilue-chinese-quotation` reached the ANSWER and the archives, which is
+FINDING 20 and stands; it never reached the transcript.
+
+**No measurement is affected.** The per-run and sweep archives are JSON written
+to disk by Python with an explicit encoding and never pass through the console.
+Every digest matches at both ends of every sweep.
+
+Recorded here rather than by editing the text above, on the precedent set when
+FINDING 19 was withdrawn without rewriting `BLOCK_E_DAY1_RESULT.md`. Carried as
+owed correction 6 in `BLOCK_E_RESULT.md` and applied 2026-08-28.

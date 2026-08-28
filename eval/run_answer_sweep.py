@@ -101,13 +101,39 @@ def _resolved(answer) -> int:
 
 def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
               k: int, max_sources: int, profiles: dict, pause: float,
-              dry_run: bool, write: bool, session: dict) -> dict:
+              dry_run: bool, write: bool, session: dict,
+              progress: bool = False) -> dict:
     from ingest.embed import EmbeddingError, embed_query, resolve_model_label
 
     model_label = translate.resolve_model_label()
     embed_model = resolve_model_label()
     results: list[dict] = []
     evidence_report: list[dict] = []
+
+    # Block E correction 5, 2026-08-28. A 99-call sweep took ten minutes and
+    # showed the operator NOTHING until it exited: `*>` redirects every stream
+    # and Python buffers stdout when it is not a terminal, so the console is
+    # dead either way. Days 1, 2 and 3 were all watched by counting archives
+    # from a second window, which works and should not have been necessary.
+    #
+    # stderr, and flush=True, both on purpose. `*>` still captures everything,
+    # so a redirected run loses nothing; an ordinary run becomes watchable; and
+    # a run piped somewhere keeps its progress out of the data on stdout.
+    #
+    # NOT applied before day 3: the redirect was itself under observation as
+    # FINDING 10's guard on the answer path, and changing the invocation on the
+    # one day whose purpose was to replicate the other two would have made its
+    # capture the only one produced a different way.
+    total_cells = len(cases) * len(prompt_versions) * repeat
+    done = 0
+
+    def _tick(case_id: str, version: str, attempt: int, outcome: str) -> None:
+        nonlocal done
+        done += 1
+        if not progress:
+            return
+        print(f"[{done:>4}/{total_cells}] {outcome:<6} {case_id} "
+              f"{version} run {attempt}/{repeat}", file=sys.stderr, flush=True)
 
     # FINDING 14, 2026-08-24. D1 made run_answer record the corpus version in
     # the answers row and the per-run archive, and this file was never given
@@ -284,6 +310,7 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                 try:
                     results.append(
                         _one_run(case, passages, version, attempt))
+                    _tick(case.id, version, attempt, "ok")
                 except Exception as exc:  # noqa: BLE001 — provider errors are untyped
                     # Not re-raised, and not swallowed. The remaining cases are
                     # still worth measuring, and abandoning here would GUARANTEE
@@ -296,6 +323,7 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                     # The provider's own words, truncated. "RuntimeError"
                     # alone sends a reader to debug the harness, which is the
                     # same misdirection FINDING 15's true-but-wrong report made.
+                    _tick(case.id, version, attempt, "FAILED")
                     print(f"  FAILED {version:<14} run {attempt}/{repeat}  "
                           f"{type(exc).__name__}: {str(exc)[:120]}"
                           f" — will retry once at the end")
@@ -313,6 +341,9 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
     if failed and not dry_run:
         print(f"\n{len(failed)} call(s) failed. Retrying each ONCE, over the "
               f"same evidence.")
+        if progress:
+            print(f"[retry] {len(failed)} cell(s), over the same evidence",
+                  file=sys.stderr, flush=True)
         still: list[dict] = []
         for item in failed:
             case = case_by_id[item["case"]]
@@ -343,9 +374,19 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
     # Distinct, sorted, and named — the same treatment corpus_version gets at
     # both ends of the sweep, and for the same reason: the claim Block E makes
     # is that nothing moved underneath it.
-    stacks = sorted({json.dumps(row["serving_stack"], sort_keys=True,
-                                ensure_ascii=False)
-                     for row in results if row.get("serving_stack")})
+    # Block E corrections 3 and 4, 2026-08-28. Counted over the stack
+    # IDENTITY, not the recorded stack: `id` is unique per call and `model` is
+    # the echo of the string sent, so counting the raw dicts reported one
+    # distinct stack per call — 99 on a 99-call day — under a heading that
+    # reads like a provider changing mid-run. Both are still on every row and
+    # in every per-run archive. An EMPTY identity is dropped rather than
+    # counted as one stack: on this gateway every identity is empty, and
+    # "nothing distinguishing" is decision 3a's answer, not "one, unchanged".
+    stacks = sorted({json.dumps(identity, sort_keys=True, ensure_ascii=False)
+                     for identity in (
+                         translate.serving_stack_identity(row.get("serving_stack"))
+                         for row in results)
+                     if identity})
     return {
         "results": results,
         "serving_stacks": [json.loads(s) for s in stacks],
@@ -501,6 +542,11 @@ def main(argv: list[str] | None = None) -> int:
                         help="a note attached to this session's identity, e.g. "
                              "'D4 pilot day 1'. The session id and UTC date "
                              "are recorded whether or not this is given.")
+    parser.add_argument("--progress", action="store_true",
+                        help="one line per completed cell to stderr, flushed. "
+                             "A redirected run still captures everything; a "
+                             "plain run becomes watchable. Block E correction "
+                             "5.")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
@@ -548,7 +594,7 @@ def main(argv: list[str] | None = None) -> int:
         outcome = run_sweep(
             conn, cases, versions, args.repeat, args.k, args.max_sources,
             profiles, args.pause, args.dry_run, write=not args.no_write,
-            session=session,
+            session=session, progress=args.progress,
         )
 
     if "error" in outcome:
