@@ -110,6 +110,62 @@ DEFAULT_ARM = {"model_alias": translate.DEFAULT_MODEL, "temperature": 0.0}
 # offline suite that has no database and no gateway.
 
 
+def floor_scope_arm(floor: dict) -> dict:
+    """The arm `floor.json` calibrates from, and HOW that is known. Pure.
+
+    The arm clause is OPTIONAL - `eval/goldset.py` refuses a half-declared one
+    and permits none at all - so a floor may make no claim about arms. When it
+    makes none, the only test left is this runner's own default, and that is
+    reported as `assumed` rather than `declared`: the same distinction
+    `answer_eval.sweep_arm` draws between an arm read off a file and one
+    reconstructed from what the code on the day could have sent.
+    """
+    scope = ((floor.get("calibration_scope") or {}).get("arm")) or {}
+    if not scope:
+        return {**DEFAULT_ARM,
+                "known": "assumed: this floor declares no arm"}
+    return {"model_alias": str(scope.get("model_alias")),
+            "temperature": float(scope.get("temperature")),
+            "known": "declared"}
+
+
+def floor_applies(arm: dict, floor: dict) -> tuple[bool, dict]:
+    """Does this floor govern a sweep on this arm? Pure; no I/O.
+
+    Ruling 36 says an arm is read BESIDE the floor and never inside it, and
+    until 2026-08-28 one place had not heard it. `main` computed `check_floor`
+    for whatever arm had just run, printed MEETS/BELOW in the words of a real
+    verdict, archived it under `floor`, and returned it in the EXIT CODE - so
+    the sonnet arm would have exited 1 for failing a floor calibrated on greedy
+    haiku. `check_floor` is arm-blind on purpose: it is pure and it scores a
+    summary. The CALLER is what has to know which arm this floor governs.
+
+    This is the incomplete-sweep clause one dimension across. A floor met on a
+    different denominator is not a floor met, and the arm is a denominator.
+    """
+    scope = floor_scope_arm(floor)
+    applies = (scope["model_alias"] == arm["model_alias"]
+               and float(scope["temperature"]) == float(arm["temperature"]))
+    return applies, scope
+
+
+def exit_code(verdicts: dict, floor_not_applicable: dict | None) -> int:
+    """What leaves the process. Pure.
+
+    `all()` over an empty dict is True, so every empty-verdict path exits 0 -
+    correct by accident for the incomplete sweep, which exits 2 before it gets
+    here, and about to become correct by accident for a second reason. A 0 with
+    no verdict behind it has to be a NAMED 0; anything else exits 2, because a
+    sweep that computed no verdict and cannot say why has not measured the
+    floor and must not report that it met it.
+    """
+    if floor_not_applicable:
+        return 0
+    if not verdicts:
+        return 2
+    return 0 if all(v["meets_floor"] for v in verdicts.values()) else 1
+
+
 def _resolved(answer) -> int:
     return sum(1 for s in answer.grounding.quote_spans if s.abs_start is not None)
 
@@ -722,8 +778,22 @@ def main(argv: list[str] | None = None) -> int:
     # floor that has stopped being measurable; this is the same rule one level
     # up.
     incomplete = outcome.get("incomplete") or []
-    verdicts = ({} if incomplete
-                else answer_eval.check_floor(summary, load_floor(), args.repeat))
+    # Ruling 36, in the one place it had not reached. A verdict computed for a
+    # foreign arm is a floor claim about an experiment this floor does not
+    # govern, printed in the words of a real verdict and archived under the
+    # same key. So a foreign arm gets no verdict AT ALL, rather than one a
+    # later reader has to know to discard.
+    floor_doc = load_floor()
+    applies, scope_arm = floor_applies(arm, floor_doc)
+    floor_not_applicable = None if applies else {
+        "reason": "ruling 36: this sweep's arm is not the arm this floor "
+                  "calibrates from, so no floor verdict is computed, printed "
+                  "or archived for it",
+        "floor_scope_arm": scope_arm,
+        "this_arm": arm,
+    }
+    verdicts = ({} if (incomplete or floor_not_applicable)
+                else answer_eval.check_floor(summary, floor_doc, args.repeat))
 
     session = close_session(session)
     if session["crossed_midnight_utc"]:
@@ -760,7 +830,11 @@ def main(argv: list[str] | None = None) -> int:
              # calls, without recounting rows.
              "incomplete": incomplete,
              "retried": outcome.get("retried") or [],
-             "floor": verdicts or None},
+             "floor": verdicts or None,
+             # Named, never absent, and never confusable with a verdict.
+             # `"floor": null` alone reads as "not computed"; what a reader
+             # needs is WHICH arm this was and which arm the floor is for.
+             "floor_not_applicable": floor_not_applicable},
             indent=2, ensure_ascii=False), encoding="utf-8")
         print(f"\nsweep archived: {path}")
 
@@ -800,6 +874,24 @@ def main(argv: list[str] | None = None) -> int:
                 "not a shorter sweep.\n  eval.decompose will refuse this day's "
                 "grid by name for the same reason."
             )
+        elif floor_not_applicable:
+            print("\n" + "=" * 72)
+            print("NO FLOOR VERDICT - this sweep is on another arm")
+            print("=" * 72)
+            print(f"  this floor calibrates from  "
+                  f"{scope_arm['model_alias']} at temperature "
+                  f"{float(scope_arm['temperature']):g}"
+                  f"   ({scope_arm['known']})")
+            print(f"  this sweep ran on           "
+                  f"{arm['model_alias']} at temperature "
+                  f"{float(arm['temperature']):g}")
+            print(
+                "\n  Ruling 36: an arm is read BESIDE this floor and never "
+                "inside it. What\n  this sweep reports is its own - the "
+                "content pass rate, the stability\n  figures and the per-case "
+                "cells above. None of them is a floor verdict,\n  and the exit "
+                "code does not carry one."
+            )
         else:
             answer_eval.print_floor(verdicts)
 
@@ -823,7 +915,7 @@ def main(argv: list[str] | None = None) -> int:
         print("=" * 72)
         return 2
 
-    return 0 if all(v["meets_floor"] for v in verdicts.values()) else 1
+    return exit_code(verdicts, floor_not_applicable)
 
 
 if __name__ == "__main__":

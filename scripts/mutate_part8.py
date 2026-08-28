@@ -754,6 +754,49 @@ def _has_content_assertion(raw: dict) -> bool:""")],
                                 if str(phrase).casefold()
                                 not in raw["question"].casefold() else set())""")],
     ),
+    # ---- Ruling 36 in the runner, 2026-08-28 -----------------------------
+    # The arm was already refused as a calibration INPUT. It was never refused
+    # as a floor SUBJECT: `main` computed a verdict for whatever arm had run,
+    # printed it in the words of a real one, archived it under `floor` and
+    # returned it in the exit code. Declared and guarded BEFORE the sonnet arm
+    # runs, because the arm archive is permanent.
+    (
+        "this floor judges every arm, not the one it was calibrated on",
+        [("""    applies = (scope["model_alias"] == arm["model_alias"]
+               and float(scope["temperature"]) == float(arm["temperature"]))""",
+          """    applies = True""")],
+    ),
+    (
+        # Half the pair is the more likely regression, and it is the half the
+        # sonnet arm actually needs: chat-strong at 1 and chat-default at 1
+        # are both foreign, and only one of them differs by alias.
+        "only the alias is compared, so another temperature is judged anyway",
+        [("""    applies = (scope["model_alias"] == arm["model_alias"]
+               and float(scope["temperature"]) == float(arm["temperature"]))""",
+          """    applies = scope["model_alias"] == arm["model_alias"]""")],
+    ),
+    (
+        # The arm clause is optional in floor.json. Presenting this runner's
+        # default as the file's own statement is the reconstruction laundered
+        # into a reading, one level up from where sweep_arm refuses it.
+        "a floor declaring no arm presents the runner default as declared",
+        [("""    if not scope:
+        return {**DEFAULT_ARM,
+                "known": "assumed: this floor declares no arm"}""",
+          """    if not scope:
+        return {**DEFAULT_ARM, "known": "declared"}""")],
+    ),
+    (
+        # The half that leaves the process. A verdict suppressed in the report
+        # and still returned by main is still a verdict.
+        "the exit code carries a verdict for an arm the floor does not govern",
+        [("""    if floor_not_applicable:
+        return 0
+    if not verdicts:
+        return 2""",
+          """    if not verdicts:
+        return 2""")],
+    ),
 ]
 
 EXPECTED = [
@@ -881,6 +924,16 @@ EXPECTED = [
     "load time",
     "GUARD word order does not rescue it — the same vocabulary in a different "
     "arrangement is the same substring hazard",
+
+    # Ruling 36 in the runner, in the order above.
+    "GUARD a sweep on another ALIAS gets no floor verdict - an arm is read "
+    "BESIDE this floor and never inside it",
+    "GUARD the same alias at another TEMPERATURE gets none either - the arm "
+    "is the pair, not the model",
+    "GUARD a floor that declares no arm SAYS the arm is assumed, rather than "
+    "presenting this runner's default as the file's own",
+    "GUARD a foreign arm cannot exit 1 - a floor that does not govern it "
+    "cannot be failed by it",
 ]
 
 

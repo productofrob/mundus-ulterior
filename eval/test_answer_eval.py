@@ -1755,7 +1755,11 @@ def test_a_failed_chat_call_does_not_take_the_day() -> None:
     # and in calibration_eligibility.
     source = (Path(__file__).resolve().parent
               / "run_answer_sweep.py").read_text(encoding="utf-8")
-    expect("verdicts = ({} if incomplete" in source,
+    # Widened 2026-08-28 with ruling 36's second reason to compute no verdict.
+    # The clause is now `incomplete or floor_not_applicable`, and this check
+    # names both halves so that dropping either one fails here rather than
+    # passing on a substring of the other.
+    expect("verdicts = ({} if (incomplete or floor_not_applicable)" in source,
            "GUARD no floor verdict is computed for an incomplete sweep — it "
            "would be a floor met on a different denominator, in the same words")
 
@@ -2103,6 +2107,70 @@ def test_the_promotion_candidate_state() -> None:
            "every sweep that also said nothing")
 
 
+def test_a_foreign_arm_is_not_a_subject_of_this_floor() -> None:
+    """Ruling 36 in the RUNNER, which is where it had not reached.
+
+    `calibration_eligibility` already refuses a foreign arm as a calibration
+    INPUT. Nothing refused it as a floor SUBJECT. `run_answer_sweep.main`
+    computed `check_floor` for whatever arm had just run, printed MEETS THE
+    FLOOR / BELOW THE FLOOR in the words of a real verdict, archived it under
+    `floor`, and returned it in the exit code - so the sonnet arm would have
+    exited 1 for failing a floor calibrated on greedy haiku, and its permanent
+    archive would carry a verdict a later reader has to know to discard.
+
+    `check_floor` is arm-blind on purpose: it is pure and it scores a summary.
+    The caller is what has to know. Tested on the three pure functions that
+    caller now uses, so this needs no database and no gateway.
+    """
+    print("\na foreign arm is not a subject of this floor")
+
+    from eval import run_answer_sweep as sweep_mod
+
+    floor = load_floor()
+    declared = floor["calibration_scope"].get("arm") or {}
+    mine = {"model_alias": declared["model_alias"],
+            "temperature": float(declared["temperature"])}
+
+    applies, scope = sweep_mod.floor_applies(mine, floor)
+    expect(applies and scope["known"] == "declared",
+           "the arm this floor was calibrated on is judged by it exactly as "
+           "before")
+
+    sonnet = {"model_alias": "chat-strong", "temperature": 1.0}
+    expect(not sweep_mod.floor_applies(sonnet, floor)[0],
+           "GUARD a sweep on another ALIAS gets no floor verdict - an arm is "
+           "read BESIDE this floor and never inside it")
+
+    hot = {"model_alias": mine["model_alias"], "temperature": 1.0}
+    expect(not sweep_mod.floor_applies(hot, floor)[0],
+           "GUARD the same alias at another TEMPERATURE gets none either - "
+           "the arm is the pair, not the model")
+
+    # The arm clause is optional in floor.json. A floor that declares none
+    # makes no claim about arms, and the fallback must not dress this runner's
+    # own default up as the file's statement - the same `recorded` vs
+    # `reconstructed` line sweep_arm draws one level down.
+    armless = {**floor, "calibration_scope": {
+        k: v for k, v in floor["calibration_scope"].items() if k != "arm"}}
+    applies, scope = sweep_mod.floor_applies(mine, armless)
+    expect(applies and str(scope["known"]).startswith("assumed"),
+           "GUARD a floor that declares no arm SAYS the arm is assumed, "
+           "rather than presenting this runner's default as the file's own")
+
+    # And the half that leaves the process. A verdict suppressed in the report
+    # but still returned by `main` is a verdict, and CI reads exit codes.
+    expect(sweep_mod.exit_code({}, {"reason": "another arm"}) == 0,
+           "GUARD a foreign arm cannot exit 1 - a floor that does not govern "
+           "it cannot be failed by it")
+    expect(sweep_mod.exit_code({}, None) == 2,
+           "GUARD an empty verdict with no stated reason exits 2 - `all([])` "
+           "is True, and a floor nobody measured must not report as met")
+    expect(sweep_mod.exit_code({"p7": {"meets_floor": False}}, None) == 1
+           and sweep_mod.exit_code({"p7": {"meets_floor": True}}, None) == 0,
+           "the default arm still fails the process when it is below the "
+           "floor, and passes when it is not")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -2130,6 +2198,7 @@ def main() -> int:
     test_calibration_refuses_too_few_days()
     test_the_calibration_scope_and_demotions()
     test_the_arm_is_part_of_the_scope()
+    test_a_foreign_arm_is_not_a_subject_of_this_floor()
     test_the_promotion_candidate_state()
     test_an_exclusion_cannot_be_the_question()
     test_skz_titulature_is_tracked_rather_than_corrected_away()
