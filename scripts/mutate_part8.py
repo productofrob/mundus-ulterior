@@ -738,6 +738,22 @@ def _has_content_assertion(raw: dict) -> bool:""")],
                     arm.get("model_alias", "")).strip():""",
           """            if False:""")],
     ),
+    # ---- Ruling 41, 2026-08-28 -------------------------------------------
+    (
+        "an exclusion may be assembled from the case's own question",
+        [("""                if phrase_words and phrase_words <= question_words:""",
+          """                if False:""")],
+    ),
+    (
+        # Comparing the raw strings instead of their content words lets the
+        # same vocabulary through in a different arrangement, which is the
+        # form oc-eo-cattigara's other two exclusions took.
+        "the rule compares whole strings, so reordering the question escapes it",
+        [("""                phrase_words = _content_words(str(phrase), stopwords)""",
+          """                phrase_words = ({str(phrase).casefold()}
+                                if str(phrase).casefold()
+                                not in raw["question"].casefold() else set())""")],
+    ),
 ]
 
 EXPECTED = [
@@ -859,6 +875,12 @@ EXPECTED = [
     "GUARD a promotion candidate with no written bar is refused",
     "GUARD a half-declared arm clause is refused — it would admit every sweep "
     "that also said nothing",
+
+    # Ruling 41, in the order above.
+    "GUARD an exclusion assembled from the case's own question is refused at "
+    "load time",
+    "GUARD word order does not rescue it — the same vocabulary in a different "
+    "arrangement is the same substring hazard",
 ]
 
 

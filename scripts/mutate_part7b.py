@@ -192,6 +192,31 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
             if translation is not None and passage.english.kind in (""",
         )],
     ),
+    # ---- Ruling 40, 2026-08-28 ------------------------------------------
+    (
+        "the added-article branch is removed, and the quotation is absent again",
+        [("""        stripped = strip_added_article(norm_quote).strip(_EDGE_PUNCTUATION)""",
+          """        stripped = norm_quote""")],
+    ),
+    (
+        # The C1a argument, one class along: a span whose label overstates what
+        # it found is the defect, not the match.
+        "an added article is recorded as an exact match",
+        [("""                norm_quote = stripped
+                match = "article_added\"""",
+          """                norm_quote = stripped
+                match = "exact\"""")],
+    ),
+    (
+        # The article is stripped from the quote but the span still measures
+        # the quote as written, so the offset runs two characters long and
+        # stops round-tripping.
+        "the span is measured against the article, not the characters found",
+        [("""            if position >= 0:
+                norm_quote = stripped""",
+          """            if position >= 0:
+                stripped = norm_quote""")],
+    ),
     (
         # The A4 defect restored: _merge assumes every chunk type carries
         # offsets. Part 7's does, Part 6's does not, and this is the branch that
@@ -222,6 +247,15 @@ EXPECTED = [
     "GUARD a merged section keeps exact offsets for its later chunks",
     "GUARD a later chunk of a merged section folds into its original",
     "GUARD a quote from a published translation resolves to characters on disk",
+
+    # Ruling 40, in the order above.
+    "GUARD a quotation the writer fitted with an added article resolves, and "
+    "is NAMED as such",
+    "GUARD an added article is not laundered into 'exact' — a viewer printing "
+    "exact beside two visibly different strings discredits itself, which is "
+    "C1a's own argument",
+    "GUARD the span covers the record's characters, not the article the writer "
+    "put in front of them",
     # Lives in answer.test_translate, which is why both suites now run.
     "without offsets, the pieces are joined with a single space",
 ]

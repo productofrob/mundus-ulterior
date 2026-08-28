@@ -55,7 +55,7 @@ import sys
 import time
 from pathlib import Path
 
-from answer import answer_store, assemble, translate
+from answer import answer_store, assemble, cite, translate
 from answer.run_answer import _archive
 from eval import answer_eval
 from eval.answer_eval import (SESSION_DATE_BASIS, close_session,
@@ -436,7 +436,12 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
         "arm": {"model_alias": model_alias,
                 "model_label": model_label,
                 "temperature": temperature,
-                "temperature_fallback": temperature_fallback},
+                "temperature_fallback": temperature_fallback,
+                # Ruling 40. What counted as a RESOLVED QUOTATION when this
+                # sweep was made. Archived spans are never re-resolved, so two
+                # sweeps under different contracts are two measurements — the
+                # arm's own defect, closed the same way.
+                "quote_resolution": cite.QUOTE_RESOLUTION_CONTRACT},
         "serving_stacks": [json.loads(s) for s in stacks],
         # A sweep with a hole in it is not a shorter sweep. Both are NAMED so
         # that the archive states which cells never returned rather than a

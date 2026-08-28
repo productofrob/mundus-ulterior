@@ -181,7 +181,6 @@
       "expected_behaviour": "correctly_refusable",
       "region": "outside",
       "expect_answer_excludes": [
-        "Antikythera mechanism was built",
         "second century BC",
         "1st century BC",
         "87 BC",
@@ -190,7 +189,8 @@
       "expect_refusal": true,
       "refusal_is_correct_because": "No seed record concerns the Antikythera mechanism. The corpus covers Roman contact with seven regions beyond the Mediterranean; the mechanism is from a wreck off Greece and is not in scope. A confident date here would be invented, not retrieved.",
       "archived_status": "PASSES on v1, v2 and v3 — all three refuse and none names a date.",
-      "note": "The excluded strings are the dangerous failure, not the merely wrong one: a fabricated date arriving attached to a citation. Across five live runs no answer has produced one."
+      "note": "The excluded strings are the dangerous failure, not the merely wrong one: a fabricated date arriving attached to a citation. Across five live runs no answer has produced one.",
+      "excludes_corrected_on": "2026-08-28, ruling 41. Dropped 'Antikythera mechanism was built', which is built entirely from this case's own question — a refusal reading \"the sources do not say when the Antikythera mechanism was built\" would have tripped it. This case is REQUIRED and passes 12/12; it was one refusal phrasing away from failing, and nothing would have said why. Found by the load-time guard written for oc-eo-cattigara, on the same morning, which is the whole argument for making a correction a rule."
     },
     {
       "id": "cana-frankincense-exports",
@@ -542,13 +542,15 @@
       "expected_behaviour": "correctly_refusable",
       "region": "Southeast Asia",
       "expect_answer_excludes": [
-        "Oc Eo was Cattigara",
         "identified as Cattigara",
-        "Ptolemy's Cattigara"
+        "Golden Chersonese",
+        "Geographia",
+        "Sinae"
       ],
       "expect_refusal": true,
       "refusal_is_correct_because": "seasia-02-oc-eo-site's original_text_excerpt covers the finds at the site and the tradition that the Romans first landed near Jiaozhou before travelling on to China in 166; it has no reference_translation. The word Cattigara appears in the record's title and its notes and in neither chunked field, and neither does Ptolemy. build_chunks emits chunks from original_text_excerpt and reference_translation only, so the identification the title advertises is not in evidence and cannot be weighed from the corpus.",
-      "note": "The dangerous failure here is subtler than a fabricated date. The Cattigara identification is genuinely debated in the literature, so a model drawing on its own knowledge could produce a careful, hedged, entirely defensible paragraph - and every sentence of it would be uncited or falsely cited, because the corpus holds nothing on the question. A hedged fabrication is still a fabrication, and this case exists because it is the kind a reader is least likely to catch."
+      "note": "The dangerous failure here is subtler than a fabricated date. The Cattigara identification is genuinely debated in the literature, so a model drawing on its own knowledge could produce a careful, hedged, entirely defensible paragraph - and every sentence of it would be uncited or falsely cited, because the corpus holds nothing on the question. A hedged fabrication is still a fabrication, and this case exists because it is the kind a reader is least likely to catch.",
+      "excludes_corrected_on": "2026-08-28, ruling 41. PREVIOUSLY ['Oc Eo was Cattigara', 'identified as Cattigara', \"Ptolemy's Cattigara\"]. Two of the three were built entirely from this case's OWN QUESTION, and a correct refusal restates its question: all twelve archived runs refused correctly and said \"…they do not address whether Óc Eo was identified as Ptolemy's Cattigara…\", which trips a substring test that cannot tell a claim from a refusal to make it. The case failed 0/12 across four sessions and three dates on that alone. The replacements are fabrication markers on the pattern the other seven correctly_refusable cases already use — Ptolemaic geography that appears nowhere in the seed corpus and that a refusal has no reason to utter. `expect_refusal: true` is what carries this case and it passed 12/12 throughout."
     },
     {
       "id": "hoby-cheirisophos-signature",
@@ -990,5 +992,56 @@
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",
-  "the_adulis_discriminator": "aksum-exports and adulis-exports are one instrument in two halves. Both assert the same content against the same document; only the question differs. A run in which the first fails and the second passes says the defect is in the question-to-retrieval-to-answer path and not in the corpus. A run in which BOTH fail says the corpus or the pipeline moved, and the discriminator has stopped working - which is a louder result than either case failing alone, and is why they must never be maintained separately. ENFORCED AT LOAD since D2, and no longer only here in prose: paired_with must be symmetric, the partner must exist, and the two assertion blocks must be identical. Deleting one half is now a load error rather than a silent halving of the discriminator, and drift between the two blocks is a load error rather than a pair that has quietly stopped discriminating between two questions and started discriminating between two tests."
+  "the_adulis_discriminator": "aksum-exports and adulis-exports are one instrument in two halves. Both assert the same content against the same document; only the question differs. A run in which the first fails and the second passes says the defect is in the question-to-retrieval-to-answer path and not in the corpus. A run in which BOTH fail says the corpus or the pipeline moved, and the discriminator has stopped working - which is a louder result than either case failing alone, and is why they must never be maintained separately. ENFORCED AT LOAD since D2, and no longer only here in prose: paired_with must be symmetric, the partner must exist, and the two assertion blocks must be identical. Deleting one half is now a load error rather than a silent halving of the discriminator, and drift between the two blocks is a load error rather than a pair that has quietly stopped discriminating between two questions and started discriminating between two tests.",
+  "refusal_exclusion_rule": {
+    "declared_on": "2026-08-28, ruling 41.",
+    "rule": "On a correctly_refusable case, an expect_answer_excludes entry whose content words ALL appear in the case's own question is refused at load time.",
+    "why": "A correct refusal restates the question it is refusing. An exclusion assembled from the question's own vocabulary therefore fires on the very answer the case exists to accept, and expect_answer_excludes is a bare substring test that cannot tell a claim from a refusal to make it. Teaching the matcher to see negation was considered and rejected: the prompt notes already record that a rule which has to be interpreted is a rule that will be broken, and inside a matcher it would be broken silently. The seven other correctly_refusable cases already exclude FABRICATION MARKERS — a name, a date, a technical term the corpus does not contain — and that is the pattern this rule makes compulsory.",
+    "stopwords": [
+      "a",
+      "an",
+      "the",
+      "of",
+      "in",
+      "on",
+      "at",
+      "to",
+      "for",
+      "and",
+      "or",
+      "was",
+      "were",
+      "is",
+      "are",
+      "be",
+      "been",
+      "by",
+      "with",
+      "from",
+      "does",
+      "do",
+      "did",
+      "what",
+      "which",
+      "who",
+      "whom",
+      "whose",
+      "why",
+      "how",
+      "when",
+      "where",
+      "it",
+      "its",
+      "this",
+      "that",
+      "as",
+      "if",
+      "than",
+      "then",
+      "there",
+      "here",
+      "s"
+    ],
+    "stopwords_note": "Here rather than in Python for the reason load_floor gives about thresholds: a list widened until an exclusion passes should be a diff."
+  }
 }

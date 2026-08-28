@@ -71,6 +71,18 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("""            if gap_reason and kind == "gap" and resolved is None and p.cache_key and p.locatable:""",
           """            if False:""")],
     ),
+    (
+        # Ruling 40, 2026-08-28. Without this branch a quotation the writer
+        # fitted with an added article falls through to `absent` — the state
+        # --verify FAILS on, and a G3 criterion. It is not a claim that stopped
+        # holding.
+        "a quotation fitted with an added article falls through to absent",
+        [("""    stripped = strip_added_article(quote)
+    if stripped != quote and _same_characters(found.casefold(),
+                                              stripped.casefold()):""",
+          """    stripped = quote
+    if False:""")],
+    ),
 ]
 
 EXPECTED = [
@@ -78,6 +90,10 @@ EXPECTED = [
     "coordinate",
     "an identified placement with no ground_citation is reported",
     "an id absent from the gazetteer cache is reported as uncached",
+
+    # Ruling 40.
+    "a span recording match='article_added' is classified as such, not as "
+    "absent — and --verify fails on absent",
 ]
 
 

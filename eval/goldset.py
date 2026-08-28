@@ -376,7 +376,18 @@ _ANSWER_OPTIONAL = {
     "expect_min_resolved_quotes", "expect_grounded", "expect_refusal",
     "refusal_is_correct_because", "paired_with", "region",
     "archived_status", "note",
+    # Ruling 41, 2026-08-28. Why an exclusion list was changed, beside the
+    # list. A correction recorded only in a commit message is a correction the
+    # next reader of this file does not have.
+    "excludes_corrected_on",
 }
+
+# Ruling 41. A correct refusal RESTATES the question it is refusing, so an
+# exclusion assembled from that question's own vocabulary fires on the very
+# answer the case exists to accept. Split out so the rule below reads as one
+# sentence; the words themselves live in answer_cases.json.
+def _content_words(text: str, stopwords: set) -> set:
+    return {w for w in re.findall(r"[^\W\d_]+", text.casefold())} - stopwords
 
 # The assertions that say something about what the answer SAYS, as opposed to
 # whether it was tidy about citing. A case built only from the latter cannot
@@ -542,6 +553,12 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
     path = path or GOLD_DIR / "answer_cases.json"
     data = _read(path)
 
+    # Ruling 41. Read once, outside the loop. An absent rule means the clause
+    # is not declared and nothing is checked, which is the pre-ruling
+    # behaviour exactly — a gold file written before it existed does not
+    # silently acquire it.
+    exclusion_rule = data.get("refusal_exclusion_rule") or {}
+
     cases: list[AnswerCase] = []
     seen: set[str] = set()
     asked: dict[str, str] = {}
@@ -690,6 +707,46 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
                 f"declines to answer is a {BEHAVIOUR_REFUSABLE!r} case whatever "
                 f"the label says."
             )
+
+        # RULING 41, 2026-08-28. `expect_answer_excludes` is a bare substring
+        # test and cannot tell a claim from a refusal to make it. On a
+        # correctly_refusable case that is not a corner: a correct refusal
+        # NAMES what it is declining to say, and the more precisely it names
+        # it the more certainly it trips an exclusion built out of the
+        # question.
+        #
+        # oc-eo-cattigara failed 0/12 across four sessions and three dates on
+        # exactly this, refusing correctly every time. Writing the guard then
+        # turned up antikythera-absent — a REQUIRED case, passing 12/12, one
+        # refusal phrasing away from the same failure, with nothing anywhere
+        # that would have said why. That second case is the argument for a rule
+        # rather than a correction.
+        #
+        # NOT a negation detector. The prompt notes already record that a rule
+        # which has to be interpreted is a rule that will be broken, and inside
+        # a matcher it would be broken in silence. This is a rule about how a
+        # CASE is written: exclude fabrication markers — a name, a date, a
+        # technical term the corpus does not hold — as the other seven
+        # correctly_refusable cases already do.
+        if behaviour == BEHAVIOUR_REFUSABLE:
+            stopwords = {w.casefold() for w in
+                         (exclusion_rule.get("stopwords") or [])}
+            question_words = _content_words(raw["question"], stopwords)
+            for phrase in raw.get("expect_answer_excludes") or []:
+                phrase_words = _content_words(str(phrase), stopwords)
+                if phrase_words and phrase_words <= question_words:
+                    raise GoldSetError(
+                        f"{where}: expect_answer_excludes {phrase!r} is built "
+                        f"entirely from this case's own question "
+                        f"({raw['question']!r}). A correct refusal restates "
+                        f"the question it is refusing, so this exclusion fires "
+                        f"on the answer the case exists to accept — and "
+                        f"expect_answer_excludes is a substring test that "
+                        f"cannot tell a claim from a refusal to make one. "
+                        f"Exclude something a fabricating answer would ADD: a "
+                        f"name, a date, a term the corpus does not contain. "
+                        f"See answer_cases.json.refusal_exclusion_rule."
+                    )
 
         positive = any(raw.get(key) for key in _POSITIVE_KEYS) or minimum > 0
         speaks = not refusal and behaviour != BEHAVIOUR_REFUSABLE

@@ -207,20 +207,18 @@ superseded text kept beside it.
 ```
 1  PROGRESS.md is two blocks stale and BLOCK_F_START points the next thread
    at its last section.
-2  a ruling on the added article in a quotation — tolerate it as a named,
-   distinctly-reported match class, or hold that a quotation altered by the
-   writer is not a quotation. aksumite-coin-imagery turns on it.
-3  a ruling on expect_answer_excludes: a bare substring test scores a correct
-   refusal as a violation whenever the refusal names what it is refusing.
-   oc-eo-cattigara turns on it, and 8 of the 33 cases are correctly_refusable.
-4  skz-titulature's Ardashir group: is a father's name in the genealogy a
-   TITLE the question asked for?
-5  the sonnet arm has not run. The window closes at the first sub-tranche.
+2  the sonnet arm has not run. The window closes at the first sub-tranche.
+3  the baseline check that mutate_part8 gained on 2026-08-28 is not in the
+   other five harnesses. Nothing is known to be wrong with any of them, which
+   is the point.
 ```
 
-Items 2, 3 and 4 are case-and-matcher rulings and belong before curating 36 new
-records against the same style of assertion — which is exactly what decision 3
-said to establish first.
+CLOSED THE SAME DAY, as rulings 40, 41 and 42 â the three case-and-matcher
+questions this list opened with. They belonged before curating 36 new records
+against the same style of assertion, which is exactly what decision 3 said to
+establish first. `F0_RULINGS.md` carries them. Ruling 41 turned up a second
+case while it was being written: `antikythera-absent`, REQUIRED and passing
+12/12, carried the same hazard and was one refusal phrasing from failing.
 
 ## The sentence that travels
 

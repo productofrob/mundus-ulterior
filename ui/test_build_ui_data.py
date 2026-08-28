@@ -226,6 +226,27 @@ def test_case_folded_is_told_from_the_labelling_defect() -> None:
            "a span recording match='case_folded' is not reported as a "
            "labelling defect")
 
+    # RULING 40, 2026-08-28. Before this, a span the writer had fitted with an
+    # added article landed in `absent` — the state `--verify` FAILS on, and a
+    # G3 criterion. It is not a claim that stopped holding; it is a claim whose
+    # rendering is one word longer than the record.
+    art_text = "Half-length bust of Ezanas right, crowned"
+    art_corpus = {"doc-2": {"fields": {"original_text_excerpt": art_text}}}
+    art_span = {
+        "quote": "a half-length bust of Ezanas right, crowned",
+        "doc_id": "doc-2", "source_field": "original_text_excerpt",
+        "abs_start": 0, "abs_end": len(art_text),
+    }
+    added = bud.classify_span({**art_span, "match": "article_added"}, art_corpus)
+    expect(added["state"] == "article_added" and added.get("label_agrees"),
+           "a span recording match='article_added' is classified as such, not "
+           "as absent — and --verify fails on absent")
+    mislabelled = bud.classify_span({**art_span, "match": "exact"}, art_corpus)
+    expect(mislabelled["state"] == "article_added"
+           and not mislabelled.get("label_agrees"),
+           "the same characters under a label that overstates them are still "
+           "found, and the disagreement is reported rather than smoothed over")
+
     verbatim = bud.classify_span(
         {**span, "quote": text, "match": "exact"}, corpus)
     expect(verbatim["state"] == "resolved",

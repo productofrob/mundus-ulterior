@@ -1825,6 +1825,101 @@ def test_a_failed_chat_call_does_not_take_the_day() -> None:
            "the progress line is flushed — buffered progress is not progress")
 
 
+def test_an_exclusion_cannot_be_the_question() -> None:
+    """Ruling 41, 2026-08-28. A correct refusal restates the question it refuses.
+
+    `expect_answer_excludes` is a bare substring test and cannot tell a claim
+    from a refusal to make one. On a correctly_refusable case that is not a
+    corner: the more precisely a refusal names what it declines to assert, the
+    more certainly it trips an exclusion assembled out of the question.
+
+    oc-eo-cattigara failed 0/12 across four sessions and three dates on exactly
+    that, refusing correctly every time. Writing this guard then turned up
+    antikythera-absent — a REQUIRED case, passing 12/12, one refusal phrasing
+    away from the same failure with nothing anywhere that would have said why.
+    The second case is the argument for a rule rather than a correction.
+    """
+    print("\nan exclusion built from the question fires on the right answer")
+
+    cases = {c.id: c for c in load_answer_cases()}
+    raw = json.loads((Path("eval/gold/answer_cases.json")).read_text(
+        encoding="utf-8"))
+    rule = raw.get("refusal_exclusion_rule") or {}
+    expect(bool(rule.get("stopwords")),
+           "the gold file declares the stopword list the rule uses — in data, "
+           "where widening it until an exclusion passes is a diff")
+
+    by_id = {c["id"]: c for c in raw["cases"]}
+    expect("Ptolemy's Cattigara" not in
+           by_id["oc-eo-cattigara"]["expect_answer_excludes"]
+           and "Oc Eo was Cattigara" not in
+           by_id["oc-eo-cattigara"]["expect_answer_excludes"],
+           "oc-eo-cattigara no longer excludes phrases made of its own "
+           "question")
+    expect("Antikythera mechanism was built" not in
+           by_id["antikythera-absent"]["expect_answer_excludes"],
+           "antikythera-absent, which is REQUIRED and was passing, no longer "
+           "carries the same hazard")
+    expect(all(str(by_id[case].get("excludes_corrected_on", "")).strip()
+               for case in ("oc-eo-cattigara", "antikythera-absent")),
+           "both corrections are recorded beside the lists they changed, not "
+           "only in a commit message")
+
+    # The archived answers are the evidence, and they are on disk: every one of
+    # the twelve refused correctly and named what it was refusing.
+    expect(cases["oc-eo-cattigara"].expected_behaviour == "correctly_refusable"
+           and cases["oc-eo-cattigara"].expect_refusal,
+           "expect_refusal is what carries this case, and it passed 12/12 "
+           "throughout")
+
+    def loads_with(case_id, excludes):
+        edited = json.loads(json.dumps(raw))
+        for case in edited["cases"]:
+            if case["id"] == case_id:
+                case["expect_answer_excludes"] = excludes
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "answer_cases.json"
+            path.write_text(json.dumps(edited), encoding="utf-8")
+            try:
+                load_answer_cases(path)
+            except GoldSetError as exc:
+                return str(exc)
+        return ""
+
+    refused = loads_with("oc-eo-cattigara", ["Ptolemy's Cattigara"])
+    expect("built entirely from this case's own question" in refused,
+           "GUARD an exclusion assembled from the case's own question is "
+           "refused at load time")
+    reordered = loads_with("oc-eo-cattigara", ["Oc Eo was Cattigara"])
+    expect("built entirely from this case's own question" in reordered,
+           "GUARD word order does not rescue it — the same vocabulary in a "
+           "different arrangement is the same substring hazard")
+    marker = loads_with("oc-eo-cattigara", ["Golden Chersonese"])
+    expect(marker == "",
+           "a FABRICATION MARKER — content the corpus does not hold and a "
+           "refusal has no reason to utter — loads, which is the pattern the "
+           "other seven refusal cases already follow")
+
+
+def test_skz_titulature_is_tracked_rather_than_corrected_away() -> None:
+    """Ruling 42, 2026-08-28."""
+    print("\nskz-titulature, tracked rather than corrected away")
+
+    floor = load_floor()
+    expect("skz-titulature" in floor["known_failing_cases"],
+           "skz-titulature is REPORTED as an open defect — it fails 0/12 on "
+           "one assertion while satisfying every other and resolving four "
+           "quotations")
+    expect("skz-titulature" not in floor["required_cases"],
+           "and it is not required, so a floor pass never reads as 'the "
+           "system answers this'")
+    case = {c.id: c for c in load_answer_cases()}["skz-titulature"]
+    expect(any("Ardashir" in group for group in case.expect_answer_contains_any),
+           "GUARD the Ardashir group is still asserted — dropping it is the "
+           "floor lowered to what is currently passing, on a case that has "
+           "never passed")
+
+
 def test_the_arm_is_part_of_the_scope() -> None:
     """Block F decision 2, 2026-08-28, declared BEFORE the sonnet arm ran.
 
@@ -2036,6 +2131,8 @@ def main() -> int:
     test_the_calibration_scope_and_demotions()
     test_the_arm_is_part_of_the_scope()
     test_the_promotion_candidate_state()
+    test_an_exclusion_cannot_be_the_question()
+    test_skz_titulature_is_tracked_rather_than_corrected_away()
     test_the_floor()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0

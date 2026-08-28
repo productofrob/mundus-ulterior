@@ -169,3 +169,125 @@ archived, and are mutation-verified; computing them costs nothing.
 **Recorded before F1 and not at the end.** A gate amended after its numbers are
 in is a gate fitted to its result, which is the same move
 `calibration_scope.declared_on` refuses one level down.
+
+---
+
+# Rulings 40 to 42 — declared 2026-08-28, before F1 curates anything
+
+*The three questions `F0_RESULT.md` left open. Each decides what a whole family
+of the 36 new records will be scored against, which is why they are settled
+before the records are written rather than after.*
+
+---
+
+## Ruling 40 — an article the writer added to a quotation is a NAMED match class, and it resolves
+
+**`answer/cite.locate_in_text` gains a fourth match class, `article_added`,
+tried last. The span covers the characters found in the record and not the
+article in front of them, so it still round-trips. It counts as resolved. It is
+never reported as `exact`.**
+
+`locate_in_text` already forgives whitespace, case and edge punctuation, on the
+stated ground that these are *"the three things a writer alters when fitting a
+quotation into a sentence of their own"*. An added article is the fourth, from
+the same cause: `The gold coin shows "a half-length bust of Ezanas…"` against a
+record opening `Half-length bust of Ezanas…`. Refusing it while forgiving the
+case-fold that arrives with it is incoherent — both edits are one act.
+
+Found from the ARCHIVE, by `scripts/assertion_audit.py`, not from a live run:
+`aksumite-coin-imagery` failed 0/12 across four sessions and three dates, every
+content assertion passing, on `resolves at least 1 quotation to characters on
+disk`, with both quotations sitting in
+`africa-02-aksumite-coin.original_text_excerpt` one word away.
+
+**The serious argument against, and why it lost.** `expect_min_resolved_quotes`
+is the floor the product's central claim rests on, and this project's instinct
+is to record rather than forgive — `mutate_part8.py` already says of a matcher
+that punctuation tolerance *"sounds like kindness and is not"*. The answer is
+the same one C1a gave for case folding: the span is exact over the record's own
+characters, and it is the RENDERING that differs. The alternative is scoring a
+verbatim, correctly-cited quotation as a fabrication.
+
+**Leading articles only.** A stripped trailing article would let a quotation end
+short of what it claims to quote, and nothing observed asks for it.
+
+**What this does NOT do.** `_resolved_quote_count` reads the spans an answer
+archived, so nothing is re-scored: `aksumite-coin-imagery` stays 0/12 in the
+Block E archive and the next sweep may score it differently. That is the arm's
+defect in another costume — a fact about the code on the day rather than about
+the file — and it is closed the same way. `cite.QUOTE_RESOLUTION_CONTRACT`
+carries a dated string, the sweep archive records it beside the arm, and a
+comparison across two contracts has to say so.
+
+**Guarded** in `answer/test_answer.py` (three mutations in
+`scripts/mutate_part7b.py`) and in `ui/test_build_ui_data.py` (one in
+`scripts/mutate_ui_places.py`) — the second because a span in this shape landed
+in `absent`, which is the state `--verify` FAILS on and a G3 criterion.
+
+---
+
+## Ruling 41 — on a `correctly_refusable` case, an exclusion may not be built from the case's own question
+
+**`eval/goldset.py` refuses, at load time, an `expect_answer_excludes` entry on
+a `correctly_refusable` case whose content words all appear in that case's own
+question. The stopword list lives in `answer_cases.json`, where widening it is
+a diff.**
+
+A correct refusal restates the question it is refusing. `expect_answer_excludes`
+is a bare substring test and cannot tell a claim from a refusal to make it — so
+the more precisely a refusal names what it declines to assert, the more
+certainly it fails. `oc-eo-cattigara` refused correctly twelve times out of
+twelve and said *"…they do not address whether Óc Eo was identified as
+Ptolemy's Cattigara…"*, which trips `"Ptolemy's Cattigara"`.
+
+**Writing the guard turned up a second case, and that is the argument for a rule
+rather than a correction.** `antikythera-absent` — REQUIRED, passing 12/12 —
+excluded `"Antikythera mechanism was built"` against its own question *"When was
+the Antikythera mechanism built?"*. It was one refusal phrasing away from the
+same failure, and nothing anywhere would have said why.
+
+**Not a negation detector.** The prompt notes already record that a rule which
+has to be interpreted is a rule that will be broken; inside a matcher it would
+be broken in silence. This is a rule about how a CASE is written.
+
+**What a refusal case should exclude instead:** fabrication markers — a name, a
+date, a technical term the corpus does not hold. Seven of the eight
+`correctly_refusable` cases already do exactly that (`"Valerian"`,
+`"West Eurasian"`, `"laukaz"`, `"87 BC"`). `oc-eo-cattigara` now excludes
+`identified as Cattigara`, `Golden Chersonese`, `Geographia`, `Sinae`, all four
+verified absent from the seed corpus. `expect_refusal: true` is what carries the
+case, and it passed 12/12 throughout.
+
+Both corrections are recorded in `excludes_corrected_on`, beside the lists they
+changed, because a correction that lives only in a commit message is one the
+next reader of the file does not have.
+
+---
+
+## Ruling 42 — `skz-titulature` is tracked as an open defect, not corrected away
+
+**It stays as written, the Ardashir group stays asserted, and the case enters
+`known_failing_cases` with its evidence.**
+
+0/12 across four sessions and three dates, on one assertion, while satisfying
+every other assertion it makes and resolving four quotations. The evidence was
+in front of it: `persia-01-skz` §1 is a single titulature formula — *"I, the
+Mazda-worshipping god Shapur, king of kings of Iran and Not-Iran, whose race is
+of the gods, son of the Mazda-worshipping god Ardashir, king of kings of Iran,
+whose race is of the gods, grandson of the god King Pabag, am lord of Iran"* —
+and the answer quoted from that sentence and stopped at Shapur's own epithets,
+dropping both genealogical clauses.
+
+**Rejected: dropping the Ardashir group.** That is the floor lowered to what is
+currently passing, on the strength of a case that has never passed — the move
+`required_cases_note` forbids.
+
+**Rejected: amending the question to ask for the filiation.** `match_case` joins
+archived runs on question text, so it would orphan the twelve archived runs and
+the case would stop being comparable with anything in the Block E archive.
+
+**The weaker half of this is the QUESTION.** *"What titles does Shapur I claim"*
+does not plainly ask for the filiation. That is a note for how the 36 new
+records are written — a case whose assertion asks for more than its question
+does is a case that will fail for a reason no reader can see — and it is not a
+licence to rewrite this one.

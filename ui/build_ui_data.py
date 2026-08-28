@@ -535,6 +535,14 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
       two states. They are not re-labelled retroactively: the archive records
       what was claimed at the time, and rewriting it would destroy the only
       evidence that the defect existed.
+    - `article_added` — they are the quoted characters with an article the
+      writer added at the front removed, and the span says so: `cite.py`
+      recorded `match="article_added"`. Ruling 40, 2026-08-28. The span is
+      right and its label is right, exactly as for `case_folded`; the
+      quotation as rendered is one word longer than the record. A span in
+      this shape whose label says otherwise is reported here with the label it
+      actually carries, on the `case_only` precedent — the archive records what
+      was claimed at the time and is never re-labelled retroactively.
     - `moved`        — the quote is still in the field, at a different offset.
       The record was edited after this answer was archived. **This is the failure
       a naive viewer would render silently and convincingly**, showing whatever
@@ -566,6 +574,27 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
                 "why": f"differs from the quotation only in letter case; "
                        f"cite.py matched case-insensitively but recorded "
                        f"match={recorded!r}"}
+
+    # Ruling 40. BEFORE `moved`/`absent`, because a quotation the writer fitted
+    # to their sentence with an article is not a claim that stopped holding —
+    # and until 2026-08-28 it landed in `absent`, which is the state
+    # `--verify` FAILS on. aksumite-coin-imagery's two spans are the ones that
+    # found this.
+    from answer.cite import strip_added_article
+    stripped = strip_added_article(quote)
+    if stripped != quote and _same_characters(found.casefold(),
+                                              stripped.casefold()):
+        agrees = recorded == "article_added"
+        return {"state": "article_added", "found": found,
+                "why": ("differs from the quotation by an article the writer "
+                        "added at the front, and the span records "
+                        "match='article_added' — the offset is right and so is "
+                        "its label")
+                       if agrees else
+                       (f"differs from the quotation by an article the writer "
+                        f"added at the front; cite.py matched it but recorded "
+                        f"match={recorded!r}"),
+                "label_agrees": agrees}
 
     at = text.find(quote)
     if at < 0 and quote:
@@ -644,7 +673,8 @@ def verify_spans(runs: list[dict], corpus: dict[str, dict]) -> dict[str, list]:
     a span holds.
     """
     buckets: dict[str, list] = {"resolved": [], "case_folded": [],
-                                "case_only": [], "moved": [], "absent": []}
+                                "article_added": [], "case_only": [],
+                                "moved": [], "absent": []}
     today_hashes = seed_record_hashes(CORPUS_DIR)
     for run in runs:
         for span in run.get("grounding", {}).get("quote_spans", []):
@@ -727,8 +757,9 @@ def main(argv: list[str] | None = None) -> int:
     buckets = verify_spans(runs, corpus)
     total = sum(len(v) for v in buckets.values())
     print(f"\n{total} claimed character span(s) checked against the seed corpus:")
-    for state in ("resolved", "case_folded", "case_only", "moved", "absent"):
-        print(f"  {state:<12} {len(buckets[state])}")
+    for state in ("resolved", "case_folded", "article_added", "case_only",
+                  "moved", "absent"):
+        print(f"  {state:<14} {len(buckets[state])}")
 
     # D1. The SECOND axis. `moved`/`absent` say a claim no longer holds; this
     # says whether the corpus it was made against has moved underneath it.

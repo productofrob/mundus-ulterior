@@ -373,10 +373,15 @@ class QuoteSpan:
     #               length-preserving, so the index map stays truthful); it is
     #               the *rendering* that differs, and a viewer printing "exact"
     #               beside two visibly different strings discredits itself.
+    # 'article_added' they are there, but the writer put an article in front of
+    #               them to fit the quotation into a sentence of their own. The
+    #               span covers the characters FOUND and not the article, so it
+    #               still round-trips; the quotation as rendered is one word
+    #               longer than the record. Ruling 40.
     # 'normalised'  found only after Unicode NFC, which can merge codepoints.
     #               No span is claimed, because a span that might be wrong is
     #               worse than none.
-    match: str          # 'exact' | 'case_folded' | 'normalised'
+    match: str          # 'exact' | 'case_folded' | 'article_added' | 'normalised'
     within: str         # 'source' | 'english'
 
     def to_dict(self) -> dict:
@@ -388,6 +393,48 @@ class QuoteSpan:
 # from exactly this: `departing with pepper.` against a source reading
 # `departing with pepper—`, and `Alla',` against `Alla'.`.
 _EDGE_PUNCTUATION = " \t\n.,;:!?—–-…\"'“”‘’«»()[]"
+
+# Ruling 40, 2026-08-28. The FOURTH thing a writer alters when fitting a
+# quotation into a sentence of their own, and the one this file did not
+# forgive: an article added at the front so the sentence reads. `The gold coin
+# shows "a half-length bust of Ezanas…"` against a record that opens
+# `Half-length bust of Ezanas…`.
+#
+# Found by scripts/assertion_audit.py, from the archive: aksumite-coin-imagery
+# failed 0/12 across four sessions and three dates on `resolves at least 1
+# quotation to characters on disk`, with both of its quotations sitting in
+# africa-02-aksumite-coin.original_text_excerpt, case-folded, one word away.
+#
+# It is a NAMED match class and never `exact`, for the reason the QuoteSpan
+# docstring already gives about case folding: a viewer printing "exact" beside
+# two visibly different strings discredits itself. Leading only. A stripped
+# TRAILING article would let a quotation end short of what it claims to quote,
+# and nothing observed asks for it.
+_ADDED_ARTICLE = re.compile(r"^(?:a|an|the)\s+", re.IGNORECASE)
+
+
+# Ruling 40, 2026-08-28. WHAT COUNTS AS A RESOLVED QUOTATION, as a dated
+# string that travels in the sweep archive.
+#
+# `_resolved_quote_count` reads the spans an answer archived, so a change here
+# does NOT re-score history: aksumite-coin-imagery's twelve archived runs stay
+# 0/12 and the next sweep may score them differently. That is the arm's defect
+# in another costume — a fact about the code on the day rather than about the
+# file — and it is closed the same way, by writing it down where a later reader
+# will find it. BUMP THIS whenever the classes above change, and say in the
+# ruling what moved.
+QUOTE_RESOLUTION_CONTRACT = "2026-08-28-article-added"
+
+
+def strip_added_article(text: str) -> str:
+    """`text` without a leading article, or `text` unchanged.
+
+    One definition, used by `locate_in_text` here and by
+    `ui/build_ui_data.classify_span`, which has to recognise the same spans
+    when it re-checks an archive against the seed files. Two copies of this
+    rule would be two answers to "did this quotation resolve".
+    """
+    return _ADDED_ARTICLE.sub("", text, count=1)
 
 
 def _fold(text: str) -> str:
@@ -420,7 +467,7 @@ class Located(NamedTuple):
     """
     start: int
     end: int
-    match: str          # 'exact' | 'case_folded'
+    match: str          # 'exact' | 'case_folded' | 'article_added'
 
 
 def locate_in_text(quote: str, haystack: str) -> Located | None:
@@ -448,6 +495,18 @@ def locate_in_text(quote: str, haystack: str) -> Located | None:
     if position < 0:
         position = _fold(norm_hay).find(_fold(norm_quote))
         match = "case_folded"
+    if position < 0:
+        # Ruling 40. Tried LAST, so nothing that resolves today changes class,
+        # and `norm_quote` is rebound so the span below covers the characters
+        # actually found rather than the article the writer put in front of
+        # them. The span stays truthful; it is the RENDERING that differs, which
+        # is the same bargain `case_folded` already makes one line up.
+        stripped = strip_added_article(norm_quote).strip(_EDGE_PUNCTUATION)
+        if stripped and stripped != norm_quote:
+            position = _fold(norm_hay).find(_fold(stripped))
+            if position >= 0:
+                norm_quote = stripped
+                match = "article_added"
     if position < 0:
         return None
     start = index[position]
@@ -638,6 +697,13 @@ def verify(
                         f"quote {quote[:40]!r} matched only after case folding: "
                         f"the span is exact, but the source renders those "
                         f"characters with different capitalisation"
+                    )
+                elif located.match == "article_added":
+                    report.notes.append(
+                        f"quote {quote[:40]!r} matched only after removing an "
+                        f"article the writer added at the front: the span "
+                        f"covers what the record holds, and the quotation as "
+                        f"rendered is one word longer than it"
                     )
                 continue
 

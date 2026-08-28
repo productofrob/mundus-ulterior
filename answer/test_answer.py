@@ -978,6 +978,35 @@ def test_live_run_defects() -> None:
     # fail when locate_quote hardcodes "exact" again.
     expect(span_case.match != "exact",
            "GUARD a case-folded match is not recorded as exact")
+
+    # RULING 40, 2026-08-28. The FOURTH thing a writer alters to fit a
+    # quotation into their own sentence, and the one this file did not forgive:
+    # an article at the front. aksumite-coin-imagery failed 0/12 over four
+    # sessions and three dates on `resolves at least 1 quotation to characters
+    # on disk`, with both quotations sitting in the record, case-folded, one
+    # word away. Found from the ARCHIVE by scripts/assertion_audit.py, not from
+    # a live run.
+    article = cite.locate_in_text(
+        "a tribute brought was neither precious nor rare",
+        "The tribute brought was neither precious nor rare")
+    expect(article is not None and article.match == "article_added",
+           "GUARD a quotation the writer fitted with an added article "
+           "resolves, and is NAMED as such")
+    expect(article is not None and article.match not in ("exact", "case_folded"),
+           "GUARD an added article is not laundered into 'exact' — a viewer "
+           "printing exact beside two visibly different strings discredits "
+           "itself, which is C1a's own argument")
+    # The span must cover what was FOUND and not the article, or the offset
+    # stops round-tripping and the product's central claim goes with it.
+    source = "The tribute brought was neither precious nor rare"
+    expect(article is not None
+           and source[article.start:article.end]
+           == "tribute brought was neither precious nor rare",
+           "GUARD the span covers the record's characters, not the article the "
+           "writer put in front of them")
+    expect(cite.locate_in_text("a thing never written", source) is None,
+           "GUARD stripping an article does not make an absent quotation "
+           "resolve")
     expect(
         cite.locate_in_text("The tribute", hou_hanshu_en).match == "exact",
         "a quote whose case already agrees is still recorded as exact",
