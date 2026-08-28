@@ -564,26 +564,27 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
     found = text[start:end]
     if _same_characters(found, quote):
         return {"state": "resolved", "found": found}
-    if _same_characters(found.casefold(), quote.casefold()):
-        if recorded == "case_folded":
-            return {"state": "case_folded", "found": found,
-                    "why": "differs from the quotation only in letter case, and "
-                           "the span records match='case_folded' — the offset is "
-                           "right and so is its label"}
-        return {"state": "case_only", "found": found,
-                "why": f"differs from the quotation only in letter case; "
-                       f"cite.py matched case-insensitively but recorded "
-                       f"match={recorded!r}"}
 
-    # Ruling 40. BEFORE `moved`/`absent`, because a quotation the writer fitted
-    # to their sentence with an article is not a claim that stopped holding —
-    # and until 2026-08-28 it landed in `absent`, which is the state
-    # `--verify` FAILS on. aksumite-coin-imagery's two spans are the ones that
-    # found this.
+    # Ruling 40, and CORRECTED the same day. This must sit ABOVE the
+    # case-folding branch, not below it: `_same_characters` tests containment
+    # in EITHER direction, so `Half-length bust…` is "the same characters" as
+    # `a half-length bust…` and an article span placed after that branch is
+    # reported as a case labelling defect. It was, on the first run.
+    #
+    # What the ruling document first said about this — that such a span landed
+    # in `absent` — was wrong, and is corrected there. Containment made it
+    # `case_only`. `absent` is what it would have been under equality, which is
+    # the more obvious reading of this function and not the one it implements.
+    #
+    # The test is precise rather than "does stripping help": the QUOTE has a
+    # leading article and what is on disk does NOT, so the writer added one.
+    # A pair that both carry `The` differs only in case and must keep falling
+    # through to the branch below.
     from answer.cite import strip_added_article
-    stripped = strip_added_article(quote)
-    if stripped != quote and _same_characters(found.casefold(),
-                                              stripped.casefold()):
+    unarticled = strip_added_article(quote)
+    if (unarticled != quote
+            and strip_added_article(found) == found
+            and _same_characters(found.casefold(), unarticled.casefold())):
         agrees = recorded == "article_added"
         return {"state": "article_added", "found": found,
                 "why": ("differs from the quotation by an article the writer "
@@ -595,6 +596,17 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
                         f"added at the front; cite.py matched it but recorded "
                         f"match={recorded!r}"),
                 "label_agrees": agrees}
+
+    if _same_characters(found.casefold(), quote.casefold()):
+        if recorded == "case_folded":
+            return {"state": "case_folded", "found": found,
+                    "why": "differs from the quotation only in letter case, and "
+                           "the span records match='case_folded' — the offset is "
+                           "right and so is its label"}
+        return {"state": "case_only", "found": found,
+                "why": f"differs from the quotation only in letter case; "
+                       f"cite.py matched case-insensitively but recorded "
+                       f"match={recorded!r}"}
 
     at = text.find(quote)
     if at < 0 and quote:

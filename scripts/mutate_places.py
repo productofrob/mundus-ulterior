@@ -432,6 +432,16 @@ def main() -> int:
         print(f"{len(MUTATIONS)} mutations against {len(EXPECTED)} expectations")
         return 1
 
+    # 2026-08-28. BYTES on the way out, whatever the harness did on the way in.
+    # PROGRESS.md named this at the close of Block D and predicted the exposure
+    # exactly — "a green mutation run is not evidence the tree was restored…
+    # three of six are exposed, and only by the accident of which files are
+    # CRLF." On 2026-08-28 mutate_ui_places converted ui/build_ui_data.py from
+    # LF to CRLF on a live run and its text-comparing restore check could not
+    # see it; the conversion reached a commit. `write_text` translates "\n" to
+    # os.linesep. The restore below writes the ORIGINAL BYTES and the check
+    # compares BYTES, so this harness can no longer do that to its own sources.
+    original_bytes = {f: f.read_bytes() for f in SOURCES}
     originals = {f: f.read_text(encoding="utf-8") for f in SOURCES}
     problems: list[str] = []
     try:
@@ -475,7 +485,7 @@ def main() -> int:
                 print(f"  MISS {label}")
     finally:
         for f in SOURCES:
-            f.write_text(originals[f], encoding="utf-8")
+            f.write_bytes(original_bytes[f])
 
     # Two different failures, kept apart — the correction made to all three
     # existing mutation scripts on 2026-08-12, after "sources were not restored
@@ -483,7 +493,7 @@ def main() -> int:
     # an exit gate.
     unrestored = [
         f.name for f in SOURCES
-        if f.read_text(encoding="utf-8") != originals[f]
+        if f.read_bytes() != original_bytes[f]
     ]
     if unrestored:
         problems.append(

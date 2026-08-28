@@ -20,6 +20,7 @@ Run: python scripts/mutate_ui_places.py
 
 from __future__ import annotations
 
+import os
 import pathlib
 import subprocess
 import sys
@@ -72,16 +73,20 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           """            if False:""")],
     ),
     (
-        # Ruling 40, 2026-08-28. Without this branch a quotation the writer
-        # fitted with an added article falls through to `absent` — the state
-        # --verify FAILS on, and a G3 criterion. It is not a claim that stopped
-        # holding.
-        "a quotation fitted with an added article falls through to absent",
-        [("""    stripped = strip_added_article(quote)
-    if stripped != quote and _same_characters(found.casefold(),
-                                              stripped.casefold()):""",
-          """    stripped = quote
-    if False:""")],
+        # Ruling 40, 2026-08-28, RE-ANCHORED the same day. Without this branch
+        # a quotation the writer fitted with an added article falls through to
+        # the case-folding branch below and is reported as a LABELLING DEFECT
+        # — `_same_characters` tests containment in either direction, so
+        # `Half-length bust…` counts as "the same characters" as `a
+        # half-length bust…`. The ruling document first said it fell through to
+        # `absent`; that is what it would be under equality, and the
+        # correction is recorded there.
+        "a quotation fitted with an added article is reported as a case "
+        "labelling defect instead",
+        [("""    if (unarticled != quote
+            and strip_added_article(found) == found
+            and _same_characters(found.casefold(), unarticled.casefold())):""",
+          """    if False:""")],
     ),
 ]
 
@@ -92,8 +97,8 @@ EXPECTED = [
     "an id absent from the gazetteer cache is reported as uncached",
 
     # Ruling 40.
-    "a span recording match='article_added' is classified as such, not as "
-    "absent — and --verify fails on absent",
+    "a span recording match='article_added' is classified as such, and not "
+    "as the case labelling defect it fell into on the first run",
 ]
 
 
@@ -105,10 +110,45 @@ def failures_from(output: str) -> set[str]:
     }
 
 
+# 2026-08-28. FINDING 10's family, at the boundary answer/cite.py's own comment
+# calls already guarded: a PARENT decoding a CHILD. This harness ran its suite
+# with neither `encoding=` nor a child PYTHONIOENCODING, so on Windows it
+# decoded stdout with the locale codec and every em-dash came back as `\xe2\x80\x94`
+# mojibake. No guard label held a non-ASCII character until ruling 40 added
+# one, and that guard could then never match its own failure line: the harness
+# printed MISS on a mutation that had worked perfectly. Fixed the way
+# scripts/mutate_part8.py already does it, which is where CHILD_ENV comes from.
+CHILD_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8",
+             "PYTHONDONTWRITEBYTECODE": "1"}
+
+
 def run_tests() -> subprocess.CompletedProcess:
     return subprocess.run(
-        [sys.executable, *TEST], cwd=ROOT, capture_output=True, text=True,
+        [sys.executable, "-B", *TEST], cwd=ROOT, capture_output=True, text=True,
+        encoding="utf-8", errors="replace", env=CHILD_ENV,
     )
+
+
+# 2026-08-28. PROGRESS.md named this at the close of Block D and predicted the
+# exposure exactly: "A green mutation run is not evidence the tree was
+# restored… All four harnesses compare text… Three of six are exposed, and
+# only by the accident of which files are CRLF." It fired today. `write_text`
+# translates "\n" to os.linesep, so on Windows every run of this harness
+# rewrote an LF source as CRLF and its restore check, which compares TEXT,
+# could not see it. The remedy PROGRESS.md gives is the one taken here: the
+# harness compares and writes BYTES.
+def _newline_of(raw: bytes) -> str:
+    crlf = raw.count(b"\r\n")
+    if crlf and raw.count(b"\n") - crlf:
+        raise SystemExit(
+            "a mutation source has MIXED line endings. Resolve that by hand "
+            "before running this harness, which would otherwise pick one."
+        )
+    return "\r\n" if crlf else "\n"
+
+
+def _write(path: pathlib.Path, text: str, newline: str) -> None:
+    path.write_bytes(text.replace("\n", newline).encode("utf-8"))
 
 
 def main() -> int:
@@ -116,10 +156,33 @@ def main() -> int:
         print(f"{len(MUTATIONS)} mutations against {len(EXPECTED)} expectations")
         return 1
 
-    originals = {f: f.read_text(encoding="utf-8") for f in SOURCES}
+    original_bytes = {f: f.read_bytes() for f in SOURCES}
+    newlines = {f: _newline_of(original_bytes[f]) for f in SOURCES}
+    originals = {
+        f: original_bytes[f].decode("utf-8").replace("\r\n", "\n")
+        for f in SOURCES
+    }
     problems: list[str] = []
     try:
+        # 2026-08-28. THE BASELINE — see scripts/mutate_part8.py. A green
+        # mutation against a red suite is a vacuous proof.
+        already_failing = failures_from(run_tests().stdout)
+        if already_failing:
+            print(f"  BASELINE: {len(already_failing)} check(s) already fail "
+                  f"with NO mutation applied.")
+            for name in sorted(already_failing):
+                print(f"            - {name}")
+            print()
+
         for (label, patches), guard in zip(MUTATIONS, EXPECTED):
+            if guard in already_failing:
+                problems.append(
+                    f"{label}: UNVERIFIED — its guard {guard!r} was already "
+                    f"failing before any mutation was applied."
+                )
+                print(f"  UNVERIFIED {label} (its guard was already red at "
+                      f"baseline)")
+                continue
             edited = {f: originals[f] for f in SOURCES}
             missing = [
                 old for old, _ in patches
@@ -133,7 +196,7 @@ def main() -> int:
                 target = next(f for f in SOURCES if old in edited[f])
                 edited[target] = edited[target].replace(old, new, 1)
             for f in SOURCES:
-                f.write_text(edited[f], encoding="utf-8")
+                _write(f, edited[f], newlines[f])
 
             result = run_tests()
             failed = failures_from(result.stdout)
@@ -157,11 +220,14 @@ def main() -> int:
                 print(f"  MISS {label}")
     finally:
         for f in SOURCES:
-            f.write_text(originals[f], encoding="utf-8")
+            f.write_bytes(original_bytes[f])
 
     unrestored = [
         f.name for f in SOURCES
-        if f.read_text(encoding="utf-8") != originals[f]
+        # BYTES, not text. A restore check that normalises newlines is
+        # constitutionally unable to see the damage a text-mode write does —
+        # PROGRESS.md, at the close of Block D.
+        if f.read_bytes() != original_bytes[f]
     ]
     if unrestored:
         problems.append(

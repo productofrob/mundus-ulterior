@@ -239,8 +239,8 @@ def test_case_folded_is_told_from_the_labelling_defect() -> None:
     }
     added = bud.classify_span({**art_span, "match": "article_added"}, art_corpus)
     expect(added["state"] == "article_added" and added.get("label_agrees"),
-           "a span recording match='article_added' is classified as such, not "
-           "as absent — and --verify fails on absent")
+           "a span recording match='article_added' is classified as such, and "
+           "not as the case labelling defect it fell into on the first run")
     mislabelled = bud.classify_span({**art_span, "match": "exact"}, art_corpus)
     expect(mislabelled["state"] == "article_added"
            and not mislabelled.get("label_agrees"),

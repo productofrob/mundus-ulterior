@@ -221,8 +221,19 @@ comparison across two contracts has to say so.
 
 **Guarded** in `answer/test_answer.py` (three mutations in
 `scripts/mutate_part7b.py`) and in `ui/test_build_ui_data.py` (one in
-`scripts/mutate_ui_places.py`) — the second because a span in this shape landed
-in `absent`, which is the state `--verify` FAILS on and a G3 criterion.
+`scripts/mutate_ui_places.py`).
+
+**CORRECTED the same day, before this document had been read twice.** The
+sentence here first said the UI path put such a span in `absent`, the state
+`--verify` fails on. It does not. `classify_span._same_characters` tests
+containment in EITHER direction, so `Half-length bust…` counts as "the same
+characters" as `a half-length bust…` and the span landed in `case_only` — a
+labelling defect, reported and not fatal. `absent` is what it would be under
+equality, which is the more obvious reading of that function and not the one it
+implements. The branch had to move ABOVE the case-folding test rather than
+below it, and the guard's own wording was corrected with it. The claim was
+written from reading the code and not from running it; the first run of the
+suite is what caught it.
 
 ---
 

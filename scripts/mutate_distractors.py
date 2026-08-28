@@ -203,6 +203,10 @@ def main() -> int:
         return 2
 
     problems: list[str] = []
+    # 2026-08-28. Bytes on the way out — see the note in
+    # scripts/mutate_places.py. mutate_ui_places converted an LF source to CRLF
+    # on a live run and its text-comparing restore check could not see it.
+    original_bytes = {f: f.read_bytes() for f in PY_SOURCES}
     originals = {f: f.read_text(encoding="utf-8") for f in PY_SOURCES}
 
     drift = check_prune_statements_match()
@@ -242,7 +246,7 @@ def main() -> int:
                 f.write_text(edited[f], encoding="utf-8")
             failed = run_suite()
             for f in PY_SOURCES:
-                f.write_text(originals[f], encoding="utf-8")
+                f.write_bytes(original_bytes[f])
             if guard in failed:
                 print(f"  ok   {label}\n       -> {guard}")
             else:
@@ -252,14 +256,14 @@ def main() -> int:
                 print(f"  MISS {label}")
     finally:
         for f in PY_SOURCES:
-            f.write_text(originals[f], encoding="utf-8")
+            f.write_bytes(original_bytes[f])
         final_restore = restore_schema()
         if final_restore:
             problems.append(final_restore)
             print(f"  !!!! {final_restore}")
 
     unrestored = [f.name for f in PY_SOURCES
-                  if f.read_text(encoding="utf-8") != originals[f]]
+                  if f.read_bytes() != original_bytes[f]]
     if unrestored:
         problems.append("sources were NOT restored cleanly: " + ", ".join(unrestored))
 

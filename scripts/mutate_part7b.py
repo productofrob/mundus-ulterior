@@ -9,6 +9,7 @@ Run: python scripts/mutate_part7b.py
 
 from __future__ import annotations
 
+import os
 import pathlib
 import subprocess
 import sys
@@ -208,14 +209,22 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
                 match = "exact\"""")],
     ),
     (
-        # The article is stripped from the quote but the span still measures
-        # the quote as written, so the offset runs two characters long and
-        # stops round-tripping.
-        "the span is measured against the article, not the characters found",
+        # The span is measured one character short of what was found, so the
+        # offset stops round-tripping to the characters the answer quoted.
+        #
+        # The first version of this mutation set `stripped = norm_quote`, which
+        # runs the end index two characters PAST the field and raises
+        # IndexError. It killed the suite instead of failing the guard, and the
+        # harness — which discarded the child's return code until today —
+        # reported it as "expected <guard> to fail, got no failures". A
+        # mutation that crashes proves nothing about the guard it names, and
+        # both halves of that are now fixed: the harness says CRASH, and this
+        # mutation no longer causes one.
+        "the span is measured one character short of what was found",
         [("""            if position >= 0:
                 norm_quote = stripped""",
           """            if position >= 0:
-                stripped = norm_quote""")],
+                norm_quote = stripped[1:]""")],
     ),
     (
         # The A4 defect restored: _merge assumes every chunk type carries
@@ -275,14 +284,39 @@ EXPECTED = [
 SUITES = ("answer.test_answer", "answer.test_translate")
 
 
-def run_suites() -> set[str]:
+# 2026-08-28. FINDING 10's family, at the boundary answer/cite.py's own comment
+# calls already guarded: a PARENT decoding a CHILD. This harness ran its suite
+# with neither `encoding=` nor a child PYTHONIOENCODING, so on Windows it
+# decoded stdout with the locale codec and every em-dash came back as `\xe2\x80\x94`
+# mojibake. No guard label held a non-ASCII character until ruling 40 added
+# one, and that guard could then never match its own failure line: the harness
+# printed MISS on a mutation that had worked perfectly. Fixed the way
+# scripts/mutate_part8.py already does it, which is where CHILD_ENV comes from.
+CHILD_ENV = {**os.environ, "PYTHONIOENCODING": "utf-8",
+             "PYTHONDONTWRITEBYTECODE": "1"}
+
+
+def run_suites() -> tuple[set[str], bool]:
+    """Failures across both suites, and whether either DIED rather than failed.
+
+    2026-08-28. The return code used to be discarded, so a mutation that
+    CRASHES a suite produced an empty failure set and was reported as
+    "expected <guard> to fail, got no failures" — which reads as a broken
+    guard and is the opposite of the truth. mutate_part8 has kept the two
+    apart since 2026-08-12; the distinction arrives here because a mutation
+    that raised IndexError inside locate_in_text was mis-reported by it.
+    """
     failed: set[str] = set()
+    crashed = False
     for suite in SUITES:
         result = subprocess.run(
-            [sys.executable, "-m", suite], cwd=ROOT, capture_output=True, text=True
+            [sys.executable, "-B", "-m", suite], cwd=ROOT, capture_output=True,
+            text=True, encoding="utf-8", errors="replace", env=CHILD_ENV,
         )
-        failed |= failures_from(result.stdout)
-    return failed
+        found = failures_from(result.stdout)
+        failed |= found
+        crashed = crashed or (result.returncode != 0 and not found)
+    return failed, crashed
 
 
 def failures_from(output: str) -> set[str]:
@@ -293,11 +327,60 @@ def failures_from(output: str) -> set[str]:
     }
 
 
+# 2026-08-28. PROGRESS.md named this at the close of Block D and predicted the
+# exposure exactly: "A green mutation run is not evidence the tree was
+# restored… All four harnesses compare text… Three of six are exposed, and
+# only by the accident of which files are CRLF." It fired today. `write_text`
+# translates "\n" to os.linesep, so on Windows every run of this harness
+# rewrote an LF source as CRLF and its restore check, which compares TEXT,
+# could not see it. The remedy PROGRESS.md gives is the one taken here: the
+# harness compares and writes BYTES.
+def _newline_of(raw: bytes) -> str:
+    crlf = raw.count(b"\r\n")
+    if crlf and raw.count(b"\n") - crlf:
+        raise SystemExit(
+            "a mutation source has MIXED line endings. Resolve that by hand "
+            "before running this harness, which would otherwise pick one."
+        )
+    return "\r\n" if crlf else "\n"
+
+
+def _write(path: pathlib.Path, text: str, newline: str) -> None:
+    path.write_bytes(text.replace("\n", newline).encode("utf-8"))
+
+
 def main() -> int:
-    originals = {f: f.read_text(encoding="utf-8") for f in SOURCES}
+    original_bytes = {f: f.read_bytes() for f in SOURCES}
+    newlines = {f: _newline_of(original_bytes[f]) for f in SOURCES}
+    originals = {
+        f: original_bytes[f].decode("utf-8").replace("\r\n", "\n")
+        for f in SOURCES
+    }
     problems: list[str] = []
     try:
+        # 2026-08-28. THE BASELINE — see scripts/mutate_part8.py for the
+        # argument at length. A mutation is evidence only if the guard it
+        # names was PASSING before the code was broken.
+        already_failing, baseline_crashed = run_suites()
+        if already_failing or baseline_crashed:
+            print(f"  BASELINE: {len(already_failing)} check(s) already fail "
+                  f"with NO mutation applied"
+                  + (" (and a suite exited non-zero)" if baseline_crashed
+                     else "") + ".")
+            for name in sorted(already_failing):
+                print(f"            - {name}")
+            print()
+
         for (label, patches), guard in zip(MUTATIONS, EXPECTED):
+            if guard in already_failing:
+                problems.append(
+                    f"{label}: UNVERIFIED — its guard {guard!r} was already "
+                    f"failing before any mutation was applied, so this "
+                    f"mutation proves nothing. Fix the suite, then re-run."
+                )
+                print(f"  UNVERIFIED {label} (its guard was already red at "
+                      f"baseline)")
+                continue
             edited: dict = {f: originals[f] for f in SOURCES}
             missing = [
                 old for old, _ in patches
@@ -310,11 +393,18 @@ def main() -> int:
                 target = next(f for f in SOURCES if old in edited[f])
                 edited[target] = edited[target].replace(old, new, 1)
             for f in SOURCES:
-                f.write_text(edited[f], encoding="utf-8")
-            failed = run_suites()
+                _write(f, edited[f], newlines[f])
+            failed, crashed = run_suites()
             if guard in failed:
                 print(f"  ok   {label}")
                 print(f"       -> {guard}")
+            elif crashed:
+                problems.append(
+                    f"{label}: the suite CRASHED rather than failing the "
+                    f"guard. A mutation that kills a suite proves nothing "
+                    f"about the guard it names."
+                )
+                print(f"  MISS {label} (crash, not a guard failure)")
             else:
                 problems.append(
                     f"{label}: expected {guard!r} to fail, got {sorted(failed) or 'no failures'}"
@@ -322,14 +412,17 @@ def main() -> int:
                 print(f"  MISS {label}")
     finally:
         for f in SOURCES:
-            f.write_text(originals[f], encoding="utf-8")
+            f.write_bytes(original_bytes[f])
 
     # Two different failures, kept apart — see the note in mutate_part8.py.
     # A restore failure is checked by comparing content; a suite failure is a
     # finding about the suite and must not be reported as a corrupted tree.
     unrestored = [
         f.name for f in SOURCES
-        if f.read_text(encoding="utf-8") != originals[f]
+        # BYTES, not text. A restore check that normalises newlines is
+        # constitutionally unable to see the damage a text-mode write does —
+        # PROGRESS.md, at the close of Block D.
+        if f.read_bytes() != original_bytes[f]
     ]
     if unrestored:
         problems.append(
