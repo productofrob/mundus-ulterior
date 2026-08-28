@@ -89,6 +89,21 @@ for _stream in (sys.stdout, sys.stderr):
 
 SWEEP_DIR = Path(__file__).resolve().parent / "sweeps"
 
+# Block F decision 2, 2026-08-28. A sweep on any arm other than the greedy
+# default is archived HERE and not in sweeps/. eval/calibrate_floor.load_sweeps
+# globs sweeps/*.json and pools every row it finds; the sonnet arm exists
+# precisely to be run BESIDE the frozen haiku archive and never folded into it,
+# and "never folded in" cannot be a habit of whoever runs it. The scope rule in
+# floor.json refuses a foreign arm even if one is moved in here by hand — that
+# is the guard. This is the ordinary path that means nobody has to rely on it.
+ARM_DIR = Path(__file__).resolve().parent / "arms"
+
+# The arm the entire archive was made on, and the only one that writes to
+# SWEEP_DIR. Not read from floor.json: floor.json names the arm its CALIBRATION
+# accepts, and a runner that took its idea of "default" from the file it is
+# about to be judged against could never produce a sweep that failed the check.
+DEFAULT_ARM = {"model_alias": translate.DEFAULT_MODEL, "temperature": 0.0}
+
 # D4's session identity lives in eval/answer_eval.py, not here. It is pure, it
 # is what eval/calibrate_floor.py counts dates from, and this module imports
 # `answer` and `ingest` — so a check on it that lived here could not run in the
@@ -102,10 +117,19 @@ def _resolved(answer) -> int:
 def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
               k: int, max_sources: int, profiles: dict, pause: float,
               dry_run: bool, write: bool, session: dict,
-              progress: bool = False) -> dict:
+              progress: bool = False, model_alias: str | None = None,
+              temperature: float = 0.0,
+              temperature_fallback: float | None = None) -> dict:
     from ingest.embed import EmbeddingError, embed_query, resolve_model_label
 
-    model_label = translate.resolve_model_label()
+    model_alias = model_alias or translate.DEFAULT_MODEL
+    # Resolved for the alias actually being sent. Before Block F this read
+    # `resolve_model_label()` with no argument, which resolves `chat-default`
+    # whatever the caller sends — the same defect correction 4 found in the
+    # probe, in the other direction: there the concrete name was sent and the
+    # alias reported, here the alias is sent and chat-default's concrete name
+    # would have been reported for a sonnet run.
+    model_label = translate.resolve_model_label(model_alias)
     embed_model = resolve_model_label()
     results: list[dict] = []
     evidence_report: list[dict] = []
@@ -168,8 +192,11 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
     def _one_run(case, passages, version, attempt) -> dict:
         answer = assemble.assemble(
             case.question, passages,
+            model=model_alias,
             model_label=model_label, profiles=profiles,
             prompt_version=version,
+            temperature=temperature,
+            temperature_fallback=temperature_fallback,
         )
         answer.embedding_model = embed_model
         answer.retrieval_k = k
@@ -187,6 +214,13 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
             "grounded": answer.grounding.ok,
             "refused": answer.refused,
             "model": answer.model,
+            # Block F decision 2. The ARM: the alias sent and the
+            # temperature the call actually ran at. `model` above is the
+            # resolved concrete label and moves whenever the gateway
+            # config is edited; the alias is what a later reader needs to
+            # know two archives are comparable.
+            "model_alias": answer.model_alias,
+            "temperature": answer.temperature,
             # Block E decision 3. `model` is the alias this repository
             # SENT and cannot move; this is what the gateway said it
             # served. Absent keys are omitted rather than written null,
@@ -228,6 +262,13 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
             # without noticing.
             "session_id": session["id"],
             "session_date": session["date"],
+            # On the ROW for the same reason session_id is: the variance
+            # decomposition and both stability numbers read ROWS, and a
+            # pooled figure over two arms is one number describing two
+            # experiments. eval.answer_eval refuses that pooling, and it
+            # can only refuse what the row states.
+            "model_alias": answer.model_alias,
+            "temperature": answer.temperature,
             "content_ok": scored.ok,
             "grounded": answer.grounding.ok,
             "refused": answer.refused,
@@ -389,6 +430,13 @@ def run_sweep(conn, cases, prompt_versions: list[str], repeat: int,
                      if identity})
     return {
         "results": results,
+        # Stated once at the top of the archive as well as on every row, so
+        # that "which arm is this" is a question the file answers in its first
+        # ten lines rather than one a reader derives from 99 rows.
+        "arm": {"model_alias": model_alias,
+                "model_label": model_label,
+                "temperature": temperature,
+                "temperature_fallback": temperature_fallback},
         "serving_stacks": [json.loads(s) for s in stacks],
         # A sweep with a hole in it is not a shorter sweep. Both are NAMED so
         # that the archive states which cells never returned rather than a
@@ -547,11 +595,29 @@ def main(argv: list[str] | None = None) -> int:
                              "A redirected run still captures everything; a "
                              "plain run becomes watchable. Block E correction "
                              "5.")
+    parser.add_argument("--model", default=translate.DEFAULT_MODEL,
+                        help="gateway alias to send. Anything other than "
+                             f"{translate.DEFAULT_MODEL!r} archives to "
+                             "eval/arms/ and can never calibrate the floor. "
+                             "Block F decision 2.")
+    parser.add_argument("--temperature", type=float, default=0.0,
+                        help="ruling 22: opt-in and recorded. A non-zero value "
+                             "is a different ARM, not a variation of this one.")
+    parser.add_argument("--temperature-fallback", type=float, default=None,
+                        help="ruling 22's opt-in fallback, for a model that "
+                             "refuses temperature=0 with a 400. Recorded in "
+                             "the arm block whether or not it fires.")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args(argv)
 
     if args.repeat < 1:
         parser.error("--repeat must be at least 1")
+    arm = {"model_alias": args.model, "temperature": args.temperature}
+    is_default_arm = arm == DEFAULT_ARM
+    if not is_default_arm and not args.session_label:
+        # A foreign arm with no label is the one that gets mistaken for the
+        # archive later. The label is free and the confusion is not.
+        parser.error("a non-default arm must carry --session-label")
     versions = args.prompt_versions or [assemble.ANSWER_PROMPT_VERSION]
 
     try:
@@ -577,6 +643,13 @@ def main(argv: list[str] | None = None) -> int:
     print(f"session: {session['id'][:12]}  {session['date']} "
           f"({SESSION_DATE_BASIS})"
           + (f"  {session['label']}" if session["label"] else ""))
+    print(f"arm: {args.model} at temperature {args.temperature}"
+          + ("" if is_default_arm else "   NOT THE DEFAULT ARM"))
+    if not is_default_arm:
+        print(f"  archives to {ARM_DIR} and NOT to {SWEEP_DIR}.\n"
+              f"  It cannot calibrate the floor, it is not comparable with "
+              f"the greedy archive,\n  and eval.calibrate_floor will refuse "
+              f"it by rule if it is ever moved across.")
 
     import psycopg
 
@@ -595,6 +668,8 @@ def main(argv: list[str] | None = None) -> int:
             conn, cases, versions, args.repeat, args.k, args.max_sources,
             profiles, args.pause, args.dry_run, write=not args.no_write,
             session=session, progress=args.progress,
+            model_alias=args.model, temperature=args.temperature,
+            temperature_fallback=args.temperature_fallback,
         )
 
     if "error" in outcome:
@@ -653,12 +728,19 @@ def main(argv: list[str] | None = None) -> int:
               f"that a sweep spanning midnight cannot be read as two days.")
 
     if not args.no_write:
-        SWEEP_DIR.mkdir(parents=True, exist_ok=True)
+        # Block F decision 2. The directory IS the arm's separation, and the
+        # filename says which arm even after someone moves the file.
+        target_dir = SWEEP_DIR if is_default_arm else ARM_DIR
+        suffix = "" if is_default_arm else (
+            f"-{args.model}-t{args.temperature:g}")
+        target_dir.mkdir(parents=True, exist_ok=True)
         stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%S")
-        path = SWEEP_DIR / f"{stamp}-{'_'.join(versions)}-r{args.repeat}.json"
+        path = target_dir / (
+            f"{stamp}-{'_'.join(versions)}-r{args.repeat}{suffix}.json")
         path.write_text(json.dumps(
             {"prompt_versions": versions, "repeat": args.repeat,
              "session": session,
+             "arm": outcome.get("arm"),
              # FINDING 14. Both ends, and the verdict, in the sweep file as
              # well as in every per-run archive — so that "the corpus did not
              # move under this sweep" is a fact the archive states rather than

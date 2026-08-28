@@ -1096,6 +1096,41 @@ def load_floor(path: Path | None = None) -> dict:
                 f"required_cases_note forbids."
             )
 
+    # Block F decision 4, 2026-08-28. The THIRD state, and the two ways it can
+    # be abused. A promotion candidate is a case that is not failing and has
+    # not met the bar; it is reported beside the floor verdict and counts
+    # toward neither side of it. The checks below exist because the entry that
+    # created this state was a case sitting in known_failing_cases recording,
+    # in its own text, that it passed 12/12 — a file asserting the opposite of
+    # what it had measured, for two days, because no state fitted.
+    for case_id, record in (data.get("promotion_candidates") or {}).items():
+        if case_id in set(data["required_cases"]):
+            raise GoldSetError(
+                f"{path.name}: {case_id} is a promotion candidate and is "
+                f"already in required_cases. A case cannot be both waiting for "
+                f"the bar and counted as having met it."
+            )
+        if case_id in (data.get("known_failing_cases") or {}):
+            raise GoldSetError(
+                f"{path.name}: {case_id} is listed as a promotion candidate "
+                f"AND as known-failing. That contradiction is exactly the one "
+                f"this state was added to end, on 2026-08-28: an entry saying "
+                f"a case fails while recording that it passes."
+            )
+        if not isinstance(record, dict):
+            raise GoldSetError(
+                f"{path.name}: promotion_candidates[{case_id}] is not a "
+                f"record.")
+        thin = [key for key in ("evidence", "bar")
+                if not str(record.get(key, "")).strip()]
+        if thin:
+            raise GoldSetError(
+                f"{path.name}: promotion_candidates[{case_id}] omits "
+                f"{sorted(thin)}. A candidate with no written bar is a case "
+                f"that gets promoted whenever someone next looks at it, which "
+                f"is the demotion rule's failure mode pointing upward."
+            )
+
     # The scope rule that decides which archived sweeps may calibrate. An
     # exclusion with no reason beside it is a file moved out of the way.
     scope = data.get("calibration_scope") or {}
@@ -1113,6 +1148,29 @@ def load_floor(path: Path | None = None) -> dict:
                     f"has no reason. An unexplained exclusion is a file moved "
                     f"out of the way with extra steps."
                 )
+        # Block F decision 2, 2026-08-28. The arm clause is optional — a floor
+        # file written before it existed does not silently acquire one — but a
+        # HALF-declared arm is worse than none, because calibration_eligibility
+        # would compare against a None alias and pass everything that also
+        # recorded None.
+        arm = scope.get("arm")
+        if arm is not None:
+            if not isinstance(arm, dict) or not str(
+                    arm.get("model_alias", "")).strip():
+                raise GoldSetError(
+                    f"{path.name}: calibration_scope.arm names no "
+                    f"model_alias. An arm clause that cannot say which alias "
+                    f"it means admits every sweep that also says nothing."
+                )
+            try:
+                float(arm.get("temperature"))
+            except (TypeError, ValueError):
+                raise GoldSetError(
+                    f"{path.name}: calibration_scope.arm.temperature is "
+                    f"{arm.get('temperature')!r}. Ruling 22 makes temperature "
+                    f"a recorded quantity; an arm that does not state one is "
+                    f"half a pair, and the pair is the whole point."
+                ) from None
     return data
 
 

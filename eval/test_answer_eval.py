@@ -1232,9 +1232,17 @@ def test_calibration_refuses_too_few_days() -> None:
     in_scope = int((floor.get("calibration_scope") or {}).get(
         "min_cases_per_sweep") or 0)
 
+    # Block F, 2026-08-28: the scope rule now reads the ARM out of a sweep as
+    # well as the case set, for the same reason the comment above gives about
+    # cases. A fixture written to test dates should carry the declared arm and
+    # fail on dates; a fixture that omitted it would fail on the arm instead
+    # and every guard below would be watching the wrong clause.
+    declared_arm = dict((floor.get("calibration_scope") or {}).get("arm") or {})
+
     def sweep(date, session_id, repeat=3, cases=None):
         n = in_scope if cases is None else cases
         return {"repeat": repeat,
+                "arm": declared_arm,
                 "results": [{"case": f"case-{i}"} for i in range(n)],
                 "session": {"id": session_id, "date": date,
                             "date_basis": "UTC"}}
@@ -1462,8 +1470,11 @@ def test_the_calibration_scope_and_demotions() -> None:
            f"the scope admits only sweeps of >= 30 cases, which is G4's "
            f"number ({scope['min_cases_per_sweep']})")
 
+    declared_arm = dict(scope.get("arm") or {})
+
     def sweep(date, session_id, repeat=3, cases=30):
         return {"repeat": repeat,
+                "arm": declared_arm,
                 "results": [{"case": f"case-{i}"} for i in range(cases)],
                 "session": {"id": session_id, "date": date,
                             "date_basis": "UTC"}}
@@ -1788,6 +1799,189 @@ def test_a_failed_chat_call_does_not_take_the_day() -> None:
            "the progress line is flushed — buffered progress is not progress")
 
 
+def test_the_arm_is_part_of_the_scope() -> None:
+    """Block F decision 2, 2026-08-28, declared BEFORE the sonnet arm ran.
+
+    The defect this closes is not that a sonnet sweep might calibrate the
+    floor by accident. It is that the file's own anti-loophole would have
+    INSISTED on it. A sonnet arm at temperature 1 carries a session identity,
+    runs the full 33 cases and archives complete, so it satisfies every clause
+    the scope had; `a_named_sweep_must_actually_fail_the_rule` then refuses to
+    let a qualifying sweep be excluded by name. The guard built to stop numbers
+    being hidden would have forced a temperature-1 sonnet sweep into a floor
+    set on greedy haiku.
+
+    Nine sweeps are archived and none records an arm, so the reconstruction is
+    guarded here too — including the half of it that is an ASSUMPTION about the
+    code rather than a reading of the file.
+    """
+    print("\nthe arm, and why it had to become part of the rule")
+
+    floor = load_floor()
+    scope = floor["calibration_scope"]
+    arm = scope.get("arm") or {}
+    expect(bool(arm.get("model_alias")) and arm.get("temperature") is not None,
+           "the floor declares the ARM it calibrates from, as a pair")
+
+    def sweep(date, session_id, arm_block=..., rows=None, cases=30):
+        out = {"repeat": int(floor["min_repetitions"]),
+               "results": rows or [{"case": f"case-{i}"} for i in range(cases)],
+               "session": {"id": session_id, "date": date, "date_basis": "UTC"}}
+        if arm_block is not ...:
+            out["arm"] = arm_block
+        return out
+
+    mine = dict(arm)
+    three = [sweep("2026-08-24", "a", mine), sweep("2026-08-25", "b", mine),
+             sweep("2026-08-26", "c", mine)]
+    expect(answer_eval.calibration_eligibility(three, floor)["may_calibrate"],
+           "three dates on the DECLARED arm calibrate exactly as before")
+
+    # The whole point, in one fixture: a foreign arm that passes every other
+    # clause. Same repetitions, same case count, complete grid, and — so that
+    # the DATE clause cannot be what refuses it — added as a fourth sweep
+    # beside three days that already calibrate on their own.
+    sonnet = three + [sweep("2026-08-27", "d",
+                            {"model_alias": "chat-strong",
+                             "temperature": 1.0})]
+    verdict = answer_eval.calibration_eligibility(sonnet, floor)
+    expect(not verdict["may_calibrate"]
+           and any("chat-strong" in r for r in verdict["refusals"]),
+           "GUARD a sweep on another arm cannot calibrate, even when it "
+           "satisfies every other clause of the rule")
+
+    # And, because it genuinely FAILS the rule, naming it is legitimate — the
+    # anti-loophole does not fire. That is the difference this clause buys.
+    named = {**floor, "calibration_scope": {
+        **scope, "excluded_by_rule": {"sonnet.json": "temperature-1 sonnet "
+                                                     "arm; not this floor's"}}}
+    excused = answer_eval.calibration_eligibility(
+        sonnet, named, ["a.json", "b.json", "c.json", "sonnet.json"])
+    expect(excused["may_calibrate"]
+           and [e["sweep"] for e in excused["excluded_by_rule"]]
+           == ["sonnet.json"],
+           "a foreign arm CAN be excluded by name, because it really does "
+           "fail the rule — the anti-loophole does not fire on it")
+
+    # The nine legacy archives. No arm block, and the alias recoverable only
+    # from the echo Block E correction 4 established cannot move.
+    legacy_rows = [{"case": f"case-{i}",
+                    "serving_stack": {"id": f"chatcmpl-{i}",
+                                      "model": arm["model_alias"]}}
+                   for i in range(30)]
+    legacy = answer_eval.sweep_arm(sweep("2026-08-24", "a", rows=legacy_rows))
+    expect(legacy["model_alias"] == arm["model_alias"]
+           and legacy["basis"] == "reconstructed",
+           "GUARD a pre-Block-F sweep's arm is RECONSTRUCTED from "
+           "serving_stack.model and says so, rather than being assumed")
+    expect(answer_eval.calibration_eligibility(
+        [sweep(d, s, rows=legacy_rows)
+         for d, s in (("2026-08-24", "a"), ("2026-08-25", "b"),
+                      ("2026-08-26", "c"))], floor)["may_calibrate"],
+           "the four Block E archives still calibrate — the clause does not "
+           "de-calibrate a floor by arriving")
+
+    foreign_legacy = [{"case": f"case-{i}",
+                       "serving_stack": {"model": "chat-strong"}}
+                      for i in range(30)]
+    expect(not answer_eval.calibration_eligibility(
+        three + [sweep("2026-08-27", "d", rows=foreign_legacy)],
+        floor)["may_calibrate"],
+           "GUARD reconstruction is not a free pass: a sweep whose rows echo "
+           "another alias fails the arm clause too")
+
+    blind = sweep("2026-08-27", "d", rows=[{"case": f"case-{i}"}
+                                           for i in range(30)])
+    expect(answer_eval.sweep_arm(blind)["basis"] == "unidentifiable"
+           and not answer_eval.calibration_eligibility(
+               three + [blind], floor)["may_calibrate"],
+           "GUARD a sweep whose arm cannot be identified at all blocks, "
+           "rather than being read as the default")
+
+    # The decomposition, from the other end. Pooling two arms charges the
+    # difference between two MODELS to the residual and prints it as sampling
+    # noise — the prompt-version refusal's argument, for the factor nothing
+    # recorded until today.
+    rows = []
+    for case in ("a", "b"):
+        for session, alias in (("s1", "chat-default"), ("s2", "chat-strong")):
+            for rep in range(2):
+                rows.append({"case": case, "session_id": session,
+                             "session_date": "2026-08-26",
+                             "prompt_version": "p7-answer-v2r",
+                             "model_alias": alias,
+                             "temperature": 0.0 if alias == "chat-default" else 1.0,
+                             "repetition": rep, "content_ok": True,
+                             "answer": "x"})
+    mixed = answer_eval.decompose_verdicts(rows)
+    expect(any("arms" in r for r in mixed["refusals"]),
+           "GUARD a decomposition refuses to pool two arms")
+
+
+def test_the_promotion_candidate_state() -> None:
+    """Block F decision 4, 2026-08-28. The third state, and its two abuses.
+
+    `weilue-chinese-quotation` sat in `known_failing_cases` for two days
+    recording, in its own corrected text, that it passed 12/12 — a file
+    asserting the opposite of what it had measured, because no state fitted.
+    The demotion rules already stop a case leaving the file downward without
+    evidence and a written condition. These are the same rules pointing up.
+    """
+    print("\nthe promotion candidate, and the bar that governs both directions")
+
+    floor = load_floor()
+    candidates = floor.get("promotion_candidates") or {}
+    expect("weilue-chinese-quotation" in candidates,
+           "weilue-chinese-quotation is a promotion candidate, not a known "
+           "failure — it passes 12/12 and the file no longer says otherwise")
+    expect("weilue-chinese-quotation" not in floor["known_failing_cases"]
+           and "weilue-chinese-quotation" not in floor["required_cases"],
+           "and it is in neither of the other two states")
+    expect(all(str(candidates["weilue-chinese-quotation"].get(k, "")).strip()
+               for k in ("evidence", "bar")),
+           "the candidate records its evidence and the bar it has to meet")
+    expect(str(floor.get("promotion_and_reinstatement_bar", "")).strip()
+           and "three" in floor["demotions"]["vimose-runes"][
+               "reinstated_when"].lower(),
+           "ONE bar governs both directions, and the demotion carries the "
+           "raised version of it")
+
+    def floor_with(**rest):
+        base = {**floor, **rest}
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "floor.json"
+            path.write_text(json.dumps(base), encoding="utf-8")
+            try:
+                load_floor(path)
+            except GoldSetError as exc:
+                return str(exc)
+        return ""
+
+    both = floor_with(promotion_candidates={
+        "vimose-runes": {"evidence": "e", "bar": "b"}})
+    expect("known-failing" in both,
+           "GUARD a case cannot be a promotion candidate AND a known failure "
+           "— that contradiction is the one this state was added to end")
+
+    already = floor_with(promotion_candidates={
+        "muziris-cargo": {"evidence": "e", "bar": "b"}})
+    expect("required_cases" in already,
+           "GUARD a case already in required_cases cannot also be waiting to "
+           "get in")
+
+    barless = floor_with(promotion_candidates={
+        "some-case": {"evidence": "12/12"}})
+    expect("bar" in barless,
+           "GUARD a promotion candidate with no written bar is refused")
+
+    scope = dict(floor["calibration_scope"])
+    half = floor_with(calibration_scope={**scope,
+                                         "arm": {"temperature": 0.0}})
+    expect("model_alias" in half,
+           "GUARD a half-declared arm clause is refused — it would admit "
+           "every sweep that also said nothing")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -1814,6 +2008,8 @@ def main() -> int:
     test_a_failed_chat_call_does_not_take_the_day()
     test_calibration_refuses_too_few_days()
     test_the_calibration_scope_and_demotions()
+    test_the_arm_is_part_of_the_scope()
+    test_the_promotion_candidate_state()
     test_the_floor()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0

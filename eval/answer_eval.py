@@ -704,6 +704,24 @@ def _decomposition_rows(rows: list[dict], value_key: str) -> dict:
     dated = [r for r in rows if r.get("session_id")]
     without = len(rows) - len(dated)
 
+    # Block F decision 2. The same argument as the prompt-version refusal
+    # directly below, for the factor that was not recorded until Block F: rows
+    # from two arms pooled into one decomposition charge the difference between
+    # two MODELS to the residual and print it as sampling noise. Rows archived
+    # before Block F carry no arm and are all one arm, so a set containing any
+    # of them plus one labelled row is exactly the case this refuses.
+    arms = sorted({(r.get("model_alias"), r.get("temperature"))
+                   for r in rows if r.get("model_alias") is not None})
+    if len(arms) > 1:
+        refusals.append(
+            f"{len(arms)} arms in one decomposition ("
+            + "; ".join(f"{alias} at temperature {float(temp or 0.0):g}"
+                        for alias, temp in arms)
+            + "). Pooling them charges the difference between two models to "
+              "the residual and reports it as sampling noise. Decompose each "
+              "arm separately."
+        )
+
     if len(versions) > 1:
         # Pooling two prompt versions puts PROMPT VERSION into the residual
         # term and reports it as sampling noise. Part 8's entire archived grid
@@ -1161,6 +1179,75 @@ def corpus_moved(before: dict, after: dict) -> str | None:
 # D4 — calibration refuses to be written from too few days
 # --------------------------------------------------------------------------
 
+# Block F decision 2, 2026-08-28. What produced these numbers, expressed as
+# the pair that decides comparability.
+LEGACY_ARM_TEMPERATURE = 0.0
+
+
+def sweep_arm(sweep: dict) -> dict:
+    """The (model alias, temperature) a sweep was run on, and how that is known.
+
+    Why this function is not `sweep["arm"]["model_alias"]`
+    -----------------------------------------------------
+
+    Nine sweeps are archived and not one of them records an arm. Every number
+    Block E published is denominated in a model and a temperature that were
+    facts about the code on the day, not about the archive — exactly the shape
+    of FINDING 14 (a corpus version that lived in the runner rather than in the
+    run) one layer up. The sonnet arm makes that gap load-bearing: two archives
+    that differ only in the thing neither of them records.
+
+    So the arm is RECONSTRUCTED for the nine, from evidence that is on disk,
+    and only from evidence that is on disk:
+
+      * the ALIAS comes from `serving_stack.model` on the rows. Block E
+        correction 4 established that this field is the echo of the string
+        SENT and cannot move — useless as a drift detector, which is precisely
+        what makes it a faithful record of what the sweep asked for.
+      * the TEMPERATURE cannot be read from the archive at all, because
+        `assemble.assemble` had no temperature parameter until Block F: the
+        answer path could not send anything but 0. That is a claim about the
+        code and not about the file, so it is `assumed` rather than `read`,
+        and it is stated in the return value rather than folded silently into
+        an equality test.
+
+    A sweep archived AFTER the runner learned to record an arm carries one, and
+    a missing arm block then means the sweep came from somewhere else. Callers
+    are told which of the two they have: `basis` is "recorded" or
+    "reconstructed", and `reconstructed` is never treated as a positive
+    identification of the arm — it is only ever enough to say "this is the
+    legacy greedy arm, or it is not identifiable".
+    """
+    recorded = sweep.get("arm")
+    if isinstance(recorded, dict) and recorded.get("model_alias"):
+        return {"model_alias": recorded["model_alias"],
+                "temperature": float(recorded.get("temperature") or 0.0),
+                "basis": "recorded",
+                "note": ""}
+
+    rows = sweep.get("results") or []
+    aliases = sorted({
+        (row.get("model_alias")
+         or ((row.get("serving_stack") or {}).get("model")))
+        for row in rows
+    } - {None})
+    if len(aliases) == 1:
+        return {"model_alias": aliases[0],
+                "temperature": LEGACY_ARM_TEMPERATURE,
+                "basis": "reconstructed",
+                "note": "alias read from serving_stack.model on the rows; "
+                        "temperature assumed 0 because the answer path could "
+                        "not send another value before Block F"}
+    if len(aliases) > 1:
+        return {"model_alias": None, "temperature": None,
+                "basis": "unidentifiable",
+                "note": f"{len(aliases)} distinct aliases on the rows of one "
+                        f"sweep: {', '.join(aliases)}"}
+    return {"model_alias": None, "temperature": None,
+            "basis": "unidentifiable",
+            "note": "no arm block, and no row records an alias"}
+
+
 def calibration_eligibility(sweeps: list[dict], floor: dict,
                             names: list[str] | None = None) -> dict:
     """May `calibrated: true` be written from these sweeps? Pure; no I/O.
@@ -1217,6 +1304,11 @@ def calibration_eligibility(sweeps: list[dict], floor: dict,
     scope = floor.get("calibration_scope") or {}
     min_cases = int(scope.get("min_cases_per_sweep") or 0)
     named = dict(scope.get("excluded_by_rule") or {})
+    # Block F decision 2. The arm this floor calibrates from. Absent means the
+    # clause is not declared and nothing is checked, which is the pre-Block-F
+    # behaviour exactly — a floor file written before the clause existed does
+    # not silently acquire it.
+    declared_arm = scope.get("arm") or {}
     if names is None:
         names = [None] * len(sweeps)
 
@@ -1245,7 +1337,30 @@ def calibration_eligibility(sweeps: list[dict], floor: dict,
         if sweep.get("incomplete"):
             fails.append(f"archived INCOMPLETE: {len(sweep['incomplete'])} "
                          f"cell(s) never returned")
-        entry = {"sweep": name, "fails": fails}
+        # Block F decision 2, 2026-08-28, declared BEFORE the sonnet arm ran
+        # and for that reason. Every archived number is haiku at temperature 0.
+        # A sonnet arm at temperature 1 carries a session identity and runs the
+        # full 33 cases, so it SATISFIES every other clause of this rule — and
+        # `a_named_sweep_must_actually_fail_the_rule` then makes it impossible
+        # to exclude by name. The arm has to be part of the rule, or the
+        # anti-loophole becomes the loophole: the file's own guard would insist
+        # that a temperature-1 sonnet sweep calibrate a floor set on greedy
+        # haiku. Declared in advance because a scope settled after seeing the
+        # sonnet numbers is a scope chosen to fit them.
+        arm = sweep_arm(sweep)
+        if declared_arm:
+            want = (declared_arm.get("model_alias"),
+                    float(declared_arm.get("temperature") or 0.0))
+            if arm["basis"] == "unidentifiable":
+                fails.append(f"records no identifiable arm ({arm['note']}), "
+                             f"and this floor calibrates only from "
+                             f"{want[0]} at temperature {want[1]:g}")
+            elif (arm["model_alias"], arm["temperature"]) != want:
+                fails.append(
+                    f"ran {arm['model_alias']} at temperature "
+                    f"{arm['temperature']:g}, not the {want[0]} at temperature "
+                    f"{want[1]:g} this floor calibrates from")
+        entry = {"sweep": name, "fails": fails, "arm": arm}
         if not fails:
             # A sweep that qualifies cannot be excluded. This is the whole
             # anti-loophole, and it is one line.
@@ -1332,6 +1447,13 @@ def calibration_eligibility(sweeps: list[dict], floor: dict,
         "excluded_by_rule": excluded,
         "wrongly_excluded": sorted(wrongly_excluded),
         "min_cases_per_sweep": min_cases,
+        "declared_arm": declared_arm or None,
+        # Every arm seen, eligible or not, and how each was established. A
+        # calibration standing on four sweeps whose arm was RECONSTRUCTED is a
+        # different claim from one standing on four that recorded it, and the
+        # difference should not have to be dug out of the code.
+        "arms": [dict(sweep_arm(sweep), sweep=name)
+                 for sweep, name in zip(sweeps, names)],
     }
 
 

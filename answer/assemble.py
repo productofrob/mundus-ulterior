@@ -244,6 +244,15 @@ class AssembledAnswer:
     # Block E decision 3, 2026-08-26. What the gateway said about which stack
     # served the call, as distinct from `model`, which is the alias sent.
     serving_stack: dict = field(default_factory=dict)
+    # Block F decision 2, 2026-08-28. THE ARM. `model` above is the resolved
+    # LABEL a caller passed in, and `serving_stack.model` is the echo of what
+    # was sent; neither is the pair (alias, temperature) that decides whether
+    # two runs are comparable. Nine archived sweeps record no such pair, so
+    # "which arm produced this" was a fact about the code at the time rather
+    # than about the archive - see eval/answer_eval.sweep_arm, which has to
+    # reconstruct it for them and refuses to for anything archived after this.
+    model_alias: str = DEFAULT_MODEL
+    temperature: float = 0.0
 
     @property
     def ok(self) -> bool:
@@ -433,6 +442,8 @@ def assemble(
     max_tokens: int = DEFAULT_MAX_TOKENS,
     sleep=time.sleep,
     prompt_version: str | None = None,
+    temperature: float = 0.0,
+    temperature_fallback: float | None = None,
 ) -> AssembledAnswer:
     """One chat call, then verification. Never raises on a bad answer — an
     ungrounded answer is a result, and suppressing it would hide the failure that
@@ -451,6 +462,8 @@ def assemble(
             model=model_label or model,
             prompt_version=version,
             notes=["retrieval returned nothing; no chat call was made"],
+            model_alias=model,
+            temperature=temperature,
         )
 
     evidence_block = cite.render_evidence(passages, profiles)
@@ -473,6 +486,14 @@ def assemble(
         build_messages(question, evidence_block, version),
         model=model, client=client, max_tokens=max_tokens, sleep=sleep,
         provenance=serving_stack,
+        # Block F decision 2. Ruling 22's contract, unchanged: temperature is
+        # opt-in and recorded. The default is 0.0 and every caller in this
+        # repository except the sonnet arm leaves it there, so the greedy
+        # archive keeps sending exactly what it sent. `temperature_fallback`
+        # stays None by default for the same reason - a caller that has not
+        # asked for a fallback must still get the 400 that ruling 22 records.
+        temperature=temperature,
+        temperature_fallback=temperature_fallback,
     )
     if retries:
         notes.append(f"{retries} retry/retries before the answer came back")
@@ -502,6 +523,12 @@ def assemble(
         prompt_version=version,
         notes=notes,
         raw_response=raw or "",
+        # The alias SENT and the temperature ACTUALLY USED, not the ones asked
+        # for. Ruling 22's fallback can move the second between the request and
+        # the response, and an arm recorded from the request would then name a
+        # temperature no call ran at.
+        model_alias=model,
+        temperature=temperature_used,
         # An empty dict, never None, when the gateway returns nothing
         # distinguishing. The difference between "this call was never asked"
         # and "this call was asked and the gateway said nothing" is the whole

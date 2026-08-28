@@ -512,15 +512,19 @@ def _has_content_assertion(raw: dict) -> bool:""")],
         # exactly: first-source-wins would have moved the mutation onto the
         # sweep's PRINTING and left the decomposition's refusal unwatched while
         # the harness reported only that its guard had not failed. Caught by
-        # this harness's own ambiguity check, which is what it is for. Anchored
-        # on the preceding line, which is unique to answer_eval.py.
+        # this harness's own ambiguity check, which is what it is for.
+        # RE-ANCHORED AGAIN 2026-08-28, Block F decision 2. The anchor was the
+        # PRECEDING line, and the arm refusal was inserted between the two —
+        # so the target stopped existing and the harness reported MISS (target
+        # not found) rather than a broken guard. It now anchors on the FOLLOWING
+        # comment, which is unique to answer_eval.py and is the thing this
+        # mutation is actually about: a preceding line can be pushed away by an
+        # insertion, and this one just was.
         "two prompt versions are pooled into one decomposition",
-        [("""    without = len(rows) - len(dated)
-
-    if len(versions) > 1:""",
-          """    without = len(rows) - len(dated)
-
-    if False:""")],
+        [("""    if len(versions) > 1:
+        # Pooling two prompt versions puts PROMPT VERSION into the residual""",
+          """    if False:
+        # Pooling two prompt versions puts PROMPT VERSION into the residual""")],
     ),
     (
         # The balanced estimators are only these expressions on a balanced
@@ -667,6 +671,73 @@ def _has_content_assertion(raw: dict) -> bool:""")],
             print(f"[retry] {len(failed)} cell(s), over the same evidence",
                   file=sys.stderr, flush=True)""")],
     ),
+    # ---- Block F decisions 2 and 4, 2026-08-28 ---------------------------
+    # Declared and guarded BEFORE the sonnet arm runs. The defect being closed
+    # is not that a sonnet sweep might calibrate the floor by accident: it is
+    # that `a_named_sweep_must_actually_fail_the_rule` would have INSISTED on
+    # it, because a temperature-1 sonnet arm satisfies every clause the scope
+    # had. The guard built to stop numbers being hidden would have forced a
+    # sonnet sweep into a floor set on greedy haiku.
+    (
+        "the arm clause is skipped, and any arm calibrates",
+        [("""        arm = sweep_arm(sweep)
+        if declared_arm:""",
+          """        arm = sweep_arm(sweep)
+        if False:""")],
+    ),
+    (
+        # The nine legacy archives record no arm. Reading "cannot tell" as
+        # "the default" is how the reconstruction stops being a reconstruction
+        # and becomes an assumption wearing its clothes.
+        "an unidentifiable arm is read as the default rather than blocking",
+        [("""    return {"model_alias": None, "temperature": None,
+            "basis": "unidentifiable",
+            "note": "no arm block, and no row records an alias"}""",
+          """    return {"model_alias": "chat-default",
+            "temperature": LEGACY_ARM_TEMPERATURE,
+            "basis": "reconstructed",
+            "note": "no arm block, and no row records an alias"}""")],
+    ),
+    (
+        # The other half: a legacy sweep whose rows echo a DIFFERENT alias is
+        # a legacy sweep from another arm, and reconstruction must not launder
+        # it into this one.
+        "reconstruction reports the default alias whatever the rows echo",
+        [("""    if len(aliases) == 1:
+        return {"model_alias": aliases[0],""",
+          """    if len(aliases) == 1:
+        return {"model_alias": "chat-default",""")],
+    ),
+    (
+        # The prompt-version refusal's argument, for the factor nothing
+        # recorded until Block F.
+        "the decomposition pools two arms and calls the difference noise",
+        [("""    if len(arms) > 1:""", """    if False:""")],
+    ),
+    (
+        # Block F decision 4. The contradiction this state was added to end:
+        # a case in known_failing_cases recording, in its own text, that it
+        # passes 12/12.
+        "a promotion candidate may also be listed as a known failure",
+        [("""        if case_id in (data.get("known_failing_cases") or {}):""",
+          """        if False:""")],
+    ),
+    (
+        # The demotion rule pointing up. A candidate with no written bar is a
+        # case that gets promoted whenever someone next looks at it.
+        "a promotion candidate need not say what would promote it",
+        [("""        thin = [key for key in ("evidence", "bar")
+                if not str(record.get(key, "")).strip()]""",
+          """        thin = []""")],
+    ),
+    (
+        # A half-declared arm compares against a None alias and passes every
+        # sweep that also says nothing — worse than not declaring one.
+        "a half-declared arm clause is accepted",
+        [("""            if not isinstance(arm, dict) or not str(
+                    arm.get("model_alias", "")).strip():""",
+          """            if False:""")],
+    ),
 ]
 
 EXPECTED = [
@@ -774,6 +845,20 @@ EXPECTED = [
     "is unchanged, and days 1-3 remain comparable",
     "the retry pass announces itself, so a sweep that appears to have stopped "
     "at the last cell is legible",
+
+    # Block F decisions 2 and 4, in the order above.
+    "GUARD a sweep on another arm cannot calibrate, even when it satisfies "
+    "every other clause of the rule",
+    "GUARD a sweep whose arm cannot be identified at all blocks, rather than "
+    "being read as the default",
+    "GUARD reconstruction is not a free pass: a sweep whose rows echo another "
+    "alias fails the arm clause too",
+    "GUARD a decomposition refuses to pool two arms",
+    "GUARD a case cannot be a promotion candidate AND a known failure — that "
+    "contradiction is the one this state was added to end",
+    "GUARD a promotion candidate with no written bar is refused",
+    "GUARD a half-declared arm clause is refused — it would admit every sweep "
+    "that also said nothing",
 ]
 
 

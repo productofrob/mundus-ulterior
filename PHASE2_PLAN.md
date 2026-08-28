@@ -556,13 +556,40 @@ will promote them automatically if the text ever lands, with no code changes.
 
 **Gate G3 checklist:**
 
+*AMENDED 2026-08-28, before F1, as Block F decision 1 — recorded in advance
+because a gate amended at the end is a gate fitted to its result. Ruling 39
+carries the full text; `F0_RULINGS.md` is the authority. The two new boxes are
+the two numbers that SAW day 3, and the box they sit beside is the one that
+did not.*
+
 - [ ] **60 records** ingested, all seven regions
 - [ ] curation cost per record recorded and **trending down**
 - [ ] full sweep re-run at 60: content pass rate **not lower** than at 24
+- [ ] **per-session stability at 60, reported beside the pass rate** — not as a
+      threshold, as the number the pass rate cannot see. FINDING 26: four
+      sessions returned `content_pass_rate` 0.727272… to every digit printed
+      while two cases reversed and cancelled. A pass rate that reads the same
+      on a day the system behaved differently is a box that ticks itself.
+- [ ] **cross-session answer-text agreement at 60**, computed over **Block F's
+      own sessions at 60** and reported beside Block E's 74–77% / 45%, which are
+      **context and not a threshold**. The Block E figures were generated over
+      24 records: at 60 the evidence blocks differ by construction, so the text
+      differs by construction, and a gate comparing across the two corpora
+      would be measuring the corpus move it was meant to survive.
 - [ ] ranking gold set still **≥95% top-6**
 - [ ] `ui/build_ui_data.py --verify` clean — **zero `moved` or `absent`** (now meaningful, because corpus version is recorded)
 - [ ] confidence profiles that fire on real machine translations recalibrated, `calibrated` set honestly
 - [ ] only then, 200
+
+**What the amendment COSTS, stated with it.** Both new boxes need at least
+**two sessions at 60 records on two distinct UTC dates** — cross-session
+agreement has no meaning inside a single sweep, and per-session stability
+inside one sweep reads NOT MEASURED and says so. G3 as originally written
+needed one sweep at 60. It now needs two, ~198 chat calls, and **two booked
+days at the end of Block F**. Booked in advance for the reason item 4 of
+*Before anything else* gives: the days are the scarce resource, and a block
+that discovers on its last afternoon that it owes a second date has already
+failed the gate it was trying to pass.
 
 ---
 

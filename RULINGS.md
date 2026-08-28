@@ -1,4 +1,4 @@
-# Rulings register — 1 to 31
+# Rulings register — 1 to 39
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
 same day with 27-31, declared during TASK 2 (D2's schema change and D3's case
@@ -31,6 +31,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 26          C7_RESULT.md              full text
 27-31       D3_RULINGS.md             full text, "## Ruling N" headings
 32-35       D4_RULINGS.md             full text, "## Ruling N" headings
+36-39       F0_RULINGS.md             full text, "## Ruling N" headings
 ```
 
 ## The register
@@ -158,6 +159,29 @@ a line in a summary list is a ruling nobody can quote, check, or argue with
 later. The cost of writing the declaration at the time is a few paragraphs. The
 cost of not writing it is that the code becomes the only authority for what was
 decided, and code says what a thing does rather than why it was chosen.
+
+## 36-39, declared before F1
+
+Full text in `F0_RULINGS.md`, written in the session that made them. All four
+settle questions `BLOCK_F_START.md` left open on purpose, and all four are
+recorded BEFORE the first sub-tranche moves the corpus:
+
+```
+36  the ARM — (model alias, temperature) — is part of a sweep's identity and
+    part of the calibration scope. Without it, floor.json's own anti-loophole
+    would have INSISTED that a temperature-1 sonnet sweep calibrate a floor
+    set on greedy haiku.
+37  ONE bar governs promotion and reinstatement: 3/3 in each of three sessions
+    on three distinct UTC dates, at the corpus in force. Raised from two on
+    two, by FINDING 26.
+38  the promotion-candidate state — not required, not known-failing, reported
+    beside the floor verdict and counted toward neither.
+39  G3 is amended in advance, gated on Block F's own numbers at 60, and the
+    second session the amendment costs is booked with it.
+```
+
+Ruling 36 is the one to read before archiving any sweep that is not
+`chat-default` at temperature 0.
 
 ## 32-35, declared in TASK 3
 
