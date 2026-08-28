@@ -1629,6 +1629,32 @@ def test_a_failed_chat_call_does_not_take_the_day() -> None:
         serving_stack: dict = {}
         passages = [_Passage()]
         sources_block = ""
+        notes: list = []
+        raw_response = ""
+        # Block F, 2026-08-28. Added because the runner started reading them
+        # and this stand-in did not have them — eight checks in this function
+        # failed with an AttributeError that named neither the field nor the
+        # reason. See the coverage guard directly below, which is the thing
+        # that should have failed instead.
+        model_alias = "chat-default"
+        temperature = 0.0
+
+    # A stand-in for AssembledAnswer is a CONTRACT with it, and until now
+    # nothing said so. `_one_run` reads attributes off whatever `assemble`
+    # returns; when the arm fields were added, this class went stale and the
+    # eight behavioural checks below failed on an AttributeError raised deep
+    # inside the retry path — which reads as "the retry is broken" and is not.
+    # Checked against the dataclass rather than against a list, so a field
+    # added tomorrow fails HERE, once, by name.
+    import dataclasses
+    from answer.assemble import AssembledAnswer
+    absent = sorted(f.name for f in dataclasses.fields(AssembledAnswer)
+                    if not hasattr(_Answer, f.name))
+    expect(not absent,
+           f"GUARD the fake answer carries every AssembledAnswer field — "
+           f"a stand-in that has gone stale fails the checks below by "
+           f"AttributeError, and names neither the field nor the reason "
+           f"(absent: {absent})")
 
     class _Scored:
         ok, failures = True, []

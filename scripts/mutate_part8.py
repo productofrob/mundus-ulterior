@@ -901,7 +901,56 @@ def main() -> int:
     }
     problems: list[str] = []
     try:
+        # 2026-08-28, Block F. THE BASELINE, and why it is worth one extra run
+        # of the suite against seventy-three.
+        #
+        # A mutation is verified by naming a guard and checking that the guard
+        # FAILS once the code is broken. That check is only evidence if the
+        # guard was PASSING beforehand. On 2026-08-28 the arm work left eight
+        # checks failing on their own account — a stale stand-in for
+        # AssembledAnswer, nothing to do with any mutation — and one of the
+        # progress mutations named a guard that was among the eight. It
+        # reported `ok`. Its guard did fail; it had been failing before the
+        # mutation was applied, and would have failed if the mutation had done
+        # nothing at all.
+        #
+        # This harness already noticed the suite was red and said so, at the
+        # END, as a separate line — the 2026-08-12 distinction between "the
+        # sources were not restored" and "the suite fails on its own account".
+        # That line is true and it is not enough: a reader sees seventy-three
+        # `ok`s above it. A green mutation against a red baseline is a vacuous
+        # proof, which is the family this repository keeps catching, and this
+        # is it inside the instrument built to catch it.
+        #
+        # So: run the suite ONCE unmutated, keep the set of guards already
+        # failing, and mark any mutation naming one of them UNVERIFIED rather
+        # than ok. Not a MISS — nothing is known to be wrong with the mutation
+        # — and not a pass either, because nothing is known to be right.
+        _purge_bytecode()
+        _baseline = subprocess.run(
+            [sys.executable, "-B", "-m", "eval.test_answer_eval"],
+            cwd=ROOT, capture_output=True, text=True,
+            encoding="utf-8", errors="replace", env=CHILD_ENV,
+        )
+        already_failing = failures_from(_baseline.stdout)
+        if already_failing:
+            print(f"  BASELINE: {len(already_failing)} check(s) already fail "
+                  f"with NO mutation applied. Any mutation naming one of\n"
+                  f"            them cannot be verified by this run.")
+            for name in sorted(already_failing):
+                print(f"            - {name}")
+            print()
+
         for (label, patches), guard in zip(MUTATIONS, EXPECTED):
+            if guard in already_failing:
+                problems.append(
+                    f"{label}: UNVERIFIED — its guard {guard!r} was already "
+                    f"failing before any mutation was applied, so this "
+                    f"mutation proves nothing. Fix the suite, then re-run."
+                )
+                print(f"  UNVERIFIED {label} (its guard was already red "
+                      f"at baseline)")
+                continue
             edited = {f: originals[f] for f in SOURCES}
             missing = [
                 old for old, _ in patches
