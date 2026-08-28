@@ -1,4 +1,4 @@
-# Rulings register — 1 to 39
+# Rulings register — 1 to 42
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
 same day with 27-31, declared during TASK 2 (D2's schema change and D3's case
@@ -31,7 +31,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 26          C7_RESULT.md              full text
 27-31       D3_RULINGS.md             full text, "## Ruling N" headings
 32-35       D4_RULINGS.md             full text, "## Ruling N" headings
-36-39       F0_RULINGS.md             full text, "## Ruling N" headings
+36-42       F0_RULINGS.md             full text, "## Ruling N" headings
 ```
 
 ## The register
@@ -159,6 +159,28 @@ a line in a summary list is a ruling nobody can quote, check, or argue with
 later. The cost of writing the declaration at the time is a few paragraphs. The
 cost of not writing it is that the code becomes the only authority for what was
 decided, and code says what a thing does rather than why it was chosen.
+
+## 40-42, declared before F1 curates anything
+
+Full text in `F0_RULINGS.md`, in the same session. Each settles what a whole
+family of the 36 new records will be scored against, which is why they are
+recorded before the records are written:
+
+```
+40  an article the writer added to a quotation is a NAMED match class,
+    `article_added`, and it resolves. The span covers the record's characters
+    and not the article, and it is never reported as `exact`.
+    cite.QUOTE_RESOLUTION_CONTRACT dates what counts as resolved, because
+    archived spans are never re-resolved.
+41  on a correctly_refusable case, an expect_answer_excludes entry may not be
+    built from the case's own question — a correct refusal restates the
+    question it refuses. Refusal cases exclude FABRICATION MARKERS.
+42  skz-titulature is tracked as an open defect rather than corrected away.
+```
+
+Ruling 40 carries a CORRECTION made the same day, in the same section: it first
+said such a span landed in `absent`, and it landed in `case_only`. Read the
+correction, not only the ruling.
 
 ## 36-39, declared before F1
 
