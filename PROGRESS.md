@@ -11372,3 +11372,1260 @@ chat calls      1 spent this session
 - **`aksum-exports` remains an open defect.** Adding the passing half did not
   close it and was not recorded as closing it.
 - **TASK 2 and TASK 3 are not started.**
+
+---
+
+# Block D — TASK 2 / D2: the expected behaviour schema (2026-08-21)
+
+*Provenance of this section and the four that follow it: they are transcribed
+from `D2_RESULT.md`, `D3_RESULT.md`, `D3_RULINGS.md`, `FINDINGS_9_TO_13.md`,
+`WEILUE_FIX_RUNBOOK.md` and `D4_START.md`, all of which were written while the
+work was being done and every number in which was measured on the host at the
+time. **Nothing here was re-measured when this section was written.** Where a
+figure has since moved — the corpus digest did, three times — the movement is
+stated in the closing section rather than silently applied backwards.*
+
+**DRAFTED 2026-08-23 AND APPLIED 2026-08-28.** These five sections sat written
+and unapplied for five days while `PROGRESS.md` ended at TASK 1 and
+`BLOCK_F_START.md` sent the next thread to its last section. The delay is
+recorded rather than smoothed over: what follows was written when the work was
+fresh, and nothing in it was revised on the day it was finally pasted in.
+
+```
+tree at start   f54c585, clean
+tree at close   9ea1774  D2: every case declares its expected behaviour, and
+                         the loader refuses a default
+
+ANSWER          eval.test_answer_eval     71 -> 98    GREEN on the host
+mutations       scripts\mutate_part8.py   11 -> 23    all 23 verified on the host
+gold cases      6, unchanged in number. All six now carry a ruled label
+```
+
+**No suite was red at any point.** Both were run on the host, in that order,
+with the commit between them.
+
+D2 is the schema change and nothing else. **No new question was written, on
+purpose:** a case drafted against a permissive loader is a case nobody can be
+sure the strict loader would have refused. D3 writes the 24 new cases against
+the loader below.
+
+## The rule, and where it now lives
+
+> Every case declares its expected behaviour explicitly, and the loader REFUSES
+> to inherit it from a default.
+
+`expected_behaviour` is in `_ANSWER_REQUIRED`. A case that omits it is a load
+error. Three values, and they are not three flavours of one thing — they are
+three different pieces of news:
+
+| value | the corpus | what a red line MEANS |
+| :---- | :---- | :---- |
+| `answerable` | holds it | retrieval or assembly failed |
+| `correctly_refusable` | does not hold it | the model invented something |
+| `refusable_with_gloss` | holds it, untranslatably | a machine translation appeared, attached to a citation |
+
+Before D2 a red line said only *"this case failed"*, and which of the three it
+was lived in a human's head.
+
+## Eight loader clauses, each with its own mutation
+
+`expect_refusal` was **kept**, not derived. Two fields that must agree are a
+guard; one field computed from the other is a guard deleted. The disagreement is
+refused in both directions, and that is deliberately two clauses:
+
+```
+1  expected_behaviour is required            no default, no fallback
+2  the value is one of the three             an unread label is not a label
+3  correctly_refusable => expect_refusal     clause one of two
+4  expect_refusal => correctly_refusable     clause two of two
+5  a speaking case asserts positive content  see below
+6  refusable_with_gloss names a quoted doc   the published gloss
+7  refusable_with_gloss declares a hedge     expect_hedge_any
+8  a hedge outside the gloss arm is refused  a rule that is not in force
+```
+
+**Clause 5 is the one that was not asked for and earns its place.** A refusal
+contains none of the strings a case excludes, so a case built from
+`expect_answer_excludes` alone is passed by silence. `_has_content_assertion`
+already accepted such a case, because an exclusion IS a content assertion — it
+just is not one an answer has to speak to satisfy. Clause 5 says: if the label
+claims the answer should speak, something must require it to.
+
+### The hedge is now a declared field
+
+`expect_hedge_any` is new, and it is the one design decision taken inside the
+ruling rather than handed up. The ruling was *"published gloss plus required
+hedge"*, and **required** needs a way to identify the hedge. Previously
+`vimose-runes`'s hedge group was one entry among four in
+`expect_answer_contains_any`, indistinguishable from content — a later edit could
+drop it and nothing would notice.
+
+It costs no scorer change: **the loader merges the declared hedge back into
+`expect_answer_contains_any` at construction**, so `answer_eval.py` sees exactly
+what it saw before. The separation exists only at the point where the rule is
+enforced, which is load time.
+
+## The discriminator is now enforced, not described
+
+`paired_with` is symmetric and load-checked. Four clauses, four mutations: a case
+may not pair with itself; the partner must exist; the partner must name this case
+back; **and the two assertion blocks must be identical**. `_ASSERTION_KEYS` is
+what gets compared — everything that IS the test. `id`, `question`, `why`,
+`note`, `archived_status` and `paired_with` are excluded, because the question is
+the only thing the two halves are allowed to differ on.
+
+Deleting one half is now a load error. Relabelling one half is a load error. Both
+were prose in `answer_cases.json`.
+
+## FINDING 8 — the mutation harness was rewriting a source on every run, and said it restored it
+
+Not argued from the code. **Observed, by running it.**
+
+`scripts/mutate_part8.py` held `SOURCES = (eval/goldset.py, eval/answer_eval.py)`
+and **those two do not agree on line endings** — `goldset.py` is CRLF,
+`answer_eval.py` is LF. It captured originals with `read_text()`, which
+normalises every ending to `\n`, and restored with `write_text()`, which writes
+the platform's. **On the host it is `answer_eval.py` that gets converted, LF →
+CRLF, on every run.** The restore check could not see it: it compared
+`read_text()` to `read_text()`, normalised against normalised. It printed
+*"sources restored"*.
+
+This is Finding 5 with a name and a reproduction, and D2 could not leave it —
+D2 doubles the number of times this harness runs. Fixed in the same file:
+originals captured and restored as **bytes**; the unrestored check compares
+bytes; each source written back with **its own** line ending, detected at start;
+mixed endings inside one source refused rather than silently picked.
+
+Verified twice, and the second check is the one that matters: **on the host,
+`git status --short` after the 23-mutation run named no tracked file at all.**
+Before D2 that same command would have named `eval/answer_eval.py`.
+
+## Also fixed: the non-Latin pipe, before D3 meets it
+
+Both ends named rather than inherited from the locale — parent
+`subprocess.run(..., encoding="utf-8", errors="replace")`, child
+`PYTHONIOENCODING=utf-8`.
+
+**Recorded as not proven.** No case in the six-case gold set produces non-Latin
+*failure detail*, so the pipe was never asked to carry Greek, Tamil or Chinese
+during the 23-mutation run. The fix is defensive and untested; D3 is what will
+test it.
+
+## The six labels, as committed in `9ea1774`
+
+```
+answerable            aksum-exports        paired_with adulis-exports
+answerable            adulis-exports       paired_with aksum-exports
+answerable            muziris-cargo
+answerable            chinese-da-qin
+refusable_with_gloss  vimose-runes
+correctly_refusable   antikythera-absent
+```
+
+`vimose-runes` was contested at drafting time and **RULED: it stands as
+`refusable_with_gloss`.** The Elder Futhark sequences are only partly deciphered,
+which argues gloss; the record does carry a `reference_translation`, which argues
+`answerable` with a hedge. The label is not cosmetic — gloss says a red line
+means *a machine translation appeared*, answerable says *retrieval broke*.
+
+## What D2 did NOT do
+
+- **No new questions.** Still 6 cases; G4 needs ≥30.
+- **No scorer change.** `answer_eval.py` untouched. Block E's 270 calls go
+  through the same scorer that scored the archives.
+- **No floor change.** `calibrated: false` still stands.
+- **`aksum-exports` is still an open defect** and D2 did not close it.
+
+---
+
+# Rulings 25 to 31 declared in PROGRESS.md at last (2026-08-21)
+
+*Written because `C7_RESULT.md`, `D1_RESULT.md` and `D2_RESULT.md` each recorded
+the same open item: rulings 25 and 26 were being quoted by four Block D documents
+and declared in none of them, and `PROGRESS.md` — the file a later thread
+actually reads — declared neither. Rulings 27–31 are indexed here in the same
+breath so the gap does not reopen. Full text lives where each line says.*
+
+| # | one line | full text in |
+| :---- | :---- | :---- |
+| 25 | G2's gap criterion FAILS on its own arithmetic; kill trigger 1 pulled; the follow-on is a sourcebook at 24–60 records, not 200 | `C5_3B_AND_PROTOCOL.md` |
+| 26 | the two via-original keys are emitted from the COLLAPSE block, so via-original is measured at both points | `C7_RESULT.md` |
+| 27 | every case declares its expected behaviour, and the loader refuses to inherit it | `D3_RULINGS.md` |
+| 28 | the gloss arm is for a contested READING of a text, and nothing else | `D3_RULINGS.md` |
+| 29 | a false premise the corpus can correct is ANSWERABLE | `D3_RULINGS.md` |
+| 30 | behaviour balance is held to the definitions, and the shortfall is recorded | `D3_RULINGS.md` |
+| 31 | a discriminator loads as one instrument, and `paired_with` means only that | `D3_RULINGS.md` |
+
+**Do not renumber.** Twenty-six numbers were already quoted across `PROGRESS.md`
+and seven session documents before 27–31 existed.
+
+**Rulings 20 and 21 still have no full text anywhere** — one line each in
+`C5_START.md`'s numbered list, which every heading-based search misses. Both are
+built and mutation-verified, so **the code is the authority for them and no prose
+is.** They are deliberately not reconstructed: filing a plausible after-the-fact
+declaration is how a register stops recording what was decided and starts
+recording what someone later assumed.
+
+Two of the five new rulings are worth restating here in full, because they are
+the ones a later thread will be tempted to relax.
+
+**Ruling 28 keeps the gloss arm narrow.** It does not cover contested
+attribution, disputed dating, uncertain identification of a depicted figure or
+unresolved provenance. Those are real uncertainties and none of them is this one;
+where a case needs the answer to preserve such a doubt, the doubt is required as
+**ordinary content** on an `answerable` case. If the arm widens to any contested
+claim, a red line on it stops naming one failure and starts naming several, and
+the specific failure it was built to catch — *a machine translation, arriving
+attached to a citation* — becomes one meaning among many. **The count would
+improve and the instrument would get worse.**
+
+**Ruling 29 says the refusal arm means "the corpus cannot address this" and never
+means "the question was badly posed."** Ruled at `oc-eo-roman-coins`, which asks
+*"Were Roman coins found at Óc Eo?"* They were not — the record calls them
+"costume jewelry rather than circulating coinage". Giving the correction is
+answering; refusing would be the wrong behaviour, not the safe one. Letting the
+arm mean the second thing turns refusal into the reward for any awkwardly-worded
+question, and `floor.json`'s `max_refusal_rate` exists precisely because a prompt
+that refuses more while erring no less is a regression no metric built on
+grounding can see.
+
+---
+
+# Block D — TASK 2 / D3: the gold set goes from 6 cases to 33 (2026-08-22)
+
+```
+gold set                6  ->  33 cases
+eval.test_answer_eval  98  ->  203
+scripts\mutate_part8   23  ->  27
+seed corpus digest     bcfa0211dcbe999a...  (moved again the same day; see the
+                                             findings section and the closing state)
+```
+
+## G4's stratification, computed by the suite rather than claimed here
+
+```
+cases                 33      wants >= 30
+behaviours            22 answerable / 3 gloss / 8 correctly_refusable
+Arabia 4   East Asia 5   Persia 4   Scandinavia 5
+South Asia 5   Southeast Asia 4   Sub-Saharan Africa 5   outside 1
+regions at >= 3       7 of 7
+source languages      14      wants >= 6
+loader-enforced pairs 2
+```
+
+`eval.test_answer_eval` computes the per-region tally itself and fails if any
+region falls below three. **A gate checked against prose is a gate checked
+against whoever wrote the prose** — and until the `region` field landed, eight
+cases were invisible to that count while still contributing to the total, because
+the loader forbids `expect_quoted_docs` on a refusal case and so a refusal names
+no document and nothing tied it to a region.
+
+## Four species of correct refusal, and they were built deliberately
+
+The eight `correctly_refusable` cases are not eight instances of one thing:
+
+```
+not in the corpus at all         antikythera-absent
+in the corpus, no reachable      palmyrene-tariff-rates, ezana-stone-geez
+text                             (both `pointer` chunks, ineligible — the
+                                  corpus's only two)
+reachable, but the excerpt does  skz-roman-emperors, oc-eo-cattigara,
+not hold what the record's own   pattanam-dna-evidence, weilue-ruler-selection
+title and notes advertise
+adjacency                        gudme-bracteate-runes
+```
+
+**The third species is the one a model is most likely to fail, and the fourth is
+the one a reader is least likely to catch.** `skz-roman-emperors` asks which
+Roman emperors the Res Gestae Divi Saporis names; the record's own notes say it
+"directly documents Roman emperors (Gordian III, Philip the Arab, Valerian)" and
+the excerpt on disk contains none of *Valerian*, *Gordian*, *Philip*, *emperor*,
+*Rome* or *Roman*. A model retrieves it with high confidence, sees a Sasanian
+royal *res gestae*, and can supply Valerian from its own weights.
+
+`gudme-bracteate-runes` refuses by **adjacency**: the record does say "nine gold
+bracteates", gold bracteates often carry Elder Futhark runes, and the corpus
+holds `vimose-runes` as a template for what such an answer looks like. Its
+excluded strings, `alu` and `laukaz`, are the formulaic legends that actually
+recur on Scandinavian bracteates — exactly what a model would supply.
+
+In every case the excluded strings are **wrong about this corpus, not about
+history**, which is why none of them may ever be softened on the grounds that the
+answer is correct.
+
+## Two loader-enforced pairs, discriminating on different axes
+
+```
+aksum-exports / adulis-exports        varies the WORDING of an English question
+akananuru-yavana-ships / -tamil       varies the LANGUAGE it is asked in
+```
+
+Both carry byte-identical assertion blocks against one record, enforced at load
+under ruling 31. The Tamil pair is the set's first non-English question, and a
+run where the Tamil half passes and the English half fails puts the defect in
+cross-lingual retrieval and nowhere else — not the corpus, which holds the poem,
+and not the answer path, which just answered the same question about the same
+record.
+
+**The Tamil question is a verbatim phrase from the poem, not an interrogative
+sentence.** It is the already-ranked `probe-tamil-akananuru` string, which buys a
+known-good retrieval half and invents no Old Tamil that nobody on this project
+can check. If someone who reads Tamil supplies a real interrogative, replace the
+question string and **nothing else** — the loader will refuse a drifted pair.
+
+## The behaviour balance is NOT met, and was not negotiated
+
+**3 gloss cases against 22 answerable.** Ruling 30 governs it: write every gloss
+case the corpus can honestly carry, fill the rest with the other two arms, and
+record the shortfall rather than widen a label to meet a number.
+
+The arm needs a text whose **reading** is unsettled. The seed corpus holds three:
+`vimose-runes` (partly undeciphered Elder Futhark), `raqosh-epitaph` (two
+competing scholarly readings, stated inside the retrieval-eligible chunk) and
+`oc-eo-medallion-legend` (a corrupt Latin coin legend with an alternative reading
+and a curator's note that it is corrupt).
+
+**That shortfall is a finding about the corpus, not about the case set**, and it
+is worth knowing before Block F decides what to add: this seed corpus contains
+very few texts whose reading is genuinely in dispute.
+
+Ruling 28 was applied three times to keep the arm narrow —
+`sasanian-hunting-plate` (contested attribution), `khao-sam-kaeo-intaglio`
+(contested identification of a carved figure), `hoby-silius-identification`
+(contested identification of a person). Each required its uncertainty as ordinary
+content instead. Widening the arm would have hit the balance target and cost the
+arm its meaning.
+
+## The boundary case, recorded so it is not re-litigated
+
+`hoby-cheirisophos-signature` quotes a Greek signature the corpus gives as
+`[ΧEIPI]ΣΟΦΟΣ` — square brackets, an epigraphic restoration, in a
+retrieval-eligible chunk. It is `answerable`, not gloss. **Restored is not
+contested**: the record supplies a confident published gloss and offers no
+alternative, so a required hedge would be a hedge the evidence does not argue
+for, and the case could never pass.
+
+## Deliberate known failures
+
+Two cases are expected to fail and say so in the file before they were ever run.
+Both are tracked in `floor.json.known_failing_cases` as **open defects, never
+tolerated ones**, and both are kept out of `required_cases` so that a floor pass
+can never be read as *"the system does this"*.
+
+- **`aksum-exports`** — unchanged from Phase 1. Seven consecutive refusals under
+  four prompts, against evidence byte-identical to the passing `adulis-exports`.
+- **`weilue-chinese-quotation`** — added 2026-08-22. Fails because nothing in the
+  answer path ever asks for a non-English source text to be quoted. See finding
+  13 below.
+
+Two more are expected to be hard but are not yet classified as known failures,
+because they have never been run: **both halves of the Akanāṉūṟu pair.** Part 4
+scored Old Tamil at 0.368 against 0.6–0.7 for other scripts. Neither goes into
+`required_cases` until both are seen passing across sessions.
+
+---
+
+# The Weilüe investigation — findings 9 to 13 (2026-08-22)
+
+*Findings 1–5 are in `D_TASK0_RESULT.md`, 6–7 in `D1_RESULT.md`, 8 in
+`D2_RESULT.md`. What follows began after D3 had closed, as a single corpus fix,
+and turned into four more defects — three of them in the instruments rather than
+the data.*
+
+**On the numbering.** Finding 11 was assigned retrospectively. Findings 12 and 13
+were named while 11 was still an unfilled gap, and 11 is recorded in the place it
+belongs chronologically rather than the order it was numbered. Said plainly,
+because a register that quietly renumbers is worse than one with a scar.
+
+## Finding 9 — the flagship record's Classical Chinese was invented
+
+`eastasia-01-weilue` is the record the AI Technology Showcase brief names by
+name. Its `original_text_excerpt` held 52 characters of plausible Classical
+Chinese **that do not occur in the Weilüe.**
+
+Checked fragment by fragment against the Sanguozhi text: **all three fragments
+absent, 0 of 3.** Four divergences, and in each the record's form appears nowhere
+in the source while the real form is present:
+
+```
+record          source
+犂靬            犁靬            the name Lijian
+安谷城          安穀城          the city Angu
+城以石為壁      以石爲城郭      the stone walls
+海西人名之海西  故俗謂之海西    "called Haixi"
+```
+
+`ingest.fidelity` classified it `partial_verbatim`, retrieval-eligible. It has no
+way to detect this.
+
+**The corruption was not discovered here, and the credit belongs elsewhere.** The
+Da Qin block §4 above records it with the specific divergences named. It was
+deliberately not fixed then, on a ground worth restating: correcting a primary
+source from a secondary work's quotation would itself be an unsourced edit, and
+the stated blocker was that zh.wikisource *"returned nothing fetchable"*.
+
+**Why it was fetchable this time: the record was citing the wrong page.** The
+魏略輯本 edition's index lists 西戎傳 — including 大秦國 — under 卷二十二, and
+卷二十二 is an unwritten page. The text lives where the record's own
+`language_note` always said it did: Pei Songzhi's commentary in the Sanguozhi,
+Wei Shu 30. That is a primary transmission, so the 2026-08-13 objection is met
+rather than waived.
+
+What this session added was not the discovery. It was: that the text was
+*invented* rather than corrupted; the 45-of-45 answer-side measurement; the
+reason the citation was unusable; and the fix.
+
+### What the fix changed, measured: nothing
+
+```
+pairs 33 / units 30                                    unchanged
+172 spans  resolved 161 case_only 9 moved 1 absent 1   unchanged
+recall@6 via original, reranked        22/30 -> 22/30
+china-describes-rome-weilue             5/1/7 -> 5/1/7
+probe-chinese-weilue                    1/1/1 -> 1/1/1
+```
+
+Only `mrr_at_10_reranked` moved, by 0.0006 — reranker noise under ruling 22.
+
+Retrieval was never going to move, and the entry role says why: the English query
+enters through the translation chunk and the Chinese query through the original
+chunk, before and after. **Replacing the content of a chunk cannot change which
+chunk a query enters through.**
+
+**That the measurements did not move is itself the finding.** The fabrication was
+never distorting the ranking figures. It was sitting underneath them.
+
+### A correction to how this was framed
+
+The brief says *"Retrieves the Weilüe passage on Da Qin in Classical Chinese."*
+That claim is about **retrieval** and it is satisfied — `probe-chinese-weilue`
+ranks the Chinese chunk 1, and it is `[S1]` for an English question too. Reading
+it as broken conflated retrieval with quotation. **The brief is fine. The gap is
+finding 13**, and nobody had separated the two claims.
+
+### Two `subject_places` notes rested on the fabrication
+
+Angu was spelled `安谷城`, a form absent from the source. More seriously, the Da
+Qin entry refused a Pleiades identification partly because *"the Chinese excerpt
+is elided at exactly the point where the capital is described"* — true of the
+fabrication, false of the Weilüe, which reads `其王治濱側河海，以石爲城郭`. **A4's
+decision is unchanged** and stands on its main ground, that the city of Rome is
+not the empire; the second reason is recorded as withdrawn and dated.
+
+## Finding 10 — nothing anywhere guarded a process's own stdout
+
+Three boundaries carry non-Latin text out of this project. Until today only two
+were guarded anywhere:
+
+```
+1. a CHILD process's stdout      PYTHONIOENCODING in the child's env
+                                 guarded: mutate_ranking.py (Part 7),
+                                          mutate_part8.py (D2)
+2. a PARENT decoding that child  subprocess.run(encoding="utf-8")
+                                 guarded: the same two files
+3. THIS process's own stdout     NOTHING, in any of 43 entry points
+```
+
+Boundaries 1 and 2 are about a pipe between two processes. **Boundary 3 is about
+where a process writes when nobody is reading its console**, and it is the one
+that fires under a redirect. **So the D2 fix was half a fix** — it secured the
+pipe into the parent and left the parent's own output open, in a harness that
+deliberately prints the child's captured text verbatim to preserve failure
+detail. Part 7 made the identical partial fix at `mutate_ranking.py:749`. Two
+people, the same blind spot, a month apart.
+
+Found by running `WEILUE_FIX_RUNBOOK.md` step 0 as written: `python -m
+ui.build_ui_data --verify >> eval\weilue-before.txt` died at
+`build_ui_data.py:730` printing the Greek behind a `case_only` span. On Windows
+`print` writes through a stream whose encoding comes from the console code page,
+and through a pipe or redirect it falls back to cp1252. **It does not degrade. It
+raises, mid-output, with the file half written and every number in it correct.**
+
+**Why it mattered more than the crash:** `eval/run_answer_sweep.py` was
+unguarded. Block E is 30 cases × 3 repetitions × 3 days, every answer quoting a
+corpus that is Greek, Tamil, Chinese, Geʽez and runic, and nobody runs a
+three-day sweep without redirecting it to a log. **It would have died on day one,
+after spending real chat calls.**
+
+### The count was wrong four times: 7, 20, 22, 43
+
+Twice from typing a list by hand. Once because `eval/answer_eval.py` — the scorer
+itself, which prints failure detail full of corpus text — was missed twice
+running. **And once because the list was verified against a partial copy of the
+repository rather than the repository**: twenty-one entry points existed that the
+checking tree did not contain, so the check passed on a tree where the files were
+absent.
+
+So the list was deleted. `test_every_entry_point_guards_its_stdout` asserts the
+**rule** — every file under `ui/ eval/ answer/ ingest/ scripts/` carrying a
+`__main__` must carry the guard — and enumerates by glob at check time. It also
+asserts the glob found **at least forty files**, because an enumeration that
+collapses to zero passes vacuously.
+
+Inlined in 43 files rather than shared, for a specific reason:
+`ui/build_ui_data.py` documents `python ui/build_ui_data.py` as an invocation,
+and under that form the repository root is not on `sys.path` — a helper module
+would be unimportable for exactly the file that found the defect.
+
+`errors="replace"` is a judgement. **A mangled character is cosmetic; a sweep
+that dies on day two of three is ninety chat calls and an unrepeatable
+measurement.**
+
+### Demonstrated, after a first attempt that proved nothing
+
+The first proof was `python -m eval.test_answer_eval > file` returning exit 0.
+**It was vacuous.** A passing suite prints only `ok` lines with English labels;
+the non-Latin lives in failure detail a green run never emits. Zero non-Latin
+characters reached the file. That is this project's own trap — *a check that
+greps a heading passes against a report that prints the heading and no rows* —
+walked into an hour after being written into a runbook.
+
+The real proof is the command that died, in a fresh shell with **no environment
+variable set**:
+
+```
+python -m ui.build_ui_data --verify > eval\stdio-guard-proof.txt 2>&1
+exit code 1        <- the gate failing on moved 1 / absent 1, BY DESIGN
+Traceback present:          False
+UnicodeEncodeError present: False
+60 lines written, report complete through the final case_only block
+```
+
+Boundary 3 fixed. **Boundary 4 — PowerShell decoding the child with
+`[Console]::OutputEncoding` — is a shell setting no code can fix**, and the same
+file shows 16 mojibake runs to prove it. Both are named in step 0 of the runbook
+now. Before the fix there were no bytes at all; now there are correct bytes that
+PowerShell mangles on the way in.
+
+## Finding 11 — the paraphrase flag marks suspicion, and nothing ever turned it into a determination
+
+`ingest/fidelity.py` carries `PARAPHRASED_ORIGINALS` and `PARAPHRASE_ID_HINTS`,
+five records flagged by the manifest as *"paraphrased or partial rather than
+verbatim"*. The branch that reads them says:
+
+> *"Where the original script is actually present, the wording is the source's
+> own — it is abridged, not invented."*
+
+**That is the assumption finding 9 disproved on the first record anyone checked.**
+
+Two of the five carry real non-Latin text. `eastasia-01-weilue` was invented.
+`eastasia-02-hou-hanshu` was checked the same way on 2026-08-22 and is
+**genuine** — 34 of 36 characters identical to the Sanguozhi transcription, one
+traditional/simplified pair (獻/献, an artefact of the `zh-hans` view) and one
+variant character for the same word (瑇/玳, tortoiseshell), which needs a
+traditional-script edition to settle.
+
+So the flag never distinguished them. It marked suspicion; nothing in the
+pipeline ever converted suspicion into a finding, and the comment asserting the
+benign reading sat there for both.
+
+A related staleness: `southasia-01-akananuru-149` is still on the hint list while
+its own note records verbatim Old Tamil recovered on 2026-08-09, and the
+corrected Weilüe is still labelled `partial_verbatim` by the override rather than
+`verbatim_original`. **Not fixed** — it requires a re-ingest and was deliberately
+kept out of the Weilüe measurement.
+
+**A hypothesis about the fabrication, offered as a hypothesis.** The Hou Hanshu's
+own Da Qin section opens `大秦国，一名犂鞬` — with **犂**. The Weilüe reads
+`大秦國一號犁靬` — with **犁靬**. The invented text read `大秦國一號犂靬`: **犂**
+from the Hou Hanshu, **靬** from the Weilüe. A blend of the two Da Qin passages
+this corpus holds, adjacent in the same region folder. Consistent with a hurried
+synthesis from neighbouring sources rather than a transcription slip, but
+circumstantial.
+
+## Finding 12 — the ranking harness drops unresolvable gold pairs silently
+
+Both Weilüe ranking pairs carried `expect_text_contains: 大秦國一號犂靬` — the
+**fabricated** form — one of them with an explicit note saying it asserted *"the
+characters that are on disk, not the characters that ought to be"*, a documented
+workaround for a known-bad record.
+
+When the record was corrected, the assertions matched nothing. Both pairs left
+the run. The harness said only:
+
+```
+"31 pairs, 29 distinct query text(s) embedded in 1 request(s)"
+```
+
+A count line. No warning. And every headline number moved:
+
+```
+pairs 33 -> 31     units 30 -> 29
+recall@6 via original, reranked   22/30 -> 21/29
+```
+
+**The denominator shrank.** `0.7333 → 0.7241` reads like a small regression; it
+is a measurement that lost a pair. This is the project's own trap in the
+aggregate line of the ranking harness, and it is why the invalid archive
+`eval/ranking_runs/20260822T160349…` is **committed deliberately and kept**: it
+is what this finding looks like from the inside.
+
+`scripts/weilue_compare.py` reports a vanished pair loudly and says explicitly
+that zero movement after a corpus edit is itself a finding. **The harness itself
+is still unguarded** — a pair-count check against the gold file, failing loudly
+and naming what did not resolve, is scheduled as the first thing in D4.
+
+## Finding 13 — nothing in the answer path ever asks for a source text to be quoted
+
+Not a weak preference. **An absent mechanism.**
+
+Prompt rule 3 permits a quotation from *"the SOURCE TEXT or the ENGLISH shown for
+that source"* and requires neither. English is easier and reads better, so
+English wins. Measured across 16 archived runs of `chinese-da-qin`: **45 of 45
+resolved spans from `reference_translation`, none from `original_text_excerpt`.**
+
+The corpus fix proved retrieval was never the obstacle. On the live run of
+2026-08-22 the Chinese chunk was `[S1]` — top of the evidence block, similarity
+0.576, traceable to `original_text_excerpt[0:221]` — and the model quoted the
+English anyway, five times out of five.
+
+**The corpus fix was necessary and could never have been sufficient**, and it was
+predicted here that it might be. It was not.
+
+`expect_quoted_docs` cannot express the difference, because it is satisfied by a
+quotation from either of a record's chunks — which is exactly why the hole was
+invisible. `expect_quoted_from_original` now can. Strictly additive: a new
+optional key and a scorer branch that runs only when the key is present, so no
+existing verdict can change, which matters because Block E's 270 calls go through
+that scorer.
+
+`weilue-chinese-quotation` is the standing detector, expected to fail, tracked as
+an open defect. **Closing it means changing prompt rule 3**, which cannot happen
+before Block E without invalidating every archived number.
+
+## What is fixed, and what is not
+
+```
+FIXED       9   the record now holds 221 sourced characters; two ranking pairs
+                retargeted; two subject_places notes corrected
+FIXED      10   43 entry points guarded, demonstrated at the boundary that failed
+OPEN       11   the fidelity override is stale on two records and its justifying
+                comment is disproved; needs a re-ingest
+GUARDED    12   in weilue_compare.py only; the harness itself is unguarded
+DETECTED   13   assertable and detected, not fixed — the fix is a prompt change
+                and the prompt is frozen
+```
+
+---
+
+# State at the close of D3 (2026-08-22)
+
+*A separate section for the same plain ordering reason the C7 state block gives:
+the sections above were written into the commits that contain them and cannot
+name them. This one is written after `b1e11ab` and names it.*
+
+## The tree
+
+```
+b1e11ab, clean
+
+b1e11ab  FINDING 11: the paraphrase flag marked suspicion
+2c8f20e  the Finding 10 demonstration
+5a3bd7b  D3 and the Weilue investigation, two documents
+846d5b9  FINDING 10: stdout guard, 43 entry points
+5b9aed2  the runs behind the Weilue fix
+d0ef3bc  FINDING 13: expect_quoted_from_original
+5289f55  Weilue: invented excerpt -> sourced Sanguozhi text
+9ea1774  D2: every case declares its expected behaviour, and the loader
+         refuses a default
+```
+
+## The numbers a later thread will want without reading for them
+
+```
+corpus          24 records / 59 chunks / 57 retrieval-eligible
+digest          26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28
+index           450 / 450 / 0 pending
+archives        79 answer runs, 26 ranking runs, 3 sweeps (ALL within-session)
+gold cases      33   22 answerable / 3 gloss / 8 correctly_refusable
+                Arabia 4  East Asia 5  Persia 4  Scandinavia 5
+                South Asia 5  Southeast Asia 4  Sub-Saharan Africa 5  outside 1
+floor           calibrated: false, 4 required, 2 known-failing
+
+ANSWER          eval.test_answer_eval       203   GREEN
+mutations       scripts\mutate_part8.py      27   GREEN
+```
+
+**THE DIGEST CHANGED THREE TIMES ON 2026-08-22.** `2e84436c` → `bcfa0211` →
+`26e4a683`, from two real corpus edits — the Weilüe text, then the Hou Hanshu
+note. **Only `26e4a683…` is current**, and it is the number Block E records on
+day one and re-asserts on day three. **Any document still naming `2e84436c` or
+`bcfa0211` is stale**, including the D3 result section above, which is left as
+written because it was true when it was written.
+
+## What is left in Block D — TASK 3 (D4), and nothing else
+
+`BLOCK_D_START.md`'s TASK 3 is still authoritative. Restated, because it is now
+the last thing between here and a Block E that can be believed:
+
+0. **Guard FINDING 12 first.** A pair-count check in `run_ranking_check.py`
+   against the gold file, failing loudly and naming what did not resolve.
+   `scripts/weilue_compare.py` already does this for the Weilüe pairs; the
+   harness itself does not.
+1. Record a **session identity** — run date at minimum — in every sweep archive.
+2. Make floor calibration **refuse to set `calibrated: true`** when distinct
+   dates < 3, and **mutation-verify that refusal**.
+3. Report **per-case stability and per-session stability as two separate
+   numbers.** One number cannot say which of the two is moving.
+4. **Pilot on 5 cases across 2 days, ~30 chat calls**, so the three-day sweep is
+   not the first time this code runs across a date boundary.
+
+**The gap is confirmed, not assumed.** `eval/run_answer_sweep.py` takes
+`--prompt-version --repeat --case --k --max-sources --pause --dry-run --no-write
+--json`. There is no session flag and no date field in any archive. Checked
+2026-08-22.
+
+**Why it is not optional.** `floor.json` says `calibration_invalidated:
+"2026-08-10, hours after being set."` The floor was calibrated on CONTENT being
+stable in 10 of 10 cells across three repetitions each. A second sweep, with the
+`vimose-runes` evidence block byte-identical across all six archived runs,
+produced 3/3 with seven resolved quotations in the first session and 0/3 with
+none in the second. Same prompt version, same model, same evidence, temperature
+0. All three archived sweeps are within-session. **Block E's 270 calls are worth
+nothing if the archives cannot tell a session from a repetition**, and today they
+cannot.
+
+## Four traps learned on 2026-08-22, carried forward
+
+- **A green result from a partial copy of the repository is not a result.** The
+  stdout-guard count was reported as "22 of 22" from a sandbox that did not
+  contain twenty-one of the entry points. Verify against the tree that ships.
+- **An enumeration maintained by hand will be wrong.** That same count was wrong
+  four times — 7, 20, 22, 43. The check that finally held asserts the RULE and
+  globs at check time, and additionally asserts the glob found at least forty
+  files, because an enumeration that collapses to zero passes vacuously.
+- **A passing suite proves nothing about non-Latin output.** A green run prints
+  only `ok` lines in English; the non-Latin lives in failure detail it never
+  emits.
+- **Encoding has TWO ends on Windows and both must be named.**
+  `PYTHONIOENCODING=utf-8` makes Python emit UTF-8; `[Console]::OutputEncoding`
+  decides how PowerShell decodes it. Set only the first and you get a capture
+  whose numbers are all correct and whose every Greek quotation is mojibake, with
+  zero replacement characters, so nothing looks wrong.
+
+## Open, and deliberately not closed
+
+- **`run_ranking_check.py` has no pair-count guard** (finding 12). First item in
+  D4.
+- **`match_case` returns the FIRST case whose question matches.** Two cases
+  sharing a question would leave the second silently unscored against every
+  archive — sitting in the gold set looking like a test and never running.
+  Avoided by hand in `weilue-chinese-quotation`; unguarded in the loader. Same
+  family as finding 12.
+- **Two gold cases are expected to fail and must stay failing.** `aksum-exports`
+  and `weilue-chinese-quotation`, both tracked in `floor.json.known_failing_cases`
+  as OPEN defects, both out of `required_cases`. Neither is closed by D4. **A
+  sweep that reports them passing is a finding, not a success.**
+- **Behaviour balance unmet**, 3 gloss against 22 answerable, under ruling 30.
+- **`ingest/fidelity.py`'s comment is false and its hint list is stale for two
+  records** (finding 11). Needs a re-ingest.
+- **The 瑇/玳 variant is unresolved** and needs a traditional-script edition.
+- **`eastasia-02-hou-hanshu`'s `original_text_note` still promises a cross-check
+  "during ingestion"** that has now been performed and should record what was
+  checked, against which page, with what result.
+- **Nothing guards the `_chat` arity contract.**
+- **Five mutation harnesses still restore with `write_text`** — `mutate_ranking`,
+  `mutate_part7b`, `mutate_places`, `mutate_ui_places`, `mutate_distractors` and
+  `mutate_recover`. Finding 8 was fixed in `mutate_part8.py` only. A known defect
+  with a known fix, not an open question.
+- **`classify_span` still asserts a cause it cannot know.**
+- **Rulings 20 and 21 still have no full text.** The code is the authority.
+- **Ruling 25's figure can no longer be re-derived from the tree.** The corpus
+  moved. The ruling stands; the cost was accepted deliberately and is recorded
+  rather than tidied away.
+- **The `weilue-before.txt` capture has mojibake Greek quotations.** Every number
+  in it is correct; the quotation lines are not evidence of anything.
+- **The Akanāṉūṟu Tamil question is a phrase, not a sentence**, pending someone
+  who reads Tamil.
+- **Housekeeping.** `_to_delete/` holds three staging tarballs from the
+  2026-08-22 session — `f10.tgz`, `f10-guarded.tgz`, `mu-sub.tgz` — alongside
+  three older files. The directory is gitignored; nothing depends on any of it.
+
+## The sentence that still travels with all of it
+
+29/30 is whether the RECORD was found. 22/30 is whether the NON-ENGLISH TEXT was
+reachable. `muziris-cargo-akananuru` still sits at rank 310. The W2b distractor
+curve still rests on English-only padding.
+
+**And one more, earned on 2026-08-22: the answer path has never quoted a
+non-English source text.** 45 of 45 resolved spans across 16 runs came from the
+English, while the Chinese chunk sat at `[S1]`. That is not retrieval and it is
+not the corpus — the corpus was corrected and nothing moved. Nothing in the
+prompt ever asks for the source text, and rule 3 permits either. **Block E will
+measure a system that reads its sources in translation.**
+
+---
+
+# Block D — TASK 3 / D4: the harness can tell a session from a repetition (2026-08-24 / 2026-08-25)
+
+*Transcribed from `D4_RESULT.md`, `D4_DAY1_STATE.md` and `D4_RULINGS.md`, all
+written at the time and every number in them read out of the archives rather
+than out of a report. Rulings 32–35 are declared in `D4_RULINGS.md`; ruling 35
+is the one to read before quoting a stability number.*
+
+```
+1  session identity in every sweep archive     DONE, on two live runs
+2  calibration refuses under 3 distinct dates  DONE, mutation-verified, and
+                                               REFUSED FOR REAL on 2026-08-25
+3  per-case and per-session as two numbers     DONE, each with its own denominator
+4  pilot on 5 cases across 2 days              DONE. 6 cases, 36 chat calls
+```
+
+## The two pilot sessions
+
+```
+                day 1                     day 2
+session         792202e7ac58              8ee2273defd6
+date            2026-08-24 (UTC)          2026-08-25 (UTC)
+window          12:21:08-12:23:10         19:14:21-19:21:21
+crossed midnight  false                   false
+corpus          26e4a683… at both ends, corpus_moved null, both days
+```
+
+The gap is **31 hours, not 24**, on purpose: midday to evening on consecutive
+dates is a stronger observation than a few hours either side of midnight UTC,
+and it keeps `crossed_midnight_utc` false so neither session's date is
+contestable.
+
+## Every verdict agreed, and not one answer text did
+
+```
+per-case      12/12 = 100%    the sampler, within one session
+per-session    6/6  = 100%    the day, across sessions
+60 rows carry no session identity and are counted in NEITHER number
+```
+
+**Both numbers are 100% and that is a real result, not a null one.** It is the
+first time this project could say its verdicts reproduce across a date boundary.
+
+And then the texts, hashed:
+
+```
+case                 day 1        day 2        shared
+adulis-exports       2 distinct   1            NONE
+aksum-exports        1            1            NONE
+antikythera-absent   1            3 distinct   NONE
+chinese-da-qin       3 distinct   1            NONE
+muziris-cargo        1            1            BYTE-IDENTICAL, all six runs
+vimose-runes         1            1            NONE
+```
+
+**Five of six cases share not a single answer text between the two days**, at
+temperature 0, against an identical corpus digest at all four measurement
+points, on a pinned dated model snapshot. Three things follow:
+
+- **Within-session determinism is not a property of the case.**
+  `chinese-da-qin` gave three texts on day 1 and one text three times on day 2;
+  `antikythera-absent` did the exact reverse.
+- **It is not a blanket claim about the model.** `muziris-cargo` returned the
+  same answer byte for byte in all six runs. Text-level reproducibility across a
+  date boundary is achievable on this stack. Five cases did not achieve it.
+- **FINDING 18: `vimose-runes` was internally deterministic on both days, and
+  deterministic about a DIFFERENT answer on each.** One text three times on the
+  24th, another three times on the 25th. That is the 2026-08-10 phenomenon
+  reproduced deliberately. It did not cross a verdict boundary — this time, for
+  these six cases.
+
+**Ruling 35 exists because of that table.** `per-session 6/6 = 100%` is a
+statement about VERDICTS. It reads 100% in a sweep where five of six cases
+changed their answer completely, so the sentence *"the system does the same
+thing on two days"* is not supported by a per-session pass, and D4 declines to
+let that reading stand. A gate that failed on any text change would fail every
+day and measure nothing; the scope is right and the wording has to say so.
+
+## The floor refused, and was right about why
+
+```
+5 archived sweep(s), 96 run(s)
+distinct dates 2 (floor requires 3): 2026-08-24, 2026-08-25
+REFUSED. `calibrated: true` may NOT be written:
+  - 2 distinct date(s), and the floor requires 3.
+  - 3 sweep(s) carry no session identity and count toward no date.
+```
+
+The three pre-D4 sweeps blocking calibration is **correct behaviour, not a
+nuisance**: a date assigned to them after the fact is precisely the calibration
+`floor.json` already records as invalid. Neither pilot met the floor, both days,
+on one case and the same one — `vimose-runes` at 0/3, and a required case must
+pass every repetition.
+
+## Two defects D4 filed rather than fixed
+
+- **`calibrate_floor`'s report contradicted itself in its own last line**,
+  printing *"re-run with --write to set calibrated: true"* directly under a
+  refusal. A reader who skims to the end is invited to do the thing the report
+  just refused. Fixed 2026-08-26, before Block E day 1.
+- **Three vacuous proofs of the encoding fix, in a row.** The sweep prints
+  PASS/FAIL rows and never prints an answer; `eval.answer_eval --archives -v`
+  emitted 70,155 characters with **zero above U+024F** except em-dashes. The
+  reason is not a bad flag: *there is no non-Latin output because the system has
+  never produced any.* FINDING 10's guard is mutation-verified and
+  **unprovable on the answer path** until the prompt asks for a source text.
+  Written down as FINDING 18's corollary so no fourth attempt is made on a path
+  with nothing to print.
+
+## What D4 handed Block E
+
+```
+corpus digest    26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28
+sweeps archived  5, of which 2 carry session identity
+distinct dates   2. Block E's first sweep is the third, and the floor becomes
+                 calibratable on that day and not before
+floor            NOT MET both days, on vimose-runes alone
+```
+
+Plus one instruction it did not have to give and did: **record whatever the
+gateway says about the serving stack, before spending 270 calls.** Nothing in
+the archive could distinguish provider drift from sampling variance, and the
+text table above is exactly the observation that needs the distinction. Block E
+took it up as decision 3, and the answer turned out to be that the gateway
+returns nothing that could identify a stack — which is a stated limit rather
+than an oversight only because it was asked before day 1.
+
+---
+
+# Block E — four sessions, three dates, and the day the block stopped replicating (2026-08-26 → 2026-08-28)
+
+*Transcribed from `BLOCK_E_RESULT.md` and its appended correction, with
+`BLOCK_E_DAY1_RESULT.md`, `BLOCK_E_DAY2_RESULT.md` and `BLOCK_E_RUNBOOK.md`
+behind them. 396 chat calls. **Read `BLOCK_E_RESULT.md` whole before quoting any
+number here** — in particular the correction appended hours after it was
+committed.*
+
+```
+S1  37f79c93b79a  2026-08-26  99 runs        33 cases x 3 repetitions
+S2  0c74d52b2c25  2026-08-26  99 runs        p7-answer-v2r, temperature 0,
+D2  6715f2a3ab6b  2026-08-27  99 runs        haiku-4-5
+D3  6a382f4f9ac7  2026-08-28  99 runs
+
+corpus 26e4a683… asserted at BOTH ends of ALL FOUR sessions. corpus_moved None
+0 incomplete, 0 retried, 0 unstable content cells, FLOOR MET, in all four
+```
+
+Day 3 was held to the morning slot on purpose: 24h 02m after day 2 and 48h 02m
+after day 1 S1, the closest this design can come to a pure 24-hour and a pure
+48-hour crossing measured at the same hour of the same kind of morning.
+
+Its own summary, read alone, is the cleanest of the block — `content 72.7%,
+per-case stability 33/33, unstable content 0`. **That summary is wrong about
+what happened.**
+
+## FINDING 25 — the answer text moved wholesale between the 27th and the 28th. A step, not a gradient.
+
+```
+pair       separation          within        across         lost
+S1 vs S2   same date, 1.5h    169/198 85%   222/297 75%    +10.6
+S1 vs D2   ACROSS,   24.0h    163/198 82%   221/297 74%    + 7.9
+S2 vs D2   ACROSS,   22.5h    174/198 88%   228/297 77%    +11.1
+D2 vs D3   ACROSS,   24.0h    173/198 87%   134/297 45%    +42.3
+S1 vs D3   ACROSS,   48.0h    168/198 85%   135/297 45%    +39.4
+S2 vs D3   ACROSS,   46.6h    179/198 90%   135/297 45%    +44.9
+```
+
+The three sessions before day 3 agree with each other at 74–77%. All three agree
+with day 3 at 45%. **The separation does nothing** — doubling the elapsed time
+changes the loss by less than the difference between the two 48-hour pairs
+themselves. **Day 3 was not internally noisy**: its within-session agreement is
+the highest of the four and its per-case stability is 33/33.
+
+**FINDING 23 is withdrawn**, and it named its own failure condition the day
+before — *"wrong if either across-date figure exceeds about +20 pts"* — with
+both new figures at twice that. Its negative half survives and is strengthened:
+distance across dates still buys nothing, over six pairs from 1.5 to 48 hours.
+Its positive half is dead. What day 3 shows is not a date effect but a
+**discontinuity located at day 3**, and the difference matters — a date effect
+would predict the 48-hour pairs lose most, and they do not.
+
+## FINDING 26 — the verdict layer is NOT invariant, two cases flipped, they cancelled exactly, and the pass rate did not move
+
+```
+oc-eo-roman-coins       S1 fail  S2 fail  D2 fail  D3 PASS
+pattanam-dna-evidence   S1 pass  S2 pass  D2 pass  D3 FAIL
+
+per-session stability   33/33 = 100%  (three sessions)
+                        31/33 =  94%  (four sessions)
+```
+
+One case gained a pass and one lost one, so `content_pass_rate` reads
+**0.727272… in every one of the four sessions, to every digit printed**. The
+session main term estimates negative, clamps to zero, and the entire effect
+lands on the interaction. **The aggregate is byte-identical across four sessions
+and three dates while the set of cases behind it is not.**
+
+This is FINDING 18's lesson one level up. Part 8 built the two-number stability
+report because a single flakiness figure hid a session boundary; day 3 shows
+that a single *pass rate* hides one too. A report carrying only 72.7% would have
+called day 3 the cleanest replication of the block.
+
+**FINDING 24 is withdrawn.** The prediction committed against day 3 — *"case
+100%"* — failed, along with all three others, all in the same direction, all by
+a wide margin. They were committed at `4860711` **before day 3 ran**, for the
+reason `BLOCK_E_DAY1_DRYRUN` gives: a prediction made before the run is
+evidence, and the same observation made afterwards is a story.
+
+## FINDING 27 — it is generation-side. Retrieval held.
+
+```
+30 of 33 evidence blocks BYTE-IDENTICAL in every session
+ 3 moved: akananuru-yavana-ships-tamil, pattanam-dna-evidence,
+          weilue-ruler-selection
+```
+
+91% of cases were handed the same prompt and the same evidence in every session,
+at temperature 0, and **55% of the answer text changed anyway**. The two verdict
+flips split cleanly on this: `pattanam-dna-evidence` is one of the three whose
+evidence moved and therefore has a retrieval explanation available;
+`oc-eo-roman-coins` is one of the thirty that did not, and **that flip has no
+explanation in this archive at all**.
+
+## The floor is calibrated, for the first time in this project
+
+```
+calibrated            true   (was false since 2026-08-10)
+calibrated_at         2026-08-28T10:51:56+00:00
+from                  2026-08-26, 2026-08-27, 2026-08-28 — 4 sessions
+per_case              132/132 = 1.000
+per_session            31/33  = 0.939
+excluded by rule      five sweeps, each with the reason it fails
+```
+
+**The 94% is IN THE FILE.** The write was defensible only on that condition: the
+two flipped cases are recorded in the artefact the floor was calibrated from,
+not buried under a pass rate that did not move. It was taken rather than
+declined on the ground `calibration_scope` already states in its own
+anti-loophole — *a sweep that satisfies the rule cannot be excluded by name*,
+because otherwise the list is *"a place to put a sweep whose numbers nobody
+liked."* Declining a gate that passes, on the strength of a finding made the
+same morning, is that move wearing the other hat. The gate's three required
+cases went 12/12 through the very session that changed 55% of the answer text,
+which is precisely what a regression gate is for.
+
+**Gate G4 is closed**, all five boxes, and the deliverable was the variance
+decomposition rather than the pass rate — which on the last day of the block
+stopped being a slogan and became the finding.
+
+## The serving stack, and a correction that arrived hours later
+
+The probe was run before day 1 and after day 3 and both readings were
+`{"id": …, "model": "anthropic/claude-haiku-4-5-20251001"}` with no
+`system_fingerprint`. **Then correction 8 established that the probe had
+bypassed the alias**: `resolve_model_label()` reads `gateway/config.yaml` off
+the local disk and never asks the gateway anything, so the probe sent the
+concrete model name it had just read out of a file in this repository and the
+gateway echoed it back. Every Block E archive carries `"model": "chat-default"`.
+**The two readings either side of the block are two echoes of a locally-read
+config value, taken on a path the archives were not made on.**
+
+This *strengthens* the section's conclusion rather than weakening it. The limit
+stated before day 1 — provider drift and sampling variance are not separable in
+these archives — is still true, and now true for a plainer reason:
+`_serving_stack`'s `model` is the echo of the string sent, in every path, and
+cannot move unless the caller moves it. Findings 25, 26 and 27 stand unchanged.
+
+## The freeze, and the eight corrections it accumulated
+
+Block E ran under a freeze: anything found mid-block was **written down rather
+than fixed**, so that day 3 replicated days 1 and 2 rather than a tree that had
+moved underneath them. Seven corrections were owed at the close and an eighth
+was found while applying them. All eight landed at `1bdaf04`, and two of them
+are worth carrying forward:
+
+- **Day 2's capture is mojibake and day 2's result document says the opposite.**
+  `eval/block-e-day2.txt` holds Γ×40, Ç×40, ö×39 — UTF-8 em-dashes read back
+  through CP850. Days 1 and 3 hold the same characters intact. **No measurement
+  is affected**: the archives are JSON written to disk with an explicit encoding
+  and never pass through the console. The watch item was also miscast from the
+  start — no character beyond ASCII punctuation appears in ANY of the three
+  captures, because the sweep prints case ids, PASS/FAIL rows and serving-stack
+  JSON and nothing else.
+- **The 99 "distinct serving stacks" line** was the per-call `id` inside the
+  identity, not a provider changing under the run — and it would have looked
+  identical on a day when a provider *had* changed, which is that correction's
+  real cost.
+
+## What Block E measured, and what it did not
+
+It set out to ask whether the answers this system gives can be improved on
+purpose. It answered a narrower question and answered it well: **you cannot
+tell, from a pass rate, whether anything moved.** It could not answer why, and
+that was known and written down on 2026-08-26, before the first call.
+
+---
+
+# Block F opens with a decision block, not with curation (2026-08-28)
+
+*The four decisions `BLOCK_F_START.md` left open on purpose, settled before F1.
+Full reasoning in `F0_RESULT.md`; rulings 36–42 in `F0_RULINGS.md`, indexed in
+`RULINGS.md`. None of this is Block F.*
+
+```
+b42ba43  the four decisions, and the arm the archive never recorded
+bee344e  the stale stand-in, and the mutation that passed for the wrong reason
+3dfcae1  rulings 40-42: the article, the exclusion, and Ardashir
+2091e03  the harnesses: mojibake, a discarded return code, and an LF source
+         converted in a commit
+```
+
+## The finding that reshaped the block: THE ARM WAS NEVER RECORDED
+
+Not one of the nine archived sweeps records which **model** or which
+**temperature** produced it. Every Block E number is denominated in an arm that
+was a fact about the code on the day rather than about the file — **FINDING 14
+one layer up**, and invisible for the same reason: while only one arm has ever
+run, the field cannot be missed.
+
+That gap was not merely untidy, and this is the part worth carrying:
+`calibration_scope`'s own anti-loophole, `a_named_sweep_must_actually_fail_the_rule`,
+refuses an exclusion naming a sweep that SATISFIES the rule. The rule had two
+clauses — a session identity, and ≥30 cases. **A sonnet arm at temperature 1
+satisfies both**, and `calibrate_floor` globs `eval/sweeps/*.json` and pools
+every row it finds. **The guard built to stop inconvenient numbers being hidden
+would have made a temperature-1 sonnet sweep impossible to exclude from a floor
+calibrated on greedy haiku.**
+
+Ruling 36 closes it before the arm runs. The arm is now `(alias, temperature)`,
+recorded on the sweep archive and every row, part of the scope rule, and refused
+as a pooling input to the decomposition. The nine legacy archives get their arm
+**reconstructed** — alias read from `serving_stack.model`, which correction 4
+established is the echo of the string SENT and therefore useless as a drift
+detector and faithful as a record of what was asked for; temperature **assumed**
+0 and labelled as assumed, because `assemble` had no temperature parameter until
+2026-08-28. A sweep archived after that must state its arm or fail.
+
+## The other three decisions
+
+- **G3 is amended in advance** (ruling 39): per-session stability and
+  cross-session answer-text agreement at 60, beside the pass rate. Gated on
+  Block F's OWN sessions at 60 — Block E's 74–77%/45% were generated over 24
+  records and a cross-corpus comparison would be measuring the corpus move it
+  was written to survive. **It costs a second session on a second date, ~198
+  calls, and the days are booked with the amendment.**
+- **One bar governs promotion and reinstatement** (ruling 37): 3/3 in each of
+  three sessions on three distinct UTC dates, at the corpus in force. Raised
+  from two-on-two by FINDING 26. Three is `min_distinct_dates`, reused rather
+  than invented. `weilue-chinese-quotation` leaves `known_failing_cases` — it
+  does not fail — for a new `promotion_candidates` state (ruling 38) rather than
+  `required_cases`, because its twelve passes are denominated in a corpus Block F
+  is about to replace.
+- **The assertions were measured rather than argued about.**
+  `scripts/assertion_audit.py` re-reads the 396 archived runs against the
+  assertions that failed them, at zero chat calls.
+
+## What the assertion audit found, and it was three different defects
+
+All four cases `BLOCK_F_START` named fail **0/12, deterministically, each on
+exactly one assertion**:
+
+```
+oc-eo-cattigara        refused correctly 12/12 and SAID "Ptolemy's Cattigara" —
+                       inside the sentence declining to claim it. RULING 41.
+aksumite-coin-imagery  every content assertion passes; both quotations are in
+                       the record, case-folded, one word away. The model wrote
+                       "a half-length bust…" where the record has
+                       "Half-length bust…". RULING 40.
+skz-titulature         good answer, four resolved quotations, fails only on
+                       ['Ardashir']. The record's §1 IS one titulature formula
+                       and the answer quoted from it and stopped at Shapur's own
+                       epithets. RULING 42 — tracked, not corrected away.
+raqosh-epitaph         states one reading of a disputed text with no hedge. NOT
+                       an assertion defect; the gloss arm's teeth are in the
+                       right place.
+```
+
+**Ruling 41 then turned up a second case while it was being written.**
+`antikythera-absent` — REQUIRED, passing 12/12 — excluded *"Antikythera
+mechanism was built"* against its own question *"When was the Antikythera
+mechanism built?"*. One refusal phrasing from the same failure, with nothing
+anywhere that would have said why. That is the argument for a rule rather than a
+correction, and the rule is now enforced at load time.
+
+## The harnesses, and three defects PROGRESS.md had already named
+
+Ruling 40 added one guard label containing an em-dash and one mutation that
+crashes. Between them:
+
+- **`mutate_ui_places` restored its source with `write_text` and converted
+  `ui/build_ui_data.py` from LF to CRLF on a live run**, and its restore check
+  compares TEXT so it could not see it. The conversion reached commit `3dfcae1`
+  and was undone in `2091e03`. **This section of PROGRESS.md predicted it
+  exactly** — *"three of six are exposed, and only by the accident of which
+  files are CRLF"* — and named the remedy. All six harnesses now restore and
+  compare BYTES. `mutate_places` was the other ACTIVE exposure and had simply
+  not been run that day.
+- **`mutate_part7b` and `mutate_ui_places` decoded their suites' stdout with the
+  locale codec.** Every em-dash came back mojibake and a guard label holding one
+  could never match its own failure line; both printed MISS on mutations that
+  had worked perfectly. FINDING 10's family, at the parent-decoding-child
+  boundary.
+- **`mutate_part7b` discarded the child's return code**, so a mutation that
+  KILLED the suite was reported as "expected <guard> to fail, got no failures".
+- **And one that was found by accident and matters most.** On the first run
+  after the arm work, eight checks failed on their own account, and one
+  mutation named a guard that was among the eight. It reported `ok`. Its guard
+  did fail — it had been failing before the mutation was applied. **A green
+  mutation against a red baseline is a vacuous proof**, and it happened inside
+  the instrument built to catch vacuous proofs. `mutate_part8`,
+  `mutate_part7b` and `mutate_ui_places` now run their suites once unmutated and
+  mark any mutation naming an already-failing guard **UNVERIFIED**.
+
+---
+
+# State at the close of F0 (2026-08-28)
+
+```
+tree            2091e03 plus the rulings-register catch-up, clean
+corpus          24 records / 450 embedded / 0 pending
+digest          26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28
+                the denominator of all 396 Block E runs, and of the sonnet arm
+                if it runs before F3
+
+ANSWER          eval.test_answer_eval       321   GREEN   (was 292)
+mutations       scripts\mutate_part8.py      75   GREEN   (was 66)
+                scripts\mutate_part7b.py     18   GREEN   (was 15)
+                scripts\mutate_ui_places.py   4   GREEN   (was 3)
+RANKING         eval.test_ranking_check     236   GREEN
+mutations       scripts\mutate_ranking.py   100   GREEN
+PART 7          answer.test_answer                GREEN
+UI              ui\test_build_ui_data.py         GREEN
+--verify        resolved 849, case_folded 26, article_added 0, case_only 9,
+                moved 1, absent 1 — the last two are the 2026-08-10 recovered
+                run D1 diagnosed and cannot explain
+
+gold cases      33   22 answerable / 3 gloss / 8 correctly_refusable
+floor           calibrated TRUE, per_case 132/132, per_session 31/33
+required        antikythera-absent, chinese-da-qin, muziris-cargo
+known-failing   aksum-exports, vimose-runes, skz-titulature
+candidate       weilue-chinese-quotation
+rulings         1 to 42, indexed in RULINGS.md
+gates           G4 CLOSED. G3 is Block F's, amended in advance.
+```
+
+## Open, and deliberately not closed
+
+- **The sonnet arm has not run**, and the frozen-corpus window closes the moment
+  the first sub-tranche lands. 33 cases × 5 repetitions at temperature 1 through
+  `chat-strong`, one session, archiving to `eval/arms/`, never folded into the
+  haiku archive. It is the only item in Block F with a hard deadline.
+- **Two days at 60 records are owed by the G3 amendment** and should be in a
+  calendar before F3, not discovered on the last afternoon of the block.
+- **`aksum-exports`, `vimose-runes` and `skz-titulature` are open defects**,
+  tracked and never subtracted from a floor verdict.
+- **FINDING 11 is still open**: `ingest/fidelity.py`'s hint list is stale for two
+  records and its justifying comment is disproved. Needs a re-ingest.
+- **Rulings 20 and 21 still have no full text.** The code is the authority.
+- **The answer path has still never quoted a non-English source text**, so
+  FINDING 10's guard remains unprovable there.
+- **`_to_delete/` holds 148 MB** of staging tarballs. Gitignored; nothing
+  depends on any of it.
+
+## The sentence that travels
+
+29/30 is whether the RECORD was found. 22/30 is whether the NON-ENGLISH TEXT was
+reachable. `muziris-cargo-akananuru` still sits at rank 310.
+
+**Four sessions read 0.727272… and one of them was different. The pass rate
+cannot see change.**
+
+And one from 2026-08-28, which travels with them now:
+
+**Nine archives, 396 runs, and not one of them recorded which model answered.**
