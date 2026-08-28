@@ -754,6 +754,34 @@ def _has_content_assertion(raw: dict) -> bool:""")],
                                 if str(phrase).casefold()
                                 not in raw["question"].casefold() else set())""")],
     ),
+    # ---- Ruling 36 in the per-run archive, 2026-08-28 --------------------
+    # eval/answer_runs/ pools arms. Found by the arm breaking a universal
+    # quantifier that had never had to name the model it quantified over.
+    (
+        "the arm filter matches everything, so the universals span two models",
+        [("""        target = on if (got["model_alias"], got["temperature"]) == want else off""",
+          """        target = on""")],
+    ),
+    (
+        # The other direction, and the quieter one: a filter matching nothing
+        # makes every assertion built on it vacuously true, and vacuous truths
+        # are green.
+        "the arm filter matches nothing, so every universal is vacuous",
+        [("""        target = on if (got["model_alias"], got["temperature"]) == want else off""",
+          """        target = off""")],
+    ),
+    (
+        # A RECORDED arm ignored is the reconstruction hazard pointing the
+        # other way: today's runs read as though they were legacy greedy ones.
+        "a recorded arm is ignored and every run is read as greedy",
+        [("""    alias = payload.get("model_alias")
+    if alias:
+        return {"model_alias": str(alias),""",
+          """    alias = None
+    if alias:
+        return {"model_alias": str(alias),""")],
+    ),
+
     # ---- Ruling 36 in the runner, 2026-08-28 -----------------------------
     # The arm was already refused as a calibration INPUT. It was never refused
     # as a floor SUBJECT: `main` computed a verdict for whatever arm had run,
@@ -924,6 +952,15 @@ EXPECTED = [
     "load time",
     "GUARD word order does not rescue it — the same vocabulary in a different "
     "arrangement is the same substring hazard",
+
+    # Ruling 36 in the per-run archive, in the order above.
+    "GUARD the arm filter EXCLUDES something — a filter matching "
+    "everything would leave every universal below a claim about two "
+    "models",
+    "GUARD and it KEEPS the greedy archive — a filter matching nothing "
+    "would make every universal below vacuously true",
+    "GUARD every archived Aksum answer ON THE GREEDY ARM fails — "
+    "including those the Part 7 checks called grounded",
 
     # Ruling 36 in the runner, in the order above.
     "GUARD a sweep on another ALIAS gets no floor verdict - an arm is read "

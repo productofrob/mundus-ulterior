@@ -851,6 +851,9 @@ def test_scoring_an_archive() -> None:
     # The property is that every archived run is scorable, not that there is a
     # particular number of them — a count assertion in a directory designed to
     # grow is a test with an expiry date.
+    #
+    # These three stay over the WHOLE directory: every run must be scorable and
+    # matched whatever arm made it. The per-case universals below must not.
     archives = answer_eval.load_archives()
     expect(len(results) == len(archives),
            f"every archived run is scored ({len(results)} of {len(archives)})")
@@ -858,6 +861,40 @@ def test_scoring_an_archive() -> None:
            f"the 16 recovered Part 7 answers are still among them "
            f"({len(results)})")
     expect(not unmatched, f"every archived question has a gold case {unmatched}")
+
+    # 2026-08-28. `eval/answer_runs/` POOLS ARMS, and the comment above has a
+    # second half it did not know about: a directory designed to grow is also a
+    # directory that grows SIDEWAYS. Ruling 36 split the sweep file — eval/arms/
+    # against eval/sweeps/ — and left the per-run archive as one directory,
+    # because rescore_sweep rebuilds a summary from these files. So the sonnet
+    # arm's 165 runs landed here beside 511 greedy ones, and every universal
+    # below became a claim about two models rather than about the archive it
+    # was written for.
+    #
+    # `all(not r.ok for r in by_case["aksum-exports"])` is the one that fired:
+    # the arm passed that case once in five, and the guard reported the arm's
+    # RESULT as a broken guard. Nothing about that was subtle, and it was only
+    # not subtle because the arm ran. Until today the filter would have been
+    # invisible and unnecessary and every one of these assertions would have
+    # been silently narrowed by the next arm that ran.
+    greedy, foreign = answer_eval.archives_on_arm(
+        archives, {"model_alias": answer_eval.LEGACY_ARM_ALIAS,
+                   "temperature": answer_eval.LEGACY_ARM_TEMPERATURE})
+    # The counts go in their OWN line and not into the guard text. A guard
+    # named by `scripts/mutate_part8.py` is matched as an exact string, so a
+    # guard whose wording carries a number it computes is a guard the harness
+    # stops being able to name the moment a mutation changes that number.
+    expect(len(greedy) + len(foreign) == len(archives),
+           f"{len(greedy)} archived run(s) on the greedy arm and "
+           f"{len(foreign)} on another — every run is on exactly one")
+    expect(bool(foreign),
+           "GUARD the arm filter EXCLUDES something — a filter matching "
+           "everything would leave every universal below a claim about two "
+           "models")
+    expect(len(greedy) >= 511,
+           "GUARD and it KEEPS the greedy archive — a filter matching nothing "
+           "would make every universal below vacuously true")
+    results, unmatched = answer_eval.score_archives(cases, archives=greedy)
 
     by_case: dict[str, list] = {}
     for result in results:
@@ -867,8 +904,8 @@ def test_scoring_an_archive() -> None:
         return [r for r in by_case[case_id] if r.prompt_version == version]
 
     expect(all(not r.ok for r in by_case["aksum-exports"]),
-           "GUARD every archived Aksum answer fails — including those the "
-           "Part 7 checks called grounded")
+           "GUARD every archived Aksum answer ON THE GREEDY ARM fails — "
+           "including those the Part 7 checks called grounded")
 
     # Case zero, asserted per run rather than per version: there are now several
     # runs under some versions, and a dict keyed on version would silently keep

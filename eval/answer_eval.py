@@ -329,6 +329,63 @@ def load_archives(runs_dir: Path | None = None) -> list[tuple[dict, str]]:
     return out
 
 
+def payload_arm(payload: dict) -> dict:
+    """The arm ONE archived run was made on. Pure.
+
+    `sweep_arm` answers this for a sweep FILE. This is the same question one
+    level down, and it had to exist because `eval/answer_runs/` is NOT split by
+    arm: ruling 36 separated `eval/arms/` from `eval/sweeps/`, and the per-run
+    archive stayed one directory, because `rescore_sweep` rebuilds a summary
+    from these files and a split directory would have to be searched twice.
+
+    A payload with no `model_alias` predates 2026-08-28, when `assemble` gained
+    the field and the answer path could not send anything but the greedy
+    default. That is the same reconstruction ruling 36 permits for the nine
+    legacy sweeps, on the same evidence, and it is labelled rather than assumed
+    in silence.
+    """
+    alias = payload.get("model_alias")
+    if alias:
+        return {"model_alias": str(alias),
+                "temperature": float(payload.get("temperature") or 0.0),
+                "basis": "recorded"}
+    # No arm on the row. `serving_stack.model` is the echo of the alias SENT -
+    # Block E correction 4 established that it cannot move, which makes it
+    # useless as a drift detector and for that reason a faithful record of what
+    # was asked for. 396 of the legacy runs carry it; 115 older ones carry
+    # nothing, and those fall back on the CODE argument above rather than on a
+    # reading of the file. Both land on the greedy default, and the two are not
+    # reported as the same kind of knowledge.
+    echoed = (payload.get("serving_stack") or {}).get("model")
+    return {"model_alias": str(echoed) if echoed else LEGACY_ARM_ALIAS,
+            "temperature": LEGACY_ARM_TEMPERATURE,
+            "basis": "reconstructed" if echoed else "assumed"}
+
+
+def archives_on_arm(archives: list[tuple[dict, str]],
+                    arm: dict) -> tuple[list, list]:
+    """Split archived runs into (on this arm, on any other). Pure.
+
+    Ruling 36 in the per-run archive. Until 2026-08-28 every run in
+    `eval/answer_runs/` was greedy haiku, so a universal quantifier over the
+    directory - `every archived Aksum answer fails` - was a claim about one arm
+    that did not have to say so. The sonnet arm put 165 runs on another arm in
+    the same directory and that assertion became a claim about two models,
+    which is not what anyone wrote.
+
+    BOTH halves are returned, so a caller can assert that the filter excluded
+    something. A filter that silently matches everything, or nothing, turns
+    every universal built on it into a vacuous truth.
+    """
+    want = (str(arm["model_alias"]), float(arm["temperature"]))
+    on, off = [], []
+    for payload, name in archives:
+        got = payload_arm(payload)
+        target = on if (got["model_alias"], got["temperature"]) == want else off
+        target.append((payload, name))
+    return on, off
+
+
 def match_case(cases: list[AnswerCase], payload: dict) -> AnswerCase | None:
     """The one gold case this archived run is scored against, or None.
 
@@ -360,9 +417,14 @@ def match_case(cases: list[AnswerCase], payload: dict) -> AnswerCase | None:
 
 
 def score_archives(cases: list[AnswerCase],
-                   runs_dir: Path | None = None) -> tuple[list[CaseResult], list[str]]:
+                   runs_dir: Path | None = None,
+                   archives: list[tuple[dict, str]] | None = None
+                   ) -> tuple[list[CaseResult], list[str]]:
+    """`archives` scores a caller-supplied subset - see `archives_on_arm`.
+    Omitted, it reads the whole directory exactly as before."""
     results, unmatched = [], []
-    for payload, name in load_archives(runs_dir):
+    for payload, name in (archives if archives is not None
+                          else load_archives(runs_dir)):
         case = match_case(cases, payload)
         if case is None:
             unmatched.append(f"{name}: {payload.get('question', '')[:60]}")
@@ -1182,6 +1244,12 @@ def corpus_moved(before: dict, after: dict) -> str | None:
 # Block F decision 2, 2026-08-28. What produced these numbers, expressed as
 # the pair that decides comparability.
 LEGACY_ARM_TEMPERATURE = 0.0
+# The alias every answer archived before 2026-08-28 was made on. Not a default
+# and not a guess: until that day `assemble.assemble` had no `model` of its own
+# to pass and the answer path could not send anything else. It is the same
+# argument ruling 36 accepted for the nine legacy sweeps' temperature, and it
+# is labelled wherever it is used rather than presented as a reading.
+LEGACY_ARM_ALIAS = "chat-default"
 
 
 def sweep_arm(sweep: dict) -> dict:
