@@ -21,7 +21,7 @@ arm.*
 
 ```
 tree            clean, at the arm thread's last commit
-                <f16>    the MISS: a recorded arm with no witness
+                13a417d  the MISS: a recorded arm with no witness
                 7d34272  the sonnet arm: 165 runs, two findings, and a floor
                          that did not move
                 dcc285a  PROGRESS.md catches up two blocks, and F1 gets a
