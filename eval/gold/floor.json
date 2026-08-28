@@ -1,7 +1,7 @@
 {
   "note": "The Part 8 hard floor. Set from the first repeated sweep: 5 gold questions x 2 prompt versions x 3 repetitions, 30 runs, 2026-08-10. Every number below sits in a gap where no observed case straddles it — the Part 6 threshold rule, confirmed by repetition rather than assumed.",
   "why_content_and_not_grounded": "Measured, not argued. Across ten cells of three repetitions each, CONTENT pass was stable in 10 of 10 — every cell landed 0/3 or 3/3, with nothing in between. GROUNDED was unstable in 3 of 10: the same question, the same evidence, the same prompt, at temperature 0, produced different grounding verdicts. A floor on `grounded` would be measuring the sampler. A floor on content is measuring the pipeline.",
-  "calibrated": false,
+  "calibrated": true,
   "n_runs": 30,
   "n_cells": 10,
   "calibrated_from": "eval/sweeps/20260810T191414-p7-answer-v2r_p7-answer-v4-r3.json",
@@ -51,5 +51,39 @@
       "20260825T192121-p7-answer-v2r-r3.json": "D4 pilot day 2: six cases, below min_cases_per_sweep"
     },
     "a_named_sweep_must_actually_fail_the_rule": "eval/answer_eval.py REFUSES an exclusion naming a sweep that satisfies the rule. Without that, this list is a place to put a sweep whose numbers are inconvenient, which is the move calibrate_floor exists to make impossible."
+  },
+  "calibrated_at": "2026-08-28T10:51:56+00:00",
+  "calibrated_from_dates": [
+    "2026-08-26",
+    "2026-08-27",
+    "2026-08-28"
+  ],
+  "calibrated_from_sessions": 4,
+  "calibrated_stability": {
+    "per_case": {
+      "stable": 132,
+      "cells": 132,
+      "rate": 1.0,
+      "measures": "the sampler, within one session"
+    },
+    "per_session": {
+      "agreeing": 31,
+      "pairs": 33,
+      "rate": 0.9393939393939394,
+      "measures": "the day, across sessions"
+    }
+  },
+  "calibrated_from_sweeps": [
+    "20260826T103006-p7-answer-v2r-r3.json",
+    "20260826T115846-p7-answer-v2r-r3.json",
+    "20260827T103048-p7-answer-v2r-r3.json",
+    "20260828T103215-p7-answer-v2r-r3.json"
+  ],
+  "calibration_excluded_sweeps": {
+    "20260810T191414-p7-answer-v2r_p7-answer-v4-r3.json": "archived before D4; carries no session identity and cannot be given one after the fact",
+    "20260810T193907-p7-answer-v2r-r3.json": "archived before D4; carries no session identity and cannot be given one after the fact",
+    "20260812T134030-p7-answer-v2r-r3.json": "archived before D4; carries no session identity and cannot be given one after the fact",
+    "20260824T122310-p7-answer-v2r-r3.json": "D4 pilot day 1: six cases, below min_cases_per_sweep",
+    "20260825T192121-p7-answer-v2r-r3.json": "D4 pilot day 2: six cases, below min_cases_per_sweep"
   }
 }

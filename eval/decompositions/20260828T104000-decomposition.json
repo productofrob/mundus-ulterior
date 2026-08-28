@@ -1,0 +1,970 @@
+{
+  "generated_at": "2026-08-28T10:40:00+00:00",
+  "groups": [
+    {
+      "sweeps": [
+        "20260810T191414-p7-answer-v2r_p7-answer-v4-r3.json"
+      ],
+      "cases": 5,
+      "prompt_versions": [
+        "p7-answer-v2r",
+        "p7-answer-v4"
+      ],
+      "dates": [],
+      "sessions": [],
+      "runs": 30,
+      "verdicts": {
+        "value": "content_ok",
+        "prompt_version": null,
+        "refusals": [
+          "2 prompt versions in one decomposition (p7-answer-v2r, p7-answer-v4). Pooling them charges the difference between two prompts to the residual and reports it as sampling noise. Decompose each version separately.",
+          "no row carries a session identity, so there is no session term to estimate. Rows archived before D4 cannot be given one after the fact."
+        ],
+        "may_report": false,
+        "cases": 0,
+        "sessions": 0,
+        "repetitions": 0,
+        "runs": 0,
+        "rows_without_session": 30,
+        "mean": null,
+        "mean_squares": null,
+        "components_raw": null,
+        "components": null,
+        "shares": null,
+        "negative_estimates": [],
+        "total_variance": null
+      },
+      "texts": {
+        "value": "answer",
+        "prompt_version": null,
+        "refusals": [
+          "2 prompt versions in one decomposition (p7-answer-v2r, p7-answer-v4). Pooling them charges the difference between two prompts to the residual and reports it as sampling noise. Decompose each version separately.",
+          "no row carries a session identity, so there is no session term to estimate. Rows archived before D4 cannot be given one after the fact."
+        ],
+        "may_report": false,
+        "rows_without_session": 30,
+        "runs": 0,
+        "within_session": {
+          "agree": 0,
+          "pairs": 0,
+          "rate": null
+        },
+        "across_sessions": {
+          "agree": 0,
+          "pairs": 0,
+          "rate": null
+        },
+        "cross_case_baseline": {
+          "agree": 0,
+          "pairs": 0,
+          "rate": null
+        },
+        "agreement_lost_at_the_session_boundary": null,
+        "per_case": []
+      },
+      "stability": {
+        "per_case": {
+          "stable": 0,
+          "cells": 0,
+          "rate": null,
+          "measures": "the sampler, within one session"
+        },
+        "per_session": {
+          "agreeing": 0,
+          "pairs": 0,
+          "rate": null,
+          "measures": "the day, across sessions"
+        },
+        "disagreeing_across_sessions": [],
+        "sessions": [],
+        "rows_without_session": 30
+      }
+    },
+    {
+      "sweeps": [
+        "20260810T193907-p7-answer-v2r-r3.json",
+        "20260812T134030-p7-answer-v2r-r3.json"
+      ],
+      "cases": 5,
+      "prompt_versions": [
+        "p7-answer-v2r"
+      ],
+      "dates": [],
+      "sessions": [],
+      "runs": 30,
+      "verdicts": {
+        "value": "content_ok",
+        "prompt_version": "p7-answer-v2r",
+        "refusals": [
+          "no row carries a session identity, so there is no session term to estimate. Rows archived before D4 cannot be given one after the fact."
+        ],
+        "may_report": false,
+        "cases": 0,
+        "sessions": 0,
+        "repetitions": 0,
+        "runs": 0,
+        "rows_without_session": 30,
+        "mean": null,
+        "mean_squares": null,
+        "components_raw": null,
+        "components": null,
+        "shares": null,
+        "negative_estimates": [],
+        "total_variance": null
+      },
+      "texts": {
+        "value": "answer",
+        "prompt_version": "p7-answer-v2r",
+        "refusals": [
+          "no row carries a session identity, so there is no session term to estimate. Rows archived before D4 cannot be given one after the fact."
+        ],
+        "may_report": false,
+        "rows_without_session": 30,
+        "runs": 0,
+        "within_session": {
+          "agree": 0,
+          "pairs": 0,
+          "rate": null
+        },
+        "across_sessions": {
+          "agree": 0,
+          "pairs": 0,
+          "rate": null
+        },
+        "cross_case_baseline": {
+          "agree": 0,
+          "pairs": 0,
+          "rate": null
+        },
+        "agreement_lost_at_the_session_boundary": null,
+        "per_case": []
+      },
+      "stability": {
+        "per_case": {
+          "stable": 0,
+          "cells": 0,
+          "rate": null,
+          "measures": "the sampler, within one session"
+        },
+        "per_session": {
+          "agreeing": 0,
+          "pairs": 0,
+          "rate": null,
+          "measures": "the day, across sessions"
+        },
+        "disagreeing_across_sessions": [],
+        "sessions": [],
+        "rows_without_session": 30
+      }
+    },
+    {
+      "sweeps": [
+        "20260824T122310-p7-answer-v2r-r3.json",
+        "20260825T192121-p7-answer-v2r-r3.json"
+      ],
+      "cases": 6,
+      "prompt_versions": [
+        "p7-answer-v2r"
+      ],
+      "dates": [
+        "2026-08-24",
+        "2026-08-25"
+      ],
+      "sessions": [
+        "792202e7ac5847ea962e5829750d8fa2",
+        "8ee2273defd6481e838aa1aaea72e6f3"
+      ],
+      "runs": 36,
+      "verdicts": {
+        "value": "content_ok",
+        "prompt_version": "p7-answer-v2r",
+        "refusals": [],
+        "may_report": true,
+        "cases": 6,
+        "sessions": 2,
+        "repetitions": 3,
+        "runs": 36,
+        "rows_without_session": 0,
+        "mean": 0.6666666666666666,
+        "mean_squares": {
+          "case": 1.6,
+          "session": 0.0,
+          "case_x_session": 0.0,
+          "residual": 0.0
+        },
+        "components_raw": {
+          "case": 0.26666666666666666,
+          "session": 0.0,
+          "case_x_session": 0.0,
+          "residual": 0.0
+        },
+        "components": {
+          "case": 0.26666666666666666,
+          "session": 0.0,
+          "case_x_session": 0.0,
+          "residual": 0.0
+        },
+        "shares": {
+          "case": 1.0,
+          "session": 0.0,
+          "case_x_session": 0.0,
+          "residual": 0.0
+        },
+        "negative_estimates": [],
+        "total_variance": 0.26666666666666666
+      },
+      "texts": {
+        "value": "answer",
+        "prompt_version": "p7-answer-v2r",
+        "refusals": [],
+        "may_report": true,
+        "rows_without_session": 0,
+        "runs": 36,
+        "within_session": {
+          "agree": 28,
+          "pairs": 36,
+          "rate": 0.7777777777777778
+        },
+        "across_sessions": {
+          "agree": 9,
+          "pairs": 54,
+          "rate": 0.16666666666666666
+        },
+        "cross_case_baseline": {
+          "agree": 0,
+          "pairs": 540,
+          "rate": 0.0
+        },
+        "agreement_lost_at_the_session_boundary": 0.6111111111111112,
+        "per_case": [
+          {
+            "case": "adulis-exports",
+            "sessions": 2,
+            "within_session": "4/6",
+            "across_sessions": "0/9",
+            "distinct_texts_overall": 3,
+            "distinct_texts_per_session": {
+              "792202e7ac5847ea962e5829750d8fa2": 2,
+              "8ee2273defd6481e838aa1aaea72e6f3": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": true
+          },
+          {
+            "case": "aksum-exports",
+            "sessions": 2,
+            "within_session": "6/6",
+            "across_sessions": "0/9",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "792202e7ac5847ea962e5829750d8fa2": 1,
+              "8ee2273defd6481e838aa1aaea72e6f3": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": true
+          },
+          {
+            "case": "antikythera-absent",
+            "sessions": 2,
+            "within_session": "3/6",
+            "across_sessions": "0/9",
+            "distinct_texts_overall": 4,
+            "distinct_texts_per_session": {
+              "792202e7ac5847ea962e5829750d8fa2": 1,
+              "8ee2273defd6481e838aa1aaea72e6f3": 3
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": true
+          },
+          {
+            "case": "chinese-da-qin",
+            "sessions": 2,
+            "within_session": "3/6",
+            "across_sessions": "0/9",
+            "distinct_texts_overall": 4,
+            "distinct_texts_per_session": {
+              "792202e7ac5847ea962e5829750d8fa2": 3,
+              "8ee2273defd6481e838aa1aaea72e6f3": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": true
+          },
+          {
+            "case": "muziris-cargo",
+            "sessions": 2,
+            "within_session": "6/6",
+            "across_sessions": "9/9",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "792202e7ac5847ea962e5829750d8fa2": 1,
+              "8ee2273defd6481e838aa1aaea72e6f3": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "vimose-runes",
+            "sessions": 2,
+            "within_session": "6/6",
+            "across_sessions": "0/9",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "792202e7ac5847ea962e5829750d8fa2": 1,
+              "8ee2273defd6481e838aa1aaea72e6f3": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": true
+          }
+        ]
+      },
+      "stability": {
+        "per_case": {
+          "stable": 12,
+          "cells": 12,
+          "rate": 1.0,
+          "measures": "the sampler, within one session"
+        },
+        "per_session": {
+          "agreeing": 6,
+          "pairs": 6,
+          "rate": 1.0,
+          "measures": "the day, across sessions"
+        },
+        "disagreeing_across_sessions": [],
+        "sessions": [
+          "792202e7ac5847ea962e5829750d8fa2",
+          "8ee2273defd6481e838aa1aaea72e6f3"
+        ],
+        "rows_without_session": 0
+      }
+    },
+    {
+      "sweeps": [
+        "20260826T103006-p7-answer-v2r-r3.json",
+        "20260826T115846-p7-answer-v2r-r3.json",
+        "20260827T103048-p7-answer-v2r-r3.json",
+        "20260828T103215-p7-answer-v2r-r3.json"
+      ],
+      "cases": 33,
+      "prompt_versions": [
+        "p7-answer-v2r"
+      ],
+      "dates": [
+        "2026-08-26",
+        "2026-08-27",
+        "2026-08-28"
+      ],
+      "sessions": [
+        "0c74d52b2c2547a2bfdd604d3bca8fb1",
+        "37f79c93b79a46c09065dba1f5ba5911",
+        "6715f2a3ab6b44d4b56bd20da0d3869f",
+        "6a382f4f9ac74c5b80f591fe393fc4e8"
+      ],
+      "runs": 396,
+      "verdicts": {
+        "value": "content_ok",
+        "prompt_version": "p7-answer-v2r",
+        "refusals": [],
+        "may_report": true,
+        "cases": 33,
+        "sessions": 4,
+        "repetitions": 3,
+        "runs": 396,
+        "rows_without_session": 0,
+        "mean": 0.7272727272727273,
+        "mean_squares": {
+          "case": 2.313920454545454,
+          "session": 0.0,
+          "case_x_session": 0.046875,
+          "residual": 0.0
+        },
+        "components_raw": {
+          "case": 0.1889204545454545,
+          "session": -0.0004734848484848485,
+          "case_x_session": 0.015625,
+          "residual": 0.0
+        },
+        "components": {
+          "case": 0.1889204545454545,
+          "session": 0.0,
+          "case_x_session": 0.015625,
+          "residual": 0.0
+        },
+        "shares": {
+          "case": 0.923611111111111,
+          "session": 0.0,
+          "case_x_session": 0.07638888888888891,
+          "residual": 0.0
+        },
+        "negative_estimates": [
+          "session"
+        ],
+        "total_variance": 0.2045454545454545
+      },
+      "texts": {
+        "value": "answer",
+        "prompt_version": "p7-answer-v2r",
+        "refusals": [],
+        "may_report": true,
+        "rows_without_session": 0,
+        "runs": 396,
+        "within_session": {
+          "agree": 342,
+          "pairs": 396,
+          "rate": 0.8636363636363636
+        },
+        "across_sessions": {
+          "agree": 1075,
+          "pairs": 1782,
+          "rate": 0.6032547699214366
+        },
+        "cross_case_baseline": {
+          "agree": 0,
+          "pairs": 76032,
+          "rate": 0.0
+        },
+        "agreement_lost_at_the_session_boundary": 0.2603815937149271,
+        "per_case": [
+          {
+            "case": "adulis-exports",
+            "sessions": 4,
+            "within_session": "10/12",
+            "across_sessions": "15/54",
+            "distinct_texts_overall": 3,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 2,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "akananuru-yavana-ships",
+            "sessions": 4,
+            "within_session": "8/12",
+            "across_sessions": "16/54",
+            "distinct_texts_overall": 4,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 2,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 2,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "akananuru-yavana-ships-tamil",
+            "sessions": 4,
+            "within_session": "3/12",
+            "across_sessions": "0/54",
+            "distinct_texts_overall": 10,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 3,
+              "37f79c93b79a46c09065dba1f5ba5911": 3,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 3,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": true
+          },
+          {
+            "case": "aksum-exports",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "18/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "aksumite-coin-imagery",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "antikythera-absent",
+            "sessions": 4,
+            "within_session": "4/12",
+            "across_sessions": "5/54",
+            "distinct_texts_overall": 7,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 3,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 2,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 3
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "cana-frankincense-exports",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "chinese-da-qin",
+            "sessions": 4,
+            "within_session": "9/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 4,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 3
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "ezana-stone-geez",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "ezana-titulature",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "gudme-bracteate-runes",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "hermapollon-cargo-value",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "hoby-cheirisophos-signature",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "hoby-silius-identification",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "hou-hanshu-166-tribute",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "hwangnam-glass-origin",
+            "sessions": 4,
+            "within_session": "8/12",
+            "across_sessions": "6/54",
+            "distinct_texts_overall": 5,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 2,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 2,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "illerup-roman-coins",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "jabal-dabub-basmala",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "khao-sam-kaeo-intaglio",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "muziris-cargo",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "oc-eo-cattigara",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "oc-eo-medallion-legend",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "oc-eo-roman-coins",
+            "sessions": 4,
+            "within_session": "10/12",
+            "across_sessions": "21/54",
+            "distinct_texts_overall": 3,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 2,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "palmyrene-tariff-rates",
+            "sessions": 4,
+            "within_session": "10/12",
+            "across_sessions": "45/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 2
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "pattanam-dna-evidence",
+            "sessions": 4,
+            "within_session": "8/12",
+            "across_sessions": "13/54",
+            "distinct_texts_overall": 3,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 2,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 2,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "raqosh-epitaph",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "sasanian-hunting-plate",
+            "sessions": 4,
+            "within_session": "10/12",
+            "across_sessions": "45/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 2,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "shapur-drachm-imagery",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "skz-roman-emperors",
+            "sessions": 4,
+            "within_session": "7/12",
+            "across_sessions": "21/54",
+            "distinct_texts_overall": 5,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 2,
+              "37f79c93b79a46c09065dba1f5ba5911": 3,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "skz-titulature",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "54/54",
+            "distinct_texts_overall": 1,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": true,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "vimose-runes",
+            "sessions": 4,
+            "within_session": "5/12",
+            "across_sessions": "6/54",
+            "distinct_texts_overall": 5,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 2,
+              "37f79c93b79a46c09065dba1f5ba5911": 3,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 2,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "weilue-chinese-quotation",
+            "sessions": 4,
+            "within_session": "10/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 3,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 2
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          },
+          {
+            "case": "weilue-ruler-selection",
+            "sessions": 4,
+            "within_session": "12/12",
+            "across_sessions": "27/54",
+            "distinct_texts_overall": 2,
+            "distinct_texts_per_session": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": 1,
+              "37f79c93b79a46c09065dba1f5ba5911": 1,
+              "6715f2a3ab6b44d4b56bd20da0d3869f": 1,
+              "6a382f4f9ac74c5b80f591fe393fc4e8": 1
+            },
+            "identical_across_every_session": false,
+            "shared_nothing_across_sessions": false
+          }
+        ]
+      },
+      "stability": {
+        "per_case": {
+          "stable": 132,
+          "cells": 132,
+          "rate": 1.0,
+          "measures": "the sampler, within one session"
+        },
+        "per_session": {
+          "agreeing": 31,
+          "pairs": 33,
+          "rate": 0.9393939393939394,
+          "measures": "the day, across sessions"
+        },
+        "disagreeing_across_sessions": [
+          {
+            "case": "oc-eo-roman-coins",
+            "prompt_version": "p7-answer-v2r",
+            "verdicts": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": "fail",
+              "37f79c93b79a46c09065dba1f5ba5911": "fail",
+              "6715f2a3ab6b44d4b56bd20da0d3869f": "fail",
+              "6a382f4f9ac74c5b80f591fe393fc4e8": "pass"
+            }
+          },
+          {
+            "case": "pattanam-dna-evidence",
+            "prompt_version": "p7-answer-v2r",
+            "verdicts": {
+              "0c74d52b2c2547a2bfdd604d3bca8fb1": "pass",
+              "37f79c93b79a46c09065dba1f5ba5911": "pass",
+              "6715f2a3ab6b44d4b56bd20da0d3869f": "pass",
+              "6a382f4f9ac74c5b80f591fe393fc4e8": "fail"
+            }
+          }
+        ],
+        "sessions": [
+          "0c74d52b2c2547a2bfdd604d3bca8fb1",
+          "37f79c93b79a46c09065dba1f5ba5911",
+          "6715f2a3ab6b44d4b56bd20da0d3869f",
+          "6a382f4f9ac74c5b80f591fe393fc4e8"
+        ],
+        "rows_without_session": 0
+      }
+    }
+  ]
+}
