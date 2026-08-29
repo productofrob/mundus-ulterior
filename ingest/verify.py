@@ -395,6 +395,45 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             f"source-text question as they are now."
         )
 
+    # 13. The curation-cost ledger (F2, rulings 46-48). data/curation_cost.json
+    #     carries minutes per record PER PHASE from record 25, and the check
+    #     that matters is COVERAGE, in both directions: every record in the
+    #     corpus is either timed or excused with a written reason, and never
+    #     both.
+    #
+    #     A FAILURE, and from the first record F3 curates. Nobody times a
+    #     record twice: the minutes exist on the day the record is made and
+    #     never again, so a record that reaches the corpus without a ledger row
+    #     has to turn this suite red in the same run that first loads it. A
+    #     coverage NOTE here would be a column that quietly ends up with 30
+    #     rows for 36 records, and kill trigger 3 hangs off the mean.
+    #
+    #     The ledger is a sidecar for ruling 43's reason, which does not
+    #     expire: a `minutes` key on a record would move corpus_digest, the
+    #     denominator of 396 Block E runs and 165 arm runs. This is the second
+    #     file that would have done it.
+    from .cost import check_ledger
+
+    cost_path = Path(__file__).resolve().parent.parent / "data" / "curation_cost.json"
+    if not cost_path.exists():
+        failures.append(
+            f"{cost_path.name} is missing: no record's curation cost is recorded"
+        )
+    else:
+        ledger = json.loads(cost_path.read_text(encoding="utf-8"))
+        for problem in check_ledger(ledger, derived if tiers_path.exists() else {}):
+            failures.append(f"curation cost: {problem}")
+
+        timed = len(ledger.get("records") or [])
+        notes.append(
+            f"curation cost: {timed} record(s) timed, "
+            f"{len(ledger.get('not_timed') or {})} excused. "
+            f"Comparator: {(ledger.get('comparator') or {}).get('evaluated_against', '?')} "
+            f"(ruling 46 -- nothing records what record 12 cost). "
+            f"Run `python -m ingest.cost_log report` for the per-tier table; "
+            f"it is the only place a curation-cost number may be read from."
+        )
+
     print(f"documents: {len(docs)}   chunks: {len(chunks)}   parallel pairs: {paired}")
     for n in notes:
         print(f"note: {n}")

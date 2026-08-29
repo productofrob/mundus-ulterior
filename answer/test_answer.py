@@ -71,11 +71,26 @@ for _stream in (sys.stdout, sys.stderr):
         pass
 
 failures: list[str] = []
+# Counted rather than transcribed, on `ingest/test_fidelity.py`'s precedent and
+# for the reason F2 found on 2026-08-29: this suite printed only "all Part 7
+# offline checks passed", so the PART 7 line in every state block in this
+# repository carried no number. `GREEN, with ONE SKIP` therefore stood for a
+# week without anyone being able to see that the skip was ONE assertion out of
+# well over a hundred -- neither how much was covered nor how little was
+# missing. A suite is the only thing that knows how many assertions it has.
+passes: list[str] = []
+# A SKIP IS NOT A PASS, and it belongs in the summary line rather than a
+# hundred and fifty lines above it. `requirements-dev.txt` is deliberate that
+# every suite degrades gracefully without it, so an absent sqlglot must not
+# fail the run -- but a skip printed once, mid-output, is a skip that stood
+# unnoticed from the day this check was written until 2026-08-29.
+skips: list[str] = []
 
 
 def expect(condition: bool, label: str) -> None:
     if condition:
         print(f"  ok   {label}")
+        passes.append(label)
     else:
         print(f"  FAIL {label}")
         failures.append(label)
@@ -731,6 +746,8 @@ def test_sql() -> None:
         expect(True, "schema and queries parse as PostgreSQL")
     except ImportError:
         print("  skip sqlglot not installed (pip install -r requirements-dev.txt)")
+        skips.append("schema and queries parse as PostgreSQL "
+                     "(sqlglot not installed)")
     except Exception as exc:  # noqa: BLE001
         expect(False, f"schema and queries parse as PostgreSQL ({exc})")
 
@@ -1248,7 +1265,15 @@ def main() -> int:
         print(f"{len(failures)} failure(s):")
         for f in failures:
             print(f"  - {f}")
+        print(f"\n{len(passes)} passed, {len(failures)} failed"
+              + (f", {len(skips)} SKIPPED" if skips else ""))
+        for s in skips:
+            print(f"  skipped: {s}")
         return 1
+    print(f"{len(passes)} passed, 0 failed"
+          + (f", {len(skips)} SKIPPED" if skips else ""))
+    for s in skips:
+        print(f"  skipped: {s}   <- not a pass. This suite is not fully run.")
     print("all Part 7 offline checks passed")
     return 0
 

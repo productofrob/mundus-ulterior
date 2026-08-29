@@ -825,6 +825,32 @@ def _has_content_assertion(raw: dict) -> bool:""")],
           """    if not verdicts:
         return 2""")],
     ),
+    # F2, FINDING 32. The five rules that make `floor_state` one token tested
+    # against one file, in both directions.
+    (
+        "floor_state stops being a closed vocabulary",
+        [("        if state not in FLOOR_STATES:", "        if False:")],
+    ),
+    (
+        "a case's declared floor state is no longer compared to the file",
+        [("        if state != real:", "        if False:")],
+    ),
+    (
+        "a case that declares nothing stops asserting `none`",
+        [("        case_id: str(raw.get(\"floor_state\", \"\") or \"\").strip() or \"none\"\n"
+          "        for case_id, raw in raws.items()",
+          "        case_id: str(raw.get(\"floor_state\", \"\") or \"\").strip() or \"none\"\n"
+          "        for case_id, raw in raws.items() if raw.get(\"floor_state\")")],
+    ),
+    (
+        "the floor may hold one case in two states",
+        [("            if case_id in actual:", "            if False:")],
+    ),
+    (
+        "a gold file copied away from floor.json escapes the check",
+        [("    if not floor_path.exists():\n        floor_path = GOLD_DIR / \"floor.json\"",
+          "    if False:\n        floor_path = GOLD_DIR / \"floor.json\"")],
+    ),
 ]
 
 EXPECTED = [
@@ -972,6 +998,11 @@ EXPECTED = [
     "presenting this runner's default as the file's own",
     "GUARD a foreign arm cannot exit 1 - a floor that does not govern it "
     "cannot be failed by it",
+    "GUARD a floor_state outside the vocabulary is refused",
+    "GUARD a case declaring a floor state the file contradicts is refused",
+    "GUARD a case that declares nothing is asserting none, so a case the floor holds is refused",
+    "GUARD a floor file holding one case in two states is refused before any case is compared against it",
+    "GUARD a gold file copied away from floor.json is still checked against the canonical one",
 ]
 
 

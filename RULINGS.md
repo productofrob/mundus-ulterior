@@ -1,4 +1,4 @@
-# Rulings register — 1 to 45
+# Rulings register — 1 to 48
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
 same day with 27-31, declared during TASK 2 (D2's schema change and D3's case
@@ -160,6 +160,41 @@ a line in a summary list is a ruling nobody can quote, check, or argue with
 later. The cost of writing the declaration at the time is a few paragraphs. The
 cost of not writing it is that the code becomes the only authority for what was
 decided, and code says what a thing does rather than why it was chosen.
+
+## 46-48, declared in F2 before a single record was timed
+
+Full text in `F2_RULINGS.md`, in the same session, together with FINDING 32.
+
+```
+46  KILL TRIGGER 3 IS EVALUATED WITHIN THE TRANCHE. Nothing anywhere records
+    what record 12 cost, so the trigger as written -- "if record 60 costs what
+    record 12 cost" -- cannot be evaluated at all. The measurable claim is a
+    trend across records 25 to 60, per tier, in curation order, with n stated
+    beside it, and it is a WEAKER claim than the trigger as written. A
+    manufactured baseline was refused: re-curating a solved record is
+    systematically cheap and would bias the trigger toward "costs have not
+    fallen". min_n_to_read_as_a_trend is 10, so published_translation_only (4
+    new) and catalogue_record (8 new) can never be read as trends in Block F.
+47  the minutes are divided into SEVEN PHASES -- source_hunting,
+    rights_and_licence, text_capture, translation_and_fidelity, placement,
+    authoring, rework -- fixed before the first record is timed, and a record
+    entry that omits a phase is REFUSED. A single figure per record is
+    gameable by re-labelling work, which is ruling 45's defect one level down.
+    A phase that went to zero has to say zero.
+48  measured and remembered minutes are two kinds of knowledge and are
+    reported as two. An estimate needs a written reason, a part-clocked cell
+    is an estimate, a measured span above 240 minutes is refused, and an open
+    clock fails ingest.verify.
+```
+
+Ruling 46 is the one to read before quoting any curation-cost number: the
+comparator is not the one `PHASE2.md` names, and the difference is the whole
+of the ruling. Ruling 47 is the one to read before timing a record, because
+nobody times a record twice.
+
+FINDING 32 is the one to read before deferring a check with its implementation
+described: the check FINDING 30 deferred could not be built as deferred, and
+F1's own correction to `archived_status` is the counterexample.
 
 ## 43-45, declared in F1 before a single new record was curated
 

@@ -344,6 +344,11 @@ class AnswerCase:
     # compute from this file rather than a mapping someone reconstructs by hand.
     region: str = ""
     archived_status: str = ""
+    # FINDING 32, F2. The one token this case asserts about floor.json, and the
+    # only thing in the case that floor.json is checked against. Absent means
+    # "none": a case that says nothing is asserting it is in NO floor state,
+    # which is what makes the check bidirectional without 33 edits.
+    floor_state: str = ""
     note: str = ""
 
 
@@ -367,6 +372,23 @@ BEHAVIOUR_REFUSABLE = "correctly_refusable"
 BEHAVIOUR_GLOSS = "refusable_with_gloss"
 ANSWER_BEHAVIOURS = (BEHAVIOUR_ANSWERABLE, BEHAVIOUR_REFUSABLE, BEHAVIOUR_GLOSS)
 
+# FINDING 32, F2. The three states floor.json can hold a case in, plus the
+# absence of all of them. They are mutually exclusive by construction:
+# load_floor already refuses required x known_failing, and F2 added
+# known_failing x promotion for the same reason -- ruling 38 created the third
+# state precisely because a case was being described by two at once.
+#
+# `demotions` is deliberately NOT a state here. A demotion is a modifier on
+# known_failing_cases -- load_floor refuses a demotion that is not tracked
+# there -- so admitting it would give one case two true answers, which is the
+# defect this check exists to catch.
+FLOOR_STATES = (
+    "required_cases",
+    "known_failing_cases",
+    "promotion_candidates",
+    "none",
+)
+
 _ANSWER_REQUIRED = {"id", "question", "why", "expected_behaviour"}
 _ANSWER_OPTIONAL = {
     "expect_cited_docs", "expect_cited_chunks", "expect_quoted_docs",
@@ -375,7 +397,7 @@ _ANSWER_OPTIONAL = {
     "expect_answer_contains_any", "expect_hedge_any", "expect_answer_excludes",
     "expect_min_resolved_quotes", "expect_grounded", "expect_refusal",
     "refusal_is_correct_because", "paired_with", "region",
-    "archived_status", "note",
+    "archived_status", "floor_state", "note",
     # Ruling 41, 2026-08-28. Why an exclusion list was changed, beside the
     # list. A correction recorded only in a commit message is a correction the
     # next reader of this file does not have.
@@ -458,6 +480,96 @@ def _has_content_assertion(raw: dict) -> bool:
 def _assertion_block(raw: dict) -> dict:
     """The part of a case that IS the test, exactly as written in the file."""
     return {key: raw[key] for key in _ASSERTION_KEYS if key in raw}
+
+
+def _check_floor_states(raws: "dict[str, dict]", path: Path) -> None:
+    """FINDING 32, F2. One token in a case, tested against one file.
+
+    FINDING 30 was a case telling you the state of ANOTHER file and going on
+    telling you after that file changed: `weilue-chinese-quotation` said it was
+    tracked in `floor.json.known_failing_cases` as an open defect while
+    floor.json had moved it to `promotion_candidates` on ruling 38. The check
+    was deferred to F2 in writing, described as *one token
+    (`known_failing_cases`) tested against one file, not prose
+    interpretation*.
+
+    **It could not be built that way, and the reason is the correction F1
+    made.** `archived_status` is prose, and F1's corrected text says, truly,
+    *"ruling 38 moved it OUT of floor.json.known_failing_cases"*. A check that
+    scans that field for the token fires on the sentence that records the
+    history correctly, and a check whose first true positive is a false one
+    gets switched off in a week. Prose cannot carry a machine-checkable claim
+    about another file, however few tokens it is scanned for.
+
+    So the claim is moved OUT of the prose and into `floor_state`, which is one
+    token and is exactly what was deferred -- the same shape as ruling 43's
+    tier: DECLARED in the case, held in the other file, and refused when they
+    disagree. `archived_status` stays prose, stays outside `_ASSERTION_KEYS`,
+    and stays unread by any check.
+
+    Both directions, for `check_declared_tiers`'s reason. A case declaring
+    nothing is asserting "none", so moving a case in floor.json without
+    touching the case fails at load -- which is FINDING 30's exact failure mode
+    and the one a one-directional check would still let through.
+    """
+    # Beside the file if one is there, and the canonical floor otherwise.
+    # NOT a convenience: it is what stops the check being escapable. Every
+    # harness in this repository that exercises a rule over the whole gold file
+    # writes a copy of it to a temporary directory, and a check that only ran
+    # next to floor.json would be a check any copy walks out of -- which is the
+    # shape of `calibration_scope`'s note about a list checked in one
+    # direction becoming a place to put things.
+    floor_path = path.parent / "floor.json"
+    if not floor_path.exists():
+        floor_path = GOLD_DIR / "floor.json"
+    declared = {
+        case_id: str(raw.get("floor_state", "") or "").strip() or "none"
+        for case_id, raw in raws.items()
+    }
+    for case_id, state in sorted(declared.items()):
+        if state not in FLOOR_STATES:
+            raise GoldSetError(
+                f"{path.name}: {case_id} declares floor_state {state!r}, which "
+                f"is not one of {list(FLOOR_STATES)}."
+            )
+
+    if not floor_path.exists():
+        asserted = sorted(c for c, s in declared.items() if s != "none")
+        if asserted:
+            raise GoldSetError(
+                f"{path.name}: {asserted} assert a floor.json state and "
+                f"there is no floor.json anywhere to be right or wrong about "
+                f"-- not beside this file and not at {GOLD_DIR.name}/. An "
+                f"assertion about a file that is not there is the thing "
+                f"FINDING 30 was."
+            )
+        return
+
+    floor = _read(floor_path)
+    actual: dict[str, str] = {}
+    for state in ("required_cases", "known_failing_cases", "promotion_candidates"):
+        entry = floor.get(state) or {}
+        ids = entry if isinstance(entry, (list, tuple)) else list(entry)
+        for case_id in ids:
+            if case_id in actual:
+                raise GoldSetError(
+                    f"{floor_path.name}: {case_id} is in both "
+                    f"{actual[case_id]} and {state}. A case in two states is "
+                    f"a case two files can each describe correctly and "
+                    f"disagree, which is ruling 38's own defect."
+                )
+            actual[str(case_id)] = state
+
+    for case_id, state in sorted(declared.items()):
+        real = actual.get(case_id, "none")
+        if state != real:
+            raise GoldSetError(
+                f"{path.name}: {case_id} declares floor_state {state!r} and "
+                f"{floor_path.name} holds it in {real!r}. FINDING 30: a case "
+                f"asserted another file's state and went on asserting it after "
+                f"that file changed, because nothing had to agree. Now "
+                f"something does."
+            )
 
 
 def _check_pairs(raws: dict[str, dict], path: Path) -> None:
@@ -829,11 +941,13 @@ def load_answer_cases(path: Path | None = None) -> list[AnswerCase]:
                 paired_with=str(raw.get("paired_with", "") or "").strip(),
                 region=region,
                 archived_status=raw.get("archived_status", ""),
+                floor_state=str(raw.get("floor_state", "") or "").strip(),
                 note=raw.get("note", ""),
             )
         )
 
     _check_pairs(raws, path)
+    _check_floor_states(raws, path)
 
     if not cases:
         raise GoldSetError(f"{path}: no answer cases defined")

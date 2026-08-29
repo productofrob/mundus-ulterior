@@ -59,11 +59,21 @@ for _stream in (sys.stdout, sys.stderr):
         pass
 
 failures: list[str] = []
+# Counted rather than transcribed, on `ingest/test_fidelity.py`'s precedent and
+# for the reason F2 recorded about `answer/test_answer.py` on 2026-08-29: this
+# suite printed only "All build-layer placement-shape assertions passed", so
+# the UI line in every state block in this repository carried no number. A
+# suite whose count nobody can read is a suite that can lose assertions, or
+# skip them, without any state block being able to say so -- which is how
+# `GREEN, with ONE SKIP` stood for weeks one file over. A suite is the only
+# thing that knows how many assertions it has.
+passes: list[str] = []
 
 
 def expect(condition: bool, label: str) -> None:
     if condition:
         print(f"  ok   {label}")
+        passes.append(label)
     else:
         print(f"  FAIL {label}")
         failures.append(label)
@@ -265,7 +275,9 @@ def main() -> int:
         print(f"FAILED ({len(failures)})")
         for f in failures:
             print(f"  x {f}")
+        print(f"\n{len(passes)} passed, {len(failures)} failed")
         return 1
+    print(f"{len(passes)} passed, 0 failed")
     print("All build-layer placement-shape assertions passed.")
     return 0
 

@@ -21,8 +21,8 @@ import tempfile
 from pathlib import Path
 
 from eval import answer_eval
-from eval.goldset import (ANSWER_BEHAVIOURS, ANSWER_REGIONS, GoldSetError,
-                          load_answer_cases, load_floor)
+from eval.goldset import (ANSWER_BEHAVIOURS, ANSWER_REGIONS, FLOOR_STATES,
+                          GoldSetError, load_answer_cases, load_floor)
 
 import sys
 
@@ -2227,6 +2227,122 @@ def test_a_foreign_arm_is_not_a_subject_of_this_floor() -> None:
            "floor, and passes when it is not")
 
 
+def test_the_floor_state_a_case_declares() -> None:
+    """FINDING 30's deferred check, and FINDING 32 -- why it is not the check
+    that was deferred.
+
+    F1 deferred *"goldset refuses a case whose archived_status names a
+    floor.json state that floor.json contradicts... one token
+    (`known_failing_cases`) tested against one file, not prose
+    interpretation"*. Building it that way is impossible, and the proof is
+    F1's own correction: the corrected `archived_status` on
+    `weilue-chinese-quotation` says, truly, that ruling 38 moved the case OUT
+    of `floor.json.known_failing_cases`. A token scan fires on the sentence
+    that gets the history right, and a check whose first true positive is a
+    false one is a check somebody switches off.
+
+    So the claim moves out of the prose and into `floor_state`: one token,
+    declared in the case, checked against one file, in both directions.
+    """
+    print("\nthe floor state a case declares, and the file that contradicts it")
+
+    def with_floor(case_overrides, floor_overrides=None):
+        """Load a one-case gold file beside a real floor.json. Returns the
+        refusal, or "" if it loaded."""
+        floor = {**load_floor(), **(floor_overrides or {})}
+        case = _valid_case(**case_overrides)
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "floor.json").write_text(
+                json.dumps(floor), encoding="utf-8")
+            cases_path = Path(tmp) / "answer_cases.json"
+            cases_path.write_text(json.dumps({"cases": [case]}), encoding="utf-8")
+            try:
+                load_answer_cases(cases_path)
+            except GoldSetError as exc:
+                return str(exc)
+        return ""
+
+    expect(
+        "none" in FLOOR_STATES and "demotions" not in FLOOR_STATES,
+        "GUARD demotions is not a floor state, because a demotion is a "
+        "modifier on known_failing_cases and a case with two true answers is "
+        "the defect",
+    )
+
+    expect_rejected(
+        _valid_case(floor_state="tracked"),
+        "GUARD a floor_state outside the vocabulary is refused",
+        because="is not one of",
+    )
+
+    # A gold file copied to a temporary directory has no floor.json beside it,
+    # and every harness here that exercises a whole-file rule makes exactly
+    # that copy. The check resolves to the canonical floor rather than going
+    # quiet, so the copy is not an exit from it.
+    expect_rejected(
+        _valid_case(id="aksum-exports", floor_state="required_cases"),
+        "GUARD a gold file copied away from floor.json is still checked "
+        "against the canonical one",
+        because="holds it in 'known_failing_cases'",
+    )
+
+    detail = with_floor(
+        {"id": "aksum-exports", "floor_state": "required_cases"})
+    expect(
+        "holds it in 'known_failing_cases'" in detail,
+        "GUARD a case declaring a floor state the file contradicts is refused",
+    )
+
+    detail = with_floor({"id": "aksum-exports"})
+    expect(
+        "declares floor_state 'none'" in detail,
+        "GUARD a case that declares nothing is asserting none, so a case the "
+        "floor holds is refused",
+    )
+
+    detail = with_floor(
+        {"id": "aksum-exports", "floor_state": "known_failing_cases"})
+    expect(detail == "",
+           "GUARD a case whose declared floor state matches the file loads")
+
+    detail = with_floor(
+        {"id": "c1"},
+        {"promotion_candidates": {"c1": {"evidence": "e", "bar": "b"},
+                                  "aksum-exports": {"evidence": "e", "bar": "b"}}},
+    )
+    expect(
+        "is in both" in detail,
+        "GUARD a floor file holding one case in two states is refused before "
+        "any case is compared against it",
+    )
+
+    expect(
+        "floor_state" not in answer_eval.ASSERTION_KEYS
+        if hasattr(answer_eval, "ASSERTION_KEYS") else True,
+        "GUARD floor_state is not a scored assertion, so no archived run is "
+        "re-scored by declaring one",
+    )
+
+    # The live file, which is the only instance that matters. It is checked at
+    # every load already; this asserts that the seven cases the floor holds are
+    # actually declaring, rather than that nothing has been declared at all.
+    declared = {c.id: c.floor_state for c in load_answer_cases() if c.floor_state}
+    floor = load_floor()
+    held = (set(floor["required_cases"])
+            | set(floor.get("known_failing_cases") or {})
+            | set(floor.get("promotion_candidates") or {}))
+    expect(
+        set(declared) == held and held,
+        "GUARD every case the floor holds declares its state, and no case "
+        "declares one the floor does not hold",
+    )
+    expect(
+        declared.get("weilue-chinese-quotation") == "promotion_candidates",
+        "GUARD the case FINDING 30 was found on now declares the state ruling "
+        "38 moved it to",
+    )
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -2259,6 +2375,7 @@ def main() -> int:
     test_an_exclusion_cannot_be_the_question()
     test_skz_titulature_is_tracked_rather_than_corrected_away()
     test_the_floor()
+    test_the_floor_state_a_case_declares()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0
 

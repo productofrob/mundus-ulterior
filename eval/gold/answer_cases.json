@@ -7,6 +7,7 @@
   "cases": [
     {
       "id": "aksum-exports",
+      "floor_state": "known_failing_cases",
       "question": "What did Rome trade with the Kingdom of Aksum?",
       "why": "The corpus contains the answer in published English. Schoff's translation of Periplus §6 reads 'There are exported from these places ivory, and tortoise-shell and rhinoceros-horn' at reference_translation[3073:3156] of subsaharan_africa/periplus-adulis.json, aligned to the Greek in original::002. Every archived answer refuses anyway, and the last v3 run refuses while stating the opposite of its own printed evidence — 'they detail what Rome exported to Aksum rather than what Rome imported from it' — and is scored grounded for it. This case exists so that answer cannot pass.",
       "expected_behaviour": "answerable",
@@ -71,6 +72,7 @@
     },
     {
       "id": "vimose-runes",
+      "floor_state": "known_failing_cases",
       "question": "What do the Vimose runes say?",
       "why": "Case zero. Under p7-answer-v2 this produced three runic sequences with their published hedges intact and seven quotations all resolving to disk; under v1 and v3 it retreats to a sentence and quotes the record's title. All three are 'grounded' or 'not grounded' for reasons that have nothing to do with which one serves a reader. The content assertions separate them mechanically, which is what Part 8 exists to do instead of adjudicating prompt versions by hand.",
       "expected_behaviour": "refusable_with_gloss",
@@ -110,6 +112,7 @@
     },
     {
       "id": "muziris-cargo",
+      "floor_state": "required_cases",
       "question": "What did ships carry from Muziris?",
       "why": "The case where the pipeline already works, kept so a regression is visible. Periplus §56 is the cargo manifest and was added to the corpus in Part 4 precisely because a record titled 'Muziris and the Limyrike coast' that stopped at §54 omitted the passage documenting the trade.",
       "expected_behaviour": "answerable",
@@ -143,6 +146,7 @@
     },
     {
       "id": "chinese-da-qin",
+      "floor_state": "required_cases",
       "question": "How did Chinese sources describe the Roman empire?",
       "why": "The mirror of the Aksum case. All three archived answers are scored NOT grounded — an uncited opening sentence, a real catch — while all three contain accurate, well-quoted content drawn from the Weilue and the Hou Hanshu. Aksum shows groundedness passing a useless answer; this shows it failing a useful one. A harness that tracks only the exit code sees neither.",
       "expected_behaviour": "answerable",
@@ -176,6 +180,7 @@
     },
     {
       "id": "antikythera-absent",
+      "floor_state": "required_cases",
       "question": "When was the Antikythera mechanism built?",
       "why": "The control. The corpus genuinely contains nothing about the Antikythera mechanism — it is a Mediterranean find, outside the seven regions — so refusal is the correct answer and must be scored as such. Without this case the harness rewards saying more, which is the mirror of the failure it was built to catch.",
       "expected_behaviour": "correctly_refusable",
@@ -316,6 +321,7 @@
     },
     {
       "id": "skz-titulature",
+      "floor_state": "known_failing_cases",
       "question": "What titles does Shapur I claim in the Res Gestae Divi Saporis?",
       "why": "Persia's cross-lingual answerable case, and the corpus's deepest one: persia-01-skz carries §1 in Parthian transliteration ('ANE mzdyzn ALHA shypwhr MLKYN MLKA'), the same §1 in scholarly transcription ('Az, mazdezn bag Sabuhr, sahan sah Eran ud Aneran'), and Nabel's English of the Parthian - three renderings of one sentence in one record. The titulature is the part of the inscription that is fully present on disk, which is why the case asks about it and not about the campaigns.",
       "expected_behaviour": "answerable",
@@ -959,6 +965,7 @@
     },
     {
       "id": "weilue-chinese-quotation",
+      "floor_state": "promotion_candidates",
       "question": "In the Weilüe's own Classical Chinese, how is Da Qin described?",
       "why": "FINDING 13, made into a standing detector instead of a paragraph. Across 16 archived runs of chinese-da-qin, 45 of 45 resolved quotations came from reference_translation and none from original_text_excerpt — while the Chinese chunk was [S1], top of the evidence block, at similarity 0.576. Retrieval was never the obstacle. Prompt rule 3 permits a quotation from 'the SOURCE TEXT or the ENGLISH' and requires neither, so the English wins every time, and until expect_quoted_from_original existed no case in the gold set could say otherwise. The question names Classical Chinese outright, which gives the pipeline every chance: if it still answers in English quotations only, the defect is not that the model misread the question.",
       "expected_behaviour": "answerable",

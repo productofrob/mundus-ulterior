@@ -12781,3 +12781,208 @@ least.**
 
 **A suite that no state block lists is a suite that can be red for a week, and
 this one was the first line of the runbook that would have found it.**
+
+---
+
+# F2 — the column, and the comparator nobody had measured (2026-08-29)
+
+*Rulings 46–48 and finding 32, full text in `F2_RULINGS.md`, indexed in
+`RULINGS.md`. F2 builds the instrument and declares what it is allowed to mean;
+it times no record, because the column starts at record 25 and that is F3's.
+The corpus is unmoved and `26e4a683` is unchanged.*
+
+## Kill trigger 3's comparator does not exist
+
+> *"if record 60 costs what record 12 cost, 200 is a staffing question rather
+> than an engineering one"* — `PHASE2.md`, repeated by `PHASE2_PLAN` F2.
+
+**Nothing anywhere records what record 12 cost.** The seed 24 were curated
+across Parts 3 to 7, before any column existed. There is no minutes figure for
+any of them in any file and none can be reconstructed, so one of the trigger's
+two terms has never been measured.
+
+Ruling 46 amends it **before the first number**: a trend across records 25 to
+60, per tier, in curation order, with n printed beside it — and it is written
+down as **a weaker claim than the trigger as written**. Two ways of
+manufacturing the missing term were refused. Re-timing seed records measures
+re-doing a solved record, which is systematically cheap in exactly the phases
+that dominate curation and would bias the trigger toward *costs have not
+fallen*; a comparator whose error has a direction is worse than none, because
+the number it produces looks like evidence. Reconstructing estimates was
+refused for ruling 39's reason in its purest form.
+
+The n travels with the claim. `min_n_to_read_as_a_trend` is 10, declared with
+its consequence rather than discovered at G3: **`published_translation_only` (4
+new) and `catalogue_record` (8 new) can never be read as trends inside Block
+F.** Two of the four moving tiers can carry the claim, and the report prints
+`NOT A TREND (n=4, floor 10)` for the rest.
+
+## A single minutes figure is ruling 45's defect one level down
+
+Cost "trends down" the moment source-hunting becomes research, or rights
+checking stops being timed, or gold-case writing moves out into "eval work".
+Ruling 45 closed an aggregate satisfied by curating cheaper records; this is an
+aggregate satisfied by **counting less of the record**. Ruling 47 fixes seven
+phases before the first record is timed — `source_hunting`,
+`rights_and_licence`, `text_capture`, `translation_and_fidelity`, `placement`,
+`authoring`, `rework` — and `check_ledger` refuses a record entry that omits
+one. **A phase that went to zero has to say zero**, so the fall lands in the
+phase that stopped. `rework` is in the list because without it the cheapest
+curation strategy is the one that fails verification.
+
+Ruling 48 keeps a clocked minute and a remembered one apart: an estimate needs
+a written reason, a part-clocked cell is an estimate, a measured span above 240
+minutes is refused, and an open clock fails `ingest.verify`. Ruling 36's shape
+one level down — recorded and reconstructed are two kinds of knowledge.
+
+## The ledger is the SECOND file that would have moved the digest
+
+`data/curation_cost.json` is a sidecar for ruling 43's reason, unchanged and
+not expiring: a `minutes` key would change every `content_hash` and therefore
+`corpus_digest`, the denominator of 396 Block E runs and 165 arm runs. And not
+under `data/seed_corpus/` either, because `iter_seed_records` refuses a `.json`
+at that depth. Seven days after the tier declaration hit the same two walls.
+
+`ingest.verify` check 13 makes the coverage bidirectional: every record in the
+corpus is either timed or excused with a written reason, never both. That is
+what makes *nobody times a record twice* enforceable rather than aspirational —
+a record F3 ingests without a ledger row turns the suite red in the same run
+that first loads it, which is the only moment its minutes still exist.
+
+## FINDING 32 — the deferred check could not be built as deferred
+
+F1 deferred FINDING 30's check **and specified it**: one token
+(`known_failing_cases`) tested against one file. Built that way it fires on
+F1's own correction, which says truly that *ruling 38 moved it OUT of
+`floor.json.known_failing_cases`*. **A check whose first true positive is a
+false one is a check somebody switches off in a week.**
+
+The claim moved out of the prose and into `floor_state` — one token, four
+values, declared in the case and held in `floor.json`, refused when they
+disagree, in both directions, with absent meaning `none`. `archived_status` is
+untouched and both fields stay outside `_ASSERTION_KEYS`, so **no archived run
+is re-scored**. Seven cases now declare; the ANSWER suite went 333 → 343 and
+stayed green.
+
+## A mutation harness was killed mid-mutation and left one on disk
+
+`scripts/mutate_part8.py` run through the device bridge was killed by the
+bridge's call timeout **between applying a mutation and reaching the `finally`
+that restores the sources.** `eval/answer_eval.py` sat in the working tree with
+`for doc_id in case.expect_quoted_docs:` mutated to `for doc_id in []:` — every
+quotation assertion in the scorer disabled, and every suite still reporting
+green because none had been re-run. Found by `git status`; restored with
+`git show HEAD:` writing bytes back, because **`git checkout --` fails through
+the bridge, which cannot unlink.**
+
+## Two counts that had drifted, both transcribed
+
+`F2_START` says **"FIVE SUITES, not four"** directly above a list of six. The
+sentence was true when F1 wrote it and `ingest.test_fidelity` made it false the
+same day. With `ingest.test_cost` there are **seven**. It is F1's own closing
+correction — one claim held in more than one place, one copy maintained —
+reappearing in the document that recorded it, eight hours later.
+
+F1's owed list says the BASELINE check is in "four harnesses of seven". It is
+now five; the denominator of seven excludes `mutate_distractors`, which mutates
+a live database view rather than a source file.
+
+---
+
+# State at the close of F2 (2026-08-29)
+
+```
+tree            577a0e2 plus one F2 commit, clean
+corpus          24 records / 450 embedded / 0 pending   UNMOVED BY F2
+digest          26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28
+                UNMOVED. F3 moves it.
+
+SEVEN SUITES. F2_START said five above a list of six; this is the corrected
+count and it is the list, not a sentence about the list.
+INGEST          ingest.verify                    GREEN   <- FIRST, always
+TIERS           ingest.test_fidelity         30   GREEN
+COST            ingest.test_cost             46   GREEN  <- new
+ANSWER          eval.test_answer_eval       343   GREEN  <- was 333
+RANKING         eval.test_ranking_check     236   GREEN
+PART 7          answer.test_answer          150   GREEN  <- was uncounted and
+                                                  carried ONE SKIP; sqlglot
+                                                  installed, and the suite now
+                                                  prints its own count
+UI              ui\test_build_ui_data.py     14   GREEN  <- was uncounted too;
+                                                  now prints its own count
+
+mutations       scripts\mutate_part8.py      87   GREEN  <- was 82
+                scripts\mutate_ranking.py   100   GREEN
+                scripts\mutate_cost.py       37   GREEN, with BASELINE  <- new
+                scripts\mutate_fidelity.py   24   GREEN, with BASELINE
+                scripts\mutate_part7b.py     18   GREEN, with BASELINE
+                scripts\mutate_ui_places.py   4   GREEN, with BASELINE
+
+cost ledger     data/curation_cost.json
+                0 records timed / 24 excused with a written reason
+                comparator: within_tranche (ruling 46)
+                7 phases, fixed (ruling 47)
+                min_n_to_read_as_a_trend 10; two of four moving tiers can
+                carry a trend at all
+
+record tiers    11 verbatim_with_provenance / 0 verbatim_machine_english /
+                1 published_translation_only / 11 catalogue_record /
+                1 pointer_only
+target at 60    25 / 10 / 5 / 19 / 1, regions levelled to 8-9, >= 4
+                source-language records per region, 8 gloss-capable,
+                >= 6 expect_quoted_from_original cases
+
+gold cases      33   22 answerable / 3 gloss / 8 correctly_refusable
+                7 now declare a floor_state, checked against floor.json
+floor           calibrated TRUE. ELIGIBLE, 4 sweeps, 3 dates — UNMOVED
+rulings         1 to 48.  findings 1 to 32.
+gates           G4 CLOSED. G3 is Block F's, amended THREE times in advance
+                (ruling 39, ruling 45, ruling 46).
+```
+
+## Open, and deliberately not closed
+
+- **No record has been timed.** F3 curates the first one the column measures,
+  and the first record is also the first real test of the CLI.
+- **The BASELINE check is in five harnesses of eight.** `mutate_ranking`,
+  `mutate_places`, `mutate_recover` still lack it.
+- **`ingest/verify.py` check 9 asserts `len(docs) == 24`** and F3 breaks it on
+  purpose, in the same commit as the records or not at all.
+- Everything carried into F2 is carried out of it: ruling 40's `article_added`
+  unverified against a live run, `muziris-cargo` at 3/5 on the arm,
+  `--archives` pooling arms, and G3's second session at 60.
+
+## The sentences that travel
+
+29/30 is whether the RECORD was found. 22/30 is whether the NON-ENGLISH TEXT was
+reachable. `muziris-cargo-akananuru` still sits at rank 310.
+
+**Four sessions read 0.727272… and one of them was different. The pass rate
+cannot see change.**
+
+**Nine archives, 396 runs, and not one of them recorded which model answered.**
+
+**36% and 27% are not two refusal rates. They are two rates of uttering one
+sentence.**
+
+**Cost per record trending down is not a fact about efficiency until the mix is
+held. The cheapest record in this corpus is the one that teaches a reader the
+least.**
+
+**A suite that no state block lists is a suite that can be red for a week.**
+
+And four from F2:
+
+**Kill trigger 3 compares record 60 against record 12, and nobody ever wrote
+down what record 12 cost.**
+
+**A number is safe from re-labelling only if the thing underneath it is
+recorded too — the tier, then the phase, and there is no third level because
+nobody times a record twice.**
+
+**A check deferred WITH its implementation described is a check specified
+before it was tried, and F1's own correction is what it would have fired on.**
+
+**A suite that prints no count can carry a skip forever, because nobody can
+tell one skipped assertion from thirty. Two of the seven were printing
+none.**
