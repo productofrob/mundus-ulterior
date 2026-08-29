@@ -1,0 +1,112 @@
+{
+  "note": "The DECLARED record tier of every seed record, and the target mix for the 36 records Block F adds. Declared 2026-08-29 in F1, before a single new record was curated, for the reason ruling 39 gives about G3: a target set after the tranche exists is a target fitted to the tranche. F1_RULINGS.md rulings 43-45 carry the full argument; this file is the data.",
+  "declared_on": "2026-08-29, F1, at commit a6442b6, corpus 24 records, digest 26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28.",
+  "why_this_file_is_not_inside_the_records": "Because a `tier` key on a seed record would MOVE THE CORPUS DIGEST. ingest.loader.canonical_record_text hashes the whole parsed record with sorted keys, so any new key changes that record's content_hash and therefore corpus_digest -- the denominator of all 396 Block E runs and of the sonnet arm's 165. F1 does not move the corpus (F1_START: 'F1 and F2 do not move the corpus'), and a tier declaration that silently invalidated every archived number would have been the most expensive tidy-up in this project's history. Checked before it was written, not after.",
+  "why_it_is_not_under_data/seed_corpus/": "iter_seed_records REFUSES any .json under the corpus directory that is not at region/record.json depth -- glob('*/*.json') would not see a file at the top level and rglob('*.json') would, and a file some walks see and others do not is the exact failure that function exists to prevent. Only manifest.json is exempt, by name. So the sidecar lives one directory up, in data/, where no corpus walk reaches it. The layout guard did its job on the first file anyone tried to add since it was written.",
+  "why_declared_AND_derived": "ingest.fidelity.derive_record_tier computes a tier from the record's chunks. If that were the only tier, it could never be wrong -- and could never be checked either. The declaration is what a curator believes the record is; the derivation is what the classifier reads it as; ingest.verify fails when they disagree. That is ruling 36's shape one level down: recorded and reconstructed are two kinds of knowledge and must be reported as two.",
+  "vocabulary": {
+    "verbatim_with_provenance": "Retrieval-eligible source-language text, a published translation, and BOTH CITED -- translation_source is non-empty. The SKZ / Periplus treatment.",
+    "verbatim_machine_english": "Retrieval-eligible source-language text and NO published translation, so resolve_english reaches the passage with `machine` or with nothing. AMENDED INTO THE VOCABULARY IN F1. PHASE2_PLAN's three tiers had no name for it, and F3-F7 predicts it becomes the common case: 'Local non-English sources mostly will not have published English, so resolve_english starts choosing machine and the Part 6 confidence machinery goes from dormant to load-bearing.' A mix cannot have a target for a tier that cannot be written down.",
+    "published_translation_only": "No retrieval-eligible source-language text, and a cited published translation. No open original transcription available.",
+    "catalogue_record": "source_type is a find, coin, object or artefact record. Both text fields are catalogue description whatever they contain, because classify_original forces object_description on these.",
+    "pointer_only": "Nothing retrieval-eligible in either role: the record says where its text lives rather than carrying it. AMENDED INTO THE VOCABULARY IN F1, for arabia-02-palmyrene-tariff, which has been in this corpus since Part 3 and which none of the three original tiers held.",
+    "unclassifiable": "NOT A TIER and refused as a declaration. What derive_record_tier returns when no tier holds a record -- ruling 36's shape, where an arm that cannot be identified blocks rather than being read as the default."
+  },
+  "what_a_tier_is_deliberately_not": "A fact about the aligner. answer.align.Pair.ground is section | index | document | none, and an unalignable published translation lands a reader on `published_document` rather than `published`. That is a real distinction, it is reported beside the tier, and it is never inside it: a tier that moved when align.py changed would stop being a property of the record, and the point of counting records is that the count means the same thing in F3 as in F7.",
+  "measured_at_24": {
+    "catalogue_record": 11,
+    "pointer_only": 1,
+    "published_translation_only": 1,
+    "verbatim_machine_english": 0,
+    "verbatim_with_provenance": 11
+  },
+  "tiers": {
+    "africa-01-ezana-stone": "published_translation_only",
+    "africa-02-aksumite-coin": "catalogue_record",
+    "africa-03-periplus-adulis": "verbatim_with_provenance",
+    "arabia-01-periplus": "verbatim_with_provenance",
+    "arabia-02-palmyrene-tariff": "pointer_only",
+    "arabia-03-jsnab17": "verbatim_with_provenance",
+    "arabia-04-jabal-dabub": "verbatim_with_provenance",
+    "eastasia-01-weilue": "verbatim_with_provenance",
+    "eastasia-02-hou-hanshu": "verbatim_with_provenance",
+    "eastasia-03-hwangnam-glass": "catalogue_record",
+    "persia-01-skz": "verbatim_with_provenance",
+    "persia-02-silver-plate": "catalogue_record",
+    "persia-03-coin": "catalogue_record",
+    "scandinavia-01-hoby-treasure": "catalogue_record",
+    "scandinavia-02-gudme-hoard": "catalogue_record",
+    "scandinavia-03-vimose": "verbatim_with_provenance",
+    "scandinavia-04-illerup-adal": "catalogue_record",
+    "seasia-01-oc-eo-medallion": "catalogue_record",
+    "seasia-02-oc-eo-site": "catalogue_record",
+    "seasia-03-khao-sam-kaeo": "catalogue_record",
+    "southasia-01-akananuru-149": "verbatim_with_provenance",
+    "southasia-02-periplus-muziris": "verbatim_with_provenance",
+    "southasia-03-muziris-papyrus": "verbatim_with_provenance",
+    "southasia-04-pattanam": "catalogue_record"
+  },
+  "target_mix": {
+    "declared_on": "2026-08-29, F1, before curation.",
+    "total_at_60": 60,
+    "new_records": 36,
+    "by_tier_new": {
+      "verbatim_with_provenance": 14,
+      "verbatim_machine_english": 10,
+      "published_translation_only": 4,
+      "catalogue_record": 8,
+      "pointer_only": 0
+    },
+    "by_tier_at_60": {
+      "verbatim_with_provenance": 25,
+      "verbatim_machine_english": 10,
+      "published_translation_only": 5,
+      "catalogue_record": 19,
+      "pointer_only": 1
+    },
+    "why_these_numbers": "PHASE2_PLAN names the failure directly -- 'so the tranche is not accidentally all catalogue records' -- and the reason it would happen is cost: a museum object record is the cheapest record in this corpus to curate and a cited bilingual inscription is the dearest. At 24 the split is 11 source-language-bearing against 11 catalogue. The target takes source-language-bearing records from 11 to 35 (46% to 58%) and catalogue from 11 to 19 (46% to 32%), because the product's central claim is about non-English source text and 22/30 is whether that text was reachable.",
+    "pointer_only_ceiling": "ZERO new pointer_only records. A record whose text lives somewhere else is a record the retrieval index cannot see, and the corpus already carries one as a standing F8 spike. Adding more would grow the record count without growing the corpus.",
+    "min_source_language_records_per_region": 4,
+    "why_per_region": "Southeast Asia currently has ZERO records carrying retrieval-eligible source-language text, which is why all four of its gold cases sit on find records, and Africa, Persia and Scandinavia have one each. A tier target met entirely inside Arabia and South Asia would satisfy every aggregate above and leave four regions exactly as unable to answer a source-text question as they are now. Aggregate targets let a total failure in one region be paid for by successes in another, which is required_cases_note's argument about the floor, one level up.",
+    "source_language_records_by_region_at_24": {
+      "Arabia": 3,
+      "East Asia": 2,
+      "Persia": 1,
+      "Scandinavia": 1,
+      "South Asia": 3,
+      "Southeast Asia": 0,
+      "Sub-Saharan Africa": 1
+    },
+    "records_by_region_at_24": {
+      "Arabia": 4,
+      "East Asia": 3,
+      "Persia": 3,
+      "Scandinavia": 4,
+      "South Asia": 4,
+      "Southeast Asia": 3,
+      "Sub-Saharan Africa": 3
+    },
+    "records_by_region_target_at_60": {
+      "Sub-Saharan Africa": 9,
+      "East Asia": 9,
+      "Persia": 9,
+      "Southeast Asia": 9,
+      "Arabia": 8,
+      "Scandinavia": 8,
+      "South Asia": 8
+    },
+    "gloss_capable_records": 8,
+    "what_gloss_capable_MEANS_mechanically": "The record carries, INSIDE A RETRIEVAL-ELIGIBLE CHUNK, both (a) a genuine alternative or hedged reading and (b) a statement that the reading is uncertain. Not in `notes` -- the notes field is not chunked and the model never sees it. This is not F1's invention: raqosh-epitaph's own note records that the case 'was nearly written' against the notes field, and oc-eo-medallion-legend's records that all three of the things it needs are retrieval-eligible. A hedge assertion the corpus cannot support is a case that can never pass.",
+    "which_tiers_can_carry_a_gloss_case": [
+      "verbatim_with_provenance",
+      "published_translation_only",
+      "catalogue_record"
+    ],
+    "why_not_verbatim_machine_english": "A refusable_with_gloss case requires the answer to quote a PUBLISHED hedged reading. On a record with no published translation the only English is machine, and quoting a machine translation of a disputed reading -- attached to a citation -- is the single worst output this system can produce, which is the thing the gloss arm exists to catch. A gloss case on that tier would be testing for the defect by requiring it.",
+    "why_eight": "The gloss arm is 3 cases against 22 answerable, and F1_START records that as a fact about the seed corpus rather than a defect: this corpus holds very few texts whose READING is genuinely in dispute. The sonnet arm then proved the assertions discriminate rather than being impossible -- vimose-runes went 0/12 to 5/5 with a real hedged gloss. So the arm is starved and its instruments work, which makes the supply of gloss-capable RECORDS the binding constraint, and the only moment it can be fixed is while the records are being chosen.",
+    "min_expect_quoted_from_original_cases_at_60": 6,
+    "why": "expect_quoted_from_original is true on exactly ONE case in thirty-three, weilue-chinese-quotation, which is also the corpus's only promotion candidate. One case is not a measurement of whether the answer path quotes source texts; it is a measurement of whether it quotes THAT source text. Six, one per region that will hold source-language records, is the smallest number that can tell the two apart."
+  },
+  "how_curation_cost_is_reported": "PER TIER, and against this mix. See ruling 45: G3's box 'curation cost per record recorded and trending down' is satisfiable by curating cheaper records, and the tier is the only thing that makes the number readable.",
+  "no_content_hash_is_stamped_here": "Deliberate. An entry could record the record's content_hash at declaration time, so a record edited after its tier was declared would flag. It does not need to: the tier is DERIVED from the record on every verify run, so a record that moves into a different tier fails declared-vs-derived immediately, and a record that moves without changing tier has nothing to report. Stamping a hash would add a re-declaration to every corpus edit in F3-F7 and detect nothing the derivation does not."
+}

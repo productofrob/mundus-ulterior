@@ -130,7 +130,33 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     # 6. No manifest-flagged record is ever presented as fully verbatim. It may
     #    be held back (pointer/paraphrase) or admitted as partial_verbatim where
     #    the original script is genuinely present — but never as clean source text.
-    for hint in MANIFEST_FLAGGED:
+    #     CORRECTED 2026-08-29, FINDING 31. This loop ran over MANIFEST_FLAGGED,
+    #     a second copy of a list `ingest/fidelity.py` also holds, and the two
+    #     drifted on 2026-08-22: FINDING 11 lifted the Weilue's flag there with
+    #     a written reason and this file was not told. The check has been RED
+    #     ever since -- through D4, Block E's four sessions and 396 runs, F0 and
+    #     the sonnet arm -- and nothing noticed, because no state block lists
+    #     `ingest.verify` among the suites while it is the FIRST line of the
+    #     sub-tranche runbook F3 runs. F3 would have curated nine records and
+    #     then met a red suite that had nothing to do with them: a true report
+    #     inviting a false diagnosis, which BLOCK_D_START warns about by name.
+    #
+    #     MANIFEST_FLAGGED stays: it is this file's transcription of the
+    #     manifest's prose, and transcribing prose by hand is fine. What is not
+    #     fine is holding a second OPINION about what the code does with it, so
+    #     the never-verbatim assertion now runs over fidelity's own hints and
+    #     `check_paraphrase_flags` refuses a manifest flag that is neither
+    #     honoured nor lifted.
+    from .fidelity import (
+        PARAPHRASE_FLAG_LIFTED,
+        PARAPHRASE_ID_HINTS,
+        check_paraphrase_flags,
+    )
+
+    for problem in check_paraphrase_flags(set(MANIFEST_FLAGGED)):
+        failures.append(f"paraphrase flags: {problem}")
+
+    for hint in PARAPHRASE_ID_HINTS:
         flagged = [
             c for c in chunks
             if hint in c.doc_id.lower() and c.role == "original"
@@ -140,6 +166,14 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             all(c.text_fidelity != "verbatim_original" for c in flagged),
             f"manifest-flagged record '{hint}' is labelled verbatim_original",
         )
+
+    for hint, reason in sorted(PARAPHRASE_FLAG_LIFTED.items()):
+        lifted = [
+            c for c in chunks
+            if hint in c.doc_id.lower() and c.role == "original"
+        ]
+        check(bool(lifted), f"lifted record '{hint}' not found in chunks")
+        notes.append(f"paraphrase flag LIFTED on '{hint}': {reason}")
 
     # 6b. No editorial placeholder reaches the retrieval index. If one did, an
     #     answer in Part 7 could cite the corpus editor's own note as a source.
@@ -274,6 +308,92 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
         f"Resolution is not checked here — run `python -m ingest.gazetteer --check`, "
         f"which is the only thing that turns an id into a coordinate."
     )
+
+    # 12. Record tiers (F1, ruling 43). data/corpus_tiers.json DECLARES what
+    #     each record is; ingest.fidelity.derive_record_tier READS what it is
+    #     from the chunks; they have to agree. A tier that were only derived
+    #     could never be wrong and could never be checked either.
+    #
+    #     The declaration is a sidecar and not a field on the record, and that
+    #     is not tidiness. `canonical_record_text` hashes the whole parsed
+    #     record with sorted keys, so a `tier` key would change every
+    #     content_hash and therefore corpus_digest -- the denominator of all
+    #     396 Block E runs and of the sonnet arm's 165. It is not under
+    #     data/seed_corpus/ either, because `iter_seed_records` refuses a .json
+    #     at that depth: glob('*/*.json') would not see it and rglob would, and
+    #     a file some walks see and others do not is the exact failure that
+    #     function exists to prevent.
+    #
+    #     A FAILURE and not a note, from the first record curated. Coverage
+    #     checks are notes here (see 11) because a suite that fails throughout
+    #     a three-session block gets ignored throughout. This is not coverage:
+    #     an untiered or mis-tiered record is a record the target mix cannot
+    #     count, and the mix is the thing F1 exists to make countable.
+    from .fidelity import (
+        RECORD_TIERS,
+        check_declared_tiers,
+        check_target_mix,
+        derive_record_tier,
+    )
+
+    tiers_path = Path(__file__).resolve().parent.parent / "data" / "corpus_tiers.json"
+    if not tiers_path.exists():
+        failures.append(f"{tiers_path.name} is missing: no record tier is declared")
+    else:
+        tier_doc = json.loads(tiers_path.read_text(encoding="utf-8"))
+        chunk_rows: dict[str, list] = defaultdict(list)
+        for c in chunks:
+            chunk_rows[c.doc_id].append(
+                (c.role, c.text_fidelity, c.lang, c.eligible_for_retrieval)
+            )
+        derived = {
+            d.doc_id: derive_record_tier(
+                d.source_type,
+                chunk_rows[d.doc_id],
+                getattr(d, "translation_source", None),
+            )
+            for d in docs
+        }
+        for problem in check_declared_tiers(tier_doc.get("tiers") or {}, derived):
+            failures.append(f"record tier: {problem}")
+        for problem in check_target_mix(
+            tier_doc.get("target_mix") or {}, tier_doc.get("measured_at_24") or {}
+        ):
+            failures.append(f"target mix: {problem}")
+
+        counts = Counter(t for t, _reason in derived.values())
+        mix = tier_doc.get("target_mix") or {}
+        at60 = mix.get("by_tier_at_60") or {}
+        notes.append(
+            "record tiers: "
+            + ", ".join(
+                f"{tier} {counts.get(tier, 0)}/{at60.get(tier, '?')}"
+                for tier in RECORD_TIERS
+            )
+            + f" (F1 target at {mix.get('total_at_60', '?')} records). "
+            + "Progress, not a threshold: the mix is a target for the end of "
+            + "Block F and a suite that failed on it throughout would be "
+            + "ignored throughout."
+        )
+
+        source_language = Counter(
+            d.region for d in docs
+            if derived[d.doc_id][0]
+            in ("verbatim_with_provenance", "verbatim_machine_english")
+        )
+        floor_per_region = mix.get("min_source_language_records_per_region", 0)
+        short = {
+            region: source_language.get(region, 0)
+            for region in sorted(EXPECTED_REGIONS)
+            if source_language.get(region, 0) < floor_per_region
+        }
+        notes.append(
+            f"source-language records by region (F1 floor {floor_per_region} each "
+            f"at 60): {dict(sorted(source_language.items()))}. Below the floor: "
+            f"{short or 'none'}. An aggregate tier target met entirely inside two "
+            f"regions leaves the other five exactly as unable to answer a "
+            f"source-text question as they are now."
+        )
 
     print(f"documents: {len(docs)}   chunks: {len(chunks)}   parallel pairs: {paired}")
     for n in notes:

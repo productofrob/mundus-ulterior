@@ -12629,3 +12629,155 @@ cannot see change.**
 And one from 2026-08-28, which travels with them now:
 
 **Nine archives, 396 runs, and not one of them recorded which model answered.**
+
+---
+
+# F1 — the tiering policy, and the suite nobody was listing (2026-08-29)
+
+*Rulings 43–45 and findings 30–31, full text in `F1_RULINGS.md`, indexed in
+`RULINGS.md`. F1 declares and does not curate: the corpus is unmoved and
+`26e4a683` was CHECKED at the close rather than assumed.*
+
+## The three tiers could not hold the corpus that already existed
+
+`PHASE2_PLAN` F1 asks for a tiering policy and a target mix across the 36 new
+records. Running `ingest.loader` over the 24 first, before writing anything:
+
+```
+verbatim_with_provenance   11
+published_translation_only  1
+catalogue_record           11
+NEITHER                     1   arabia-02-palmyrene-tariff
+```
+
+And the tier F3–F7 explicitly PREDICTS becomes the common case — source-language
+text with no published English, where `resolve_english` starts choosing
+`machine` — had no name in the table at all. **A mix cannot have a target for a
+tier that cannot be written down**, so F7 would have found the mix unaccountable
+rather than unmet. Ruling 43 declares five: the two above, plus
+`verbatim_machine_english` and `pointer_only`. Ruling 38 one level over.
+
+## G3 has a box that ticks itself, and F1 was the last moment to say so
+
+**"Curation cost per record recorded and trending down" is satisfiable by
+curating cheaper records.** A museum object record is the cheapest thing in this
+corpus to produce and a cited bilingual inscription the dearest; the box cannot
+tell *the same kind of record got cheaper* from *we made more of the cheap
+kind*, and kill trigger 3 hangs off the number. Ruling 45 amends it in advance —
+cost PER TIER, against the declared mix — because F2 starts the column at record
+25 and **nobody times a record twice**. FINDING 26's shape: an aggregate that
+moves for two reasons reports one number.
+
+## The digest question, asked before the file was written
+
+A `tier` key on a seed record would have moved `corpus_digest`:
+`canonical_record_text` hashes the whole parsed record with sorted keys. That is
+the denominator of 396 Block E runs and 165 arm runs. So the declaration is a
+sidecar — and not under `data/seed_corpus/` either, because `iter_seed_records`
+refuses a `.json` at that depth. **The layout guard fired on the first file
+anyone has tried to add since it was written.**
+
+## FINDING 31 — `ingest.verify` had been RED for a week
+
+```
+FAILED (1)
+  x manifest-flagged record 'weilue' is labelled verbatim_original
+```
+
+One claim held in three places — the manifest's prose,
+`fidelity.PARAPHRASE_ID_HINTS`, `verify.MANIFEST_FLAGGED`. FINDING 11 corrected
+one of the three on 2026-08-22 with the reason written down. The other two were
+never told, and the check has been failing through D4, Block E's four sessions
+and 396 runs, F0 and the sonnet arm.
+
+**Nothing caught it because no state block in this repository lists
+`ingest.verify` among the suites**, and `PHASE2_PLAN` F3–F7 makes it the FIRST
+line of the block run after every sub-tranche. F3 would have curated nine
+records and met a red suite that had nothing to do with them.
+
+Fixed by deleting the second OPINION, not the check: the assertion now runs over
+fidelity's own list, and a lift is a written entry with a reason that
+`check_paraphrase_flags` refuses to accept without one. *Two ends of a
+comparison must not hold two definitions of the thing being compared.*
+
+## FINDING 30 — and one that only a reader could ever have found
+
+`weilue-chinese-quotation.archived_status` still said the case was tracked in
+`floor.json.known_failing_cases` as an open defect, and that no archived answer
+has quoted its Chinese. Ruling 38 moved it to `promotion_candidates` on
+2026-08-28 on evidence that says the opposite. `archived_status` is prose,
+deliberately outside `_ASSERTION_KEYS`, and read by no check anywhere.
+Corrected in place; the load-time check deferred to F2 in writing, on FINDING
+29's precedent.
+
+---
+
+# State at the close of F1 (2026-08-29)
+
+```
+tree            a6442b6 plus one F1 commit, clean
+corpus          24 records / 450 embedded / 0 pending   UNMOVED BY F1
+digest          26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28
+                RECOMPUTED at the close and matched. F3 moves it.
+
+ANSWER          eval.test_answer_eval       333   GREEN
+RANKING         eval.test_ranking_check     236   GREEN
+PART 7          answer.test_answer                GREEN
+UI              ui\test_build_ui_data.py         GREEN
+INGEST          ingest.verify                    GREEN  <- first time since
+                                                        2026-08-22, FINDING 31
+TIERS           ingest.test_fidelity         30   GREEN  <- new
+mutations       scripts\mutate_part8.py      82   GREEN
+                scripts\mutate_part7b.py     18   GREEN
+                scripts\mutate_ui_places.py   4   GREEN
+                scripts\mutate_ranking.py   100   GREEN
+                scripts\mutate_fidelity.py   24   GREEN  <- new, with BASELINE
+
+record tiers    11 verbatim_with_provenance / 0 verbatim_machine_english /
+                1 published_translation_only / 11 catalogue_record /
+                1 pointer_only
+target at 60    25 / 10 / 5 / 19 / 1, region levelling to 8-9 each,
+                >= 4 source-language records per region, 8 gloss-capable,
+                >= 6 expect_quoted_from_original cases
+
+gold cases      33   22 answerable / 3 gloss / 8 correctly_refusable
+floor           calibrated TRUE. ELIGIBLE, 4 sweeps, 3 dates — UNMOVED
+rulings         1 to 45.  findings 1 to 31.
+gates           G4 CLOSED. G3 is Block F's, amended twice in advance
+                (ruling 39, ruling 45).
+```
+
+## Open, and deliberately not closed
+
+- **F2 has not started the cost column.** Ruling 45 says what it must carry.
+- **FINDING 30's load-time check** is deferred to F2, in writing.
+- **Three harnesses still lack the BASELINE check**: `mutate_ranking`,
+  `mutate_places`, `mutate_recover`.
+- **`ingest/verify.py` check 9 asserts `len(docs) == 24`** and F3 breaks it on
+  purpose. Left as written: loosening a count check in advance of the records
+  is the floor lowered to what is currently passing.
+- Everything carried into F1 is carried out of it: ruling 40's `article_added`
+  unverified against a live run, `muziris-cargo` at 3/5 on the arm,
+  `--archives` pooling arms, and G3's second session at 60.
+
+## The sentences that travel
+
+29/30 is whether the RECORD was found. 22/30 is whether the NON-ENGLISH TEXT was
+reachable. `muziris-cargo-akananuru` still sits at rank 310.
+
+**Four sessions read 0.727272… and one of them was different. The pass rate
+cannot see change.**
+
+**Nine archives, 396 runs, and not one of them recorded which model answered.**
+
+**36% and 27% are not two refusal rates. They are two rates of uttering one
+sentence.**
+
+And two from 2026-08-29:
+
+**Cost per record trending down is not a fact about efficiency until the mix is
+held. The cheapest record in this corpus is the one that teaches a reader the
+least.**
+
+**A suite that no state block lists is a suite that can be red for a week, and
+this one was the first line of the runbook that would have found it.**

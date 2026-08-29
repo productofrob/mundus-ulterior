@@ -1,4 +1,4 @@
-# Rulings register — 1 to 42
+# Rulings register — 1 to 45
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
 same day with 27-31, declared during TASK 2 (D2's schema change and D3's case
@@ -82,7 +82,8 @@ section anywhere — they exist only as one-line entries in a numbered list in
     never reached by widening a label
 31  a discriminator loads as one instrument: paired_with is symmetric and the
     two assertion blocks must be identical, and it is NOT for two cases that
-    merely share a record32  a lost gold pair kills the run; the only way past it is --allow-unresolvable
+    merely share a record
+32  a lost gold pair kills the run; the only way past it is --allow-unresolvable
     naming the pair, and an allowance that has gone stale is itself refused
 33  DATES gate calibration (three distinct UTC dates); sessions are recorded and
     named beside them and gate nothing; a sweep with no session identity blocks
@@ -159,6 +160,37 @@ a line in a summary list is a ruling nobody can quote, check, or argue with
 later. The cost of writing the declaration at the time is a few paragraphs. The
 cost of not writing it is that the code becomes the only authority for what was
 decided, and code says what a thing does rather than why it was chosen.
+
+## 43-45, declared in F1 before a single new record was curated
+
+Full text in `F1_RULINGS.md`, in the same session, together with FINDING 30 and
+FINDING 31.
+
+```
+43  a record's TIER is one of five, not three. It is DECLARED in
+    data/corpus_tiers.json and DERIVED by ingest.fidelity.derive_record_tier,
+    and ingest.verify fails when they disagree, when a record has no
+    declaration, and when a declaration names a record that is not in the
+    corpus. `unclassifiable` is not a tier and may not be declared. The
+    declaration is a sidecar OUTSIDE the record because a `tier` key would
+    move the corpus digest, and outside data/seed_corpus/ because
+    iter_seed_records refuses a .json at that depth.
+44  the target mix across the 36 new records, declared before the first one
+    exists: 14 / 10 / 4 / 8 / 0 by tier, region levelling to 8-9 each, at
+    least 4 source-language records PER REGION, 8 gloss-capable records, and
+    at least 6 expect_quoted_from_original cases at 60.
+45  G3's curation-cost box is amended in advance: cost per record is reported
+    PER TIER and against the declared mix. "Trending down" is otherwise
+    satisfiable by curating cheaper records, and kill trigger 3 hangs off it.
+```
+
+Ruling 43 is the one to read before adding any record to the corpus. Ruling 45
+is the one to read before F2 starts the minutes-per-record column, because a
+column that does not carry the tier cannot be decomposed by it afterwards.
+
+FINDING 31 is the one to read before believing the tree is green: there are
+FIVE suites, and `ingest.verify` — absent from every state block in this
+repository — had been red for a week.
 
 ## 40-42, declared before F1 curates anything
 

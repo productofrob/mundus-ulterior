@@ -257,3 +257,409 @@ def classify_translation(text: str, source_type: str) -> tuple[str, str, bool]:
         # translation. Still useful for retrieval; labelled honestly.
         return "object_description", "en", True
     return "translation", "en", True
+
+
+# ---------------------------------------------------------------------------
+# Record tiers (F1, 2026-08-29)
+# ---------------------------------------------------------------------------
+# The classifier above answers a question about a CHUNK: is this field the
+# source's own wording, and may it be retrieved? A tier answers a question
+# about a RECORD: what kind of evidence is this, and what did curating it cost?
+# F1 needs the second question because PHASE2_PLAN sets a target mix over the
+# 36 new records, and a mix can only be set over something that is counted.
+#
+# PHASE2_PLAN wrote three tiers. The corpus on disk has five states and the
+# pipeline already distinguishes them:
+#
+#   verbatim_with_provenance      11 records
+#   verbatim_machine_english       0 records   <- the tier F3-F7 predicts
+#   published_translation_only     1 record    africa-01-ezana-stone
+#   catalogue_record              11 records
+#   pointer_only                   1 record    arabia-02-palmyrene-tariff
+#
+# `verbatim_machine_english` is the one worth the amendment. F3-F7 says in
+# terms: "Local non-English sources mostly will not have published English, so
+# `resolve_english` starts choosing `machine` and the Part 6 confidence
+# machinery goes from dormant to load-bearing." A record with original text and
+# no published translation is not verbatim_with_provenance -- there is no
+# published translation to cite -- and it is not published_translation_only,
+# because there IS an original. The tier the tranche is predicted to fill had
+# no name, and a mix cannot have a target for a tier that cannot be written
+# down. `pointer_only` is the smaller half of the same defect: the Palmyrene
+# Tariff has been in this corpus since Part 3 and none of the three tiers held
+# it.
+#
+# This is ruling 38 one level over. floor.json spent two days asserting the
+# opposite of what it had measured because no state fitted, and the answer was
+# a third state rather than a better argument about the two.
+#
+# WHAT A TIER IS DELIBERATELY NOT. It is not a fact about the aligner.
+# `answer.align.Pair.ground` is section | index | document | none, and an
+# unalignable published translation lands a reader on `published_document`
+# rather than `published`. That is a real distinction and it is reported beside
+# the tier, never inside it: a tier that moved when align.py changed would stop
+# being a property of the record, and the whole point of counting records is
+# that the count means the same thing in F3 as it does in F7.
+
+RECORD_TIERS = (
+    "verbatim_with_provenance",
+    "verbatim_machine_english",
+    "published_translation_only",
+    "catalogue_record",
+    "pointer_only",
+)
+
+# Not a tier. Returned when no tier holds the record, and REFUSED as a
+# declaration -- ruling 36's shape, where an arm that cannot be identified
+# blocks rather than being read as the default. A record nobody can tier is a
+# record somebody has to look at, and a sixth tier invented at curation time to
+# hold it is a tier chosen to fit one record.
+UNCLASSIFIABLE = "unclassifiable"
+
+# The original-role fidelities that mean "the source's own characters are
+# here". `partial_verbatim` is included and that is not an oversight: it means
+# "flagged and unchecked", not "not there", and three of the eleven verbatim
+# records (hou-hanshu, akananuru, muziris-papyrus) carry it. `transliteration`
+# is included for the same reason and covers four more (jsnab17, jabal-dabub,
+# skz, vimose). Excluding either would tier seven of eleven records as though
+# they held no source text at all.
+ELIGIBLE_ORIGINAL_FIDELITIES = frozenset(
+    {"verbatim_original", "partial_verbatim", "transliteration"}
+)
+
+
+def derive_record_tier(
+    source_type: str,
+    chunk_rows: "list[tuple[str, str, str, bool]]",
+    translation_source: str | None = None,
+) -> tuple[str, str]:
+    """Derive one record's tier from its chunks. Returns (tier, reason).
+
+    `chunk_rows` is (role, text_fidelity, lang, eligible_for_retrieval) per
+    chunk -- plain tuples rather than Chunk objects, so this module keeps its
+    one useful property: it imports nothing from the package and can be tested
+    without a corpus, a database or a network.
+
+    The reason travels with the tier and is printed by `ingest.verify`, because
+    a derivation that says only what it concluded is a derivation nobody can
+    argue with when it is wrong.
+    """
+    rows = [(str(r), str(f), str(lang), bool(e)) for r, f, lang, e in chunk_rows]
+    if not rows:
+        return UNCLASSIFIABLE, "the record produced no chunks at all"
+
+    # 1. A find record first, and unconditionally. `classify_original` already
+    #    forces `object_description` on these whatever the field contains, so a
+    #    Korean object description is still a catalogue description and not
+    #    Korean source text. Testing anything else first would let the shape of
+    #    a catalogue entry decide the tier.
+    if source_type in FIND_TYPES:
+        return "catalogue_record", (
+            f"source_type {source_type!r} is a find/coin/object record, so both "
+            f"text fields are catalogue description whatever they contain"
+        )
+
+    eligible = [r for r in rows if r[3]]
+    if not eligible:
+        return "pointer_only", (
+            "no chunk in either role is retrieval-eligible: the record says "
+            "where its text lives rather than carrying it"
+        )
+
+    source_language = [
+        r for r in eligible
+        if r[0] == "original"
+        and r[1] in ELIGIBLE_ORIGINAL_FIDELITIES
+        and r[2] != "en"
+    ]
+    published = [r for r in eligible if r[0] == "translation" and r[1] == "translation"]
+
+    if source_language:
+        langs = sorted({r[2] for r in source_language})
+        if not published:
+            return "verbatim_machine_english", (
+                f"retrieval-eligible source-language text in {langs} and no "
+                f"published translation, so `resolve_english` reaches this "
+                f"passage with `machine` or with nothing"
+            )
+        if not (translation_source or "").strip():
+            return UNCLASSIFIABLE, (
+                f"source-language text in {langs} and a translation chunk, but "
+                f"`translation_source` is empty. 'both cited' is the clause that "
+                f"makes this tier verbatim_with_provenance rather than a claim, "
+                f"and an unattributed translation is a curation defect and not a "
+                f"sixth tier"
+            )
+        return "verbatim_with_provenance", (
+            f"retrieval-eligible source-language text in {langs}, a published "
+            f"translation, and both cited"
+        )
+
+    english_original = [
+        r for r in eligible
+        if r[0] == "original"
+        and r[1] in ELIGIBLE_ORIGINAL_FIDELITIES
+        and r[2] == "en"
+    ]
+    if english_original:
+        return UNCLASSIFIABLE, (
+            "the original_text_excerpt classifies as retrieval-eligible ENGLISH "
+            "source text on a record that is not a find record. No tier holds "
+            "it: there is no source-language text to be verbatim about, and "
+            "calling it published_translation_only would assert that no original "
+            "transcription is available when the field on disk IS the original"
+        )
+
+    if published:
+        return "published_translation_only", (
+            "no retrieval-eligible source-language text, and a published "
+            "translation that is cited"
+        )
+
+    return UNCLASSIFIABLE, (
+        "a retrieval-eligible chunk exists but it is neither source-language "
+        f"original nor published translation: {sorted({(r[0], r[1]) for r in eligible})}"
+    )
+
+
+def check_declared_tiers(
+    declared: "dict[str, str]",
+    derived: "dict[str, tuple[str, str]]",
+) -> "list[str]":
+    """Compare a declared tier map against the derived one. Returns problems.
+
+    Three failures and they are three different defects, which is why they are
+    not one message:
+
+      * a record with no declared tier -- the curator added a record and did not
+        tier it, and a tier that is optional is a tier that gets forgotten;
+      * a declaration naming a record that is not in the corpus -- the sidecar
+        has drifted, and a stale entry silently makes the count wrong in the
+        direction nobody checks;
+      * declared != derived -- the curator believes the record is one kind of
+        evidence and the classifier reads it as another. That one is the whole
+        reason a DECLARATION exists beside a derivation. A tier that is only
+        derived cannot be wrong, and cannot be checked either.
+
+    Both drift directions are named on purpose. `calibration_scope`'s
+    `a_named_sweep_must_actually_fail_the_rule` is the same argument in
+    floor.json: a list that is only checked in one direction becomes a place to
+    put things.
+    """
+    problems: list[str] = []
+
+    for doc_id in sorted(set(derived) - set(declared)):
+        problems.append(
+            f"{doc_id}: no declared tier. Derived {derived[doc_id][0]!r} -- "
+            f"{derived[doc_id][1]}"
+        )
+
+    for doc_id in sorted(set(declared) - set(derived)):
+        problems.append(
+            f"{doc_id}: declared tier {declared[doc_id]!r} names a record that "
+            f"is not in the corpus"
+        )
+
+    for doc_id in sorted(set(declared) & set(derived)):
+        want = declared[doc_id]
+        got, reason = derived[doc_id]
+        if want == UNCLASSIFIABLE:
+            problems.append(
+                f"{doc_id}: {UNCLASSIFIABLE!r} is not a declarable tier. It is "
+                f"what the derivation returns when no tier holds a record"
+            )
+            continue
+        if want not in RECORD_TIERS:
+            problems.append(
+                f"{doc_id}: declared tier {want!r} is not one of {RECORD_TIERS}"
+            )
+            continue
+        if want != got:
+            problems.append(
+                f"{doc_id}: declared {want!r}, derived {got!r} -- {reason}"
+            )
+
+    return problems
+
+
+# The tiers that can carry a `refusable_with_gloss` case. Held here rather than
+# only in data/corpus_tiers.json because it is a rule and not a number: a gloss
+# case requires the answer to quote a PUBLISHED hedged reading, and on
+# verbatim_machine_english the only English is machine. Quoting a machine
+# translation of a disputed reading, attached to a citation, is the exact output
+# the gloss arm exists to catch, so a gloss case on that tier would be testing
+# for the defect by requiring it.
+GLOSS_CAPABLE_TIERS = frozenset(
+    {"verbatim_with_provenance", "published_translation_only", "catalogue_record"}
+)
+
+REGION_COUNT = 7
+
+
+def check_target_mix(
+    mix: "dict", measured_at_24: "dict[str, int]"
+) -> "list[str]":
+    """Is the declared target mix internally coherent? Returns problems.
+
+    The mix is data and this is the rule it has to satisfy. Kept in code so a
+    mutation can break it: a target mix that does not add up is a target nobody
+    can miss, and the arithmetic is exactly the kind of thing that stays wrong
+    for five sessions because every individual number looks reasonable.
+    """
+    problems: list[str] = []
+
+    new = mix.get("by_tier_new") or {}
+    at60 = mix.get("by_tier_at_60") or {}
+    by_region = mix.get("records_by_region_target_at_60") or {}
+
+    unknown = sorted(set(new) - set(RECORD_TIERS))
+    if unknown:
+        problems.append(f"by_tier_new names tiers outside the vocabulary: {unknown}")
+
+    want_new = mix.get("new_records")
+    if sum(new.values()) != want_new:
+        problems.append(
+            f"by_tier_new sums to {sum(new.values())}, not the {want_new} records "
+            f"Block F adds"
+        )
+
+    want_total = mix.get("total_at_60")
+    if sum(by_region.values()) != want_total:
+        problems.append(
+            f"records_by_region_target_at_60 sums to {sum(by_region.values())}, "
+            f"not {want_total}"
+        )
+    if len(by_region) != REGION_COUNT:
+        problems.append(
+            f"records_by_region_target_at_60 covers {len(by_region)} regions, not "
+            f"{REGION_COUNT}. A region with no target is a region the mix cannot "
+            f"be missed in"
+        )
+
+    for tier in sorted(set(new) | set(at60)):
+        expect = measured_at_24.get(tier, 0) + new.get(tier, 0)
+        if at60.get(tier) != expect:
+            problems.append(
+                f"by_tier_at_60[{tier}] is {at60.get(tier)!r}; measured_at_24 "
+                f"{measured_at_24.get(tier, 0)} plus by_tier_new {new.get(tier, 0)} "
+                f"is {expect}"
+            )
+
+    if new.get("pointer_only", 0) != 0:
+        problems.append(
+            "by_tier_new allows a new pointer_only record. The ceiling is zero: a "
+            "record whose text lives somewhere else grows the record count without "
+            "growing the corpus"
+        )
+
+    # The per-region minimum has to be reachable from the aggregate, or it is a
+    # target that fails in F7 for a reason set in F1.
+    per_region = mix.get("min_source_language_records_per_region") or 0
+    source_language_at_60 = sum(
+        at60.get(t, 0) for t in ("verbatim_with_provenance", "verbatim_machine_english")
+    )
+    if per_region * REGION_COUNT > source_language_at_60:
+        problems.append(
+            f"min_source_language_records_per_region {per_region} x {REGION_COUNT} "
+            f"regions needs {per_region * REGION_COUNT} source-language records, and "
+            f"the tier targets provide {source_language_at_60}"
+        )
+
+    gloss_tiers = set(mix.get("which_tiers_can_carry_a_gloss_case") or ())
+    if not gloss_tiers or not gloss_tiers <= GLOSS_CAPABLE_TIERS:
+        problems.append(
+            f"which_tiers_can_carry_a_gloss_case is {sorted(gloss_tiers)}; a gloss "
+            f"case may only sit on {sorted(GLOSS_CAPABLE_TIERS)}"
+        )
+
+    gloss = mix.get("gloss_capable_records") or 0
+    if not 0 < gloss <= (want_new or 0):
+        problems.append(
+            f"gloss_capable_records is {gloss}, which is not a quota over the "
+            f"{want_new} new records"
+        )
+
+    return problems
+
+
+# ---------------------------------------------------------------------------
+# Flags the MANIFEST names that this module deliberately no longer honours
+# ---------------------------------------------------------------------------
+# FINDING 31, 2026-08-29, found by running `python -m ingest.verify` in F1.
+#
+# `data/seed_corpus/manifest.json.follow_up_before_ingestion` names five
+# records as "paraphrased or partial": Palmyrene Tariff, Weilue, Hou Hanshu,
+# Akananuru 149, Ezana Stone. That claim was held in THREE places -- the
+# manifest's prose, `PARAPHRASE_ID_HINTS` above, and `MANIFEST_FLAGGED` in
+# `ingest/verify.py`. On 2026-08-22 FINDING 11 corrected ONE of the three:
+# eastasia-01-weilue's excerpt is now 221 verbatim characters from
+# zh.wikisource and the hint was removed, with the reason written down.
+#
+# `verify.py` kept its copy, and its check that no manifest-flagged record is
+# ever labelled `verbatim_original` has been RED ever since -- through D4,
+# through Block E's four sessions and 396 runs, through F0 and the sonnet arm.
+# Nothing caught it because no state block lists `ingest.verify` among the
+# suites, and it is the FIRST line of the sub-tranche runbook that F3 runs.
+#
+# Two ends of a comparison must not hold two definitions of the thing being
+# compared -- `iter_seed_records`'s own lesson, and this is it between two
+# modules rather than between two walks. A lift is now a WRITTEN entry with a
+# reason, and `check_paraphrase_flags` refuses a manifest flag that is neither
+# honoured nor lifted. The divergence cannot recur in silence.
+PARAPHRASE_FLAG_LIFTED: dict[str, str] = {
+    "weilue": (
+        "LIFTED 2026-08-22, FINDING 11. eastasia-01-weilue's "
+        "original_text_excerpt is 221 verbatim characters from zh.wikisource "
+        "三國志/卷30 and classifies as verbatim_original on its own merits. The "
+        "manifest's flag marked SUSPICION and nothing in the pipeline ever "
+        "turned suspicion into a determination; when two of its entries were "
+        "finally checked they came back opposite ways. Leaving the flag on "
+        "would have the corpus report a sourced text as paraphrased."
+    ),
+}
+
+
+def check_paraphrase_flags(manifest_flagged: "set[str]") -> "list[str]":
+    """Do the manifest's flags and this module's agree? Returns problems.
+
+    `manifest_flagged` is the hand-transcription of the manifest's prose that
+    `ingest/verify.py` holds. Transcribing prose by hand is fine; holding a
+    SECOND opinion about what the code does with it is not, and that is the
+    divergence FINDING 31 records.
+    """
+    problems: list[str] = []
+
+    both = sorted(set(PARAPHRASE_ID_HINTS) & set(PARAPHRASE_FLAG_LIFTED))
+    if both:
+        problems.append(
+            f"{both} are both honoured as paraphrase hints and recorded as "
+            f"lifted. A flag cannot be in force and withdrawn at once"
+        )
+
+    for record_id, reason in PARAPHRASE_FLAG_LIFTED.items():
+        if not (reason or "").strip():
+            problems.append(
+                f"the lift on {record_id!r} has no written reason. A lift with "
+                f"no reason is a flag deleted by whoever last found it "
+                f"inconvenient"
+            )
+
+    unaccounted = sorted(
+        manifest_flagged - set(PARAPHRASE_ID_HINTS) - set(PARAPHRASE_FLAG_LIFTED)
+    )
+    if unaccounted:
+        problems.append(
+            f"the manifest flags {unaccounted} and this module neither honours "
+            f"nor lifts them. That is FINDING 31 recurring: two modules holding "
+            f"two opinions about one claim, with nothing that has to agree"
+        )
+
+    stray = sorted(set(PARAPHRASE_FLAG_LIFTED) - manifest_flagged)
+    if stray:
+        problems.append(
+            f"{stray} are recorded as lifted but the manifest does not flag "
+            f"them. A lift on a flag that does not exist is a note nobody can "
+            f"check"
+        )
+
+    return problems
