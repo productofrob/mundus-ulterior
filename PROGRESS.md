@@ -13117,6 +13117,27 @@ block           NINE sessions, not eight.
   case in a set that had three since Part 8: the arm is starved, its
   instruments were proved to work by the sonnet arm, and the supply of
   gloss-capable records is the binding constraint.
+- **`ingest.verify` check 10 caught the new record on its first run, and the
+  catch was right.** `translation_source` declared a summary while the
+  translation chunk classified as `translation` — the divergence the 2026-08-10
+  audit built the check for, with the Palmyrene Tariff as its cautionary case:
+  *editorial prose in a quotable field is citable as source evidence*. The
+  check is deliberately NOT automatic. It carries a written triage decision per
+  record, and a new record of the same shape must be judged rather than inherit
+  the Vimose ruling. Judged, and one sentence removed rather than defended: the
+  translation closed *"No single reading is established"*, which is a curatorial
+  summary and not a published reading. The three published readings and their
+  published apparatus stay. **The gold case's hedge group had to narrow with
+  it** — it named `no single reading` and `not established`, and a hedge the
+  corpus no longer holds is a case that can never pass.
+- **And the tension is worth naming: every gloss-capable record trips check 10
+  BY CONSTRUCTION.** `corpus_tiers.json` requires the statement of uncertainty
+  to sit inside a retrieval-eligible chunk, and only `original_text_excerpt`
+  and `reference_translation` are chunked — which is the same fact that made
+  records 25 and 26 miss the quota, arriving from the other direction. The
+  `reviewed` list will grow by one per gloss record. That is correct, each one
+  needs its own triage, and it is written down so a later reader does not read
+  the growth as drift.
 - **The column is now 51% REMEMBERED, at n=3.** Ruling 48 exists so that a
   column built mostly out of recollection cannot be read as one that was
   measured, and it now is mostly recollection. Two causes, both procedural and

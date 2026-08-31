@@ -232,6 +232,29 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     #     24 records, and this check exists so it does not have to be done again
     #     from scratch — only for records not yet triaged.
     reviewed = {
+        "scandinavia-05-thorsberg-chape": (
+            "KEPT, and triaged 2026-08-31 rather than inheriting the Vimose "
+            "ruling below. Three published readings are quoted verbatim -- "
+            "'Wolthuthewaz is well-renowned', 'the servant of Ullr, the "
+            "renowned', 'inherited property of Wulthuthewaz, the renowned' -- "
+            "and what surrounds them is the apparatus they are published "
+            "with: the alternative rune division, the grammatical objection "
+            "that the owner's name is not in the possessive case, and the "
+            "poetic reading. That is the Vimose shape -- published readings "
+            "presented with their uncertainty intact, which is what an answer "
+            "quoting them reproduces. ONE SENTENCE WAS REMOVED RATHER THAN "
+            "DEFENDED: the field closed 'No single reading is established', "
+            "which is a curatorial summary and not a published reading, and "
+            "is exactly the prose this check exists to catch. AND THE TENSION "
+            "IS WORTH NAMING: corpus_tiers.json requires a gloss-capable "
+            "record to carry a statement of uncertainty INSIDE a "
+            "retrieval-eligible chunk, and only original_text_excerpt and "
+            "reference_translation are chunked -- so every gloss-capable "
+            "record trips this check BY CONSTRUCTION. That is correct rather "
+            "than a defect, each one needs its own triage, but it means this "
+            "list grows by one per gloss record and a reader should expect "
+            "that rather than read it as drift."
+        ),
         "scandinavia-03-vimose": (
             "KEPT. A hedged scholarly gloss of six partly undeciphered runic "
             "sequences — 'likely', 'possibly', 'remain only partially "

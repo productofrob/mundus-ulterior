@@ -142,11 +142,11 @@
           "because": "the clock read 0.0 because start and stop were issued in a SINGLE command, so it spanned the command and not the work -- the case was composed between calls, where no clock is running. A measurement artefact of how this session curates, not a phase that took no time, and ruling 47's zero means the latter. Recorded as an estimate because the weaker provenance wins (ruling 48) and because the span was never measured."
         },
         "rework": {
-          "minutes": 0,
+          "minutes": 0.5,
           "provenance": "measured"
         }
       },
-      "note": "text_capture: the two sequences, the competing divisions, and the uncertainty statement placed in reference_translation ON PURPOSE, because only that field and original_text_excerpt are chunked. authoring: the gold case, and it is a refusable_with_gloss -- the fourth in a set that had three."
+      "note": "text_capture: the two sequences, the competing divisions, and the uncertainty statement placed in reference_translation ON PURPOSE, because only that field and original_text_excerpt are chunked. authoring: the gold case, and it is a refusable_with_gloss -- the fourth in a set that had three. rework: ingest.verify check 10 flagged the new record for triage -- translation_source declares a summary while the chunk classifies as translation. The check is right and it is not automatic: it carries a written triage decision per record from the 2026-08-10 audit, and a new record of the same shape must be judged rather than inherit one. One curatorial sentence was removed from the record, the gold case's hedge group was narrowed to words the corpus still holds, and the decision was written where the audit's decisions live."
     }
   ],
   "retired": [
