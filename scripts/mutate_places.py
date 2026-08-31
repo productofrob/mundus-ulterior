@@ -421,10 +421,16 @@ EXPECTED = [
 
 
 def failures_from(output: str) -> set[str]:
+    # "FAIL " with the space, FINDING 37. ingest.test_places ends with a
+    # summary line reading "FAILED (1)", which startswith("FAIL") matched --
+    # so every red run harvested a phantom guard named "ED (1)" alongside the
+    # real ones, and the BASELINE block would have reported it as a check that
+    # is already failing. A guard set that can contain a substring of the
+    # summary line is a guard set nobody can read.
     return {
         line.split("FAIL", 1)[1].strip()
         for line in output.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 
@@ -504,9 +510,20 @@ def main() -> int:
             for f in SOURCES:
                 f.write_text(edited[f], encoding="utf-8")
 
+            # FINDING 37, 2026-08-31. Without `encoding` and
+            # PYTHONIOENCODING the child's stdout is decoded with the parent's
+            # locale codec: on Windows an em-dash in a guard label comes back
+            # as three mojibake characters, the label no longer equals the one
+            # in EXPECTED, and a mutation that worked perfectly is reported
+            # MISS. Seven of this harness's forty-three were, on the first run
+            # after the BASELINE check was added. FINDING 10's family, already
+            # fixed in mutate_ranking and named in ingest/test_fidelity.py's
+            # header -- and still here, because this harness had not been run.
             result = subprocess.run(
                 [sys.executable, "-m", "ingest.test_places"],
                 cwd=ROOT, capture_output=True, text=True,
+                encoding="utf-8", errors="replace",
+                env={**os.environ, "PYTHONIOENCODING": "utf-8"},
             )
             failed = failures_from(result.stdout)
             if guard in failed:
@@ -547,6 +564,8 @@ def main() -> int:
     check = subprocess.run(
         [sys.executable, "-m", "ingest.test_places"],
         cwd=ROOT, capture_output=True, text=True,
+        encoding="utf-8", errors="replace",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
     )
     if check.returncode != 0:
         problems.append(

@@ -35,7 +35,13 @@ python -m eval.test_answer_eval
 python -m eval.test_ranking_check
 python -m answer.test_answer
 python ui\test_build_ui_data.py
+python scripts\test_recover_baseline.py
 ```
+
+**EIGHT suites, not seven, from 2026-08-31.** `scripts/test_recover_baseline.py`
+joins the list by FINDING 36: it had been red since Block E and no state block
+listed it, which is FINDING 31's lesson one suite over. It needs psycopg and
+so runs on the host only.
 
 **Expected, and every number below was printed by the suite that describes
 it — through the bridge, on 2026-08-31, and confirmed on the host the same

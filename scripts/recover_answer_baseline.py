@@ -107,6 +107,24 @@ ABSENT = [
     "passages[].english.text — likewise",
     "sources_block — the rendered evidence block was never persisted",
     "refused — not a stored column; infer from the answer text if needed",
+    # Both added 2026-08-31, FINDING 36. run_answer's archived payload grew
+    # these two during D4 and Block E and this list was not extended with it,
+    # so scripts/test_recover_baseline.py has been RED since -- unnoticed,
+    # because it is not one of the seven suites and no state block listed it.
+    # Naming them here is what the guard actually asks for: that nothing the
+    # reconstruction omits goes unnamed in the files it writes.
+    "serving_stack — never persisted to `answers` at all. It exists only in "
+    "the per-run archive, which is the thing being reconstructed, so no "
+    "recovery from the database can produce it.",
+    "corpus_version — NOT rebuilt, and this one is a deferred DECISION rather "
+    "than an impossibility. `answers` does hold seed_corpus_digest, "
+    "corpus_digest_algorithm and cited_record_hashes, so a PARTIAL block "
+    "could be reconstructed; SELECT_ANSWERS does not read them. Whether a "
+    "recovered payload may carry a corpus identity that is missing "
+    "seed_record_count and record_hashes is a question about the field "
+    "FINDING 14 created to identify a run, and ruling 49 has just made that "
+    "field decide what may calibrate the floor. It is open, it belongs to F4, "
+    "and it is named here rather than settled in the last hour of F3.",
 ]
 
 SELECT_CENSUS = """

@@ -334,9 +334,19 @@ def test_absent_list_is_honest() -> None:
     unaccounted = native_keys - recoverable
     named = " ".join(rb.ABSENT)
     missing = [key for key in unaccounted if key not in named]
+    # FINDING 36, 2026-08-31. The label used to carry `missing` inside itself.
+    # A failure string that changes shape with the failure cannot be matched by
+    # scripts/mutate_recover.py -- so the mutation written for this guard was
+    # reported MISS rather than UNVERIFIED, and the harness could not tell
+    # "your mutation did nothing" from "this guard was already red". That is
+    # the same defect eval/test_answer_eval.py's expect_rejected already warns
+    # about in its own docstring, and it cost five MISSes there on the first
+    # run. The label is bare; the detail is printed beneath it.
+    if missing:
+        print(f"       unaccounted payload key(s): {sorted(missing)}")
     expect(not missing,
-           f"GUARD every native payload key is either recoverable or named in "
-           f"ABSENT (unaccounted: {missing})")
+           "GUARD every native payload key is either recoverable or named in "
+           "ABSENT")
 
 
 def main() -> int:

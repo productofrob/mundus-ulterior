@@ -367,6 +367,109 @@ avoid.
 
 ---
 
+# FINDING 36 — the BASELINE check found a suite that had been red since Block E, on its first run, and nothing listed it
+
+`scripts/test_recover_baseline.py` fails:
+
+```
+FAIL GUARD every native payload key is either recoverable or named in ABSENT
+     (unaccounted: ['corpus_version', 'serving_stack'])
+44 passed, 1 failed
+```
+
+`answer/run_answer.py`'s archived payload grew `corpus_version` in D4
+(FINDING 14) and `serving_stack` in Block E. `recover_answer_baseline.ABSENT`
+— the list a recovered payload carries so that a reader of Part 8 is never
+left to discover a missing key by its absence — was not extended with it. The
+suite that checks the two against each other has therefore been red for a
+week, through every session of Block F, **and no state block in this
+repository lists it.** FINDING 31 exactly, one suite over: `ingest.verify` was
+red for a week for the same reason, and F1's remedy was to put it in the list.
+
+**It was found by the BASELINE check on the first run after the check was
+added**, which is the argument for adding it before the corpus moves rather
+than after, made in advance and then paid out within the hour. Without the
+baseline, `mutate_recover`'s eleven mutations would have run against a red
+suite and one of them would have been a green line proving nothing.
+
+## And the guard could not say which kind of failure it was
+
+The mutation was reported `MISS`, not `UNVERIFIED`, because the label carried
+its own detail:
+
+```
+expected  "...ABSENT (unaccounted: ['evidence_digest'])"          to fail
+got       "...ABSENT (unaccounted: ['corpus_version', 'evidence_digest',
+                                    'serving_stack'])"
+```
+
+A failure string that changes shape with the failure cannot be matched against
+a fixed expectation, so the harness could not tell *your mutation did nothing*
+from *this guard was already red*. `eval/test_answer_eval.py`'s
+`expect_rejected` already warns about this in its own docstring and records
+that it cost five MISSes on the first run there. The label is now bare and the
+detail is printed beneath it.
+
+## What was done, and the one thing deliberately not done
+
+`serving_stack` is named in ABSENT as unrecoverable, which it is: it was never
+persisted to `answers` at all, and exists only in the per-run archive that
+recovery is rebuilding.
+
+**`corpus_version` is named as a DEFERRED DECISION, not as an impossibility**,
+because it is not one. `answers` holds `seed_corpus_digest`,
+`corpus_digest_algorithm` and `cited_record_hashes`; `SELECT_ANSWERS` simply
+does not read them, so a PARTIAL block could be rebuilt. Whether a recovered
+payload may carry a corpus identity missing `seed_record_count` and
+`record_hashes` is a question about the field FINDING 14 created to identify a
+run — and ruling 49 has just made that field decide what may calibrate the
+floor. **That is not a question to answer in the last hour of a session**, so
+it is named in the artefact, carried as owed, and belongs to F4.
+
+**`scripts/test_recover_baseline.py` is now listed as the EIGHTH suite.** It
+needs psycopg and therefore the host: it cannot run in the bridge's
+interpreter at all, which is part of how it stayed invisible.
+
+---
+
+# FINDING 37 — seven mutations that worked perfectly were reported MISS, on an em-dash
+
+`scripts/mutate_places.py` ran 43 mutations and reported 7 `MISS`. Every one of
+the seven looks like this:
+
+```
+expected "...the publisher's declaration that they apply is a second claim"
+got      "...the publisher's declaration that they apply is a second claim"
+                                    ^ read back as â€”
+```
+
+The guards fired. The harness could not recognise its own labels, because it
+ran the child with `capture_output=True, text=True` and no `encoding`, so the
+suite's UTF-8 output was decoded with the parent's locale codec and every
+em-dash came back as three mojibake characters.
+
+**This is FINDING 10's family and it was already written down twice** — fixed
+in `mutate_ranking`, and named in `ingest/test_fidelity.py`'s own header:
+*"a label carrying an em-dash could not be matched against its own failure
+line once a harness decoded the child's stdout with the locale codec, and two
+harnesses printed MISS on mutations that had worked perfectly."* It survived
+in `mutate_places` because `mutate_places` had not been run.
+
+A second defect surfaced in the same output: `failures_from` matched
+`startswith("FAIL")`, and `ingest.test_places` ends with a summary line reading
+`FAILED (1)` — so every red run harvested a phantom guard named `ED (1)`
+beside the real ones, which the new BASELINE block would have reported as a
+check that is already failing. Both fixed: `encoding="utf-8"` with
+`PYTHONIOENCODING` on both child runs, and `"FAIL "` with the space.
+
+**Neither defect touches a single one of the 43 mutations.** They are correct
+and were correct before this session. What was wrong was the instrument's
+ability to read its own results — which is the shape of every finding in this
+family, and the reason a harness that has not been run recently is not a
+harness anyone can quote.
+
+---
+
 # The trap this session walked into, recorded because it is a new mechanism
 
 **A mutation harness cannot be run through the bridge because of what the SUITE

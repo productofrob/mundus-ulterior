@@ -13104,6 +13104,28 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **FINDING 36: the BASELINE check found a red suite on its first run.**
+  `scripts/test_recover_baseline.py` fails — `run_answer`'s archived payload
+  grew `corpus_version` (D4) and `serving_stack` (Block E) and
+  `recover_answer_baseline.ABSENT` was never extended, so the suite has been
+  red for a week, through every session of Block F, **and no state block
+  listed it**. FINDING 31 one suite over. It needs psycopg and so runs only on
+  the host, which is part of how it stayed invisible; it is now listed as the
+  EIGHTH suite. `serving_stack` is named ABSENT as unrecoverable, which it is.
+  `corpus_version` is named as a DEFERRED DECISION, because `answers` holds
+  the digest and the cited hashes and a partial block could be rebuilt —
+  whether a recovered payload may carry a corpus identity missing
+  `seed_record_count` is a question ruling 49 has just made load-bearing, and
+  it belongs to F4 rather than to the last hour of F3. The guard's label also
+  carried its own detail, so the mutation read MISS instead of UNVERIFIED;
+  the label is bare now.
+- **FINDING 37: seven mutations that worked perfectly were reported MISS.**
+  `mutate_places` ran its child without `encoding`, so UTF-8 em-dashes in
+  guard labels came back mojibake and no label matched. FINDING 10's family,
+  already fixed in `mutate_ranking` and already written down in
+  `ingest/test_fidelity.py`'s header — it survived here because this harness
+  had not been run. `failures_from` also harvested `FAILED (1)` as a phantom
+  guard named `ED (1)`. Both fixed; none of the 43 mutations was wrong.
 - **FINDING 35: the sentence that travels undercounts its own evidence.**
   *"Nine archives, 396 runs"* has been copied into every block document since
   Block E, and `calibrate_floor` printed `9 archived sweep(s), 492 run(s)` on
