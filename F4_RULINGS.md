@@ -1,0 +1,720 @@
+# Rulings 53 to 56 — declared 2026-08-31, in F4, before record 31
+
+*Date taken from the host, not from another document: `date -u +%F` printed
+`2026-08-31`. FINDING 34 is four days old and cost eleven documents.*
+
+*All four are recorded BEFORE the first candidate is examined. That is ruling
+39's argument for the sixth time in this block, and F4 is the session where it
+stops being a habit and becomes the instrument: two of these rulings are
+PREDICTIONS, and a prediction written after the run is an explanation. This
+project already has a sentence about the difference.*
+
+---
+
+## Ruling 53 — F4 curates against the allocation AS WRITTEN, and the `verbatim_machine_english` ruling is DEFERRED to F4's close with its conditions declared today
+
+**`data/corpus_tiers.json` is not changed. `ingest.fidelity.check_allocation`
+is not changed. F4's three `verbatim_machine_english` slots stand, an unfilled
+one is a SHORTFALL — which `check_delivery` already reports as progress rather
+than failing — and the ruling FINDING 41 asks for is made at F4's close, on
+Ge'ez evidence, against conditions written here before the hunt begins.**
+
+### Why the ruling is better made after F4 than before it
+
+FINDING 41 is correct about what it saw. It saw Persia and Scandinavia.
+
+```
+Kartir KKZ/KNRb                    English on avesta.org and UCI Sasanika
+the Pahlavi corpus (five works)    all Englished
+M 5794 I                           Skjaervo, free PDF, manichaeism.de
+the Istanbul epitaph of Khurdad    de Blois 1990, quoted on en.wikipedia
+```
+
+Four disqualifications, one region, one scholarly tradition — and Middle
+Persian epigraphy is among the most thoroughly Englished bodies of text in
+existence, because the people who learned to read it in the twentieth century
+published in English. Scandinavian runology is the other one. F3 tested the
+tier where the tier is hardest to fill and reported the result as a property of
+the tier.
+
+**The allocation's own sentence, written in F3 before any of this, anticipated
+exactly that:**
+
+> *"Africa is at one source-language record of four and Ge'ez has no published
+> translation for most of what is open, so it is the second-hardest region and
+> the second-largest `verbatim_machine_english` draw."*
+
+That sentence is a prediction and F4 is its test. Re-cutting the mix now
+discards the test to act on one tranche of evidence from the two regions least
+able to produce it.
+
+### What is being deferred, and what is NOT
+
+Deferred: whether `verbatim_machine_english` is allocated at all, and whether
+`by_tier_new`'s ten becomes a floor of the form *"at least N, discovered"*.
+
+Not deferred, and not weakened: **FINDING 41's central claim stands
+today.** A curator establishes *"I did not find an English translation"*, which
+is a property of the search. Nothing in F4 makes that false. What F4 can settle
+is whether the property of the search is stable enough across a tradition to
+plan against — which is a different question, and the one the mix actually
+needs answered.
+
+### The conditions, declared now so the close reads as a result
+
+**NARROWS** — FINDING 41 becomes *"`verbatim_machine_english` cannot be
+targeted from English-language scholarship"*, a rule about where a hunt looks
+rather than about the tier: Sub-Saharan Africa delivers **2** honest vme
+records, each with its failed English search written down per the anti-loophole
+below.
+
+**STANDS AS WRITTEN** — the tier is a residue and the mix re-cuts at F5 with
+two tranches of evidence: Africa delivers **0 or 1**, and the disqualifying
+reason is again *somebody has already translated this well and posted it*.
+
+**NEITHER, AND SAY SO** — Africa delivers 0 or 1 for a different reason: no
+open transliteration, a text outside the window, a source that refuses
+automated fetching. That is FINDING 38's supply problem, not FINDING 41's
+search problem, and reading it as either would be reading the number without
+the reason. **Recorded as a third outcome precisely so the close is not forced
+into a binary it can satisfy by choosing.**
+
+East Asia's single vme slot is evidence toward none of the three. One slot in a
+tradition with its own enormous English-language scholarship decides nothing,
+and its outcome is reported without being read.
+
+### The anti-loophole, which is the part that makes the test honest
+
+**F4 can reach two vme records by not looking, and every check in this
+repository would pass.** `derive_record_tier` reads an empty
+`translation_source`; an empty field is what a thorough search and no search
+both produce.
+
+So: **a `verbatim_machine_english` record curated in F4 must carry, in its own
+`notes`, the English-language search that failed — the named sources consulted,
+not a count — and any English found must be cited with its URL beside the
+reason it was refused as a `translation_source`.** A record whose note says
+only *"no English translation found"* is not evidence for any of the three
+outcomes above, and F4's close must say so rather than count it.
+
+This is `floor.json`'s `a_named_sweep_must_actually_fail_the_rule` in the
+curator's chair: **a tier that can be reached by doing less work is a place to
+put records nobody searched for.**
+
+### What it costs to be wrong here
+
+If the deferral is wrong, F5 re-cuts having spent F4's vme hunting time — the
+cost F3 measured at ~29 minutes in retired rows. If the re-cut were made today
+and wrong, the mix loses its only quota on the tier that turns on the
+machine-translation path, and `verse` and `documentary` stay at n=1 with
+nothing scheduled to move them. **The recoverable error is the one that is
+taken.**
+
+---
+
+## Ruling 54 — a record's ranking pair and its gold case are written in the SAME COMMIT as the record
+
+**No record enters the corpus in a commit that does not also add at least one
+ranking pair naming it, or a written reason in that commit that it cannot carry
+one. The precedent is in this repository: `ingest/verify.py` check 9 is raised
+in the same commit as the records it counts, never in advance and never
+later.**
+
+### The defect is structural and it repeats without a rule
+
+FINDING 43, measured:
+
+```
+F3 added six records.
+Ranking pairs for those six records:                            0
+Gold cases written against them that have ever been executed:   0
+Pairs that moved:  muziris-cargo-akananuru 310 -> 313
+                   tc-jabal-dabub            2 -> 3
+                   vimose-runes              3 -> 7   (out of recall@6)
+```
+
+**Every tranche adds competition to queries written before it and adds no query
+of its own.** So the instrument gets monotonically more pessimistic as the
+corpus improves, and `recall@6` at 60 records is partly a measure of how much
+the corpus grew. That is not a bad tranche. It is the measurement design, and
+F4 inherits it unchanged unless the rule changes.
+
+### Why the same commit and not the same session
+
+A pair written after the ranking run is a pair written knowing the rank. There
+is no accusation in that sentence and no need for one: the anchor token, the
+phrasing and the expected document are all choices, and a person who has just
+seen a record land at rank 9 writes a different query than one who has not.
+`archived_status` and `superseded_diagnosis` exist in this project because the
+remedy for that class of problem is ORDER, recorded, not intention.
+
+The commit is the only boundary git can prove.
+
+### F3's six, which can never be paired honestly, are named rather than fixed
+
+The six records of F3 are already in the index. Any pair written for them now
+is written after their run. **They are given pairs anyway — a corpus where six
+records are invisible to the ranking check is worse — and each is stamped
+`written_after_the_records_entered_the_index: true`, is excluded from every
+before/after claim, and may not be cited as evidence that F3 improved
+retrieval.** That is `excluded_by_rule`'s shape: excluding by a recorded rule
+is a diff, and excluding by making a row vanish is not.
+
+**The flag is absent from F4 onward, and its absence is the claim.**
+
+### What this buys F4 that F3 could not have
+
+F4 measures both what it added and what it cost. F3 measured only the second,
+and *"six records entered the corpus and the only thing any instrument here can
+say about them is that two older pairs moved down"* is a sentence about the
+instrument, not about the records.
+
+---
+
+## Ruling 55 — the East Asia prediction, registered before the first East Asian candidate is examined
+
+**Prediction: when F4's East Asian records enter the index, both
+`china-describes-rome` pairs move DOWN, and `china-describes-rome-weilue` is
+the more likely of the two to leave the top 6.**
+
+### The numbers, read from the archive rather than from a document
+
+`eval/ranking_runs/20260831T150406+0000-retrievable_chunks_with_distractors.json`,
+view `retrievable_chunks_with_distractors`, index 460 chunks:
+
+```
+china-describes-rome-houhanshu   rank 4   recall@6 true    anchor_points_home false
+china-describes-rome-weilue      rank 5   recall@6 true    anchor_points_home false
+vimose-runes                     rank 7   recall@6 false   anchor_doc
+                                                    scandinavia-05-thorsberg-chape
+```
+
+### The mechanism, which is FINDING 43's and is not new here
+
+`vimose-runes` fell from 3 to 7 when a record arrived that was its near
+neighbour in language, script, period, object type and country. F4 plans two
+`verbatim_with_provenance` and one `verbatim_machine_english` East Asian
+records, which will be Literary Chinese `lzh` texts **about Rome** — the same
+language, the same script, the same period and the SAME SUBJECT as both pairs'
+queries.
+
+And **neither pair points home.** `anchor_points_home` is false for both: their
+queries carry no rare token resolving to their own record, which is precisely
+the condition under which `scandinavia-05-thorsberg-chape` took
+`vimose-runes`'s place. Two ranks and one rank of headroom, against three new
+competitors written to be about the same thing.
+
+`weilue` is named as the likelier to fall because it sits one rank lower and
+because `eastasia-01-weilue` is the record whose Chinese chunk has already been
+shown to lose the model's attention to its own English (45 of 45, FINDING 13).
+
+### What falsifies it
+
+**Both pairs hold or improve.** Then FINDING 43's mechanism is narrower than
+same-language-same-subject — it is about near-duplicate OBJECTS, a chape beside
+a spearhead, not about texts that discuss one another's topic. That is a
+smaller and more useful finding than the one currently on file, and it is only
+available because the prediction was written first.
+
+**One holds and one falls, and it is `houhanshu` that falls.** The mechanism is
+real and the ordering reasoning is wrong, which would say the anchor-token
+story is doing less work than the rank gap.
+
+### What the prediction is NOT
+
+It is not a reason to curate fewer East Asian records: the region is at two
+source-language records against a floor of four, and ruling 51 put it in F4 for
+that reason. It is not a regression claim — a pair moving down inside the top 6
+breaks no gate, and both pairs are outside the floor's `required_cases`. And it
+is a prediction about a dense retriever measured by one diagnostic, so a
+confirmation is evidence and not a proof of cause.
+
+**It is available today, costs nothing, and F3 could not make it.**
+
+---
+
+## Ruling 56 — the quoted-from-original quota splits in two, because the two questions are not one question
+
+**`min_expect_quoted_from_original_cases_at_60: 6` counts ONLY cases written
+against records that HOLD a `reference_translation`. Cases on
+`verbatim_machine_english` records are counted on their own line,
+`vme_quotation_cases`, which every sub-tranche must DECLARE, which is capped by
+that sub-tranche's vme slots, and which carries no aggregate minimum.**
+
+### FINDING 40's evidence, restated because the ruling depends on it
+
+On a record carrying both an `original_text_excerpt` and a
+`reference_translation`, both chunks are retrieval-eligible, both are in front
+of the model, and the assertion records **WHICH ONE** the quotation came out
+of. That choice is the defect the assertion was invented to see:
+
+```
+chinese-da-qin, 16 archived runs:  45 of 45 resolved quotations came from the
+                                   English, while the source chunk sat at [S1]
+```
+
+On a `verbatim_machine_english` record there is no second chunk. The machine
+English lives in `current_translations`, which is not a corpus field, so a
+quotation of it cannot resolve to characters on disk at all. The assertion is
+then satisfied by **any resolved quotation whatsoever** — which
+`expect_min_resolved_quotes: 1` on the same case already required.
+
+**Six of six is four of the first question and two of the second.**
+
+### The direction is what makes this a ruling rather than a note
+
+The plan predicts `verbatim_machine_english` becomes the common tier. Every vme
+record supplies a quotation case that passes by construction. **So the quota
+gets easier to satisfy as the thing it measures gets harder to observe** — and
+it drifts silently, because the count is the only thing anyone reads and the
+count is the only thing G3 will read.
+
+A measure that improves while its subject worsens is a measure on its way to
+becoming decoration.
+
+### The tier rule, held in code with its reason
+
+```python
+QUOTATION_CHOICE_TIERS = frozenset({"verbatim_with_provenance"})
+```
+
+A case that asks WHICH chunk was quoted requires two retrieval-eligible chunks,
+an original and its published translation, and exactly one tier holds both.
+`published_translation_only` has no original to prefer;
+`catalogue_record` has neither; `verbatim_machine_english` has no published
+translation. This is `GLOSS_CAPABLE_TIERS`'s shape, one assertion over, and it
+is in code for the same reason: **it is a rule and not a number, and a mutation
+has to be able to break it.**
+
+### The vme line has no floor, and the reason is ruling 53
+
+A minimum on vme quotation cases is a quota on cases that can only exist on
+records of a tier this session has just declined to decide the targetability
+of. **Declaring one today would re-target the residue through a different
+field.** So the line is declared, capped by capacity, required to be PRESENT in
+every sub-tranche — an absent field is a failure, not a zero — and reported.
+
+Said plainly, because a zero in a guard is usually a guard nobody wrote: **the
+teeth on this line are the presence check and the capacity cap, not the
+minimum.** The number that belongs there is F5's to set, after ruling 53's
+deferred ruling, and it is owed.
+
+### What is NOT done
+
+**The six is not lowered.** Lowering a bar because the cases behind it turned
+out to be weaker is a different ruling, and the number that belongs at 60 is
+not known from four. The allocation already writes seven choice cases across
+F3-F5 against a minimum of six, so the split costs nothing that was not already
+budgeted.
+
+**No delivered number is rewritten.** F3's row keeps the 2 it declared, and
+gains the `vme_quotation_cases: 2` it delivered under a distinction that did
+not exist when it was written. Restating a delivered plan to match what
+happened is the move this project refuses everywhere else.
+
+**The gold set is now counted, and that is the part with teeth at G3.** Until
+today the six lived only in the allocation plan; nothing counted the cases that
+actually exist. `ingest.verify` now classifies every
+`expect_quoted_from_original` case by the tier of the record it names and
+reports the split. Today that reads **4 choice / 2 whether-resolved**, which is
+the number FINDING 40 says a reader should have.
+
+---
+
+# The sentences that travel, from F4's opening
+
+**FINDING 41 was measured in the two traditions most thoroughly translated into
+English, and reported as a property of the tier.**
+
+**A tier that can be reached by doing less work is a place to put records
+nobody searched for.**
+
+**A pair written after the run is a pair written knowing the rank, and the
+commit is the only boundary git can prove.**
+
+**Two pairs sit at rank 4 and rank 5, neither points home, and three records
+about the same subject in the same language are about to enter the index. That
+sentence is worth more today than any sentence about it will be worth at F4's
+close.**
+
+**A measure that improves as the thing it measures gets harder to observe is a
+measure drifting toward decoration, and it drifts silently because the count is
+the only thing anyone reads.**
+
+---
+---
+
+# Rulings 57 and 58, and FINDINGS 44 to 46 — declared 2026-08-31, LATER THE SAME SESSION, and still before record 31
+
+*Rulings 53 to 56 were written before the hunt. These were written after it and
+before any record was curated, and the gap between those two moments is the
+only reason they can be trusted: the hunt produced candidates, not numbers. No
+record exists, no rank has moved, no suite has been run against a changed
+corpus. Ruling 39's line is that a rule written after the first sub-tranche is
+a rule written by someone who has seen what the first sub-tranche did to the
+numbers. Nobody has seen anything yet.*
+
+*What the hunt DID produce is the answer to ruling 53's own question, four
+hours early and in a shape ruling 53 did not have a name for. That is recorded
+as FINDING 45 rather than quietly folded into the ruling it embarrasses.*
+
+---
+
+## Ruling 57 — `verbatim_machine_english` means NO ENGLISH A CURATOR CAN REACH, and every record in the tier states the boundary of its own search
+
+**The tier's written definition in `data/corpus_tiers.json` — *"no published
+English translation"* — is replaced by *"no English translation reachable by
+the curator, with the search recorded."* Every `verbatim_machine_english`
+record carries, in its `notes`, the named sources consulted and the boundary
+where the search stopped. A record that does not is not in the tier.**
+
+### This is FINDING 41's argument accepted rather than resisted
+
+FINDING 41's central sentence has been treated for a session as a problem to
+be worked around:
+
+> *"What a curator can actually establish is 'I did not find an English
+> translation.' That is a property of the SEARCH, not of the text."*
+
+**It is not a problem. It is the definition.** The written definition claims
+something no curator has ever been able to establish and no check has ever
+verified: `derive_record_tier` reads whether a record cites a
+`translation_source`, which is a fact about the record, and the JSON above it
+claims a fact about the world. Those have never been the same claim, and the
+gap between them is where three sessions of confusion has lived.
+
+Once the tier says what a curator can actually establish, it becomes
+targetable — which is the thing FINDING 41 said it could not be — because the
+search has a shape and a curator can aim at where the shape is thin. FINDING 45
+is what that looks like in practice.
+
+### The evidence that forced it, and it is decisive
+
+Three East Asia candidates have no English translation findable anywhere
+online: the Tang Huiyao, the Cefu Yuangui and the Taiping Huanyuji. Checked
+against Hirth 1885's own contents rather than a bibliography, against Hirth &
+Rockhill 1911, Legge 1888 and Yule 1866, against Fordham, Silk Road Seattle,
+silkroadfoundation.org and silk-road.com, and against eight databases.
+
+And **Leslie & Gardiner, *The Roman Empire in Chinese Sources* (Rome, 1996), is
+the standard translation-corpus of exactly this material, print only, and
+nothing available to this project can establish whether it covers them.**
+
+Under the old definition those three records are uncurable, and they are
+uncurable for a reason no amount of work removes: to establish "no published
+English translation" a curator would have to read every book. Under the new
+one they are curable, and each one states where it looked and where it
+stopped, which is a claim that can be checked and, if wrong, corrected by
+naming the book.
+
+**A definition that can only be satisfied by omniscience is satisfied in
+practice by whoever searched least.** That is the loophole ruling 53's
+anti-loophole was written against, and this closes it at the definition
+instead of patrolling it at each record.
+
+### It also describes F3's own records correctly for the first time
+
+`seasia-06-kedukan-bukit` and `seasia-07-talang-tuo` qualified because the
+English that circulates for them is unattributed. FINDING 41 recorded that
+their *"JUSTIFICATION is not stable — the day somebody attributes that
+translation, the records' written reason becomes false while every check in
+this repository continues to pass."*
+
+Under ruling 57 the justification is stable, because it is a different
+sentence. It no longer says *nobody has translated this*; it says *this curator
+searched here and here and found no attributable English*. That statement does
+not become false when somebody attributes the translation. It becomes
+INCOMPLETE, and the record's own note says where to look to complete it.
+
+### The anti-loophole, restated, because the definition change makes it load-bearing
+
+Ruling 53 already requires the failed search in the record's notes. Ruling 57
+makes that requirement the tier itself rather than a discipline attached to it:
+
+- **Named sources, not a count.** "I searched extensively" is not a search.
+- **Any English found is cited with its URL beside the reason it was refused**
+  as a `translation_source` — paywalled, print-only, unattributed.
+- **The boundary is stated.** "Print-only monographs were not consulted" is a
+  legitimate boundary and a useful one. An unstated boundary is not.
+
+### What is NOT decided
+
+The mix is untouched. The allocation is untouched. `check_allocation` is
+untouched. Ruling 53's deferral stands and its three outcomes still get their
+reading at F4's close — with FINDING 45 as a fourth, which is the whole reason
+the third outcome was written.
+
+**And no check enforces this.** Whether a note names its sources is a judgement
+about prose, which is `why_gloss_capability_is_DECLARED`'s situation exactly
+and gets the same answer: declared, visible in the record, and readable by a
+human who wants to argue with it. A checker that counted source names would be
+satisfied by a list.
+
+---
+
+## Ruling 58 — Sub-Saharan Africa's source-language floor is being met in GREEK, and that is declared rather than discovered
+
+**F4 curates Silko at Talmis and the Monumentum Adulitanum II as Africa's two
+`verbatim_with_provenance` records. Both are Greek. With
+`africa-03-periplus-adulis` that puts three of the region's four required
+source-language records in the language of the Roman Empire, and this ruling
+says so in advance, in the file, because no check in this repository can.**
+
+### What the checks can and cannot see
+
+```
+ingest.fidelity  min_source_language_records_per_region  4
+                 counted over verbatim_with_provenance + verbatim_machine_english
+                 There is no clause about WHICH language.
+```
+
+Four Greek records would satisfy the per-region floor, `check_allocation`,
+`check_delivery` and `check_target_mix` — every one of them green — and leave
+Sub-Saharan Africa's source-language corpus written entirely in the language of
+the empire the project exists to measure distance from. The project
+instructions ask for *"relevant local, non-English sources from the regions
+above."* **Greek from an African findspot is a non-English source and it is not
+a local one, and no field in this repository holds that distinction.**
+
+This is ruling 49's shape one dimension over: a rule that could not see the
+data it was written to protect. `min_source_language_records_per_region` was
+written to stop an aggregate being met inside two regions. It cannot stop a
+region being met inside one empire.
+
+### Why the check is not changed today
+
+The third option was a per-region rule that refuses a floor met entirely in
+Greek or Latin. It was refused for ruling 53's reason, one field over: it
+changes `corpus_tiers.json` and `check_allocation` together, mid-tranche, on
+one tranche of evidence, and this session has already declined to do exactly
+that for the tier. **Two mid-tranche re-cuts of the same file, in the same
+session, in opposite directions, is a session editing its own instruments to
+fit what it found.**
+
+It is owed, it is named here, and F5 has both this and ruling 53's deferred
+ruling in front of it — which is one re-cut with two tranches of evidence
+instead of two re-cuts with one each.
+
+### What the Greek records are, and why they are not a consolation prize
+
+Silko writes Greek in a Roman temple and calls himself `βασιλίσκος`, the
+diminutive the Greco-Roman world used for client kings on its edge, and says
+God gave him the victory. The Adulis throne inscription has an Aksumite king
+listing conquests, recording that he made the trade roads safe by land and sea,
+and dedicating the throne **to Ares**. Neither is a Roman text. **Both are
+Africans using the empire's language and the empire's gods to say something
+about themselves**, which is a sharper statement about influence than a local
+language would have made, and it is the reason these two were chosen over the
+Dongola Creed and the Qasr Ibrim epitaphs.
+
+That is an argument for these records. **It is not an argument for the floor
+being met this way, and the two must not be allowed to blur.** Said here so
+that nobody at G3 reads three Greek records as four regions' worth of local
+source text.
+
+### The Ge'ez route is closed for a stated reason, not an unstated one
+
+Littmann's *Deutsche Aksum-Expedition* IV (1913) is public domain, downloadable
+in full, and prints Aksumite inscriptions in original script with
+transliteration and **German translation only** — the exact
+`verbatim_machine_english` profile the mix wants. Its contents were read
+through. **Every text in it that touches Rome is either Ezana, which this
+corpus already holds, or Sembrouthes.** Kaleb (RIÉ 191) and Wa'zeb (RIÉ 192)
+are not in Littmann; they are in the RIÉ, which is not open, and the 2019
+Drewes/Kropp edition is French and print-only.
+
+**So Ge'ez fails on the ROME criterion, not on the translation criterion.**
+That is FINDING 38's supply problem and not FINDING 41's search problem, and it
+is ruling 53's third outcome — NEITHER — arriving in the region ruling 53 named
+as its test. **The third outcome was written so the close could not be forced
+into a binary it could satisfy by choosing, and it earned itself within four
+hours.**
+
+---
+
+# FINDING 44 — the tier does not distinguish "nobody translated it" from "nobody can", and the best evidence this project will ever find is for the second
+
+The Hamadab stela of Amanirenas and Akinidad — British Museum EA1650,
+excavated 1914 south of Meroe, 42-45 lines of Meroitic cursive, showing the
+queen and prince of the Roman war of 25-21 BC above a relief of bound
+prisoners. The British Museum's own record states that the word `Areme` in the
+text is thought to represent **Rome**, and that the inscription may document
+the Kushite raid on Roman Egypt of 24 BC.
+
+**It has the strongest "no English translation exists" evidence this project
+will ever assemble.** Four independent authorities say so on the record:
+
+```
+British Museum, object EA1650      "remains undeciphered"; meaning "far from clear"
+Fontes Historiae Nubiorum II       "no consecutive translations can be provided"
+Rilly, UCLA Encyclopedia of        "no more than a hundred words can be
+  Egyptology                        translated with some certainty"
+ACL 2025, Towards Ancient          available translations are "constrained to
+  Meroitic Decipherment             titularies, toponyms, and anthroponyms"
+```
+
+**And it is the wrong record, for a reason the tier's definition cannot
+express.**
+
+## The three mechanisms, which one field is carrying
+
+`verbatim_machine_english` is derived from an empty `translation_source`. That
+one absence is produced by three completely different states of the world:
+
+1. **Nobody has published an English translation** — the tier as intended.
+   Machine translation is available and the Part 6 path does real work.
+2. **An English translation exists somewhere a curator could not reach** —
+   ruling 57's case. Machine translation is available and does real work; the
+   record's note says where the search stopped.
+3. **No translation exists in any language because the language is not
+   understood.** Machine translation is not available in any meaningful sense,
+   and the path produces fluent output with no relationship to the source.
+
+**The pipeline cannot tell these apart, because the field it reads is empty in
+all three.** A Hamadab record would send Meroitic through `resolve_english`,
+get back confident English, attach it to a citation resolving to real
+characters in a real record, and every check in this repository would pass. The
+`verse` and `documentary` confidence profiles — at n=1, and load-bearing since
+the first vme records landed — would score it.
+
+**That is the gloss arm's target output produced by the corpus rather than by
+the model.** The one thing this project has built machinery to catch, arriving
+through the front door with a British Museum accession number attached.
+
+## What is done, and what is deliberately not
+
+The record is **not curated**, and Meroitic is recorded here as a class rather
+than as one refused candidate: Dakka (FHN II 173) and Kharamadoye (REM 0094)
+fall the same way, and the whole Meroitic corpus is behind them.
+
+**The tier is NOT given a fourth state today.** A distinction invented in the
+hour its first case appeared is a distinction fitted to one record — FINDING
+32's precedent, and ruling 53 has already declined one mid-tranche re-cut of
+this file. What is owed, and stated so it is not re-derived: **the tier needs
+to know whether a machine translation of this record's language is possible at
+all**, and that is a property of the language, not of the record, which means
+it belongs beside `answer/translate.py`'s language declarations — the ones
+F3_RESULT already lists as load-bearing and uncovered by any mutation.
+
+**The sentence that travels: the tier's whole justification is that it turns
+the machine-translation path on, and the best-evidenced untranslated text in
+the world is one where turning that path on is the failure mode.**
+
+---
+
+# FINDING 45 — `verbatim_machine_english` is fed by GENRE, not by obscurity, and that is a seam a curator can aim at
+
+FINDING 41 concluded that the tier cannot be hunted, on this mechanism:
+
+> *"A text worth curating is a text worth translating. The properties that make
+> a record valuable here are the properties that got it translated into English
+> by somebody, and being translated is the disqualifier. The tier is fed by
+> obscurity and the corpus is trying to be interesting."*
+
+**The East Asia hunt falsifies the mechanism while confirming the observation
+that produced it.** Both halves matter.
+
+## What was actually translated, read off the books rather than off a bibliography
+
+Hirth, *China and the Roman Orient* (1885), public domain, contents enumerated
+from the volume itself:
+
+```
+TRANSLATED, all of it, in one nineteenth-century volume
+  Shiji, Qian Hanshu, Hou Hanshu, Weilue, Jinshu, Songshu, Liangshu, Weishu,
+  Jiu Tangshu, Xin Tangshu, Songshi, Mingshi, Zhufan Zhi, Wenxian Tongkao
+
+NOT TRANSLATED, and not mentioned anywhere in the volume
+  Tang Huiyao        唐會要      an institutional compendium from court archives
+  Cefu Yuangui       冊府元龜    1,000 juan, built from Tang court records
+  Taiping Huanyuji   太平寰宇記  Northern Song imperial geography
+  Lingwai Daida      嶺外代答    a twelfth-century official's merchant report
+```
+
+**Every text in the first list is a DYNASTIC HISTORY or its recognised
+companion. Every text in the second is a `huiyao`, a `leishu` or a geography.**
+The sinologists translated the prestige genre. The Song-era compilations that
+preserve the administrative detail — the dated embassy registers, the tribute
+lists, the gazetteers — were left alone, and they have stayed alone for a
+hundred and forty years.
+
+## Why this is a correction and not a quibble
+
+Obscurity is not a property a curator can aim at: FINDING 41 is right that more
+effort finds MORE English, not less, and right that the tier and the corpus
+pull in opposite directions if that is the mechanism.
+
+**Genre is a property a curator can aim at.** It is stable, it is knowable in
+advance, it is the same in Chinese as it is in Ge'ez and Middle Persian — the
+open Littmann volume is a *scholarly epigraphic corpus*, the prestige genre for
+Aksum, and it is fully translated into German — and it predicts where to look
+before the looking starts. That is exactly what FINDING 41 said the tier did
+not have.
+
+**And the seam is not thin material.** The Cefu Yuangui entry is a dated
+Byzantine embassy notice naming its gift — 拂菻王波多力遣使獻赤頗黎、綠頗黎 —
+red glass and green glass, presented at the Tang court in 643. This corpus
+already holds Roman and Byzantine glass as archaeology in three regions. The
+text that records the same substance arriving as diplomacy has never been
+translated into English, and it is the single strongest East Asia candidate in
+either list.
+
+## What FINDING 41 got right, kept
+
+Two of the five East Asia candidates DID have English, found only by looking
+hard: one in a 2020 monograph from an Italian academic press, one in a 1984
+UNESCO series whose open-access status could not be established. That is
+FINDING 41's observation intact — a hunt that goes looking for the absence of
+English keeps finding English — and it is why ruling 57 changes the definition
+rather than the effort.
+
+**The two findings compose, and the composition is the useful rule:** aim at
+the genre nobody translated, and record the boundary of the search, because the
+English you have not found is not the English that does not exist.
+
+---
+
+# FINDING 46 — a defect recorded as fixed was fixed in one of four places, and the other three were only invisible because nobody had run them
+
+FINDING 37, five days old, found two defects in `scripts/mutate_places.py` and
+records both as fixed. The second:
+
+> *"`failures_from` matched `startswith("FAIL")`, and `ingest.test_places` ends
+> with a summary line reading `FAILED (1)` — so every red run harvested a
+> phantom guard named `ED (1)` beside the real ones, which the new BASELINE
+> block would have reported as a check that is already failing."*
+
+**Three other harnesses carried the identical defect and were not touched:**
+
+```
+scripts/mutate_ui_places.py   suite ends `FAILED (1)`      phantom `ED (1)`
+scripts/mutate_fidelity.py    suite ends `FAILED (5)`      phantom `ED (5)`
+scripts/mutate_ranking.py     suite ends `FAILED: <name>`  phantom `ED: <name>`
+```
+
+All three fixed in F4, with the space.
+
+## The mechanism, which is FINDING 37's own and one level up
+
+FINDING 37's closing sentence was *"it survived in `mutate_places` because
+`mutate_places` had not been run."* The same sentence explains all three of
+these, and it explains why the FIX did not travel either: **a defect is fixed
+in the file where it was found, and the search for its siblings is a separate
+act that nobody scheduled.** F1 found a transcription defect in an assertion
+count, F2 found it in two suite counts, F3 found it in a date. This is the
+fourth instance of that family and the first where the remedy already existed
+and simply had not been copied.
+
+**What a phantom guard actually costs, which is why this is not cosmetic.**
+These harnesses now carry a BASELINE block: before applying a mutation they run
+the suite and record which guards are already red, so a mutation caught by a
+pre-existing failure is reported UNVERIFIED rather than verified. A phantom
+guard is an invented entry in that block. **A harness that invents a failing
+guard reports a green suite as partly red** — which is the one thing a mutation
+harness must never do quietly, because the whole instrument is an argument that
+the guards are watched.
+
+It has cost nothing yet, because a phantom only appears on a red run and these
+three have not had one since the BASELINE blocks were added. That is not
+reassurance. It is the same silence that hid it for five days.
+
