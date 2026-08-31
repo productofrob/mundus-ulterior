@@ -312,12 +312,35 @@ gains the `vme_quotation_cases: 2` it delivered under a distinction that did
 not exist when it was written. Restating a delivered plan to match what
 happened is the move this project refuses everywhere else.
 
-**The gold set is now counted, and that is the part with teeth at G3.** Until
-today the six lived only in the allocation plan; nothing counted the cases that
-actually exist. `ingest.verify` now classifies every
-`expect_quoted_from_original` case by the tier of the record it names and
-reports the split. Today that reads **4 choice / 2 whether-resolved**, which is
-the number FINDING 40 says a reader should have.
+**The gold set is now counted AS TWO LINES, and that is the part with teeth at
+G3.** This paragraph said something false when it was first written, and the
+correction is left in place rather than tidied away, because it is the ruling's
+own argument happening to the ruling.
+
+It said the six lived only in the allocation plan and that nothing counted the
+cases that exist. **`eval/test_answer_eval.py` has counted them since F1**, in a
+test whose own heading is *"the quoted-from-original quota, counted rather than
+assumed"* — written precisely so the number could not be transcribed into a
+document. It counted six.
+
+So the defect was never that nobody counted. **It is that the count was right
+and the READING was wrong, inside the suite built to stop a number being
+wrong** — which is a sharper statement of FINDING 40 than FINDING 40 made, and
+it means the misreading was sitting in the file nearest to G3.
+
+Both counters are now split, and the split is **imported from
+`ingest.fidelity`** rather than recomputed in each place, for
+`SOURCE_LANGUAGE_TIERS`' own reason: a rule spelled out twice is a rule that
+disagrees once. For one turn today there really were two counters and they
+really did disagree — `ingest.verify` read four and the gold suite read six.
+
+Today both read **4 asking WHICH chunk / 2 asking WHETHER anything resolved**,
+which is the number FINDING 40 says a reader should have.
+
+**And the reachability guard was reachable through the wrong records.** It
+counted `verbatim_machine_english` slots toward a quota those records cannot
+satisfy, reporting a target as attainable through the tier that cannot attain
+it. Its ceiling is now `QUOTATION_CHOICE_TIERS`.
 
 ---
 
@@ -684,15 +707,24 @@ records both as fixed. The second:
 > phantom guard named `ED (1)` beside the real ones, which the new BASELINE
 > block would have reported as a check that is already failing."*
 
-**Three other harnesses carried the identical defect and were not touched:**
+**Three other harnesses carried the identical defect LIVE and were not
+touched, and a fourth carries it latent:**
 
 ```
 scripts/mutate_ui_places.py   suite ends `FAILED (1)`      phantom `ED (1)`
 scripts/mutate_fidelity.py    suite ends `FAILED (5)`      phantom `ED (5)`
 scripts/mutate_ranking.py     suite ends `FAILED: <name>`  phantom `ED: <name>`
+scripts/mutate_part8.py       suite ends `N passed, N failed`   -- nothing to
+                              harvest, so the same code is harmless HERE
 ```
 
-All three fixed in F4, with the space.
+All four fixed in F4, with the space. **The fourth is the one worth the
+sentence.** `mutate_part8` is correct today only because
+`eval.test_answer_eval` happens never to print a line beginning `FAIL` that is
+not a guard. That is a property of the SUITE, not of the harness — and a
+harness whose correctness depends on what its suite chooses to print is a
+harness one `print` statement away from inventing a failing guard. It was made
+the same as the other three so that nobody has to establish this again.
 
 ## The mechanism, which is FINDING 37's own and one level up
 
@@ -718,3 +750,106 @@ It has cost nothing yet, because a phantom only appears on a red run and these
 three have not had one since the BASELINE blocks were added. That is not
 reassurance. It is the same silence that hid it for five days.
 
+
+
+---
+
+# FINDING 47 — a suite reported green in the commit that made it red, by the run that commit was about
+
+`eval.test_answer_eval` was **382 passed, 1 failed** on the host this morning,
+at `ea1b9ae`, before F4 had touched a line of it.
+
+```
+FAIL and the greedy archive is known two ways, both named:
+     ['assumed', 'reconstructed', 'recorded']
+```
+
+F3_RESULT reports, under the heading *"Suites, on the host, at the committed
+tree"*:
+
+```
+eval.test_answer_eval    383 passed / 0 failed   (377 before F3)
+```
+
+**Both statements are true and they are about different trees.**
+
+## What moved, and it was F3's own instrument
+
+The assertion read `bases == {"reconstructed", "assumed"}` — the set of ways a
+greedy run can be told which arm it ran on. It was true because **no greedy run
+had ever recorded its arm**: the field arrived in Block F, and the 165 runs
+carrying it are the sonnet arm, which this line filters out.
+
+Ruling 51 sent F3's mid-tranche floor reading to a **PROBE**: three required
+cases at three repetitions, archived to `eval/probes/`. Nine runs, on the greedy
+arm, at 14:58 UTC on 2026-08-31 — and, being new runs, **they record their
+arm.**
+
+```
+greedy archive, by basis:   assumed 115   reconstructed 396   recorded 9
+                                                              ^ the probe
+git log -1 -- eval/answer_runs/20260831T*.json
+    3010abd  F3 CLOSED: the handoff, and two findings the sub-tranche run produced
+```
+
+**The nine archives arrived in the same commit whose message reports this suite
+green.** The suite was run before the probe; the commit contains both.
+
+## Why this is not a scheduling slip
+
+`eval/probes/` was invented so a probe could not calibrate the floor **by
+construction rather than by being remembered** — ruling 51, and it worked
+exactly as designed. What nobody asked is what a probe does to everything ELSE
+that reads the archive, and the answer is that its per-run payloads land in
+`eval/answer_runs/` like any other run, because that is where
+`run_answer._archive` puts them. **The directory rule governs the SWEEP
+archive. It does not govern the run archive, and a census assertion over the
+run archive is downstream of both.**
+
+**This is ruling 49 one level up.** Ruling 49 exists because the rule deciding
+what may calibrate could not see the corpus a sweep ran at. Here a suite result
+was reported at a tree, and the archive it counts moved inside the commit that
+reported it. Same shape, same session — and the remedy ruling 49 chose is the
+remedy here: **a suite number in a result document should name the commit it
+was run at, and a suite run before the last thing that commit adds is not a
+suite run at that tree.**
+
+## The assertion was a frozen census, and that is the repairable part
+
+`bases == {"reconstructed", "assumed"}` is not a rule about the archive. It is
+a photograph of it. It was true when written and became false the moment this
+project did the thing it has been trying to do for two blocks — archive a run
+that says what it ran on. **An assertion that fails when the evidence improves
+has to be edited every time the system gets better, and an assertion nobody can
+edit without thinking is one somebody eventually edits without thinking.**
+
+Rewritten as three rules that do not expire:
+
+- both reconstruction and assumption are still exercised — the anti-vacuity the
+  original was for, kept as a subset test rather than an equality;
+- no fourth basis ever appears unnamed;
+- **a GREEDY run that records its arm is read from the row**, which is the
+  foreign-arm assertion turned around and could not be written until nine
+  greedy runs existed to make it assertable. That one gets STRONGER as the
+  archive grows.
+
+Plus a counted line rather than an asserted number: *9 greedy run(s) now RECORD
+their arm.*
+
+## What is NOT claimed
+
+F3 did not report a false number. It reported a true number about a tree that
+existed for twenty minutes, and F3_RESULT's suite table is among the most
+carefully assembled parts of that document. **The defect is that "at the
+committed tree" was written where "before the probe" was meant, and nothing in
+this repository can tell those apart** — FINDING 34's family, with the number
+correct and the PROVENANCE wrong.
+
+```
+eval.test_answer_eval    383 -> 388 assertions, 0 failed
+                         (one rewritten into three, plus the quota split's two)
+```
+
+**The sentence that travels: a probe was routed away from the sweep archive so
+it could not calibrate the floor, and it landed in the run archive and broke a
+census that the same commit reported as green.**
