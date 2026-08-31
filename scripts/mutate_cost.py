@@ -55,10 +55,17 @@ def _purge_bytecode() -> None:
 # anchored on one line: the same _check_record_entry call appears in the
 # `records` loop above it, and a target occurring twice resolves
 # first-occurrence-wins in silence.
+# RE-ANCHORED IN F4. This anchor is SOURCE TEXT, so it moves whenever the source
+# does: ruling 59 inserted its reinstatement block between the phase check and
+# `in_corpus`, and this mutation reported `MISS ... (target not found)` on the
+# next run. That is the harness working -- an anchor that no longer matches is
+# reported, never silently skipped -- and it is the standing cost of a harness
+# that patches text rather than behaviour. The line it removes is unchanged;
+# only the context that makes it unique has moved.
 PHASE_CHECK = (
     "        problems.extend(_check_record_entry(entry, where, max_span))\n"
     "\n"
-    "    in_corpus = sorted(set(retired_ids) & set(derived_tiers))"
+    "    # RULING 59, F4, 2026-08-31."
 )
 
 MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
@@ -346,8 +353,7 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "a retired row's phases stop being checked",
-        [(PHASE_CHECK,
-          "\n    in_corpus = sorted(set(retired_ids) & set(derived_tiers))")],
+        [(PHASE_CHECK, "\n    # RULING 59, F4, 2026-08-31.")],
     ),
     (
         "a retired term that is not a list is iterated anyway",
@@ -364,7 +370,10 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "the report stops saying a retired row is in no mean",
-        [('"here, counted in NO mean below.")', '"here.")')],
+        # RE-ANCHORED IN F4: ruling 59 split the retirement block in the
+        # report into retired rows and reinstated rows, and the sentence moved
+        # onto a different line.
+        [('f"named here, counted in NO mean below.")', 'f"named here.")')],
     ),
     (
         "the ledger no longer has to carry a retired list",
