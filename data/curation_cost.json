@@ -414,6 +414,45 @@
       "note": "",
       "retired_on": "2026-08-31",
       "because": "This record will never exist: it is not a record, it is a hunt that failed to find one. FINDING 38. Nine minutes of verbatim_machine_english hunting produced zero records, against 15.8 minutes that produced two verbatim_with_provenance records. Kept and named so that the cost of the tier the mix is short of is visible in the report rather than absent from it."
+    },
+    {
+      "record_id": "persia-vme-hunt-unresolved",
+      "tier": "",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 20.0,
+          "provenance": "estimated",
+          "because": "Two hunts, no record. Eliminated Kartir, the Pahlavi papyri and the Zoroastrian Pahlavi books on open English; then M 5794 I on Skjaervo's free PDF; then the Istanbul epitaph of Khurdad on de Blois 1990 via English Wikipedia. FINDING 41: the disqualifier was quality every time. Estimated, and structurally so -- the clock takes a record id and the hunt is what chooses one."
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "",
+      "retired_on": "2026-08-31",
+      "because": "Not a record: the second hunt in this tranche that found none. Kept and named so the cost of the tier the mix is short of stays in the report rather than disappearing with the records that were never written."
     }
   ],
   "retirement": {

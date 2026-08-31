@@ -777,6 +777,87 @@ change to `corpus_tiers.json`'s `target_mix` and to whatever derives it, and
 
 ---
 
+# FINDING 41 — `verbatim_machine_english` is a residue, not a target, and F3 allocated four of them
+
+F3's allocation asked for **four** `verbatim_machine_english` records. Two
+landed. The hunt for the other two produced three strong candidates and
+disqualified every one of them **on the same fact**:
+
+| candidate | why it is not vme |
+|---|---|
+| Kartir's inscriptions (KKZ/KNRb) | English on avesta.org and UCI Sasanika |
+| the Pahlavi papyri, Šahrestānīhā, Ardā Wīrāz, Bundahišn, Mādayān | all Englished |
+| **M 5794 I** — Mani's religion in every land and language | Skjærvø's English, free PDF on manichaeism.de |
+| **the Istanbul epitaph of Khurdād son of Ohrmazd-āfrīd** | de Blois 1990, quoted on English Wikipedia |
+
+Each was refused because **somebody had already translated it well and posted
+it**. Not because the text was weak — the last two are better records than
+most of what this corpus holds.
+
+## The tier's real definition, which is not the written one
+
+`corpus_tiers.json` says vme means *no published English translation*.
+`derive_record_tier` implements *this record carries no cited
+`translation_source`*. Those are not the same claim, and the gap between them
+is the curator.
+
+What a curator can actually establish is **"I did not find an English
+translation."** That is a property of the SEARCH, not of the text. Two
+curators of different skill, or the same curator on two different days,
+assign different tiers to the same inscription — and nothing in the pipeline
+can tell the difference, because the derivation only reads a field the curator
+filled in.
+
+So the tier cannot be hunted for. **You cannot search for the absence of a
+thing; you can only fail to find it, and then name the failure a tier.**
+
+## The two that landed did so on an accident
+
+seasia-06-kedukan-bukit and seasia-07-talang-tuo qualified because the English
+that circulates for them is UNATTRIBUTED — the article printing it names Coedes
+and de Casparis in a bibliography without saying whose English it prints. That
+is not a fact about the Old Malay. It is a fact about one Wikipedia editor's
+sourcing.
+
+Their DERIVED tier is stable: `translation_source` is empty and stays empty,
+so `check_declared_tiers` will agree with the sidecar forever. Their
+JUSTIFICATION is not. The day somebody attributes that translation, the
+records' written reason becomes false while every check in this repository
+continues to pass. **A declared-versus-derived agreement cannot see a reason
+going stale**, which is the one thing ruling 43's pattern was never built to
+catch.
+
+## The inverse correlation, which is the part that will not go away
+
+A text worth curating is a text worth translating. The properties that make a
+record valuable here — it is legible, it is dated, it says something about a
+connection — are the properties that got it translated into English by
+somebody, and being translated is the disqualifier. The tier is fed by
+obscurity and the corpus is trying to be interesting. Those pull in opposite
+directions, permanently, and no amount of hunting effort resolves it: more
+effort finds MORE English, not less.
+
+## What this does NOT say
+
+It does not say vme records are bad. Records 29 and 30 are good records and
+the tier they populate is the one that turns on the machine-translation path,
+which is a whole limb of this project. It says the tier is an OUTCOME and
+F3 wrote it into a plan as a QUOTA.
+
+## What F4 has to decide, stated so it is not re-derived
+
+Stop allocating vme slots. Allocate by REGION and by source-language coverage
+— things a curator can aim at — and let the tier fall out of what each record
+turns out to carry once the translation hunt is done. That is not a patch:
+`check_allocation` currently REFUSES an allocation whose tier totals differ
+from `by_tier_new`, and the mix at 60 declares 10 vme. Both would have to
+change, together, and the number that replaces the 10 is a floor of the form
+"at least N, and we will discover which records they are", not a target.
+
+Ruling 51's allocation is otherwise untouched. F3 delivers what it delivers.
+
+---
+
 # The trap this session walked into, recorded because it is a new mechanism
 
 **A mutation harness cannot be run through the bridge because of what the SUITE
@@ -811,6 +892,54 @@ pre-verification could not have shown. **The pre-verification agreed with the
 full harness this time and that is not a reason to trust it next time** — it
 would have agreed just as loudly if a guard elsewhere had been doing the work,
 because it never ran the guards that would have.
+
+---
+
+
+# Candidates banked, so F4 and F5 do not hunt cold
+
+Found while hunting F3's last two slots. None can be curated into F3 —
+each is either the wrong region for the remaining slots or the wrong tier —
+and all are recorded here with the reason they were passed over, because a
+candidate discarded silently is a hunt paid for twice.
+
+**Persia, `verbatim_with_provenance`, F5 (1 vwp + 1 vme):**
+
+- **The Istanbul epitaph of Khurdād son of Ohrmazd-āfrīd.** Middle Persian
+  Christian gravestone, Çapa district, Istanbul, found 1964 in a Byzantine
+  cemetery; dated early 8th to late 10th century, inside the window.
+  Transliteration and Persian translation: Nasrollahzadeh 1398, vol. 1, p. 248,
+  via parsigdatabase.com (Sasanian and post-Sasanian private inscriptions →
+  کتیبه‌های مسیحیان- استانبول; the site has NO per-record URL, the entry is
+  reachable only through the two selectors). English translation: de Blois
+  1990, quoted on English Wikipedia. **The strongest Persia candidate this
+  project has found.** Every other Persia record is a king on a monument; this
+  is a named private man from the village of Xišt in the rōstāg of Čaragān who
+  went to Rōm `pad ummēd xwāstārīh-kardan ī bār-xwadā ī mašīh` and was buried
+  there. The corpus is full of Roman objects moving east; this is a Persian
+  person moving west, in his own language, in the Roman capital.
+- **M 5794 I**, Boyce Reader text a — Mani's religion "manifest in every
+  country and in all languages". Transliteration Boyce 1975 p. 29; Persian
+  Mostafavi Kashani 1400; English Skjærvø, free PDF at manichaeism.de.
+
+**East Asia, F4 (2 + 1):**
+
+- **The Xi'an stele (Hsian Inscr)**, 781 CE — Middle Persian and Syriac in the
+  Tang capital. In parsigdatabase's private-inscriptions corpus. Region is
+  assigned by FINDSPOT in this corpus, which is why it is not a Persia record.
+
+**South Asia, F5:**
+
+- **The Quilon copper plates**, 849 CE, Kollam — Pahlavi signatures beside
+  Kufic and Hebrew.
+- **The Kānherī gunāh inscriptions** — Pahlavi graffiti in the Kanheri caves.
+
+**A source, not a candidate:** `parsigdatabase.com` carries four corpora
+(Zoroastrian Middle Persian, the Zand, private Sasanian and post-Sasanian
+inscriptions, and Manichaean texts) with Persian translations and free use on
+attribution. It refuses automated fetching, so every record from it costs a
+human pass. The private-inscriptions corpus is the one worth the pass: its
+texts are ordinary people, which no other Persian source in this project is.
 
 ---
 
@@ -858,3 +987,11 @@ UTC date is the thing a ninth session was just booked to buy.**
 quoted-from-original cases at 60 are four that ask WHICH chunk was quoted and
 two that ask only WHETHER anything resolved — and the tier that made them
 different is the one the plan says will become the common one.**
+
+**You cannot search for the absence of a translation. You can only fail to
+find one, and then call the failure a tier. Three candidates were refused in
+one session because somebody had already translated them well and posted them
+free.**
+
+**The two vme records this corpus holds qualified because one Wikipedia editor
+did not say whose English he was printing.**
