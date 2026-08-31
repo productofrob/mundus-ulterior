@@ -206,7 +206,12 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     notes.append(f"retrieval-eligible non-English chunks by language: {dict(langs)}")
 
     # 9. Docs and chunks line up.
-    check(len(docs) == 24, f"expected 24 documents, got {len(docs)}")
+    # F3, 2026-08-31. 24 -> 25 with the FIRST record of Block F, and raised in
+    # the same commit as the record that makes it true. F2 wrote the rule this
+    # obeys: "it is correct today and F3 breaks it on purpose, in the same
+    # commit as the records or not at all. Loosening it in advance is the floor
+    # lowered to what is currently passing."
+    check(len(docs) == 25, f"expected 25 documents, got {len(docs)}")
     orphans = {c.doc_id for c in chunks} - {d.doc_id for d in docs}
     check(not orphans, f"chunks reference unknown docs: {orphans}")
 
@@ -299,10 +304,17 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
         place_ids.update(p.cache_key for p in record_places if p.cache_key)
 
     notes.append(
+        # F3, 2026-08-31. This read "25/24 considered" the moment the corpus
+        # grew past G1's target, because a moving quantity was printed over a
+        # closed gate's constant. At 60 records it would have read "60/24".
+        # The denominator is now the corpus, and G1's target is stated beside
+        # it as the met target it is. Same defect as the sentence that read
+        # "nine archives, 396 runs" while the archives held 492: a constant
+        # paired with something that moves.
         f"W1 placements: {placed} placed + {declared_unplaceable} declared "
-        f"unplaceable = {placed + declared_unplaceable}/{G1_PLACED_TARGET} "
-        f"considered, "
-        f"{named}/{G1_NAMED_TARGET} with a named place, "
+        f"unplaceable = {placed + declared_unplaceable}/{len(docs)} "
+        f"considered (G1's target was {G1_PLACED_TARGET}, met), "
+        f"{named} with a named place (G1 wanted {G1_NAMED_TARGET}), "
         f"{len(place_ids)} distinct gazetteer ids, {contested} contested "
         f"(G1 criteria 1 and 3). Grounds: {dict(sorted(by_ground.items()))}. "
         f"Resolution is not checked here — run `python -m ingest.gazetteer --check`, "

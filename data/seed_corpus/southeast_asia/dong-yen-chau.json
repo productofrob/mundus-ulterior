@@ -1,0 +1,25 @@
+{
+  "id": "seasia-04-dong-yen-chau",
+  "region": "Southeast Asia",
+  "title": "Đông Yên Châu inscription — the nāga of the king (Old Cham, Pallava script)",
+  "source_type": "inscription",
+  "language_code": [
+    "ocm"
+  ],
+  "language_note": "Old Cham, written in Pallava script and stored here in the scholarly Latin transliteration in which it is published, not in the Pallava characters. This is the oldest attested text in any Austronesian language and the earliest direct evidence for the Chamic branch.",
+  "date": "c. 350 CE (4th century)",
+  "findspot": "Đông Yên Châu, a hamlet near Trà Kiệu, Duy Xuyên district, Quảng Nam province, Vietnam. Discovered 1936.",
+  "original_text_excerpt": "Siddham! Ni yang nāga punya putauv. Ya urāng sepuy di ko, kurun ko jemā labuh nari svarggah. Ya urāng paribhū di ko, kurun saribu thun davam di naraka, dengan tijuh kulo ko.",
+  "original_text_note": "Transliteration as published by Thurgood (1999), quoted in three lines as the edition prints them. The text is an imprecatory formula protecting the nāga of the king — most probably the guardian spirit of a spring or well, though the inscription does not say so and the identification is an editorial reading rather than a statement of the text. Note the shape of the language: `Siddham`, `nāga`, `svarggah`, `naraka` and `paribhū` are Sanskrit loans carried inside an Austronesian grammatical frame (`ni yang ... punya putauv`, `dengan tijuh kulo ko`). That mixture is the evidence this record exists for.",
+  "reference_translation": "Fortune! this is the divine serpent of the king. Whoever respects him, for him jewels fall from heaven. Whoever insults him, he will remain for a thousand years in hell, with seven generations of his family.",
+  "translation_source": "Graham Thurgood, 'From Ancient Cham to Modern Dialects: Two Thousand Years of Language Contact and Change' (Oceanic Linguistics Special Publication 28, University of Hawai'i Press, 1999). The 4th-century text is out of copyright; the reading and the English are the editor's and are quoted here with attribution, at the length the corpus already quotes Al-Jallad's Sabaic reading in arabia-04-jabal-dabub.",
+  "citation": "https://en.wikipedia.org/wiki/%C4%90%C3%B4ng_Y%C3%AAn_Ch%C3%A2u_inscription",
+  "notes": "FIRST RECORD OF BLOCK F, and the first record in this corpus curated with a cost clock running (data/curation_cost.json). NOT DIRECTLY ABOUT ROME, and admitted for a reason recorded here rather than assumed — the same treatment arabia-04-jabal-dabub already carries. Southeast Asia held ZERO records with retrieval-eligible source-language text, which is why all four of its gold cases sat on find records: the region's entire presence in this corpus was Roman objects excavated at Óc Eo and Khao Sam Kaeo, which is the maritime route seen only from its western end. This is the local voice of the same coast in the same centuries, and the Sanskrit loanwords inside its Austronesian grammar are that same Indian Ocean network arriving in language rather than in objects. RIGHTS: the Corpus of the Inscriptions of Campā (EFEO with ISAW/NYU, CC BY 3.0) was checked first and does not carry this inscription — C0174 is absent and the index runs C. 173 to C. 175 — so the permissive route was tried before the quotation route. THE SIMHAPURA IDENTIFICATION IS NOT ENCODED: Trà Kiệu is widely identified with the Cham capital Simhapura, that is an ancient-name question, a contested identification needs both sides on the record, and no gazetteer entry for Simhapura was resolved.",
+  "findspot_places": [
+    {
+      "name": "Đông Yên Châu (near Trà Kiệu, Duy Xuyên, Quảng Nam)",
+      "ground": "regional",
+      "note": "NO GAZETTEER ID RESOLVED, and the reason is the session rather than the place. No GeoNames dump is cached in this repository — data/gazetteer.json holds the licence blocks and the ids resolved in earlier blocks, and `--geonames-find` needs `--geonames-dump` — so no candidate could be examined, accepted or refused. The findspot is known more precisely than 'region': it is a named hamlet. `stated` requires a gazetteer_id and an authored coordinate is refused outright, so `regional` with this note is the encoding that records what can be resolved without asserting what cannot. The id can be added later without touching the text, the translation or the tier."
+    }
+  ]
+}

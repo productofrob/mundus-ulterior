@@ -34,7 +34,45 @@
     "n_note": "New records per tier, from data/corpus_tiers.json target_mix.by_tier_new. A trend over eight catalogue records is not a measurement anyone should stake 200 on, and min_n_to_read_as_a_trend is what stops the report drawing one."
   },
   "open_entry": null,
-  "records": [],
+  "records": [
+    {
+      "record_id": "seasia-04-dong-yen-chau",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 2.6,
+          "provenance": "estimated",
+          "because": "measured against seasia-04-vo-canh before the hunt had settled which record would exist; that row is retired (ruling 52) and these are the same minutes, re-filed as an estimate because a span measured against another record id is not a measurement of this one"
+        },
+        "rights_and_licence": {
+          "minutes": 0.3,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 4.8,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0.3,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 2.4,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 1.3,
+          "provenance": "measured"
+        }
+      },
+      "note": "PHASE BOUNDARIES, first record: rights_and_licence and placement read 0.3 min each because the work they name happened earlier under other clocks -- the Campa corpus's CC BY 3.0 was checked during source_hunting, and the gazetteer investigation that decided this record's placement ran under text_capture. The seven phases assume work arrives in phase order and investigation for a later phase routinely happens during an earlier one. The numbers are honest about when the clock ran and understate two phases. Not corrected by re-filing: nobody times a record twice, and moving measured minutes by estimate would be worse than leaving them where they were measured. authoring window 1: the record JSON, the manifest entry, the declared tier, the new language in answer.translate and the check-9 raise. The gold case is a second window. authoring window 2: the gold case, written against record 25 on the day it was curated. rework: two guards encoded 'the corpus is 24 records' and 'the column is empty' as invariants rather than as snapshots, and record 25 turned both red. Neither was named in advance the way ingest/verify.py check 9 was. Corrected so the claims survive a moving corpus: the tier histogram is counted over the ledger's excused seed set, and the excused list is now guarded as FROZEN -- a record excused after the column opened is the column being routed around, which nothing in this repository would otherwise notice."
+    }
+  ],
   "retired": [
     {
       "record_id": "seasia-04-vo-canh",

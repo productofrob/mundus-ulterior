@@ -37,6 +37,10 @@ from .cost import (
 from .fidelity import derive_record_tier
 from .loader import SEED_CORPUS_DIR, load_corpus
 
+# The tier declaration, read for its own count of the seed records so the
+# excused list and the histogram cannot disagree about how many there were.
+TIERS_FILE = Path(__file__).resolve().parent.parent / "data" / "corpus_tiers.json"
+
 # FINDING 10: this process's own stdout. Through a pipe or a redirect on
 # Windows it falls back to the locale codec, which cannot encode Greek, Tamil,
 # Chinese, Ge'ez or runic, and it raises mid-output with the file half written
@@ -515,13 +519,33 @@ def test_against_the_live_ledger():
         "GUARD the comparator on disk is the within-tranche one ruling 46 declared",
     )
 
-    # The column starts at record 25 and the seed 24 are excused, every one of
-    # them with a written reason. If a seed record ever acquires a minutes
-    # figure it was reconstructed, and a reconstructed baseline is exactly what
-    # ruling 46 refuses.
+    # CORRECTED 2026-08-31, by record 25 turning it red. This asserted `not
+    # doc.get("records")` -- that NOTHING had been timed -- which was true from
+    # F2 until the moment the column was used for the first time. It encoded
+    # "the column is empty" as an invariant when it was a state, and it would
+    # have gone red on the first record whatever that record was.
+    #
+    # What survives is the claim worth guarding, and it is now the stronger
+    # one. `not_timed` is the seed set: 24 records excused with a written
+    # reason, frozen on the day the column opened. **A record excused AFTER
+    # that is the column being routed around** -- a curator who does not want
+    # to time a record can satisfy check_ledger's coverage rule by excusing it
+    # instead, and nothing else in this repository would notice. The count is
+    # read from `measured_at_24`'s own arithmetic rather than written here as
+    # 24, so the two declarations have to agree.
+    tiers_doc = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
+    seed_count = sum(int(v) for v in tiers_doc["measured_at_24"].values())
+    excused = doc.get("not_timed") or {}
     expect(
-        not doc.get("records") and len(doc.get("not_timed") or {}) == len(derived),
-        "GUARD every seed record is excused from the column and none is timed",
+        len(excused) == seed_count,
+        "GUARD the excused list is FROZEN at the seed records the tier "
+        "declaration counts -- a record excused after the column opened is "
+        "the column being routed around",
+    )
+    expect(
+        not (set(excused) & {e.get("record_id") for e in doc.get("records") or []}),
+        "GUARD no seed record ever acquires a minutes figure, because a "
+        "reconstructed baseline is what ruling 46 refuses",
     )
 
 
@@ -534,7 +558,13 @@ def test_the_report_names_retired_rows():
     entry_retired.update({"retired_on": "2026-08-31",
                           "because": "the hunt these minutes measured is what "
                                      "ruled the source out"})
-    doc = ledger(retired=[entry_retired])
+    # `records=[]` is deliberate, and it is not tidiness. With records in the
+    # ledger, format_report reaches trend_line -- and the EXISTING mutation
+    # that removes trend_line's floor check then makes this fixture CRASH
+    # rather than print the wrong thing, which mutate_cost correctly reports as
+    # "crash, not a guard failure" and not as a pass. A fixture for the
+    # retirement block should exercise the retirement block.
+    doc = ledger(records=[], retired=[entry_retired])
     text = "\n".join(format_report(doc, {"by_tier_at_60": {}}))
     expect("z-99" in text,
            "GUARD the report NAMES a retired row rather than subtracting it")
@@ -544,7 +574,7 @@ def test_the_report_names_retired_rows():
            "GUARD the report says a retired row is in no mean, so a reader "
            "cannot take it for a timed record")
 
-    quiet = "\n".join(format_report(ledger(), {"by_tier_at_60": {}}))
+    quiet = "\n".join(format_report(ledger(records=[]), {"by_tier_at_60": {}}))
     expect("retired rows" not in quiet,
            "GUARD a ledger with nothing retired prints no retirement block")
 

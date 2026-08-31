@@ -479,12 +479,34 @@ def test_against_the_live_corpus():
     # policy was declared, and it is what the target mix is arithmetic over.
     # If it drifts, every target above it is denominated in a corpus that is
     # not the one on disk -- FINDING 14's shape, one level up.
+    # CORRECTED 2026-08-31, by record 25 turning it red. This counted the LIVE
+    # corpus and compared it to `measured_at_24`, which made "the corpus is 24
+    # records" an invariant when it is a SNAPSHOT -- taken at digest 26e4a683
+    # on the day F1 declared the policy, and the thing every target in the file
+    # is arithmetic over. The first record of Block F is precisely the event
+    # that was always going to break it, and nothing named it in advance the
+    # way `ingest/verify.py` check 9 was named.
+    #
+    # The seed set is the ledger's `not_timed`: F2 defined it as the 24 records
+    # excused from the column with a written reason, and check_ledger refuses a
+    # record that is both timed and excused. So the histogram is counted over
+    # exactly those, and it stays a fact about the corpus the policy was
+    # declared over however far the corpus moves past it.
+    ledger = json.loads(
+        (TIERS_FILE.parent / "curation_cost.json").read_text(encoding="utf-8"))
+    seed = set(ledger.get("not_timed") or {})
     actual: dict[str, int] = {t: 0 for t in RECORD_TIERS}
-    for t, _reason in derived.values():
-        actual[t] = actual.get(t, 0) + 1
+    for doc_id, (t, _reason) in derived.items():
+        if doc_id in seed:
+            actual[t] = actual.get(t, 0) + 1
     expect(
         actual == {k: int(v) for k, v in doc["measured_at_24"].items()},
         "GUARD the measured histogram the target mix is arithmetic over still holds",
+    )
+    expect(
+        len(seed) == sum(int(v) for v in doc["measured_at_24"].values()),
+        "GUARD the seed set the histogram is counted over is the 24 the "
+        "declaration names, and has not grown",
     )
 
 

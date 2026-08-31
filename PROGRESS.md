@@ -13104,6 +13104,42 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **RECORD 25 EXISTS. The corpus is 25 records and the digest has moved.**
+  `seasia-04-dong-yen-chau` — the Đông Yên Châu inscription, Old Cham in
+  Pallava script, c. 350 CE, the oldest attested text in any Austronesian
+  language — is the first record this project has added since Part 7 and the
+  first ever curated with a clock running. **Southeast Asia goes from ZERO
+  source-language records to one**, which is why all four of its gold cases
+  sat on find records. `ingest/verify.py` check 9 is raised 24 → 25 in the
+  same commit as the record, which is the only way F2 permitted it to move.
+  The record derives `verbatim_with_provenance` from its own content.
+  **11.7 minutes**, and the report prints what ruling 48 asked it to: 9.1
+  measured, 2.6 estimated, 22% remembered, decomposed across all seven phases,
+  `NOT A TREND (n=1, floor 10)`, and `NOT YET A COST CLAIM` because the mix is
+  unmet. Every one of those sentences was written before the first minute was
+  timed.
+- **A new language costs a declaration in two modules, and it fails at the
+  WRONG END.** `ocm` had to be added to `answer.translate.LANG_NAMES` and
+  `TRANSLITERATED_LANGS`, or `retrieve.render.required_script` raises and
+  ruling 12 renders every query into every non-English index language — so the
+  failure lands at `eval.run_ranking_check`, not at ingest. Every sub-tranche
+  that introduces a language pays this, and F4–F7 introduce several.
+- **Two guards encoded a frozen corpus as an invariant, and record 25 turned
+  both red.** `GUARD the measured histogram the target mix is arithmetic over
+  still holds` counted the LIVE corpus against `measured_at_24`, which is a
+  SNAPSHOT taken at digest 26e4a683; it now counts over the ledger's excused
+  seed set. `GUARD every seed record is excused from the column and none is
+  timed` asserted the column was EMPTY, true from F2 until the column was
+  first used. What replaced it is stronger: **the excused list is frozen, and
+  a record excused after the column opened is the column being routed
+  around** — a curator who does not want to time a record can satisfy
+  coverage by excusing it, and nothing else here would notice. Neither guard
+  was named in advance the way check 9 was, and both were rework by ruling
+  47's definition, clocked as such.
+- **`verify`'s placement note read `25/24 considered`** the moment the corpus
+  passed G1's target, because a moving quantity was printed over a closed
+  gate's constant. At 60 it would have read `60/24`. Same defect as the
+  sentence that read "nine archives, 396 runs" while the archives held 492.
 - **RULING 52, and the column opened.** `cost_log start seasia-04-vo-canh
   source_hunting` at 08:18 UTC is the first curation minute this project has
   ever recorded. The hunt those minutes measured is what ruled Võ Cạnh out —
