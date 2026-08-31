@@ -1,7 +1,7 @@
 {
   "corpus_name": "Mundus Ulterior Phase 1 Part 2 — Seed Corpus",
   "generated": "2026-08-09",
-  "total_documents": 26,
+  "total_documents": 27,
   "regions": [
     "Arabia",
     "East Asia",
@@ -370,6 +370,19 @@
       "path": "southeast_asia/my-son-b6.json",
       "has_reference_translation": true,
       "citation": "https://isaw.nyu.edu/publications/inscriptions/campa/inscriptions/C0087.html"
+    },
+    {
+      "id": "scandinavia-05-thorsberg-chape",
+      "region": "Scandinavia",
+      "title": "Thorsberg chape — Proto-Norse runes on a Roman-style scabbard fitting, c. 200 CE",
+      "source_type": "inscription",
+      "language_code": [
+        "gmq-pro"
+      ],
+      "date": "c. 200 CE",
+      "path": "scandinavia/thorsberg-chape.json",
+      "has_reference_translation": true,
+      "citation": "https://en.wikipedia.org/wiki/Thorsberg_chape"
     }
   ]
 }

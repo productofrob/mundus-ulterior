@@ -207,6 +207,10 @@ Ruling 49 is the one to read before archiving or quoting any sweep run after
 record 25. Ruling 51 is the one to read before running anything at a
 sub-tranche.
 
+FINDING 38 is the one to read before hunting a verbatim_machine_english
+record: publishing an inscription means translating it, so the tier cannot be
+filled from English-language scholarship at all.
+
 FINDING 35 is the one to read before quoting a number out of a document
 rather than out of a tool: *"nine archives, 396 runs"* had been copied
 since Block E, and the archives hold 492.

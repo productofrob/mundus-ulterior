@@ -13104,6 +13104,51 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **RECORD 27: `scandinavia-05-thorsberg-chape`, and it is the first record
+  curated DELIBERATELY to be gloss-capable.** Proto-Norse runes, c. 200 CE, on
+  a scabbard chape of Roman military pattern from the Thorsberg votive
+  deposit — Roman form, Proto-Norse text, which is the distinction between a
+  region that received Roman goods and one that answered them. The mechanical
+  requirement is that a genuine alternative reading AND a statement that the
+  reading is uncertain both sit in a RETRIEVAL-ELIGIBLE chunk, and only
+  `original_text_excerpt` and `reference_translation` are chunked — so both are
+  in the translation, on purpose, which is exactly what records 25 and 26
+  missed. Gloss-capable declared **1/8**. It also carries the FOURTH gloss
+  case in a set that had three since Part 8: the arm is starved, its
+  instruments were proved to work by the sonnet arm, and the supply of
+  gloss-capable records is the binding constraint.
+- **The column is now 51% REMEMBERED, at n=3.** Ruling 48 exists so that a
+  column built mostly out of recollection cannot be read as one that was
+  measured, and it now is mostly recollection. Two causes, both procedural and
+  both recorded on the rows: pre-selection hunting cannot be clocked against a
+  record id the hunt has not chosen, and on record 27 `authoring` read 0.0
+  because start and stop were issued in a SINGLE command — so the clock spanned
+  the command and not the work, which happens between calls. The second is
+  fixable and the fix is to separate start and stop across calls.
+- **FINDING 38: `verbatim_machine_english` assumes a supply that publishing
+  destroys.** Nine candidates across three source families, not one of them a
+  vme record. The Campā corpus supplies English BY DESIGN — it is
+  English-language scholarship, superb for `verbatim_with_provenance` and
+  structurally not a vme source — and its one French-only entry is dated 1230s,
+  outside the window. Cœdès translated all three famous Srivijaya inscriptions;
+  the fame and the translation are the same fact. **Publishing an inscription
+  means editing AND translating it**, so the supply the tier assumes is
+  destroyed by the same act that makes a text available. That is general, not
+  Southeast Asian: the mix allocates TEN vme records on the assumption that
+  machine English is the common case, and F3's evidence says the common case is
+  the published translation. The tier is not unfillable — it cannot be filled
+  from English-language scholarship, and the routes left (Dutch editions of Old
+  Javanese charters, in-window French-only Campā entries, Thai and Vietnamese
+  institutional databases) each cost more per record than any record curated so
+  far. **15.8 minutes produced two vwp records; ~11 minutes of vme hunting
+  produced zero.**
+- **A hunt that produces NO record has nowhere to go in the ledger**, and
+  ruling 52 does not cover it. Its retired rows are for hunts that produced a
+  DIFFERENT record and are re-filed onto the one that landed. A hunt that lands
+  nothing has no record id to re-file onto and no clock could have been started
+  against it. Nine minutes went in as a retired row whose record will never
+  exist — which is what `retired` was built to hold — so that the cost of the
+  tier the mix is short of is visible in the report rather than absent from it.
 - **THE DELIVERY CHECK, and the gap it closed was found by two records rather
   than by a check.** `check_allocation` guards the PLAN — eleven branches of
   arithmetic over a table of slots — and nothing guarded DELIVERY. Two records

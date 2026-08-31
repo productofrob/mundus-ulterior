@@ -562,6 +562,90 @@ harness anyone can quote.
 
 ---
 
+# FINDING 38 — `verbatim_machine_english` assumes a supply that publishing destroys
+
+`PHASE2_PLAN` F3-F7 predicts, and ruling 44 allocates ten of the thirty-six
+records against:
+
+> *"Local non-English sources mostly will not have published English, so
+> `resolve_english` starts choosing `machine` and the Part 6 confidence
+> machinery goes from dormant to load-bearing."*
+
+**For published epigraphy that prediction inverts.** Nine candidates were
+examined across three source families and not one of them is a
+`verbatim_machine_english` record:
+
+```
+the Campa corpus (8 entries sampled)   C. 1, 79, 86, 87, 117, 137, 173, and
+                                       the full index of 52
+  -> supplies English BY DESIGN. It is an English-language scholarly
+     publication of EFEO with ISAW/NYU. Superb verbatim_with_provenance
+     material -- record 26 is one -- and structurally not a vme source.
+  -> the ONE French-only entry found, C. 86, is Old Cam and dated 1230s.
+     Outside the window by three decades.
+
+famous Srivijaya inscriptions          Kedukan Bukit, Talang Tuo, Kota Kapur
+  -> Coedes translated all three. The fame and the translation are the same
+     fact: these are the texts everyone cites BECAUSE somebody edited and
+     translated them.
+
+Old Javanese                           Sojomerto
+  -> no complete transliteration published in an accessible form, so there is
+     nothing to quote even as a source text.
+```
+
+## The mechanism, and it is not about Southeast Asia
+
+**Publishing an inscription means editing AND translating it.** A text
+reachable enough to curate is a text somebody has already translated; a text
+nobody has translated is usually a text nobody has published, and an
+unpublished text cannot be curated either. The supply the tier assumes is
+destroyed by the same act that makes a text available at all.
+
+That is a general claim and it will hold in Persia, Scandinavia and Africa too.
+The mix allocates **ten** vme records against **fourteen**
+verbatim_with_provenance, on the assumption that the machine-English case is
+the COMMON one. F3's evidence says the opposite: the common case is the
+published translation, and machine English is what you reach when you leave
+English-language scholarship.
+
+## What it does NOT mean
+
+The tier is not unfillable. It cannot be filled from English-language
+scholarship, which is where a hunt naturally goes first and where every one of
+this session's nine candidates came from. The routes that remain are non-English
+publication: Dutch editions of Old Javanese charters, French-only entries in
+the Campa corpus that fall inside the window, and the Thai and Vietnamese
+institutional inscription databases. **Each costs more per record than any
+verbatim_with_provenance record has cost**, which is a claim this project can
+now put a number on rather than assert.
+
+## The number, and the hole it exposed in the ledger
+
+```
+2 verbatim_with_provenance records   15.8 min   CURATED
+the vme hunt                         ~11 min    ZERO records
+                                     1.7 measured (retired: seasia-06-talang-tuo)
+                                     9.0 estimated (retired:
+                                                    seasia-vme-hunt-unresolved)
+```
+
+Getting that second figure into the ledger at all exposed a gap ruling 52 does
+not cover. **A hunt that produces no record has nowhere to go.** The retired
+rows the ruling created are for hunts that produced a DIFFERENT record -- they
+are re-filed onto the record that landed. A hunt that lands nothing has no
+record id to be re-filed onto, no clock could have been started against it, and
+nine minutes of real Block F curation cost would have left the column in
+silence.
+
+It is recorded as a retired row whose record will never exist, which is exactly
+what `retired` was built to hold, and the reason field says so. **The cost of
+the tier the mix is short of is now visible in the report rather than absent
+from it** -- which is the difference between a kill trigger that can see the
+problem and one that cannot.
+
+---
+
 # The trap this session walked into, recorded because it is a new mechanism
 
 **A mutation harness cannot be run through the bridge because of what the SUITE

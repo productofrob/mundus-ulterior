@@ -38,6 +38,7 @@
     "scandinavia-02-gudme-hoard": "catalogue_record",
     "scandinavia-03-vimose": "verbatim_with_provenance",
     "scandinavia-04-illerup-adal": "catalogue_record",
+    "scandinavia-05-thorsberg-chape": "verbatim_with_provenance",
     "seasia-01-oc-eo-medallion": "catalogue_record",
     "seasia-02-oc-eo-site": "catalogue_record",
     "seasia-03-khao-sam-kaeo": "catalogue_record",
@@ -302,7 +303,9 @@
         }
       ]
     },
-    "gloss_capable_declared": [],
+    "gloss_capable_declared": [
+      "scandinavia-05-thorsberg-chape"
+    ],
     "why_gloss_capability_is_DECLARED": "Because it cannot be derived. what_gloss_capable_MEANS_mechanically defines it as a hedged reading AND a statement that the reading is uncertain, both inside a RETRIEVAL-ELIGIBLE chunk -- and only original_text_excerpt and reference_translation are chunked, which is the trap this list exists to make visible. Whether a passage hedges is a judgement about prose and no classifier here can read it, so the declaration is the claim and ingest.fidelity.check_delivery guards everything mechanical about it: that the record is one this tranche curated, that its tier can carry a gloss case at all, that the count does not exceed the quota, and that the quota is still REACHABLE from the slots the allocation has left. EMPTY AT F3 RECORD 26, and that is the finding this list was added for: two records were curated and neither carries its hedge in a chunked field, because the hedge was written into original_text_note, which the loader does not chunk."
   },
   "how_curation_cost_is_reported": "PER TIER, and against this mix. See ruling 45: G3's box 'curation cost per record recorded and trending down' is satisfiable by curating cheaper records, and the tier is the only thing that makes the number readable.",

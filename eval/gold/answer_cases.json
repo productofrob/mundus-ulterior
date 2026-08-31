@@ -1063,6 +1063,47 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD. Written on the day the record was curated, so its first result is a measurement and not a regression, and deliberately in NO floor state: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
       "note": "The second content group is the discriminator and every member of it is Sanskrit that the English does not contain. The first group admits three spellings of one name because matching is case-insensitive and whitespace-collapsing but NOT punctuation-insensitive, and a case must say which spelling it accepts rather than let the matcher decide. The question names the stela rather than Champa or Mỹ Sơn, because match_case returns the FIRST case whose question matches and Southeast Asia now carries five."
+    },
+    {
+      "id": "thorsberg-chape-reading",
+      "question": "What does the runic inscription on the Thorsberg chape say, and is the reading agreed?",
+      "why": "THE GLOSS ARM IS STARVED AND THIS IS THE FIRST CASE WRITTEN TO FEED IT. F1_START records three gloss cases against twenty-two answerable as a fact about the seed corpus rather than a defect: this corpus holds very few texts whose READING is genuinely in dispute. The sonnet arm then proved the assertions discriminate rather than being impossible — vimose-runes went 0/12 to 5/5 with a real hedged gloss — so the arm's instruments work and the supply of gloss-capable RECORDS is the binding constraint. corpus_tiers.json says the only moment that can be fixed is while the records are being chosen, and scandinavia-05-thorsberg-chape was chosen for it. The question asks the second half outright — 'is the reading agreed' — because a gloss case tests whether the answer will SHOW a disputed reading and mark it as disputed, and a question that does not ask leaves the model free to pick one and sound certain.",
+      "expected_behaviour": "refusable_with_gloss",
+      "region": "Scandinavia",
+      "expect_cited_docs": [
+        "scandinavia-05-thorsberg-chape"
+      ],
+      "expect_quoted_docs": [
+        "scandinavia-05-thorsberg-chape"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "owlþuþewaz",
+          "wulþuþewaz",
+          "Wolthuthewaz",
+          "Wulthuthewaz"
+        ],
+        [
+          "niwajemariz",
+          "niwajmariz",
+          "renowned"
+        ]
+      ],
+      "expect_hedge_any": [
+        [
+          "disputed",
+          "is possible",
+          "no single reading",
+          "uncertain",
+          "not established"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts. It is the FOURTH gloss case in a set that had three, and the first added since the corpus began moving.",
+      "note": "The hedge group is drawn from words the record's own reference_translation contains — 'disputed', 'It is possible', 'No single reading is established' — because expect_hedge_any is scored as one more alternatives group and a hedge the corpus cannot support is a case that can never pass. That is corpus_tiers.json's own sentence about what gloss-capable means mechanically, applied to the case rather than to the record. The second content group admits 'renowned' alone: both published readings agree the epithet is there and disagree about whose it is, so requiring the disagreement in group one and the agreement in group two is what makes the case test the gloss rather than the vocabulary."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

@@ -109,6 +109,44 @@
         }
       },
       "note": "text_capture: stanza I of Face A, the English beside it, and the edition's own restoration brackets kept rather than normalised. authoring: the gold case. PLACEMENT reads 0 and is not zero work: the findspot block was written inside the text_capture window, and moving those minutes here by estimate would double-count what was already measured there. Same phase-boundary caveat as seasia-04-dong-yen-chau."
+    },
+    {
+      "record_id": "scandinavia-05-thorsberg-chape",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "because": "pre-selection hunting cannot be clocked against a record id the hunt has not chosen -- the same fact the two retired rows above demonstrate twice. Filed directly as an estimate rather than through a third retirement that would say nothing new. Covers the choice of Thorsberg over Paikuli and the check that its reading is genuinely contested in the literature."
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 0.6,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 2.5,
+          "provenance": "estimated",
+          "because": "the clock read 0.0 because start and stop were issued in a SINGLE command, so it spanned the command and not the work -- the case was composed between calls, where no clock is running. A measurement artefact of how this session curates, not a phase that took no time, and ruling 47's zero means the latter. Recorded as an estimate because the weaker provenance wins (ruling 48) and because the span was never measured."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "text_capture: the two sequences, the competing divisions, and the uncertainty statement placed in reference_translation ON PURPOSE, because only that field and original_text_excerpt are chunked. authoring: the gold case, and it is a refusable_with_gloss -- the fourth in a set that had three."
     }
   ],
   "retired": [
@@ -187,6 +225,83 @@
       "note": "",
       "retired_on": "2026-08-31",
       "because": "The hunt these minutes measured moved off Kedukan Bukit and onto C. 87. Wikipedia's English translation of Kedukan Bukit is UNATTRIBUTED -- the article names Coedes 1930 and de Casparis 1975 in its bibliography but does not say whose English it prints -- and verbatim_with_provenance requires a published translation that is CITED. Attributing an anonymous translation would have put a name in translation_source that no page supports. The Campa corpus carries C. 87 with an English translation, a named editor and an explicit CC BY 3.0 licence, so the record that lands is seasia-05-my-son-b6."
+    },
+    {
+      "record_id": "seasia-06-talang-tuo",
+      "tier": "",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 1.7,
+          "provenance": "measured"
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "",
+      "retired_on": "2026-08-31",
+      "because": "Talang Tuo's English translation IS attributed -- to Coedes -- so it is verbatim_with_provenance material, and Southeast Asia's two vwp slots are already filled by records 25 and 26. check_delivery would refuse it as over-delivery. These minutes measured a hunt for a verbatim_machine_english record and found, across six candidates, that Southeast Asia's published epigraphy does not contain one: see the finding recorded in PROGRESS.md."
+    },
+    {
+      "record_id": "seasia-vme-hunt-unresolved",
+      "tier": "",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "because": "RECONSTRUCTED, not clocked, and the reason it was not clocked is the point: this hunt produced NO record, so there was no record id to start a clock against. The two retired rows above cover hunts that produced a DIFFERENT record; a hunt that produces nothing at all has nowhere in this ledger to go, and 9 minutes of real Block F curation cost would otherwise leave the column silently. Nine is a reconstruction of wall time across nine candidates in three source families -- the Campa corpus index and seven of its entries, three Srivijaya inscriptions, and one Old Javanese candidate -- and it is deliberately conservative."
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "",
+      "retired_on": "2026-08-31",
+      "because": "This record will never exist: it is not a record, it is a hunt that failed to find one. FINDING 38. Nine minutes of verbatim_machine_english hunting produced zero records, against 15.8 minutes that produced two verbatim_with_provenance records. Kept and named so that the cost of the tier the mix is short of is visible in the report rather than absent from it."
     }
   ],
   "retirement": {
