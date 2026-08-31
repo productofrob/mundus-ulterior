@@ -39,6 +39,7 @@ from .fidelity import (
     check_declared_tiers,
     check_paraphrase_flags,
     check_target_mix,
+    split_quotation_cases,
     derive_record_tier,
 )
 from .loader import SEED_CORPUS_DIR, load_corpus
@@ -429,6 +430,65 @@ def test_allocation():
         any("expect_quoted_from_original" in p
             for p in check_allocation(broken, at24, sl24)),
         "GUARD an allocation writing fewer quoted-from-original cases than the mix requires is refused",
+    )
+
+    # RULING 56, F4. The quotation quota is two questions under one name, and
+    # the four assertions below are the four ways the split can be undone: by
+    # writing choice cases where nothing competes, by never declaring the second
+    # line, by writing more of it than there are records to carry it, and by
+    # classifying a case from the plan instead of from the record it names.
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][0]["slots"] = [
+        {"region": "Southeast Asia", "tier": "verbatim_machine_english", "n": 8}
+    ]
+    broken["allocation"]["sub_tranches"][0]["expect_quoted_from_original_cases"] = 2
+    expect(
+        any("for it to be preferred over" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD quoted-from-original cases allocated to a sub-tranche with no "
+        "record holding both an original and a published English are refused",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    del broken["allocation"]["sub_tranches"][1]["vme_quotation_cases"]
+    expect(
+        any("declares no vme_quotation_cases" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD a sub-tranche that declares no vme_quotation_cases is refused, "
+        "because a zero it was given by default is a decision nobody made",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][3]["vme_quotation_cases"] = 3
+    expect(
+        any("verbatim_machine_english slot(s)" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD vme quotation cases allocated over a sub-tranche's "
+        "verbatim_machine_english slots are refused",
+    )
+
+    # The reading, not the plan. FINDING 40: a quota counts cases and assumes
+    # the cases are the same case.
+    split = split_quotation_cases(
+        [("choice-case", ["a-vwp"]),
+         ("resolved-only", ["b-vme"]),
+         ("both", ["b-vme", "a-vwp"]),
+         ("nowhere", ["c-gone"])],
+        {"a-vwp": "verbatim_with_provenance",
+         "b-vme": "verbatim_machine_english",
+         "d-cat": "catalogue_record"},
+    )
+    expect(
+        split["choice"] == ["choice-case", "both"]
+        and split["whether_resolved"] == ["resolved-only"],
+        "GUARD a quotation case is classified by the TIER OF THE RECORD it "
+        "names, and one naming any record that holds a competing English asks "
+        "the which-chunk question",
+    )
+    expect(
+        split["untiered"] == [("nowhere", ["c-gone"])],
+        "GUARD a quotation case naming a record this corpus does not hold is "
+        "counted in neither line rather than in the flattering one",
     )
 
     broken = json.loads(json.dumps(mix))

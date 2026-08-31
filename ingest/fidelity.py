@@ -493,6 +493,28 @@ GLOSS_CAPABLE_TIERS = frozenset(
     {"verbatim_with_provenance", "published_translation_only", "catalogue_record"}
 )
 
+# Ruling 56, F4, 2026-08-31. The tiers on which an `expect_quoted_from_original`
+# case asks WHICH CHUNK was quoted, rather than WHETHER anything resolved.
+#
+# The assertion is built from resolved quote spans whose `source_field` is
+# `original_text_excerpt`. That is a CHOICE only where a second retrieval-
+# eligible chunk is competing for the quotation, and exactly one tier holds
+# both an original and its published English: `verbatim_with_provenance`.
+# `published_translation_only` has no original to prefer, `catalogue_record` has
+# neither, and on `verbatim_machine_english` the only English lives in
+# `current_translations`, which is not a corpus field, so a quotation of it
+# cannot resolve to characters on disk at all and the assertion is satisfied by
+# any resolved quotation whatsoever.
+#
+# FINDING 40 measured the difference the name hides: across 16 archived runs of
+# chinese-da-qin, 45 of 45 resolved quotations came from the English while the
+# source chunk sat at [S1]. That is the defect the assertion was invented to
+# see, and it is unobservable on a record with one chunk.
+#
+# Held in code beside GLOSS_CAPABLE_TIERS, and for its reason: it is a rule and
+# not a number, and a mutation has to be able to break it.
+QUOTATION_CHOICE_TIERS = frozenset({"verbatim_with_provenance"})
+
 REGION_COUNT = 7
 
 
@@ -738,17 +760,102 @@ def check_allocation(
                 f"a tier that can carry a gloss case"
             )
 
+    # Ruling 56. Two lines, because they are two questions. The first counts
+    # cases that ask WHICH chunk was quoted and may only be written where a
+    # second chunk competes; the second counts cases on records where nothing
+    # competes, and is capacity-capped and REPORTED rather than floored.
     quoted = sum(int(t.get("expect_quoted_from_original_cases") or 0)
                  for t in tranches)
     want_quoted = int(mix.get("min_expect_quoted_from_original_cases_at_60") or 0)
     if quoted < want_quoted:
         problems.append(
             f"the allocation writes {quoted} expect_quoted_from_original "
-            f"case(s) and the mix requires {want_quoted}. One case is a "
-            f"measurement of whether the answer path quotes THAT source text"
+            f"case(s) on records that hold a reference_translation and the mix "
+            f"requires {want_quoted}. One such case is a measurement of "
+            f"WHICH chunk the answer path quoted; the same words on a "
+            f"verbatim_machine_english record ask only whether anything "
+            f"resolved, and are counted on their own line"
+        )
+
+    for index, tranche in enumerate(tranches):
+        capacity = sum(
+            int(slot.get("n") or 0) for slot in (tranche.get("slots") or [])
+            if str(slot.get("tier")) in QUOTATION_CHOICE_TIERS)
+        if int(tranche.get("expect_quoted_from_original_cases") or 0) > capacity:
+            problems.append(
+                f"{names[index] or index}: "
+                f"{tranche.get('expect_quoted_from_original_cases')} "
+                f"quoted-from-original case(s) allocated over {capacity} slot(s) "
+                f"on a tier that carries both an original and a published "
+                f"English for it to be preferred over"
+            )
+
+        # PRESENCE, not a value. An absent field is a sub-tranche that never
+        # decided, and a zero it was given by `or 0` is a decision nobody made.
+        # This is the guard with teeth on this line: the aggregate below is a
+        # declared zero, for the reason ruling 56 gives.
+        vme_cases = tranche.get("vme_quotation_cases")
+        if vme_cases is None:
+            problems.append(
+                f"{names[index] or index}: declares no vme_quotation_cases. "
+                f"Ruling 56 splits the quotation quota in two and a sub-tranche "
+                f"that names only one of them is a sub-tranche whose cases land "
+                f"in whichever line reads better afterwards"
+            )
+            continue
+        vme_capacity = sum(
+            int(slot.get("n") or 0) for slot in (tranche.get("slots") or [])
+            if str(slot.get("tier")) == "verbatim_machine_english")
+        if int(vme_cases or 0) > vme_capacity:
+            problems.append(
+                f"{names[index] or index}: {vme_cases} vme quotation case(s) "
+                f"allocated over {vme_capacity} verbatim_machine_english slot(s)"
+            )
+
+    vme_total = sum(int(t.get("vme_quotation_cases") or 0) for t in tranches)
+    want_vme = int(mix.get("min_vme_quotation_cases_at_60") or 0)
+    if vme_total < want_vme:
+        problems.append(
+            f"the allocation writes {vme_total} vme quotation case(s) and the "
+            f"mix requires {want_vme}"
         )
 
     return problems
+
+
+def split_quotation_cases(
+    cases: "list[tuple[str, list[str]]]", tiers: "dict[str, str]",
+) -> "dict[str, list]":
+    """Read the gold set's quotation cases as the two questions they ask.
+
+    Ruling 56, F4. Until today the six lived only in the allocation PLAN and
+    nothing counted the cases that actually exist -- so the number a reader
+    takes to G3 was a number nobody had classified. FINDING 40's correction is
+    a reading, and a reading nothing computes is a reading that decays.
+
+    `cases` is (case id, the doc_ids its expect_quoted_from_original names).
+    A case naming several records is counted as `choice` if ANY of them can
+    carry the choice, because one competing pair of chunks is enough to make
+    the assertion discriminate.
+
+    The direction is why this is worth computing every run: the plan predicts
+    verbatim_machine_english becomes the common tier, and every vme record
+    supplies a case that passes by construction. The count therefore gets
+    EASIER to satisfy as the thing it measures gets harder to observe, and it
+    drifts silently, because the count is the only thing anyone reads.
+    """
+    split: dict[str, list] = {"choice": [], "whether_resolved": [], "untiered": []}
+    for case_id, doc_ids in cases:
+        known = [d for d in doc_ids if d in tiers]
+        unknown = [d for d in doc_ids if d not in tiers]
+        if unknown:
+            split["untiered"].append((case_id, sorted(unknown)))
+            continue
+        if any(tiers[d] in QUOTATION_CHOICE_TIERS for d in known):
+            split["choice"].append(case_id)
+        else:
+            split["whether_resolved"].append(case_id)
+    return split
 
 
 def check_delivery(

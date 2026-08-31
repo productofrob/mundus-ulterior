@@ -272,6 +272,41 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         "a lift may name a flag the manifest does not carry",
         [("    if stray:", "    if False:")],
     ),
+    (
+        # RULING 56, F4. Every tier treated as able to carry the which-chunk
+        # question, which is the reading FINDING 40 corrected: on a record with
+        # one chunk the assertion asks only whether anything resolved, and a
+        # rule that says otherwise counts the weaker case as the stronger one.
+        "every tier is treated as able to carry the which-chunk question",
+        [('QUOTATION_CHOICE_TIERS = frozenset({"verbatim_with_provenance"})',
+          "QUOTATION_CHOICE_TIERS = frozenset(RECORD_TIERS)")],
+    ),
+    (
+        "quoted-from-original cases may be allocated to a sub-tranche with no "
+        "record that holds a competing English",
+        [('        if int(tranche.get("expect_quoted_from_original_cases") or 0) > capacity:',
+          "        if False:")],
+    ),
+    (
+        # The teeth on the vme line, per ruling 56: the aggregate is a declared
+        # zero, so PRESENCE is what a sub-tranche cannot skip.
+        "a sub-tranche may omit vme_quotation_cases and be read as zero",
+        [("        if vme_cases is None:", "        if False:")],
+    ),
+    (
+        "vme quotation cases may exceed the sub-tranche's vme slots",
+        [("        if int(vme_cases or 0) > vme_capacity:", "        if False:")],
+    ),
+    (
+        # The flattering direction, which is the one to guard: a case naming a
+        # record nobody holds counted in a line rather than in neither.
+        "a quotation case naming a record this corpus does not hold falls into "
+        "a line instead of into neither",
+        [("""        if unknown:
+            split["untiered"].append((case_id, sorted(unknown)))""",
+          """        if False:
+            split["untiered"].append((case_id, sorted(unknown)))""")],
+    ),
 ]
 
 EXPECTED = [
@@ -316,6 +351,19 @@ EXPECTED = [
     "GUARD a lift with no written reason is refused",
     "GUARD a flag cannot be honoured and lifted at once",
     "GUARD a lift naming a flag the manifest does not carry is refused",
+
+    # RULING 56, F4 — in the order above.
+    "GUARD a quotation case is classified by the TIER OF THE RECORD it names, "
+    "and one naming any record that holds a competing English asks the "
+    "which-chunk question",
+    "GUARD quoted-from-original cases allocated to a sub-tranche with no "
+    "record holding both an original and a published English are refused",
+    "GUARD a sub-tranche that declares no vme_quotation_cases is refused, "
+    "because a zero it was given by default is a decision nobody made",
+    "GUARD vme quotation cases allocated over a sub-tranche's "
+    "verbatim_machine_english slots are refused",
+    "GUARD a quotation case naming a record this corpus does not hold is "
+    "counted in neither line rather than in the flattering one",
 ]
 
 # NOT mutation-verified from this source, and said so rather than left to be
@@ -343,10 +391,15 @@ UNMUTATED_BY_DESIGN = (
 
 
 def failures_from(output: str) -> set[str]:
+    # The SPACE. FINDING 37 found this in scripts/mutate_places.py and fixed it
+    # only there: `ingest.test_fidelity` ends a red run with `FAILED (5)`, so a
+    # bare startswith("FAIL") harvests a phantom guard named `ED (5)` beside the
+    # real ones, and a harness that invents a failing guard reports a BASELINE
+    # block against a suite that is green.
     return {
-        line.split("FAIL", 1)[1].strip()
+        line.split("FAIL ", 1)[1].strip()
         for line in output.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 

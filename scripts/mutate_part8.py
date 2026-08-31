@@ -1053,10 +1053,21 @@ EXPECTED = [
 
 
 def failures_from(output: str) -> set[str]:
+    # The SPACE, for the fourth time -- and this is the harness where the
+    # defect is LATENT rather than live. FINDING 37 found it in
+    # scripts/mutate_places.py; F4 found it live in mutate_ui_places,
+    # mutate_fidelity and mutate_ranking, whose suites all end a red run with a
+    # FAILED line and therefore harvested a phantom guard from it. This one is
+    # harmless today only because `eval.test_answer_eval` happens to end with
+    # "N passed, N failed" and never prints a line beginning FAIL that is not a
+    # guard. That is a property of the SUITE, not of the harness, and a harness
+    # whose correctness depends on what its suite chooses to print is a harness
+    # one print statement away from inventing a failing guard. Made the same as
+    # the other three so the question does not have to be asked again.
     return {
-        line.split("FAIL", 1)[1].strip()
+        line.split("FAIL ", 1)[1].strip()
         for line in output.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 

@@ -111,13 +111,16 @@
     "why_not_verbatim_machine_english": "A refusable_with_gloss case requires the answer to quote a PUBLISHED hedged reading. On a record with no published translation the only English is machine, and quoting a machine translation of a disputed reading -- attached to a citation -- is the single worst output this system can produce, which is the thing the gloss arm exists to catch. A gloss case on that tier would be testing for the defect by requiring it.",
     "why_eight": "The gloss arm is 3 cases against 22 answerable, and F1_START records that as a fact about the seed corpus rather than a defect: this corpus holds very few texts whose READING is genuinely in dispute. The sonnet arm then proved the assertions discriminate rather than being impossible -- vimose-runes went 0/12 to 5/5 with a real hedged gloss. So the arm is starved and its instruments work, which makes the supply of gloss-capable RECORDS the binding constraint, and the only moment it can be fixed is while the records are being chosen.",
     "min_expect_quoted_from_original_cases_at_60": 6,
+    "what_the_six_COUNTS": "Ruling 56, F4, 2026-08-31. Cases written against records that HOLD a reference_translation, and only those. On such a record both chunks are retrieval-eligible and in front of the model, so the assertion records WHICH one the quotation came out of -- which is the defect it was invented to see, measured at 45 of 45 across 16 archived runs of chinese-da-qin. On a verbatim_machine_english record there is no second chunk and the same words ask only whether anything resolved. ingest.fidelity.QUOTATION_CHOICE_TIERS holds the rule, because it is a rule and not a number. The six is NOT lowered: the number that belongs at 60 is not known from four, and lowering a bar because the cases behind it turned out to be weaker is a ruling of its own.",
+    "min_vme_quotation_cases_at_60": 0,
+    "why_the_vme_quotation_line_has_no_floor": "Ruling 56 with ruling 53 in hand. A minimum on cases that can exist only on verbatim_machine_english records is a quota on a tier this block has just declined to decide the targetability of -- FINDING 41 -- so declaring one would re-target the residue through a different field. The teeth on this line are the PRESENCE check (a sub-tranche that omits the field is refused, because a zero it was given by default is a decision nobody made) and the capacity cap against its own vme slots. The number that belongs here is F5's to set, after ruling 53's deferred ruling, and it is owed.",
     "why": "expect_quoted_from_original is true on exactly ONE case in thirty-three, weilue-chinese-quotation, which is also the corpus's only promotion candidate. One case is not a measurement of whether the answer path quotes source texts; it is a measurement of whether it quotes THAT source text. Six, one per region that will hold source-language records, is the smallest number that can tell the two apart.",
     "allocation": {
       "declared_on": "2026-08-31, F3, before the first new record was curated. Ruling 51.",
       "why_this_file_carries_it": "Ruling 44 declared the mix at 60 and did not say which sub-tranche carries what, and F3-F7 curate roughly seven records at a time. An allocation decided at F7 is an allocation fitted to what was already curated: F7 would inherit every unmet constraint at once - four source-language records for Southeast Asia, eight gloss-capable records, six quoted-from-original cases - with no room left to fail and retry. Every aggregate tier target in this file is satisfiable inside Arabia and South Asia alone, which is why F1 declared the per-region floor and why the allocation has to name regions and not only counts.",
       "the_ordering_principle": "EVERY source-language record is curated before EVERY catalogue record, and the check refuses an allocation where that is not true. Hard regions go first: Southeast Asia has ZERO records carrying retrieval-eligible source-language text today, which is why all four of its gold cases sit on find records, and it needs four. If the block runs out of days, what is missing is catalogue records - the tier this corpus already has eleven of and the cheapest to curate - rather than the records the product's central claim depends on.",
       "what_this_does_to_the_cost_column": "It biases the AGGREGATE cost per record downward by construction, because the expensive tiers are curated first and the cheap tier last. That is not a defect to be corrected by re-ordering, it is the reason ruling 46 already reports per tier and in curation order: within a tier the ordering is untouched, and verbatim_with_provenance (14) and verbatim_machine_english (10) are the two tiers above min_n_to_read_as_a_trend and the two spread across four sub-tranches each. The aggregate is unreadable under this allocation and ruling 46 already forbids reading it. Said here so that nobody at G3 reads a falling total as efficiency.",
-      "gloss_and_quotation_are_CASE_quotas": "gloss_capable is a count of RECORDS the sub-tranche must leave capable of carrying a refusable_with_gloss case; expect_quoted_from_original_cases is a count of gold CASES written in that sub-tranche. Seven are allocated against a target of six - one per region that will hold source-language records - so that one may fail without the target failing with it.",
+      "gloss_and_quotation_are_CASE_quotas": "gloss_capable is a count of RECORDS the sub-tranche must leave capable of carrying a refusable_with_gloss case; expect_quoted_from_original_cases and vme_quotation_cases are counts of gold CASES written in that sub-tranche. Seven quoted-from-original cases are allocated against a target of six - one per region that will hold source-language records - so that one may fail without the target failing with it. Ruling 56, F4: the two case fields are two questions and not one, expect_quoted_from_original_cases is capped by the sub-tranche's verbatim_with_provenance slots and vme_quotation_cases by its verbatim_machine_english slots, and both must be PRESENT. F3's numbers are its plan as declared and are not restated to match what it delivered; its vme_quotation_cases records the two cases that landed under a distinction that did not exist when its plan was written.",
       "sub_tranches": [
         {
           "name": "F3",
@@ -155,6 +158,7 @@
           ],
           "gloss_capable": 2,
           "expect_quoted_from_original_cases": 2,
+          "vme_quotation_cases": 2,
           "why_these": "The hardest eight in the tranche, first. Southeast Asia's four source-language records are the constraint no other region can pay for, and the four verbatim_machine_english records here are what turn on the machine-translation path: the verse and documentary confidence profiles are at n=1 and go load-bearing the moment the first one lands. Discovering that in F7 leaves no session to calibrate them in."
         },
         {
@@ -183,6 +187,7 @@
           ],
           "gloss_capable": 2,
           "expect_quoted_from_original_cases": 2,
+          "vme_quotation_cases": 1,
           "why_these": "Africa is at one source-language record of four and Ge'ez has no published translation for most of what is open, so it is the second-hardest region and the second-largest verbatim_machine_english draw."
         },
         {
@@ -221,6 +226,7 @@
           ],
           "gloss_capable": 2,
           "expect_quoted_from_original_cases": 3,
+          "vme_quotation_cases": 1,
           "why_these": "The last source-language records for the three regions that already clear the per-region floor, and the sub-tranche that completes the quoted-from-original quota at seven cases across seven regions."
         },
         {
@@ -259,6 +265,7 @@
           ],
           "gloss_capable": 1,
           "expect_quoted_from_original_cases": 0,
+          "vme_quotation_cases": 0,
           "why_these": "The last two source-language records sit here rather than in F7, so that the boundary between the expensive tiers and the cheap one falls inside a sub-tranche that still has a session after it."
         },
         {
@@ -302,6 +309,7 @@
           ],
           "gloss_capable": 1,
           "expect_quoted_from_original_cases": 0,
+          "vme_quotation_cases": 0,
           "why_these": "Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last."
         }
       ]

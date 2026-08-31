@@ -372,6 +372,7 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
         check_declared_tiers,
         check_target_mix,
         derive_record_tier,
+        split_quotation_cases,
     )
 
     tiers_path = Path(__file__).resolve().parent.parent / "data" / "corpus_tiers.json"
@@ -410,6 +411,42 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             mix_doc.get("source_language_records_by_region_at_24") or {},
         ):
             failures.append(f"allocation: {problem}")
+
+        # Ruling 56, F4. Until today the six quoted-from-original cases lived
+        # only in the allocation PLAN, and nothing counted the cases that
+        # actually exist. FINDING 40's correction is a READING -- four of the
+        # six ask which chunk was quoted and two ask only whether anything
+        # resolved -- and a reading nothing computes is a reading that decays.
+        # This is the number a G3 reader should be handed instead of the count.
+        gold_cases_path = (Path(__file__).resolve().parent.parent
+                           / "eval" / "gold" / "answer_cases.json")
+        if gold_cases_path.exists():
+            gold_doc = json.loads(gold_cases_path.read_text(encoding="utf-8"))
+            quotation_cases = [
+                (str(case.get("id")), list(case.get("expect_quoted_from_original") or []))
+                for case in (gold_doc.get("cases") or [])
+                if case.get("expect_quoted_from_original")
+            ]
+            split = split_quotation_cases(
+                quotation_cases, {d: t for d, (t, _r) in derived.items()})
+            for case_id, unknown in split["untiered"]:
+                failures.append(
+                    f"quotation quota: gold case {case_id!r} asserts "
+                    f"expect_quoted_from_original against {unknown}, which no "
+                    f"record in this corpus holds -- so the case is counted in "
+                    f"neither line and scored against nothing"
+                )
+            notes.append(
+                f"quotation cases: {len(split['choice'])} ask WHICH chunk was "
+                f"quoted (target "
+                f"{mix_doc.get('min_expect_quoted_from_original_cases_at_60', '?')} "
+                f"at 60) and {len(split['whether_resolved'])} ask only WHETHER "
+                f"anything resolved. Ruling 56: they are two questions under one "
+                f"name. The second line rises by construction with every "
+                f"verbatim_machine_english record, so a total that is climbing "
+                f"is not evidence that this system quotes sources rather than "
+                f"translations."
+            )
 
         counts = Counter(t for t, _reason in derived.values())
         mix = tier_doc.get("target_mix") or {}

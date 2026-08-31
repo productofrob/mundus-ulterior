@@ -909,11 +909,39 @@ def test_scoring_an_archive() -> None:
            "GUARD a run that RECORDS its arm is READ FROM THE ROW, never "
            "reconstructed from the serving-stack echo — an echo that agrees "
            "is still not a reading")
+    # FINDING 47, F4. This read `bases == {"reconstructed", "assumed"}` and was
+    # a frozen census of the archive rather than a rule about it: TRUE when
+    # written, because no greedy run had ever recorded its arm, and false the
+    # moment one did. F3's floor probe archived nine greedy runs that record
+    # theirs, in the same commit whose message reports this suite green.
+    #
+    # A greedy run that records its arm is the archive getting BETTER, and an
+    # assertion that fails on it is an assertion that would have to be edited
+    # every time this project does the right thing. What the line was actually
+    # for is kept and split into three rules that do not expire:
     bases = {answer_eval.payload_arm(p)["basis"] for p, _ in greedy}
-    expect(bases == {"reconstructed", "assumed"},
-           f"and the greedy archive is known two ways, both named: {sorted(bases)} "
-           f"— the echo where there is one, and the code argument where there "
-           f"is not")
+    expect({"reconstructed", "assumed"} <= bases,
+           f"GUARD the greedy archive is still known in BOTH of the ways that "
+           f"do not require a recorded arm: {sorted(bases)} — the echo where "
+           f"there is one, and the code argument where there is not")
+    expect(bases <= {"recorded", "reconstructed", "assumed"},
+           f"GUARD no basis outside the three declared ones appears: "
+           f"{sorted(bases)}. A fourth would be a reading nobody named")
+    # And the rule the nine new runs make assertable for the first time on this
+    # arm, which is the foreign-arm assertion above turned around: a run that
+    # SAYS what it ran on is read from the row. It could not be written until a
+    # greedy run said so, and it is the one that will hold as the archive grows.
+    expect(all(answer_eval.payload_arm(p)["basis"] == "recorded"
+               for p, _ in greedy if p.get("model_alias")),
+           "GUARD a GREEDY run that records its arm is read from the row too — "
+           "the reconstruction is for the archive that predates the field, not "
+           "a preference over what a run states about itself")
+    recorded_greedy = sum(1 for p, _ in greedy
+                          if answer_eval.payload_arm(p)["basis"] == "recorded")
+    expect(recorded_greedy >= 1,
+           f"{recorded_greedy} greedy run(s) now RECORD their arm, so the "
+           f"reconstruction is no longer the only reading this arm has — "
+           f"counted, not asserted at a number that would expire")
     results, unmatched = answer_eval.score_archives(cases, archives=greedy)
 
     by_case: dict[str, list] = {}
@@ -2556,33 +2584,63 @@ def test_the_quoted_from_original_quota() -> None:
     """
     print("\nthe quoted-from-original quota, counted rather than assumed")
 
+    from ingest.fidelity import QUOTATION_CHOICE_TIERS, split_quotation_cases
+
     cases = load_answer_cases()
-    delivered = sum(1 for c in cases if c.expect_quoted_from_original)
     tiers = json.loads(
         (Path(__file__).resolve().parent.parent / "data" / "corpus_tiers.json")
         .read_text(encoding="utf-8"))
     mix = tiers["target_mix"]
     want = int(mix.get("min_expect_quoted_from_original_cases_at_60") or 0)
 
-    expect(delivered >= 1 and want >= 1,
-           f"the quota is counted from the gold set ({delivered}) against the "
-           f"mix's own minimum ({want}), not transcribed into a document")
+    # RULING 56, F4. This counted every expect_quoted_from_original case as one
+    # thing and printed the total, which is FINDING 40's misreading living
+    # inside the suite that exists to stop a number being transcribed. The
+    # count was right and the READING was wrong: on a record holding a
+    # reference_translation the assertion says WHICH chunk was quoted, and on a
+    # verbatim_machine_english record there is no second chunk, so it says only
+    # that something resolved.
+    #
+    # The split is IMPORTED from ingest.fidelity rather than recomputed here.
+    # Two counters that disagree is the defect this project keeps finding, and
+    # for one turn today there WERE two: ingest.verify read four and this line
+    # read six.
+    split = split_quotation_cases(
+        [(c.id, list(c.expect_quoted_from_original)) for c in cases
+         if c.expect_quoted_from_original],
+        {doc: tier for doc, tier in (tiers.get("tiers") or {}).items()})
+    choice, resolved_only = len(split["choice"]), len(split["whether_resolved"])
 
-    # A case can only require a quotation from an original where a record
-    # HAS one, so the ceiling is the source-language records: those already
-    # curated plus those the allocation still places.
-    source_tiers = ("verbatim_with_provenance", "verbatim_machine_english")
+    expect(choice >= 1 and want >= 1,
+           f"the quota is counted from the gold set and SPLIT: {choice} case(s) "
+           f"ask which chunk was quoted, against the mix's minimum of {want} at "
+           f"60, and {resolved_only} ask only whether anything resolved")
+    expect(not split["untiered"],
+           f"GUARD every quotation case names a record this corpus holds, so "
+           f"neither line is counting a case scored against nothing: "
+           f"{split['untiered']}")
+
+    # A case can only ask WHICH chunk was quoted where a record holds both an
+    # original and a published English for it to be preferred over, so the
+    # ceiling is QUOTATION_CHOICE_TIERS and not both source-language tiers.
+    # Counting vme slots toward this quota was counting records that cannot
+    # satisfy it -- the reachability guard was reachable through the wrong
+    # records.
     planned = sum(
         int(slot.get("n") or 0)
         for tranche in (mix.get("allocation") or {}).get("sub_tranches") or []
         for slot in tranche.get("slots") or []
-        if slot.get("tier") in source_tiers)
-    at_24 = sum(int(v) for k, v in (mix.get(
-        "source_language_records_by_region_at_24") or {}).items())
-    expect(delivered + planned + at_24 >= want,
+        if slot.get("tier") in QUOTATION_CHOICE_TIERS)
+    at_24 = sum(1 for tier in (tiers.get("tiers") or {}).values()
+                if tier in QUOTATION_CHOICE_TIERS)
+    expect(choice + planned >= want,
            "GUARD the quoted-from-original quota is still REACHABLE from the "
-           "source-language records curated and the ones the allocation has "
-           "left to place")
+           "records that can carry the which-chunk question and the slots the "
+           "allocation has left to place on that tier")
+    expect(at_24 >= 1,
+           f"{at_24} record(s) in the corpus today hold both an original and a "
+           f"published English, which is the population the six is counted "
+           f"over")
 
 
 def test_a_record_cannot_falsify_a_refusal_case() -> None:
