@@ -853,3 +853,133 @@ eval.test_answer_eval    383 -> 388 assertions, 0 failed
 **The sentence that travels: a probe was routed away from the sweep archive so
 it could not calibrate the floor, and it landed in the run archive and broke a
 census that the same commit reported as green.**
+
+---
+
+# FINDING 48 — the capture path silently rewrites the characters it captures, and this corpus has already lost a record to that once
+
+**`WebFetch` cannot be used to capture source text.** Two defects, measured on
+one line of one inscription, by comparing what the fetch returned against what
+the same page gives a human who copies it:
+
+```
+page (copied by hand)   <— — —> μεθ’ ἃ ἀνδρείωσας τὰ μὲν ἔγγιστα τοῦ βασιλείου
+fetch returned                   μεθ' ἃ ἀνδρείωσας τὰ μὲν ἔγγιστα τοῦ βασιλείου
+
+  1. the lacuna marker `<— — —> ` was DROPPED -- eight characters stating that
+     text is missing before this point, which is an editorial claim about the
+     monument and not decoration
+  2. U+2019 RIGHT SINGLE QUOTATION MARK became U+0027 APOSTROPHE
+```
+
+Fifty-six characters in, two silent alterations: one deletion of an editorial
+statement, one character substitution.
+
+## Why this is disqualifying rather than a quirk to work around
+
+**Neither defect is visible to any check in this repository.** `ingest.verify`
+asserts `source_text[char_start:char_end] == chunk.text`, which is a claim about
+INTERNAL consistency: an excerpt corrupted before it lands is corrupted
+consistently, and every offset resolves perfectly against the wrong characters.
+`build_ui_data --verify` compares archived quotations to the seed record, not
+the seed record to the page it came from. **Nothing in this project compares a
+record to its source.** The curator is that check, and a summarising fetch is
+the curator not looking.
+
+And the substitution is precisely the class of edit the corpus cannot survive.
+The apostrophe in `μετ’ εἰρήνης` is a character in a chunk whose offsets other
+runs cite. FINDING 42 was a whole finding about a newline rendered as a space.
+
+## The precedent, which is in this repository and is the reason this is a rule
+
+`china-describes-rome-weilue`'s own note:
+
+> *"the record's excerpt was known corrupt against Chen Shou 1975 ... The
+> excerpt turned out to be NOT CORRUPT BUT INVENTED: none of its three
+> fragments occurs in the source. When it was replaced this assertion matched
+> nothing and the pair silently left the run — pairs 33 -> 31, units 30 -> 29,
+> and every aggregate moved because the DENOMINATOR shrank."*
+
+An excerpt that arrived through a summarising layer, in the corpus whose
+central claim is that quotations resolve to exact character offsets, and it
+cost a pair, a unit and the comparability of every aggregate before anybody
+noticed. **This finding is that incident's mechanism, caught before the second
+one.**
+
+## What it costs, and where the cost goes
+
+Source text and its published translation are **pasted by the curator from the
+cited page**. Every record. That is not a limitation of one awkward site: F3
+budgeted `parsigdatabase.com` as *"a human pass at the keyboard"* as though it
+were the exception, and the human pass is the ordinary case — what
+parsigdatabase adds is a second one.
+
+This belongs in `text_capture` under ruling 46, and it means the phase has a
+floor that no tooling removes. **A tranche that reports `text_capture` falling
+is a tranche where somebody stopped checking the page**, which is the shape
+ruling 46 already warns about for the aggregate.
+
+## What it does NOT mean
+
+Fetching is still how candidates are FOUND, how translations are located, and
+how a search is established as having failed — ruling 57's evidence is built
+entirely out of it. The rule is narrow and it is about one step: **the
+characters that go on disk are copied by a person from the page, and nothing
+between the page and the record is allowed to be a model.**
+
+**The sentence that travels: the corpus check asserts that a quotation resolves
+to the characters on disk, and nothing at all asserts that the characters on
+disk are the ones on the page.**
+
+---
+
+# FINDING 49 — the rule about numbers in guard labels is written down in this repository, and was being broken two files away
+
+Adding ONE ranking pair, under ruling 54, turned `eval.test_ranking_check` red:
+
+```
+FAILED: ruling 12 costs exactly 205 renderings over this gold set
+```
+
+The assertion was right and the guard was wrong. `expected_rendering_count` is
+computed from the language rule and the gold set, so it moves the moment the
+gold set moves — which, from ruling 54 onward, is **every record F4 through F7
+curates.**
+
+## The rule already existed, in another file, with its reason attached
+
+`eval/test_answer_eval.py`, written before F4:
+
+> *"The counts go in their OWN line and not into the guard text. A guard named
+> by `scripts/mutate_part8.py` is matched as an exact string, so a guard whose
+> wording carries a number it computes is a guard the harness stops being able
+> to name the moment a mutation changes that number."*
+
+`eval/test_ranking_check.py`'s label carried `205`, and
+`scripts/mutate_ranking.py`'s `EXPECTED` list named that label verbatim. So the
+guard, the number and the harness were three copies of one figure in three
+files — **FINDING 14's shape, in the machinery built to catch FINDING 14's
+shape.**
+
+## What the cheap fix would have cost, which is why it was not taken
+
+Bumping `205` to the new total takes one minute and works. It also means the
+guard label and the harness's `EXPECTED` entry must be edited **together, on
+every tranche, for the rest of Block F** — and an edit that must be made in two
+files at once, routinely, by whoever is curating, is an edit that is eventually
+made in one. The harness would then print `MISS` on a guard that was working,
+which is FINDING 37 exactly, and this project has now spent parts of three
+sessions on harnesses that could not name their own guards.
+
+**What is asserted is now the rule rather than the total.** The cost is
+computed twice from two directions and the two must agree; the total is printed
+in the detail line, where nothing matches on it.
+
+## The part worth keeping
+
+**A rule written down in one file is not a rule.** F1 found a count declared
+beside a list, F2 found it in two suite counts, F3 found it in a date, F4 found
+it in a harness fix applied to one file of four (FINDING 46) — and here in a
+convention stated, argued and then not carried across the directory boundary.
+The remedy is the same every time and it is never the number: **derive it, or
+put it where no matcher reads it.**

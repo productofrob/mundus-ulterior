@@ -259,6 +259,42 @@
         }
       },
       "note": ""
+    },
+    {
+      "record_id": "africa-05-adulis-throne",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 1.3,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 1.8,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": ""
     }
   ],
   "retired": [
@@ -453,6 +489,44 @@
       "note": "",
       "retired_on": "2026-08-31",
       "because": "Not a record: the second hunt in this tranche that found none. Kept and named so the cost of the tier the mix is short of stays in the report rather than disappearing with the records that were never written."
+    },
+    {
+      "record_id": "africa-04-silko-talmis",
+      "tier": "",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 1.7,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "",
+      "retired_on": "2026-08-31",
+      "because": "F4. The clock was started on Silko's text_capture and the Greek was captured, and then the record's ORDER changed rather than its status: Monumentum Adulitanum II was curated first because its published English is readable at tertullian.org, while Silko's is Fontes Historiae Nubiorum III p. 1147, a free 54 MB PDF that costs a human pass. Silko WILL exist -- it is F4's second Sub-Saharan Africa verbatim_with_provenance record and ruling 58 names it -- so this is not FINDING 38's hunt-that-landed-nothing. Retired because ingest.verify refuses a ledger row whose record is not in the corpus, and that refusal is correct: a row for a record that is coming is indistinguishable from a row for a record that never will. The 1.7 measured minutes are re-filed on Silko with add when it lands, which writes them as estimated -- ruling 52's deliberate cost, paid here for an ordering decision rather than for a change of subject."
     }
   ],
   "retirement": {

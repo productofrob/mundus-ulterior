@@ -211,7 +211,14 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     # obeys: "it is correct today and F3 breaks it on purpose, in the same
     # commit as the records or not at all. Loosening it in advance is the floor
     # lowered to what is currently passing."
-    check(len(docs) == 30, f"expected 30 documents, got {len(docs)}")
+    #
+    # F4, 2026-08-31. 30 -> 31 with africa-05-adulis-throne, in that record's
+    # own commit. RULING 54 generalises this check's discipline from the count
+    # to the gold set: this line is the precedent the ruling cites, because it
+    # is the one thing in this repository that has never been raised in advance
+    # and never late, and a ranking pair written after the run is the same
+    # defect as a count loosened before the record.
+    check(len(docs) == 31, f"expected 31 documents, got {len(docs)}")
     orphans = {c.doc_id for c in chunks} - {d.doc_id for d in docs}
     check(not orphans, f"chunks reference unknown docs: {orphans}")
 

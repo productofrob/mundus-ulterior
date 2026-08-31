@@ -1325,11 +1325,35 @@ def test_the_query_rendering_rule_cannot_see_the_answer() -> None:
           len(target_langs(index_langs, "grc")) == len(corpus_langs) - 1)
 
     # The whole cost of ruling 12, computed rather than estimated:
-    # 25 English queries x 7 + 5 native-language queries x 6 = 205.
+    # one rendering per (distinct query, index language it is not already in).
+    #
+    # F4, 2026-08-31. THE NUMBER HAS LEFT THIS GUARD'S LABEL, and the reason is
+    # written in this repository already, in eval/test_answer_eval.py:
+    #
+    #   "The counts go in their OWN line and not into the guard text. A guard
+    #    named by scripts/mutate_part8.py is matched as an exact string, so a
+    #    guard whose wording carries a number it computes is a guard the
+    #    harness stops being able to name the moment a mutation changes that
+    #    number."
+    #
+    # This label read "costs exactly 205 renderings" and was named verbatim in
+    # scripts/mutate_ranking.py's EXPECTED list. Adding ONE ranking pair under
+    # ruling 54 moved the cost, and the guard and its harness would have had to
+    # be edited together on every tranche for the rest of Block F -- which is
+    # how a harness quietly stops naming the guard it is exercising. The rule
+    # was written for one file and broken in another.
+    #
+    # What is asserted is now the RULE and not the total: the cost is exactly
+    # what the language rule says it is, computed the same way twice from two
+    # different directions, and the total is printed beside it.
     query_langs = {p["query"]: p["query_lang"] for p in gold_doc["pairs"]}
     cost = expected_rendering_count(index_langs, query_langs.values())
-    check("ruling 12 costs exactly 205 renderings over this gold set",
-          cost == 205, f"{cost}")
+    by_hand = sum(len(target_langs(index_langs, lang))
+                  for lang in query_langs.values())
+    check("ruling 12's cost is the language rule applied to every distinct "
+          "query, and nothing else",
+          cost == by_hand and cost > 0, f"{cost} renderings over "
+          f"{len(query_langs)} distinct queries")
 
     # ---- ruling 17(a): the script check ---------------------------------
     check("Greek script passes a grc rendering",

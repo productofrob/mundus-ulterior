@@ -827,7 +827,9 @@ EXPECTED = [
     # C2 — fourteen, in the same order as the fourteen mutations above.
     "a query is never rendered into its own language",
     "English is never a render target — it is the single-variant arm",
-    "ruling 12 costs exactly 205 renderings over this gold set",
+    # F4: the number left this label. See the comment at the guard.
+    "ruling 12's cost is the language rule applied to every distinct query, "
+    "and nothing else",
     "ROMANISED Tamil is refused for oty — the Part 4 chrF-0.004 failure",
     "Literary Chinese inside an English sentence is refused for lzh",
     "a rendering identical to its query is refused as an echo",

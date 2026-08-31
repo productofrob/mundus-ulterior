@@ -1200,6 +1200,38 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts. It is additionally the first case in this file whose record carries NO English at all, so its first result measures the verbatim_machine_english path rather than any regression in it.",
       "note": "Both content groups are strings that occur ONLY in original_text_excerpt: the name appears nowhere in this record's title, notes or language_note, and `punta hiyang` appears in the source text of this record and, in the spelling `ḍapunta hiyaṃ`, in seasia-06-kedukan-bukit. The first group admits three spellings of the name because matching is case-insensitive and whitespace-collapsing but NOT punctuation-insensitive, and a case must say which spelling it accepts rather than let the matcher decide. The question names the inscription rather than Srivijaya or Palembang, because match_case returns the FIRST case whose question matches and Southeast Asia now carries seven. FINDING 40 applies to expect_quoted_from_original here exactly as it does to the Kedukan Bukit case."
+    },
+    {
+      "id": "adulis-throne-leuke-kome",
+      "question": "In the Greek of the Aksumite throne inscription at Adulis, which Red Sea port does the king name as the limit of the coast he subdued, and what did he order about travel?",
+      "why": "F4's FIRST expect_quoted_from_original case, and under ruling 56 it is one of the four that ask WHICH chunk was quoted rather than whether anything resolved -- the record holds both a Greek original and McCrindle's published English, so both chunks compete for the quotation and the assertion records which one won. The discrimination is built into the content groups: `Λευκῆς κώμης` is in the Greek and the English says `Leucê Cômê`, so an answer that paraphrases the translation satisfies neither group. The question is worth asking on its own terms as well -- Leuke Kome is the Roman Red Sea port the Periplus names, and this corpus holds it in two other records, so a correct answer is a link between an African king's own account and the Roman itinerary that describes his coast.",
+      "expected_behaviour": "answerable",
+      "region": "Sub-Saharan Africa",
+      "expect_cited_docs": [
+        "africa-05-adulis-throne"
+      ],
+      "expect_quoted_docs": [
+        "africa-05-adulis-throne"
+      ],
+      "expect_quoted_from_original": [
+        "africa-05-adulis-throne"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Λευκῆς κώμης",
+          "Λευκῆς Κώμης"
+        ],
+        [
+          "πλέεσθαι",
+          "ὁδεύεσθαι"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD. Written in the same commit as the record, per ruling 54, so its first result is a measurement and not a regression, and deliberately in NO floor state: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
+      "note": "Both content groups are Greek that the English translation does not contain, which is my-son-b6-isananatha's shape and for its reason: a case whose groups appear in both chunks cannot tell a source quotation from a translated one. The second group takes the two bare verbs `πλέεσθαι` and `ὁδεύεσθαι` rather than the phrase `ὁδεύεσθαι μετ’ εἰρήνης`, because matching is case-insensitive and whitespace-collapsing but NOT punctuation-insensitive and that phrase carries U+2019 -- the character FINDING 48 caught an automated fetch replacing with U+0027. A case that asserts a punctuation mark asserts the capture path as well as the answer."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",
