@@ -896,6 +896,139 @@ because it never ran the guards that would have.
 ---
 
 
+# FINDING 42 — the verifier is stricter than the matcher it verifies, and it fails into the loudest category it has
+
+`build_ui_data.py --verify` reported:
+
+```
+ABSENT  southasia-01-akananuru-149.original_text_excerpt[293:345]
+        quote: 'தந்த வினைமாண் நன்கலம் பொன்னொடு வந்து கறியொடு பெயரும்'
+        the quotation is not in this field of the seed record as it stands today
+        corpus provenance: unchanged
+```
+
+The span is there. Same offsets, same length. **One character differs**: the
+field holds `நன்கலம்\nபொன்னொடு` and the archived quotation holds
+`நன்கலம் பொன்னொடு` — a newline the model rendered as a space when it quoted
+across a line break.
+
+`cite.locate_in_text` collapses runs of whitespace, and the gold suite asserts
+it: *"matching collapses whitespace, including newlines"*. So cite.py was
+right to resolve this quotation and right to record the offsets it recorded.
+The verifier then re-checks the same claim with a stricter rule than the one
+that made it.
+
+## Why the category is the problem, not the miss
+
+The checker already models tolerant matches — it has `case_folded` and
+`case_only`, and it reported 48 and 9 of them in this run. It has no
+whitespace category. So a whitespace difference does not degrade into a
+softer classification; it falls all the way through to **ABSENT**, which is
+the checker's way of saying *the quotation is not in the record.* That is
+what a fabricated citation looks like.
+
+The failure direction is what makes this urgent rather than tidy. A verifier
+that under-reports is quietly useless; a verifier that reports its most
+serious finding on a newline **trains its reader to disbelieve it**, and this
+one is the instrument that would catch a real fabrication. F4 adds records and
+therefore spans. The next reader to see ABSENT on this record will have been
+taught by this run that ABSENT means whitespace.
+
+It also lands on `southasia-01-akananuru-149`, which is the record carrying the
+corpus's one genuinely broken cross-lingual link. At a glance the two look
+like the same problem and they are unrelated.
+
+**The fix is a category, not a tolerance.** Do not make the verifier
+whitespace-insensitive silently — that would hide a real edit that changed
+only spacing. Add `whitespace_only` beside `case_only`, so the count is
+reported and a reader can see that the corpus and the archive disagree about a
+line break without being told a quotation was invented.
+
+---
+
+# FINDING 43 — F3's six records are measured only by what they broke
+
+The sub-tranche ranking check (`--with-distractors`, index 460) moved exactly
+three pairs against every stable baseline since 19 August:
+
+| pair | before | after |
+|---|---|---|
+| `muziris-cargo-akananuru` | 310 | 313 |
+| `tc-jabal-dabub` | 2 | 3 |
+| **`vimose-runes`** | **3** | **7** |
+
+`vimose-runes` left the top 6.
+
+## The record that pushed it out was curated to help it
+
+`scandinavia-05-thorsberg-chape` was chosen in this tranche **for the gloss
+arm**, because F1 recorded three gloss cases against twenty-two answerable and
+`corpus_tiers.json` says the only moment that can be fixed is while records are
+being chosen. `vimose-runes` is the gloss arm's one proven success — the sonnet
+arm took it from 0/12 to 5/5 with a real hedged gloss, which is what
+established that the assertions discriminate rather than being impossible.
+
+The pair's own diagnostic names the cause without being asked:
+
+```
+"anchor_doc": "scandinavia-05-thorsberg-chape",
+"anchor_points_home": false
+```
+
+The query's rarest token now points at a record that **did not exist when the
+pair was written**. Two `gmq-pro` transliteration chunks sit where there was
+one, and the second is a near neighbour of the first in every respect a dense
+retriever can see: same language, same script, same period, same kind of
+object, same country.
+
+So the corpus acquired a record for the gloss arm and the gloss arm's only
+working case fell out of retrieval. Both facts are true and neither cancels
+the other.
+
+## What is NOT claimed
+
+`vimose-runes` is a `known_failing` case and the floor does not require it, so
+nothing regressed against the gate. Rank 7 is not rank 313. And the causal
+story is a diagnostic, not an experiment: `anchor_points_home` is a lexical
+property recorded against a dense retriever, and the report says in its own
+voice not to read a cause out of it without a run designed to test one.
+
+## The part that generalises, which is the reason this is a finding
+
+**The only measured effect F3 had on retrieval is damage.** There is not one
+ranking pair for any of the six new records. The answer sweep runs at 60
+(ruling 51) and the probe ran three pre-existing cases, so the four gold cases
+written against records 25, 26, 28 and the two Old Malay records have never
+been executed. Six records entered the index and the only thing any instrument
+in this repository can say about them is that two existing pairs moved down.
+
+That is a structural property of adding records to a fixed pair set, not an
+accident of this tranche: every tranche from here adds competition to queries
+written before it, and adds no query of its own until someone writes one. The
+measurement gets monotonically more pessimistic as the corpus improves, and
+`recall@6` at 60 records will be partly a measure of how much the corpus grew.
+
+F4 should write ranking pairs for its records **in the same commit as the
+records**, the way `verify` check 9 is raised in the same commit as the
+records it counts. A pair written later is a pair written knowing the rank.
+
+## And the report states a rank that no check compares to its own table
+
+The ranking report prints, hardcoded at `eval/run_ranking_check.py:1695`:
+
+> *one of them the corpus's only genuinely broken cross-lingual link, at rank
+> 309*
+
+The table above it said **313** in this run, and **54** in the baseline-view
+run twenty minutes earlier. The sentence prints under either view and under
+any corpus. `run_ranking_check.py:471` records that this exact confusion has
+bitten before — `index_state()` counting one view while `search()` ranked
+another — and the resolution then was to make the view explicit. The prose was
+not brought along. It is the declared-versus-derived pattern with the
+declaration written in English, where no check can reach it.
+
+---
+
 # Candidates banked, so F4 and F5 do not hunt cold
 
 Found while hunting F3's last two slots. None can be curated into F3 —
@@ -995,3 +1128,12 @@ free.**
 
 **The two vme records this corpus holds qualified because one Wikipedia editor
 did not say whose English he was printing.**
+
+**A verifier that reports its most serious finding on a newline teaches its
+reader to disbelieve it, and it is the instrument that would catch a real
+fabrication.**
+
+**Six records entered the corpus and the only thing any instrument here can
+say about them is that two older pairs moved down. A tranche that adds
+competition and no queries makes the measurement worse as the corpus gets
+better.**
