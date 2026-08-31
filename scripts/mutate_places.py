@@ -17,6 +17,7 @@ Run: python scripts/mutate_places.py
 
 from __future__ import annotations
 
+import os
 import pathlib
 import subprocess
 import sys
@@ -445,7 +446,49 @@ def main() -> int:
     originals = {f: f.read_text(encoding="utf-8") for f in SOURCES}
     problems: list[str] = []
     try:
+        # THE BASELINE, added 2026-08-31 in F3. Carried as owed since F1 and
+        # closed BEFORE the corpus moves, which is the whole reason it stopped
+        # being cheap to defer.
+        #
+        # A mutation is verified by naming a guard and checking that the guard
+        # FAILS once the code is broken. That is only evidence if the guard was
+        # PASSING beforehand. A green mutation against a red baseline is a
+        # vacuous proof, and on 2026-08-28 one happened inside the instrument
+        # built to catch vacuous proofs.
+        #
+        # F3 takes the corpus from 24 records to 60. A guard that goes red
+        # because of a NEW RECORD, in a harness with no baseline, turns every
+        # mutation naming it into a green line that proves nothing.
+        _baseline = subprocess.run(
+            [sys.executable, "-B", "-m", "ingest.test_places"], cwd=ROOT,
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            env={**os.environ, "PYTHONIOENCODING": "utf-8",
+                 "PYTHONDONTWRITEBYTECODE": "1"},
+        )
+        already_failing = failures_from(_baseline.stdout)
+        if _baseline.returncode != 0 and not already_failing:
+            print("  BASELINE: the suite CRASHED with NO mutation applied. "
+                  "Nothing below can be verified.")
+            print(_baseline.stderr.rstrip()[-2000:])
+            return 1
+        if already_failing:
+            print(f"  BASELINE: {len(already_failing)} check(s) already fail "
+                  f"with NO mutation applied. Any mutation naming one of\n"
+                  f"            them cannot be verified by this run.")
+            for name in sorted(already_failing):
+                print(f"            - {name}")
+            print()
+
         for (label, patches), guard in zip(MUTATIONS, EXPECTED):
+            if guard in already_failing:
+                problems.append(
+                    f"{label}: UNVERIFIED - its guard {guard!r} was already "
+                    f"failing before any mutation was applied, so this "
+                    f"mutation proves nothing. Fix the suite, then re-run."
+                )
+                print(f"  UNVERIFIED {label} "
+                      f"(its guard was already red at baseline)")
+                continue
             edited = {f: originals[f] for f in SOURCES}
             missing = [
                 old for old, _ in patches

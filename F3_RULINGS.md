@@ -323,6 +323,50 @@ authority**, because the host is what stamps a sweep.
 
 ---
 
+# FINDING 35 — the sentence that travels undercounts its own evidence, and the correction makes it stronger
+
+**"Nine archives, 396 runs, and not one of them recorded which model
+answered."** That sentence has been copied into every block document since
+Block E. `eval.calibrate_floor` printed the other number on 2026-08-31, on the
+host, in its first line:
+
+```
+9 archived sweep(s), 492 run(s)
+```
+
+Counted per archive, from the files:
+
+```
+20260810T191414  30 runs   5 cases   NO SESSION IDENTITY
+20260810T193907  15 runs   5 cases   NO SESSION IDENTITY
+20260812T134030  15 runs   5 cases   NO SESSION IDENTITY
+20260824T122310  18 runs   6 cases   D4 pilot day 1
+20260825T192121  18 runs   6 cases   D4 pilot day 2
+20260826T103006  99 runs  33 cases   Block E day 1
+20260826T115846  99 runs  33 cases   Block E day 1
+20260827T103048  99 runs  33 cases   Block E day 2
+20260828T103215  99 runs  33 cases   Block E day 3
+                492
+```
+
+**396 is 4 x 99 — the four Block E sweeps, and only those.** It is the right
+number for the sentence it was born in, `F2_RESULT`'s *"the denominator of all
+396 Block E runs"*, and the wrong number beside "nine archives". The pair is
+mismatched: nine archives hold 492.
+
+**And the claim the sentence makes is true of all nine.** Not one of the 492
+records which model answered — the three pre-D4 archives least of all, since
+they carry no session identity either. So the correction does not weaken the
+finding, it strengthens it by a hundred runs, which is the opposite of how a
+transcribed number usually fails.
+
+Corrected in F3's documents. The earlier block documents keep the sentence as
+they wrote it: they are the record of what was said at the time, and editing
+them is the move `archived_status` and `superseded_diagnosis` already exist to
+avoid.
+
+---
+
 # The trap this session walked into, recorded because it is a new mechanism
 
 **A mutation harness cannot be run through the bridge because of what the SUITE
@@ -368,7 +412,9 @@ was reachable. `muziris-cargo-akananuru` still sits at rank 310.
 **Four sessions read 0.727272… and one of them was different. The pass rate
 cannot see change.**
 
-**Nine archives, 396 runs, and not one of them recorded which model answered.**
+**Nine archives, 492 runs, and not one of them recorded which model
+answered.** (CORRECTED 2026-08-31, FINDING 35. The sentence has read 396
+since Block E; that is the four Block E sweeps' runs, not the nine archives'.)
 
 **36% and 27% are not two refusal rates. They are two rates of uttering one
 sentence.**

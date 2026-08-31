@@ -13104,6 +13104,22 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **FINDING 35: the sentence that travels undercounts its own evidence.**
+  *"Nine archives, 396 runs"* has been copied into every block document since
+  Block E, and `calibrate_floor` printed `9 archived sweep(s), 492 run(s)` on
+  the host. 396 is 4 x 99, the four Block E sweeps alone; the nine archives
+  hold 492 once the two D4 pilots (36) and the three pre-D4 sweeps (60) are
+  counted. The claim is true of all nine, so the correction STRENGTHENS it by
+  ninety-six runs. Corrected in F3's documents; earlier block documents keep
+  the sentence as they wrote it.
+- **The BASELINE check is now in EIGHT harnesses of eight.** `mutate_ranking`
+  (100), `mutate_places` (43) and `mutate_recover` (11) gained it on
+  2026-08-31, before the corpus moves and not after -- a guard that goes red
+  because of a NEW RECORD, in a harness with no baseline, turns every mutation
+  naming it into a green line that proves nothing, and `mutate_ranking` had
+  just run 100 mutations without one. The refusal branch was watched firing in
+  all three. **The three have not yet been RE-RUN with it**, which is what
+  turns the check from present into exercised.
 - **FINDING 34, and it was caught by the host suite rather than by a reader.**
   Rulings 49-51 were written on 2026-08-31 and stamped **2026-08-29** in seven
   source files and five documents, including `floor.json`'s own
@@ -13129,8 +13145,9 @@ block           NINE sessions, not eight.
   elsewhere had been doing the work.
 - **`ingest/verify.py` check 9 still asserts `len(docs) == 24`**, and it is
   broken on purpose in the same commit as the records or not at all.
-- **The BASELINE check is in five harnesses of eight.** `mutate_ranking`,
-  `mutate_places`, `mutate_recover` still lack it.
+- ~~The BASELINE check is in five harnesses of eight.~~ **CLOSED 2026-08-31**
+  -- it is in eight of eight. `mutate_distractors` stays outside the
+  denominator: it mutates a live database view and is a different shape.
 - Everything carried into F3 is carried out of it: ruling 40's `article_added`
   unverified against a live run, `muziris-cargo` at 3/5 on the arm,
   `--archives` pooling arms, `ingest/test_sql.py` never run with sqlglot and
