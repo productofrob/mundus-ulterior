@@ -35,6 +35,54 @@
   },
   "open_entry": null,
   "records": [],
+  "retired": [
+    {
+      "record_id": "seasia-04-vo-canh",
+      "tier": "",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 2.6,
+          "provenance": "measured"
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "",
+      "retired_on": "2026-08-31",
+      "because": "The hunt that these minutes measured is what ruled Vo Canh out: no open transliteration is published for it, so the record could only have been published_translation_only, a tier Southeast Asia's allocation carries none of. The minutes are real curation minutes for the SEA sub-tranche and are re-filed on the record that lands."
+    }
+  ],
+  "retirement": {
+    "declared_on": "2026-08-31, F3, on the first record this project ever timed. Ruling 52.",
+    "what_it_is": "A row whose record will NEVER EXIST, moved out of `records` and kept with the date and the written reason it was retired. It is not a delete. Every minute it recorded is still on disk and still readable.",
+    "why_it_was_needed": "Source hunting is the phase that DECIDES which record exists, so the clock cannot be started against the right record id until the phase it is timing is over. The first record proved it in under three minutes: the clock was opened on seasia-04-vo-canh, the hunt then ruled that source out, and ingest.verify went red on a stale row the CLI had no way to correct. F2 predicted exactly this -- 'the FIRST record F3 curates is the first test of the CLI under real conditions'.",
+    "the_anti_loophole": "A row may be retired ONLY if its record is not in the corpus. Without that clause, `retire` is a way to take the expensive records out of the column kill trigger 3 reads. This is floor.json's a_named_sweep_must_actually_fail_the_rule one file over: a list that can hold a qualifying row is a place to put numbers nobody liked.",
+    "what_happens_to_the_minutes": "They are NOT carried across automatically, and that is the ruling rather than an omission. A span measured against a record id the hunt had not yet settled is not a measurement of the record that landed. It is re-filed with `add`, which writes ESTIMATED and demands a written reason -- ruling 48, where the weaker provenance wins.",
+    "why_kept_rather_than_deleted": "Excluding by a recorded rule is a diff. Excluding by making a row vanish is not, and is forbidden here for the reason floor.json gives about moving sweep files out of the way."
+  },
   "not_timed": {
     "africa-01-ezana-stone": "Curated before this column existed, so no minutes figure was ever recorded and none can be reconstructed. Excused explicitly rather than left out: a record that is silently absent from the ledger and a record nobody timed look the same on disk.",
     "africa-02-aksumite-coin": "Curated before this column existed, so no minutes figure was ever recorded and none can be reconstructed. Excused explicitly rather than left out: a record that is silently absent from the ledger and a record nobody timed look the same on disk.",

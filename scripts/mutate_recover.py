@@ -137,8 +137,12 @@ EXPECTED = [
     "GUARD the runs directory is imported from run_answer, not re-derived",
     "the qualification is specific, not decorative",
     "GUARD a fixture with no question is not counted as a run",
-    "GUARD every native payload key is either recoverable or named in ABSENT "
-    "(unaccounted: ['evidence_digest'])",
+    # FINDING 36, 2026-08-31. BARE. This label carried `missing` inside itself
+    # until the suite was corrected, so this harness could not tell "your
+    # mutation did nothing" from "this guard was already red" -- it reported
+    # MISS where it meant UNVERIFIED. The detail now prints beneath the label
+    # in the suite, where a changing string costs nothing.
+    "GUARD every native payload key is either recoverable or named in ABSENT",
 ]
 
 

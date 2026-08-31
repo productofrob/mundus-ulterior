@@ -458,9 +458,13 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             failures.append(f"curation cost: {problem}")
 
         timed = len(ledger.get("records") or [])
+        retired = len(ledger.get("retired") or [])
         notes.append(
             f"curation cost: {timed} record(s) timed, "
-            f"{len(ledger.get('not_timed') or {})} excused. "
+            f"{len(ledger.get('not_timed') or {})} excused"
+            + (f", {retired} RETIRED (ruling 52: kept and named, counted in "
+               f"no mean)" if retired else "")
+            + ". "
             f"Comparator: {(ledger.get('comparator') or {}).get('evaluated_against', '?')} "
             f"(ruling 46 -- nothing records what record 12 cost). "
             f"Run `python -m ingest.cost_log report` for the per-tier table; "

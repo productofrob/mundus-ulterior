@@ -51,6 +51,16 @@ def _purge_bytecode() -> None:
         shutil.rmtree(source.parent / "__pycache__", ignore_errors=True)
 
 
+# Ruling 52's retired-row phase check, which is two statements and cannot be
+# anchored on one line: the same _check_record_entry call appears in the
+# `records` loop above it, and a target occurring twice resolves
+# first-occurrence-wins in silence.
+PHASE_CHECK = (
+    "        problems.extend(_check_record_entry(entry, where, max_span))\n"
+    "\n"
+    "    in_corpus = sorted(set(retired_ids) & set(derived_tiers))"
+)
+
 MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         'the declared phase list is compared as a SET, so order stops mattering',
@@ -311,6 +321,55 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
              '        tier = "unknown"'),
         ],
     ),
+    # Ruling 52, F3. Retirement, one branch at a time.
+    (
+        "a row may be retired even though its record is in the corpus",
+        [("    if in_corpus:", "    if False:")],
+    ),
+    (
+        "a retirement no longer needs a written reason",
+        [('        if not str(entry.get("because", "") or "").strip():',
+          "        if False:")],
+    ),
+    (
+        "retired_on stops having to be a date",
+        [('        if not _ISO_DATE.match(str(entry.get("retired_on", "") or "")):',
+          "        if False:")],
+    ),
+    (
+        "a record may be retired twice",
+        [("        if rid in retired_ids:", "        if False:")],
+    ),
+    (
+        "a record may be retired and excused at once",
+        [("    if clash:", "    if False:")],
+    ),
+    (
+        "a retired row's phases stop being checked",
+        [(PHASE_CHECK,
+          "\n    in_corpus = sorted(set(retired_ids) & set(derived_tiers))")],
+    ),
+    (
+        "a retired term that is not a list is iterated anyway",
+        [("    if not isinstance(retired, list):", "    if False:")],
+    ),
+    (
+        "a retired row is subtracted rather than named",
+        [("    if retired:", "    if False:")],
+    ),
+    (
+        "the retirement's written reason stops being printed",
+        [("""            lines.append(f"      {entry.get('because', '')}")""",
+          """            pass""")],
+    ),
+    (
+        "the report stops saying a retired row is in no mean",
+        [('"here, counted in NO mean below.")', '"here.")')],
+    ),
+    (
+        "the ledger no longer has to carry a retired list",
+        [('    "retired",\n    "not_timed",', '    "not_timed",')],
+    ),
 ]
 
 EXPECTED = [
@@ -351,6 +410,17 @@ EXPECTED = [
     "GUARD a record's total is the sum of every phase it declares",
     "GUARD a tier's records are summarised in curation order, not file order",
     'GUARD records are counted under their own tier and not pooled',
+    "GUARD retiring a row whose record IS in the corpus is refused -- otherwise retirement takes the expensive records out of the column",
+    "GUARD a retirement with no written reason is refused",
+    "GUARD a retired_on that is not a date is refused",
+    "GUARD a record retired twice is refused",
+    "GUARD a record that is retired and also excused is refused -- one record, one answer",
+    "GUARD a retired row's phases are checked like any other row's",
+    "GUARD a retired term that is not a list is refused",
+    "GUARD the report NAMES a retired row rather than subtracting it",
+    "GUARD the report prints the retirement's written reason",
+    "GUARD the report says a retired row is in no mean, so a reader cannot take it for a timed record",
+    "GUARD the required ledger terms are exactly the seven declared here, and a term removed from the set is refused rather than untested",
 ]
 
 # NOT mutation-verified from this source, and said so rather than left to be

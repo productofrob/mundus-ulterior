@@ -117,6 +117,10 @@ def ledger(**overrides) -> dict:
             "n_per_tier_at_60": {"verbatim_with_provenance": 14},
         },
         "records": [entry(), entry(record_id="a-02", tier="catalogue_record")],
+        # Ruling 52. Present and empty in the fixture for the same reason it is
+        # present and empty on disk: a ledger with nowhere to record a
+        # retirement makes the first one a hand edit.
+        "retired": [],
         "not_timed": {},
         "min_n_to_read_as_a_trend": 10,
         "max_measured_span_minutes": 240,
@@ -324,6 +328,24 @@ def test_coverage():
         "GUARD a corpus covered by timing and excusing together is accepted",
     )
 
+    # Found by ruling 52's own mutation, 2026-08-31. The loop below iterates
+    # LEDGER_REQUIRED, so it tests the MECHANISM -- a missing term is refused --
+    # and can never see a term LEAVE the set: delete one and the loop simply
+    # stops testing it. That was true of all six original terms and nobody
+    # could have noticed, because no mutation had ever removed one. The
+    # membership is therefore declared here as well, independently, in ruling
+    # 43's shape: declared in the module, declared again in the suite, and a
+    # disagreement fails. It is the same lesson as "a check that greps a
+    # heading passes against a report that prints the heading and no rows".
+    expect(
+        LEDGER_REQUIRED == {
+            "phases", "comparator", "records", "retired", "not_timed",
+            "min_n_to_read_as_a_trend", "max_measured_span_minutes",
+        },
+        "GUARD the required ledger terms are exactly the seven declared here, "
+        "and a term removed from the set is refused rather than untested",
+    )
+
     for term in sorted(LEDGER_REQUIRED):
         short = ledger()
         short.pop(term)
@@ -503,11 +525,119 @@ def test_against_the_live_ledger():
     )
 
 
+def test_the_report_names_retired_rows():
+    """Ruling 52. A retired row that no report mentions is a row that
+    vanished, which is precisely what retirement was built not to be."""
+    print("format_report, retirement")
+
+    entry_retired = entry(record_id="z-99", tier="")
+    entry_retired.update({"retired_on": "2026-08-31",
+                          "because": "the hunt these minutes measured is what "
+                                     "ruled the source out"})
+    doc = ledger(retired=[entry_retired])
+    text = "\n".join(format_report(doc, {"by_tier_at_60": {}}))
+    expect("z-99" in text,
+           "GUARD the report NAMES a retired row rather than subtracting it")
+    expect("ruled the source out" in text,
+           "GUARD the report prints the retirement's written reason")
+    expect("counted in NO mean" in text,
+           "GUARD the report says a retired row is in no mean, so a reader "
+           "cannot take it for a timed record")
+
+    quiet = "\n".join(format_report(ledger(), {"by_tier_at_60": {}}))
+    expect("retired rows" not in quiet,
+           "GUARD a ledger with nothing retired prints no retirement block")
+
+
+def test_retirement():
+    """Ruling 52, F3. A row whose record will never exist.
+
+    Source hunting is the phase that DECIDES which record exists, so the clock
+    cannot be started against the right id until the phase it is timing is
+    over. The first record this project ever timed proved it in under three
+    minutes.
+
+    The guard that matters is the anti-loophole: a row may be retired only if
+    its record is NOT in the corpus. Without it, retirement is a way to take
+    the expensive records out of the column kill trigger 3 reads -- which is
+    floor.json's a_named_sweep_must_actually_fail_the_rule, one file over.
+    """
+    print("check_ledger, retirement")
+
+    def retired(record_id="z-99", **overrides):
+        out = entry(record_id=record_id, tier="")
+        out.update({"retired_on": "2026-08-31",
+                    "because": "the hunt these minutes measured is what ruled "
+                               "the source out"})
+        out.update(overrides)
+        return out
+
+    ok = ledger(retired=[retired()])
+    expect(
+        not check_ledger(ok, TIERS),
+        "GUARD a retired row naming a record that is not in the corpus is "
+        "accepted, and is NOT counted as a stale row",
+    )
+
+    # The anti-loophole, and the only guard here that protects a number.
+    bad = ledger(records=[entry(record_id="a-02", tier="catalogue_record")],
+                 retired=[retired(record_id="a-01",
+                                  tier="verbatim_with_provenance")])
+    expect(
+        fired(check_ledger(bad, TIERS), "may be retired only if"),
+        "GUARD retiring a row whose record IS in the corpus is refused -- "
+        "otherwise retirement takes the expensive records out of the column",
+    )
+
+    bad = ledger(retired=[retired(because="   ")])
+    expect(
+        fired(check_ledger(bad, TIERS), "no written reason"),
+        "GUARD a retirement with no written reason is refused",
+    )
+
+    bad = ledger(retired=[retired(retired_on="last Tuesday")])
+    expect(
+        fired(check_ledger(bad, TIERS), "is not a date"),
+        "GUARD a retired_on that is not a date is refused",
+    )
+
+    bad = ledger(retired=[retired(), retired()])
+    expect(
+        fired(check_ledger(bad, TIERS), "retired twice"),
+        "GUARD a record retired twice is refused",
+    )
+
+    bad = ledger(retired=[retired(record_id="z-99")],
+                 not_timed={"z-99": "excused"})
+    expect(
+        fired(check_ledger(bad, TIERS), "retired AND timed or excused"),
+        "GUARD a record that is retired and also excused is refused -- one "
+        "record, one answer",
+    )
+
+    # A retired row is still a row: its phases are checked, so minutes cannot
+    # be laundered by retiring the entry that holds them.
+    bad = ledger(retired=[retired(phases=phases(source_hunting={
+        "minutes": -5, "provenance": "measured"}))])
+    expect(
+        fired(check_ledger(bad, TIERS), "negative"),
+        "GUARD a retired row's phases are checked like any other row's",
+    )
+
+    bad = ledger(retired="not a list")
+    expect(
+        fired(check_ledger(bad, TIERS), "retired is not a list"),
+        "GUARD a retired term that is not a list is refused",
+    )
+
+
 def main() -> int:
     test_phase_vocabulary()
     test_comparator()
     test_record_entries()
     test_coverage()
+    test_retirement()
+    test_the_report_names_retired_rows()
     test_the_open_clock()
     test_the_report()
     test_the_arithmetic()

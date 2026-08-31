@@ -13104,6 +13104,26 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **RULING 52, and the column opened.** `cost_log start seasia-04-vo-canh
+  source_hunting` at 08:18 UTC is the first curation minute this project has
+  ever recorded. The hunt those minutes measured is what ruled Võ Cạnh out —
+  no open transliteration is published for it — so 2.6 measured minutes were
+  filed against a record that will never exist, `ingest.verify` went red on
+  the stale row, and the CLI had no way to correct one. **Source hunting is
+  the phase that decides which record exists, so the clock cannot be started
+  against the right id until the phase it is timing is over**, and that is
+  true of all 36 records. `cost_log retire` keeps the row and its written
+  reason rather than deleting it; the minutes are re-filed with `add` as
+  ESTIMATED, because a span measured against an id the hunt had not settled is
+  not a measurement of the record that landed. **The anti-loophole is the
+  whole design: a row may be retired only if its record is NOT in the
+  corpus**, or retirement takes the expensive records out of the column kill
+  trigger 3 reads. Its own mutation then found that the required-terms guard
+  loops over `LEDGER_REQUIRED` and can never see a term LEAVE it — true of all
+  six original terms, and now declared independently in the suite.
+  `ingest.test_cost` 46 → 59, `mutate_cost` 37 → 48 — and the report now
+  NAMES every retired row with its minutes and its written reason, because
+  a retired row no report mentions is a row that vanished.
 - **FINDING 36: the BASELINE check found a red suite on its first run.**
   `scripts/test_recover_baseline.py` fails — `run_answer`'s archived payload
   grew `corpus_version` (D4) and `serving_stack` (Block E) and

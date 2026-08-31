@@ -232,6 +232,65 @@ def cmd_add(args) -> int:
     return 0
 
 
+def cmd_retire(args) -> int:
+    """Ruling 52, F3. Retire a row whose record will never exist.
+
+    NOT a delete. The row is moved to `retired`, keeps every minute it
+    recorded, and gains the date and the written reason -- because excluding
+    by a recorded rule is a diff and excluding by making a row vanish is not.
+    That is floor.json's `excluded_by_rule` one file over.
+
+    The minutes are NOT carried across automatically, and that is the ruling
+    rather than an omission. A span measured against a record id the hunt had
+    not yet settled is not a measurement of the record that landed, so it is
+    re-filed with `add`, which writes `estimated` and demands a reason. Ruling
+    48: the weaker provenance wins.
+    """
+    ledger = read_ledger()
+    tiers = derived_tiers()
+    if not args.because.strip():
+        print("`retire` needs --because. An unexplained retirement is a "
+              "deletion with extra steps, and the minutes it removes are the "
+              "ones nobody can re-measure.")
+        return 1
+    if args.record_id in tiers:
+        print(
+            f"{args.record_id} IS in the corpus, so its row may not be "
+            f"retired. A row may be retired only if its record does not "
+            f"exist: otherwise retirement is a way to take the expensive "
+            f"records out of the column kill trigger 3 reads."
+        )
+        return 1
+    open_entry = ledger.get("open_entry") or {}
+    if open_entry.get("record_id") == args.record_id:
+        print(f"a clock is still running on {args.record_id}. Stop it first, "
+              f"or its minutes are retired without ever being recorded.")
+        return 1
+    for i, entry in enumerate(ledger["records"]):
+        if entry.get("record_id") == args.record_id:
+            break
+    else:
+        print(f"{args.record_id} has no row in `records`.")
+        return 1
+    entry = ledger["records"].pop(i)
+    entry["retired_on"] = _now().strftime("%Y-%m-%d")
+    entry["because"] = args.because
+    ledger.setdefault("retired", []).append(entry)
+    write_ledger(ledger)
+    print(
+        f"retired {args.record_id}: {cost.record_total(entry):.1f} min kept in "
+        f"`retired`, not deleted.\n"
+        f"Those minutes are NOT credited anywhere yet. Re-file them on the "
+        f"record that landed with\n"
+        f"  python -m ingest.cost_log add <record-id> <phase> --minutes N "
+        f"--because \"...\"\n"
+        f"which writes ESTIMATED, because a span measured against a record id "
+        f"the hunt had not settled is not a measurement of the record that "
+        f"landed."
+    )
+    return 0
+
+
 def cmd_status(args) -> int:
     ledger = read_ledger()
     open_entry = ledger.get("open_entry")
@@ -296,6 +355,14 @@ def main(argv: "list[str] | None" = None) -> int:
     p.add_argument("--minutes", type=float, required=True)
     p.add_argument("--because", required=True)
     p.set_defaults(func=cmd_add)
+
+    # Ruling 52. A writing command, and the third one -- kept beside `add`
+    # rather than among the read-only three.
+    p = sub.add_parser("retire",
+                       help="retire a row whose record will never exist")
+    p.add_argument("record_id")
+    p.add_argument("--because", required=True)
+    p.set_defaults(func=cmd_retire)
 
     sub.add_parser("status").set_defaults(func=cmd_status)
     sub.add_parser("report").set_defaults(func=cmd_report)

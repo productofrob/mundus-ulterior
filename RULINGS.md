@@ -1,4 +1,4 @@
-# Rulings register — 1 to 51
+# Rulings register — 1 to 52
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
 same day with 27-31, declared during TASK 2 (D2's schema change and D3's case
@@ -34,7 +34,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 36-42       F0_RULINGS.md             full text, "## Ruling N" headings
 43-45       F1_RULINGS.md             full text, "## Ruling N" headings
 46-48       F2_RULINGS.md             full text, "## Ruling N" headings
-49-51       F3_RULINGS.md             full text, "## Ruling N" headings
+49-52       F3_RULINGS.md             full text, "## Ruling N" headings
 ```
 
 ## The register
@@ -190,6 +190,17 @@ Full text in `F3_RULINGS.md`, in the same session, together with FINDING 33.
     cannot calibrate BY CONSTRUCTION. And the 36 records are ALLOCATED across
     F3-F7 as slots, hard regions first, every source-language record before
     every catalogue record, checked by ingest.verify.
+52  a ledger row may be RETIRED, and only if its record does not exist.
+    Source hunting is the phase that DECIDES which record exists, so the clock
+    cannot be started against the right id until the phase it is timing is
+    over -- the first record this project ever timed proved it in three
+    minutes. `retire` keeps the row and its written reason rather than
+    deleting it, and the minutes are re-filed with `add` as ESTIMATED, because
+    a span measured against a record id the hunt had not settled is not a
+    measurement of the record that landed. The anti-loophole is the whole
+    design: a row may be retired only if its record is NOT in the corpus,
+    or retirement takes the expensive records out of the column kill trigger 3
+    reads.
 ```
 
 Ruling 49 is the one to read before archiving or quoting any sweep run after

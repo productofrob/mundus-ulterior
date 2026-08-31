@@ -114,6 +114,11 @@ LEDGER_REQUIRED = {
     "phases",
     "comparator",
     "records",
+    # Ruling 52, F3. A row whose record will never exist, kept rather than
+    # deleted. Required, not optional: a ledger without the list is a ledger
+    # where a retirement has nowhere to be recorded, and the first one would
+    # then be a hand edit.
+    "retired",
     "not_timed",
     "min_n_to_read_as_a_trend",
     "max_measured_span_minutes",
@@ -357,6 +362,66 @@ def check_ledger(
                     f"two means at once."
                 )
 
+    # Ruling 52, F3, 2026-08-31. Source hunting is the phase that DECIDES
+    # which record exists, so the clock cannot be started against the right id
+    # until the phase it is timing is over. The first record in this project's
+    # history proved it in under three minutes: the hunt eliminated the source
+    # the clock was opened against, and the ledger had no way to say so.
+    #
+    # The anti-loophole is the whole design, and it is one clause: a row may be
+    # retired ONLY if the record is not in the corpus. Without it, `retire`
+    # becomes a way to delete the expensive records from the column kill
+    # trigger 3 reads -- the same shape as a sweep excluded from a calibration
+    # because somebody did not like its numbers, which floor.json refuses with
+    # `a_named_sweep_must_actually_fail_the_rule`.
+    #
+    # Retired rows are KEPT and named, never deleted. Excluding by a recorded
+    # rule is a diff; excluding by making a row vanish is not.
+    retired = ledger.get("retired")
+    retired_ids: dict[str, dict] = {}
+    if not isinstance(retired, list):
+        problems.append("retired is not a list")
+        retired = []
+    for i, entry in enumerate(retired):
+        where = f"retired[{i}]"
+        if not isinstance(entry, dict):
+            problems.append(f"{where}: not an object")
+            continue
+        rid = str(entry.get("record_id", "") or "")
+        if not rid:
+            problems.append(f"{where}: no record_id")
+            continue
+        where = f"retired[{rid}]"
+        if rid in retired_ids:
+            problems.append(f"{where}: retired twice")
+            continue
+        retired_ids[rid] = entry
+        if not str(entry.get("because", "") or "").strip():
+            problems.append(
+                f"{where}: retired with no written reason. An unexplained "
+                f"retirement is a deletion with extra steps, and the minutes "
+                f"it removes are the ones nobody can re-measure."
+            )
+        if not _ISO_DATE.match(str(entry.get("retired_on", "") or "")):
+            problems.append(
+                f"{where}: retired_on {entry.get('retired_on')!r} is not a date"
+            )
+        problems.extend(_check_record_entry(entry, where, max_span))
+
+    in_corpus = sorted(set(retired_ids) & set(derived_tiers))
+    if in_corpus:
+        problems.append(
+            f"{in_corpus} are RETIRED and are in the corpus. A row may be "
+            f"retired only if its record does not exist: otherwise retirement "
+            f"is a way to take the expensive records out of the column kill "
+            f"trigger 3 reads."
+        )
+    clash = sorted(set(retired_ids) & (set(timed) | set(not_timed)))
+    if clash:
+        problems.append(
+            f"{clash} are retired AND timed or excused. One record, one answer."
+        )
+
     both = sorted(set(timed) & set(not_timed))
     if both:
         problems.append(
@@ -518,6 +583,24 @@ def format_report(
         f"why not record 12 : {comparator.get('why_not_record_12', '?')}",
         "",
     ]
+
+    # Ruling 52. NAMED, never merely subtracted -- the sentence
+    # calibrate_floor already earns about an excluded sweep. A retired row that
+    # no report mentions is a row that vanished, which is the thing retirement
+    # was built NOT to be. Printed above the table because it is the one part
+    # of this report that is about minutes NOT in it.
+    retired = [e for e in (ledger.get("retired") or []) if isinstance(e, dict)]
+    if retired:
+        lines.append(f"retired rows: {len(retired)} -- minutes recorded "
+                     f"against a record that will never exist, kept and named "
+                     f"here, counted in NO mean below.")
+        for entry in retired:
+            lines.append(
+                f"  {entry.get('record_id', '?')}   "
+                f"{record_total(entry):.1f} min   "
+                f"retired {entry.get('retired_on', '?')}")
+            lines.append(f"      {entry.get('because', '')}")
+        lines.append("")
 
     timed = sum(b["n"] for b in by_tier.values())
     excused = len(ledger.get("not_timed") or {})

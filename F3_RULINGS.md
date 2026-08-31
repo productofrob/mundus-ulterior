@@ -367,6 +367,98 @@ avoid.
 
 ---
 
+## Ruling 52 — a ledger row may be RETIRED, and only if its record does not exist
+
+**`python -m ingest.cost_log retire <record-id> --because "..."` moves a row
+out of `records` into `retired`, keeping every minute it recorded together
+with the date and the written reason. It is not a delete. A row may be retired
+ONLY if its record is not in the corpus, and the minutes are not carried
+across: they are re-filed with `add`, which writes `estimated`.**
+
+### The first record this project ever timed found the defect in three minutes
+
+`python -m ingest.cost_log start seasia-04-vo-canh source_hunting` opened the
+column at 08:18 UTC on 2026-08-31. The hunt those minutes were measuring is
+what ruled Võ Cạnh out — no open transliteration is published for it, so the
+record could only ever have been `published_translation_only`, a tier
+Southeast Asia's allocation carries none of. `stop` wrote 2.6 measured minutes
+against a record that will never exist, `ingest.verify` went red on the stale
+row, and `cost_log` had `start`, `stop`, `add`, `status`, `report` and `check`
+— **no way to correct one.** Ruling 46 makes `cost_log` the only thing
+permitted to write that ledger, so hand-editing the JSON was not available
+either.
+
+**The general statement is worth more than the incident: source hunting is the
+phase that DECIDES which record exists, so the clock cannot be started against
+the right record id until the phase it is timing is over.** That is true of
+every one of the 36 records, not of this one, and F2 named the day it would
+show up: *"the FIRST record F3 curates is the first test of the CLI under real
+conditions."*
+
+### The anti-loophole is the whole design
+
+**A row may be retired only if its record is NOT in the corpus.** Without that
+clause `retire` is a way to take the expensive records out of the column kill
+trigger 3 reads — curate three hard `verbatim_with_provenance` records, retire
+the two that took an afternoon, and the tranche reports a falling mean with
+every rule satisfied.
+
+It is `floor.json`'s `a_named_sweep_must_actually_fail_the_rule` one file over,
+and it earns the same sentence: **a list that can hold a qualifying row is a
+place to put numbers nobody liked.**
+
+Retired rows are kept and named rather than deleted, for the reason
+`calibration_scope` already gives about sweep archives: excluding by a recorded
+rule is a diff, and excluding by making a row vanish is not.
+
+### The minutes become an estimate, and that is the ruling
+
+`retire` credits nothing. The minutes are re-filed on the record that landed
+with `add`, which writes `estimated` and demands a written reason.
+
+**A span measured against a record id the hunt had not yet settled is not a
+measurement of the record that landed.** Ruling 48 already decides the
+tie-break — the weaker provenance wins — and this is that rule reaching a case
+ruling 48 did not have in front of it. The alternative, carrying `measured`
+minutes across a change of subject, would put the most trustworthy label in the
+file on the one figure whose subject moved.
+
+### What the mutation found, and it was not about retirement
+
+The mutation `the ledger no longer has to carry a retired list` — removing
+`"retired"` from `LEDGER_REQUIRED` — reported **MISS**, correctly. The suite's
+required-terms guard is a loop over `LEDGER_REQUIRED` itself:
+
+```python
+for term in sorted(LEDGER_REQUIRED):
+    short = ledger(); short.pop(term)
+    ...refused?
+```
+
+It tests the MECHANISM and can never see a term LEAVE the set: delete one and
+the loop simply stops testing it. **That was true of all six original terms and
+nobody could have noticed, because no mutation had ever removed one.** The
+membership is now declared independently in the suite, in ruling 43's shape —
+declared in the module, declared again in the test, and a disagreement fails.
+Same lesson as the trap this repository already carries about a check that
+greps a heading and passes against a report printing the heading and no rows.
+
+### Named, never merely subtracted
+
+`ingest.cost_log report` prints every retired row — its id, its minutes and the
+reason it was retired — above the table, and says the minutes are counted in no
+mean below it. `ingest.verify`'s note says how many there are. That is the
+sentence `calibrate_floor` already earns about an excluded sweep: **a retired
+row that no report mentions is a row that vanished**, which is the thing
+retirement was built not to be.
+
+```
+ingest.test_cost       46 -> 59
+scripts\mutate_cost.py 37 -> 48, all eleven new mutations verified
+```
+
+---
+
 # FINDING 36 — the BASELINE check found a suite that had been red since Block E, on its first run, and nothing listed it
 
 `scripts/test_recover_baseline.py` fails:

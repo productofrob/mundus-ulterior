@@ -52,7 +52,7 @@ ingest.verify            All integrity checks passed.
                          + a NEW note line: "allocation (ruling 51): F3 8,
                            F4 7, F5 7, F6 7, F7 7 = 36 record(s)"
 ingest.test_fidelity     42 passed, 0 failed      <- was 30; +12 for ruling 51
-ingest.test_cost         46 passed, 0 failed
+ingest.test_cost         59 passed, 0 failed      <- was 46; +13 for ruling 52
 eval.test_answer_eval   360 passed, 0 failed      <- was 343; +17 for ruling 49
 eval.test_ranking_check 236 passed, 0 failed
 answer.test_answer      150 passed, 0 failed      <- SEE BELOW
@@ -71,7 +71,7 @@ above it.
 ## 2. COMMIT FIRST, then the mutation harnesses — DONE 2026-08-31 at `a1af62d`
 
 **288 mutations, six harnesses, no MISS, no UNVERIFIED and no BASELINE block:**
-`mutate_part8` 94, `mutate_fidelity` 35, `mutate_cost` 37, `mutate_ranking`
+`mutate_part8` 94, `mutate_fidelity` 35, `mutate_cost` 48, `mutate_ranking`
 100, `mutate_part7b` 18, `mutate_ui_places` 4. Sources restored byte for byte
 and `git status --porcelain` empty afterwards. F3's owed item 1 is closed: the
 seven new `mutate_part8` mutations were each caught by their own guard, which
@@ -129,7 +129,7 @@ python scripts\mutate_ui_places.py
 ```
 mutate_part8.py     all 94 mutations verified    <- was 87; +7 for ruling 49
 mutate_fidelity.py  all 35 mutations verified    <- was 24; +11 for ruling 51
-mutate_cost.py      all 37 mutations verified
+mutate_cost.py      all 48 mutations verified    <- was 37, ruling 52
 mutate_ranking.py   all 100 mutations verified
 mutate_part7b.py    all 18 mutations verified
 mutate_ui_places.py all 4 mutations verified
@@ -202,7 +202,19 @@ python -m ingest.cost_log stop
 # a phase done away from the keyboard, or a clock left running:
 python -m ingest.cost_log add <record-id> rights_and_licence --minutes 20 `
     --because "checked the licence in the browser before the clock existed"
+
+# RULING 52, and it happened on the very first record: if the hunt eliminates
+# the source the clock was opened against --
+python -m ingest.cost_log retire <record-id> --because "..."
+python -m ingest.cost_log add <the record that landed> source_hunting `
+    --minutes N --because "measured against <retired id>, before the hunt had
+    settled which record would exist"
 ```
+
+`retire` REFUSES a record that is in the corpus, keeps the row rather than
+deleting it, and credits nothing. `add` writes ESTIMATED, which is the ruling
+and not an omission: a span measured against a record id the hunt had not
+settled is not a measurement of the record that landed.
 
 `source_hunting`, `rights_and_licence`, `text_capture`,
 `translation_and_fidelity`, `placement`, `authoring`, `rework`. **Every record
