@@ -1316,6 +1316,38 @@ def sweep_arm(sweep: dict) -> dict:
             "note": "no arm block, and no row records an alias"}
 
 
+def sweep_corpus(sweep: dict) -> dict:
+    """The corpus a sweep ran at, and how that is known. Pure; no I/O.
+
+    Ruling 49, F3. `sweep_arm` exists because nine archives record no arm and
+    the arm had to be reconstructed from what was on disk. This function is its
+    opposite case and that is the whole point: the corpus IS on disk, in every
+    archive, in `corpus_version`, put there by FINDING 14 precisely so that a
+    corpus which moved could not go unnoticed. It was never read. So there is
+    nothing to reconstruct here and nothing is: a sweep either states its
+    corpus or is `unidentifiable`, and an unidentifiable corpus is never read
+    as the current one.
+
+    `corpus_moved` is reported rather than folded into the identity. A sweep
+    whose corpus moved UNDER it has two corpora and matching either end would
+    be picking the flattering one.
+    """
+    version = sweep.get("corpus_version") or {}
+    digest = str(version.get("seed_corpus_digest") or "").strip()
+    try:
+        count = int(version.get("seed_record_count"))
+    except (TypeError, ValueError):
+        count = None
+    moved = sweep.get("corpus_moved") or None
+    if not digest:
+        return {"seed_corpus_digest": None, "seed_record_count": count,
+                "basis": "unidentifiable", "moved": moved,
+                "note": "the archive records no "
+                        "corpus_version.seed_corpus_digest"}
+    return {"seed_corpus_digest": digest, "seed_record_count": count,
+            "basis": "recorded", "moved": moved, "note": ""}
+
+
 def calibration_eligibility(sweeps: list[dict], floor: dict,
                             names: list[str] | None = None) -> dict:
     """May `calibrated: true` be written from these sweeps? Pure; no I/O.
@@ -1377,6 +1409,10 @@ def calibration_eligibility(sweeps: list[dict], floor: dict,
     # behaviour exactly — a floor file written before the clause existed does
     # not silently acquire it.
     declared_arm = scope.get("arm") or {}
+    # Ruling 49, F3, 2026-08-31, declared BEFORE record 25 was ingested and for
+    # that reason. Absent means the clause is not declared and nothing is
+    # checked, which is the pre-F3 behaviour exactly.
+    declared_corpus = scope.get("corpus") or {}
     if names is None:
         names = [None] * len(sweeps)
 
@@ -1428,7 +1464,37 @@ def calibration_eligibility(sweeps: list[dict], floor: dict,
                     f"ran {arm['model_alias']} at temperature "
                     f"{arm['temperature']:g}, not the {want[0]} at temperature "
                     f"{want[1]:g} this floor calibrates from")
-        entry = {"sweep": name, "fails": fails, "arm": arm}
+        # Ruling 49, F3, 2026-08-31. The moment record 25 is ingested, a
+        # sweep at 33 records carries a session identity, runs the full case
+        # set, states its arm and archives complete -- so it satisfies every
+        # clause above -- and `a_named_sweep_must_actually_fail_the_rule` then
+        # makes it impossible to exclude by name. Without this clause the file
+        # would INSIST that a 33-record sweep calibrate a floor set at 24: the
+        # arm argument one dimension over, on data FINDING 14 already put in
+        # every archive and no rule ever read. This does not suspend the floor;
+        # a sweep at a moved corpus still computes a verdict on required_cases
+        # and that verdict is the regression reading. It may not RE-CALIBRATE.
+        corpus = sweep_corpus(sweep)
+        if declared_corpus:
+            want_digest = str(declared_corpus.get("seed_corpus_digest") or "")
+            want_count = declared_corpus.get("seed_record_count")
+            if corpus["basis"] == "unidentifiable":
+                fails.append(
+                    f"records no identifiable corpus ({corpus['note']}), and "
+                    f"this floor calibrates only at {want_digest[:8]}... "
+                    f"({want_count} records)")
+            elif corpus["seed_corpus_digest"] != want_digest:
+                fails.append(
+                    f"ran at corpus {corpus['seed_corpus_digest'][:8]}... "
+                    f"({corpus['seed_record_count']} records), not the "
+                    f"{want_digest[:8]}... ({want_count} records) this floor "
+                    f"calibrates from")
+            elif corpus["moved"]:
+                # Two corpora in one archive. Matching either end would be
+                # choosing the one that lets the sweep through.
+                fails.append(
+                    f"the corpus MOVED under this sweep: {corpus['moved']}")
+        entry = {"sweep": name, "fails": fails, "arm": arm, "corpus": corpus}
         if not fails:
             # A sweep that qualifies cannot be excluded. This is the whole
             # anti-loophole, and it is one line.
@@ -1522,6 +1588,12 @@ def calibration_eligibility(sweeps: list[dict], floor: dict,
         # difference should not have to be dug out of the code.
         "arms": [dict(sweep_arm(sweep), sweep=name)
                  for sweep, name in zip(sweeps, names)],
+        "declared_corpus": declared_corpus or None,
+        # Every corpus seen, eligible or not. A calibration standing on four
+        # sweeps at 24 records is a different claim from one standing on four
+        # at 60, and after F3 that difference is the whole question.
+        "corpora": [dict(sweep_corpus(sweep), sweep=name)
+                    for sweep, name in zip(sweeps, names)],
     }
 
 
@@ -1546,6 +1618,14 @@ def print_calibration(verdict: dict) -> None:
         # silently is a sweep nobody can argue with later.
         print(f"    excluded by rule  {entry['sweep']}")
         print(f"                      {'; '.join(entry['fails'])}")
+    if verdict.get("declared_corpus"):
+        want = verdict["declared_corpus"]
+        print(f"  scope: a sweep calibrates only at corpus "
+              f"{str(want.get('seed_corpus_digest'))[:8]}... "
+              f"({want.get('seed_record_count')} records)\n"
+              f"         (floor.json calibration_scope.corpus, ruling 49). "
+              f"The floor stays IN FORCE at any\n         corpus; what a "
+              f"moved corpus removes is the ability to re-calibrate it.")
     if verdict["dates_with_more_than_one_session"]:
         print(f"  more than one session on: "
               f"{', '.join(verdict['dates_with_more_than_one_session'])} — "

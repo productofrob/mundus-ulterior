@@ -501,7 +501,25 @@ trigger 2.
 
 ---
 
-# Block F — W3, corpus 24 → 60 (8 sessions) → **G3**
+# Block F — W3, corpus 24 → 60 (NINE sessions) → **G3**
+
+*AMENDED 2026-08-31, in F3, before record 25 was ingested — ruling 50, and
+FINDING 33 is why. THREE rules in this repository require three sessions at 60
+records on three distinct UTC dates, and this block booked two:*
+
+```
+floor.json  min_distinct_dates                     3 dates, and ruling 49 now
+                                                   requires them AT the corpus
+                                                   in force
+floor.json  promotion_and_reinstatement_bar        3 sessions, 3 dates, AT 60
+                                                   (weilue-chinese-quotation)
+floor.json  demotions.vimose-runes.reinstated_when 3 sessions, 3 dates, AT 60
+```
+
+*The list is the count, not a sentence about the list. Two dates at 60 leave
+the floor calibrated from four sweeps at 24 records through G3, and both cases
+unresolvable. The ninth session is ~198 chat calls and one booked day; the F8
+spike is NOT spent on it.*
 
 Only after G2 and G4. **Depth, not breadth** — all seven regions already exist;
 deepen them rather than add. Target ~30 records per region at 200, so 60 is
@@ -528,7 +546,21 @@ Minutes per record, in a column, from the first new record. **Kill trigger 3
 depends on it:** if record 60 costs what record 12 cost, 200 is a staffing
 question rather than an engineering one, and that is a finding worth having.
 
-### F3–F7 — Curate in sub-tranches of ~9, re-running the sweep at each
+### F3–F7 — Curate in sub-tranches of ~7, re-running the RANKING check at each
+
+*AMENDED 2026-08-31, in F3 — ruling 51. This heading and the command block
+beneath it said two different things: "the sweep" reads as the ~198-call answer
+sweep, and the block is the ranking check. THE COMMAND BLOCK IS WHAT F3–F7 DO.
+A full sweep at 33 records produces a number no rule here may read — it cannot
+calibrate (ruling 49), cannot promote or reinstate (the bar says at 60), and G3
+asks for nothing at 33, 42 or 51. The floor's mid-tranche reading is a PROBE:
+the three required cases at min_repetitions, ~9 calls, archived to
+`eval/probes/`.*
+
+*And the 36 records are ALLOCATED before the first one, in
+`data/corpus_tiers.json.target_mix.allocation`: F3 8, F4 7, F5 7, F6 7, F7 7,
+hard regions first, every source-language record before every catalogue record,
+and `ingest.verify` fails if the allocation does not deliver the declared mix.*
 
 After each sub-tranche:
 
@@ -538,6 +570,11 @@ python -m ingest.run_ingest
 python -m ingest.run_embed              # only the new/changed chunks
 python -m eval.run_ranking_check        # must hold ≥95% top-6
 python ui\build_ui_data.py --verify     # zero moved, zero absent
+
+# the floor's mid-tranche reading (ruling 51) — ~9 chat calls, archives to
+# eval/probes/ and can never calibrate:
+python -m eval.run_answer_sweep --case antikythera-absent --case chinese-da-qin `
+    --case muziris-cargo --repeat 3 --session-label "F3 floor probe"
 ```
 
 **Expect the machine-translation path to fire.** Local non-English sources mostly
@@ -562,7 +599,13 @@ carries the full text; `F0_RULINGS.md` is the authority. The two new boxes are
 the two numbers that SAW day 3, and the box they sit beside is the one that
 did not.*
 
-- [ ] **60 records** ingested, all seven regions
+- [ ] **60 records** ingested, all seven regions, and the ALLOCATION delivered
+      (ruling 51: `ingest.verify` checks it, and it is the only thing that
+      makes the per-region source-language floor reachable)
+- [ ] **three sessions at 60 on three distinct UTC dates** (ruling 50), and
+      with them: `calibrated: true` re-written at the 60-record corpus
+      (ruling 49), `weilue-chinese-quotation` resolved, `vimose-runes`
+      resolved. Two dates leave all three where they are.
 - [ ] curation cost per record recorded and **trending down**
 - [ ] full sweep re-run at 60: content pass rate **not lower** than at 24
 - [ ] **per-session stability at 60, reported beside the pass rate** — not as a

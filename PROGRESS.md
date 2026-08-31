@@ -12986,3 +12986,166 @@ before it was tried, and F1's own correction is what it would have fired on.**
 **A suite that prints no count can carry a skip forever, because nobody can
 tell one skipped assertion from thirty. Two of the seven were printing
 none.**
+
+---
+
+# F3 — the clause the floor did not have, and a date nobody had booked (2026-08-31)
+
+**Three decisions, all recorded BEFORE record 25 is ingested.** `F3_RULINGS.md`
+carries the full text of rulings 49-51 and FINDING 33; this is the summary and
+the state.
+
+**Ruling 49 — the corpus is part of the calibration scope.** `floor.json`
+gained a `corpus` clause: a seed record count and a digest, checked exactly as
+ruling 36's arm clause is, optional in the same way, and refused at load if
+half-declared. The defect it closes is not that a 33-record sweep might
+calibrate the floor by accident — it is that the file's own anti-loophole,
+`a_named_sweep_must_actually_fail_the_rule`, would have **INSISTED** on it: a
+sweep at 33 records satisfies every other clause, so it could not have been
+excluded by name. Measured before the clause was written: all four archives the
+floor stands on carry `seed_record_count 24` in their own `corpus_version`
+block, put there by FINDING 14 so that a corpus which moved could not go
+unnoticed, and `eval/calibrate_floor.py` contained **zero occurrences of the
+string "corpus"**. The data was on disk for three weeks and the rule did not
+read it.
+
+**The floor is NOT suspended for the tranche.** A run at a moved corpus still
+computes a verdict on `required_cases` — that verdict is the regression reading
+— and what it may not do is re-calibrate. `calibrate_floor` still reports
+ELIGIBLE at this commit, which is checked rather than asserted: a rule that
+de-calibrated the floor by arriving would be a rule that lowered the thing it
+was written to protect.
+
+**Ruling 50 — the third UTC date at 60 is booked, as a NINTH session.** Three
+rules in this repository require three sessions at 60 on three distinct dates:
+`min_distinct_dates`, the promotion bar governing `weilue-chinese-quotation`,
+and `vimose-runes`'s reinstatement condition. G3's amendment booked two. That
+is FINDING 33, and its shape is FINDING 14's one level up from data: a quantity
+that has to agree across three declarations, maintained in three places, with
+nothing computing the sum — two of the three written on the same day, in the
+same file, by the same decision list. `PHASE2_PLAN.md` now carries the session
+count and the three rules that set it in one place. **The F8 spike was NOT
+spent on it:** the two records it would promote are the corpus's only
+`pointer_only` record and its companion, and trading them for a calibration
+date is paying for a measurement with the thing being measured.
+
+**Ruling 51 — a sub-tranche re-runs the RANKING check and a floor PROBE.**
+`PHASE2_PLAN`'s F3-F7 heading said "re-running the sweep at each" and its own
+command block said the ranking check; read the heading the other way and it is
+~198 chat calls four or five times over, on top of three sessions at 60. The
+command block is what F3-F7 do, and the argument is not only cost: **a full
+sweep at 33 records produces a number no rule here may read** — it cannot
+calibrate (ruling 49), cannot promote or reinstate (the bar says at 60), and G3
+asks for nothing at 33, 42 or 51. The floor's mid-tranche reading is a probe of
+the three required cases at `min_repetitions`, ~9 calls, archived to
+`eval/probes/` and never to `eval/sweeps/` — **so it cannot calibrate by
+construction**, and `excluded_by_rule` does not grow one entry per sub-tranche.
+The directory is the rule; the scope clause is still the guard.
+
+**And the 36 records are ALLOCATED.** `target_mix.allocation` places every one
+as a slot — region, tier, count — over F3 to F7, and `ingest.verify` FAILS if
+the slots do not deliver the declared mix. Southeast Asia's four
+source-language records go first because it has zero today; every
+source-language record is curated before every catalogue record, and the check
+refuses an allocation where that is not true. **That biases the aggregate cost
+per record downward by construction, which is why ruling 46 already reports per
+tier and in curation order** — said here so nobody at G3 reads a falling total
+as efficiency.
+
+## State at the close of F3 (2026-08-31)
+
+*Every number below was printed by the thing it describes, through the device
+bridge. The bridge runs a different interpreter from the host venv and one
+number differs because of it, which is said where it happens rather than
+smoothed over.*
+
+```
+tree            F3's commit, on top of
+                51e0f21  F3_START names the commit it was written at
+                a74a307  F2: a column that cannot be gamed
+corpus          24 records / 59 chunks    STILL UNMOVED
+digest          26e4a683014bdf8a3dff98d48865a61869d137853333b82d024220c18eda9b28
+                >>> F3 declared the rules for moving it and did not move it. <<<
+
+SEVEN SUITES
+INGEST          ingest.verify                    GREEN   <- FIRST, always
+                                                 + allocation note (ruling 51)
+TIERS           ingest.test_fidelity         42   GREEN   was 30, +12
+COST            ingest.test_cost             46   GREEN
+ANSWER          eval.test_answer_eval       360   GREEN   was 343, +17
+RANKING         eval.test_ranking_check     236   GREEN
+PART 7          answer.test_answer          149   GREEN, 1 SKIPPED through the
+                                                  bridge: sqlglot is in the HOST
+                                                  venv, not this interpreter.
+                                                  F2 measured 150 on the host;
+                                                  F3 did not re-run it there.
+UI              ui\test_build_ui_data.py     14   GREEN
+
+mutations       mutate_fidelity  35  +11, all eleven verified here in three
+                                     slices (the suite costs 3.9s)
+                mutate_part8     94  +7, anchors checked and all seven fire
+                                     against ONE test function -- NOT the full
+                                     harness, which costs 21.7s x 94 through
+                                     the bridge. CLAIMED, not verified.
+                                     F3_RUNBOOK step 2 settles it on the host.
+
+cost ledger     0 records timed / 24 excused. Comparator within_tranche.
+floor           calibrated TRUE, ELIGIBLE, 4 sweeps, 3 dates, all at 24 records
+                and now SAYING SO in the rule as well as in the archives.
+allocation      F3 8 / F4 7 / F5 7 / F6 7 / F7 7 = 36
+rulings         1 to 51.  findings 1 to 33.
+gates           G4 CLOSED. G3 is Block F's, amended FOUR times in advance
+                (rulings 39, 45, 46, and now 50 and 51 together).
+block           NINE sessions, not eight.
+```
+
+## Open, and deliberately not closed
+
+- **FINDING 34, and it was caught by the host suite rather than by a reader.**
+  Rulings 49-51 were written on 2026-08-31 and stamped **2026-08-29** in seven
+  source files and five documents, including `floor.json`'s own
+  `calibration_scope.corpus.declared_on`. The date came from `F3_START.md`'s
+  opening line and from the session's device information — neither of them a
+  clock — while `session_identity`, the function that dates every sweep,
+  printed `2026-08-31` on the host. Corrected in every one of them. A wrong
+  date here is a false provenance claim in the file whose business is
+  provenance: `min_distinct_dates` counts UTC dates, and ruling 50 has just
+  booked a ninth session to buy one. Fourth transcription defect in three
+  sessions, and the remedy is the one already written down — the number must be
+  produced by something that can be re-run. `F3_RUNBOOK` step 0 is now one
+  command that prints the date.
+- **No record has been timed, and the corpus has not moved.** F3 spent its
+  session on the three things `F3_START` said had to be settled before a single
+  record was curated. Curation starts at the top of F3_RUNBOOK step 4.
+- **`mutate_part8`'s seven new mutations are claimed, not verified.** The full
+  harness cannot run through the bridge at 21.7 seconds a suite.
+- **`ingest/verify.py` check 9 still asserts `len(docs) == 24`**, and it is
+  broken on purpose in the same commit as the records or not at all.
+- **The BASELINE check is in five harnesses of eight.** `mutate_ranking`,
+  `mutate_places`, `mutate_recover` still lack it.
+- Everything carried into F3 is carried out of it: ruling 40's `article_added`
+  unverified against a live run, `muziris-cargo` at 3/5 on the arm,
+  `--archives` pooling arms, `ingest/test_sql.py` never run with sqlglot and
+  the database, and the `verse` and `documentary` profiles at n=1 — which stop
+  being dormant in F3's own sub-tranche, four `verbatim_machine_english`
+  records deep.
+
+## The sentences that travel
+
+And three from F3:
+
+**The floor was calibrated on four sweeps at 24 records and the rule that
+decides what is allowed to calibrate it could not see the corpus — on data that
+had been in every archive for three weeks, put there so that a corpus which
+moved could not go unnoticed.**
+
+**Three rules required a third UTC date at 60 records, two of them written on
+the same day as the gate that booked two, and no document held the sum.**
+
+**An allocation decided at F7 is an allocation fitted to what was already
+curated, and the cheap tier last is the only ordering under which running out
+of days costs the corpus least.**
+
+**Eleven documents said 2026-08-29 and the machine that stamps every sweep said
+2026-08-31. The date was read off another document, in the repository where a
+UTC date is the thing a ninth session was just booked to buy.**

@@ -1295,10 +1295,18 @@ def test_calibration_refuses_too_few_days() -> None:
     # and every guard below would be watching the wrong clause.
     declared_arm = dict((floor.get("calibration_scope") or {}).get("arm") or {})
 
+    # Ruling 49, F3. The same argument as the arm above, and eight assertions
+    # in this file failed on the day the corpus clause landed because their
+    # fixtures did not state one: a fixture that omits the corpus fails on the
+    # CORPUS clause and every guard below it is then watching the wrong one.
+    declared_corpus = dict((floor.get("calibration_scope") or {}).get("corpus")
+                           or {})
+
     def sweep(date, session_id, repeat=3, cases=None):
         n = in_scope if cases is None else cases
         return {"repeat": repeat,
                 "arm": declared_arm,
+                "corpus_version": declared_corpus,
                 "results": [{"case": f"case-{i}"} for i in range(n)],
                 "session": {"id": session_id, "date": date,
                             "date_basis": "UTC"}}
@@ -1528,9 +1536,16 @@ def test_the_calibration_scope_and_demotions() -> None:
 
     declared_arm = dict(scope.get("arm") or {})
 
+    # Ruling 49, F3. The same argument as the arm above, and eight assertions
+    # in this file failed on the day the corpus clause landed because their
+    # fixtures did not state one: a fixture that omits the corpus fails on the
+    # CORPUS clause and every guard below it is then watching the wrong one.
+    declared_corpus = dict(scope.get("corpus") or {})
+
     def sweep(date, session_id, repeat=3, cases=30):
         return {"repeat": repeat,
                 "arm": declared_arm,
+                "corpus_version": declared_corpus,
                 "results": [{"case": f"case-{i}"} for i in range(cases)],
                 "session": {"id": session_id, "date": date,
                             "date_basis": "UTC"}}
@@ -2004,8 +2019,15 @@ def test_the_arm_is_part_of_the_scope() -> None:
     expect(bool(arm.get("model_alias")) and arm.get("temperature") is not None,
            "the floor declares the ARM it calibrates from, as a pair")
 
+    # Ruling 49, F3. The same argument as the arm above, and eight assertions
+    # in this file failed on the day the corpus clause landed because their
+    # fixtures did not state one: a fixture that omits the corpus fails on the
+    # CORPUS clause and every guard below it is then watching the wrong one.
+    declared_corpus = dict(scope.get("corpus") or {})
+
     def sweep(date, session_id, arm_block=..., rows=None, cases=30):
         out = {"repeat": int(floor["min_repetitions"]),
+               "corpus_version": declared_corpus,
                "results": rows or [{"case": f"case-{i}"} for i in range(cases)],
                "session": {"id": session_id, "date": date, "date_basis": "UTC"}}
         if arm_block is not ...:
@@ -2343,6 +2365,179 @@ def test_the_floor_state_a_case_declares() -> None:
     )
 
 
+def test_the_corpus_is_part_of_the_scope() -> None:
+    """Ruling 49, F3, 2026-08-31, declared BEFORE record 25 was ingested.
+
+    The same defect as the arm clause and the same shape of fix, one dimension
+    over. The moment F3 ingests record 25, a sweep at 33 records carries a
+    session identity, runs the full case set, states its arm and archives
+    complete — so it satisfies every clause the scope had — and
+    `a_named_sweep_must_actually_fail_the_rule` then refuses to let a
+    qualifying sweep be excluded by name. The file would have INSISTED that a
+    33-record sweep calibrate a floor set at 24.
+
+    What makes this one different from the arm is that nothing had to be
+    reconstructed. FINDING 14 put `corpus_version` into every archive precisely
+    so that a corpus which moved could not go unnoticed, `calibration_scope`
+    was then written twice without ever reaching for it, and
+    `eval/calibrate_floor.py` contained zero occurrences of the string
+    "corpus". The data was on disk for three weeks and the rule did not read
+    it.
+
+    And the clause does not suspend the floor: a run at a moved corpus still
+    computes a verdict on `required_cases`, which is the regression reading
+    ruling 51 takes at every sub-tranche. What it may not do is re-calibrate.
+    """
+    print("\nthe corpus, and the rule that could not see it")
+
+    floor = load_floor()
+    scope = floor["calibration_scope"]
+    declared = scope.get("corpus") or {}
+    expect(len(str(declared.get("seed_corpus_digest") or "")) == 64
+           and int(declared.get("seed_record_count") or 0) > 0,
+           "the floor declares the CORPUS it calibrates from, as a digest and "
+           "a count")
+
+    declared_arm = dict(scope.get("arm") or {})
+
+    def sweep(date, session_id, corpus=..., cases=30, moved=None):
+        out = {"repeat": int(floor["min_repetitions"]),
+               "arm": declared_arm,
+               "results": [{"case": f"case-{i}"} for i in range(cases)],
+               "session": {"id": session_id, "date": date,
+                           "date_basis": "UTC"}}
+        if corpus is not ...:
+            out["corpus_version"] = corpus
+        if moved:
+            out["corpus_moved"] = moved
+        return out
+
+    at_24 = {"seed_record_count": declared["seed_record_count"],
+             "seed_corpus_digest": declared["seed_corpus_digest"]}
+    at_33 = {"seed_record_count": 33, "seed_corpus_digest": "9" * 64}
+
+    three = [sweep("2026-08-24", "a", at_24), sweep("2026-08-25", "b", at_24),
+             sweep("2026-08-26", "c", at_24)]
+    expect(answer_eval.calibration_eligibility(three, floor)["may_calibrate"],
+           "three dates at the DECLARED corpus calibrate exactly as before")
+
+    # The whole point, in one fixture: F3's first sub-tranche. Full case set,
+    # declared arm, complete grid, real session identity, and a fourth date —
+    # so that nothing but the corpus can be what refuses it.
+    moved_corpus = three + [sweep("2026-08-30", "d", at_33)]
+    verdict = answer_eval.calibration_eligibility(moved_corpus, floor)
+    expect(not verdict["may_calibrate"],
+           "GUARD a sweep at a moved corpus cannot calibrate, even when it "
+           "satisfies every other clause of the rule")
+    expect(any("33 records" in r and "24 records" in r
+               for r in verdict["refusals"]),
+           "the refusal names both record counts, so the reader is not asked "
+           "to compare two digests by eye")
+
+    named = {**floor, "calibration_scope": {
+        **scope, "excluded_by_rule": {"f3.json": "ran at 33 records; this "
+                                                 "floor is set at 24"}}}
+    excused = answer_eval.calibration_eligibility(
+        moved_corpus, named, ["a.json", "b.json", "c.json", "f3.json"])
+    expect(excused["may_calibrate"]
+           and [e["sweep"] for e in excused["excluded_by_rule"]] == ["f3.json"],
+           "a moved corpus CAN be excluded by name, because it really does "
+           "fail the rule — the anti-loophole does not fire on it")
+
+    silent = three + [sweep("2026-08-30", "d")]
+    expect(not answer_eval.calibration_eligibility(
+        silent, floor)["may_calibrate"],
+           "GUARD a sweep that records no corpus at all cannot calibrate — an "
+           "unidentifiable corpus is never read as the current one")
+
+    both_ends = three + [sweep("2026-08-30", "d", at_24,
+                               moved="record 'seasia-04-new' appeared")]
+    expect(not answer_eval.calibration_eligibility(
+        both_ends, floor)["may_calibrate"],
+           "GUARD a sweep whose corpus MOVED under it cannot calibrate even "
+           "when both ends match the declared one")
+
+    # Absent means the clause is not declared and nothing is checked, exactly
+    # as the arm clause behaves. A floor file written before F3 does not
+    # silently acquire a corpus rule.
+    without = {**floor, "calibration_scope": {
+        k: v for k, v in scope.items() if k != "corpus"}}
+    expect(answer_eval.calibration_eligibility(
+        moved_corpus, without)["may_calibrate"],
+           "GUARD a floor declaring no corpus clause behaves exactly as it did "
+           "before F3")
+
+    reading = answer_eval.sweep_corpus(sweep("2026-08-24", "a", at_24))
+    expect(reading["basis"] == "recorded"
+           and reading["seed_record_count"] == declared["seed_record_count"],
+           "a sweep that states its corpus is read as RECORDED")
+    blind = answer_eval.sweep_corpus(sweep("2026-08-24", "a"))
+    expect(blind["basis"] == "unidentifiable"
+           and blind["seed_corpus_digest"] is None,
+           "GUARD a sweep with no corpus_version is unidentifiable and is not "
+           "given a digest")
+
+    # The clause has to match the archives the floor actually stands on, or it
+    # de-calibrates the floor by arriving — which would be a rule that lowered
+    # the thing it was written to protect.
+    sweep_dir = Path(__file__).resolve().parent / "sweeps"
+    standing = []
+    for name in floor.get("calibrated_from_sweeps") or []:
+        path = sweep_dir / name
+        if path.exists():
+            standing.append(json.loads(path.read_text(encoding="utf-8"))
+                            .get("corpus_version") or {})
+    expect(bool(standing) and all(
+        s.get("seed_corpus_digest") == declared["seed_corpus_digest"]
+        for s in standing),
+           "every archive this floor is calibrated FROM ran at the corpus the "
+           "clause declares")
+
+    # A HALF-declared corpus is worse than none, for the reason the arm clause
+    # already gives: calibration_eligibility would compare against a None
+    # digest and admit every archive that also recorded None, which is the
+    # three pre-D4 sweeps precisely.
+    def floor_with(corpus_clause) -> str:
+        broken = json.loads(json.dumps(floor))
+        broken["calibration_scope"]["corpus"] = corpus_clause
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "floor.json"
+            path.write_text(json.dumps(broken), encoding="utf-8")
+            try:
+                load_floor(path)
+            except GoldSetError as exc:
+                return str(exc)
+        return ""
+
+    expect("64-character seed_corpus_digest"
+           in floor_with({"seed_record_count": 24}),
+           "GUARD a corpus clause with no digest is refused at load, not "
+           "silently matched against every archive that also says nothing")
+    expect("seed_record_count"
+           in floor_with({"seed_corpus_digest": declared["seed_corpus_digest"]}),
+           "GUARD a corpus clause with no record count is refused at load")
+    expect("A floor calibrated on no records" in floor_with(
+        {"seed_corpus_digest": declared["seed_corpus_digest"],
+         "seed_record_count": 0}),
+           "GUARD a corpus clause declaring zero records is refused at load")
+
+    # Ruling 51 — the mid-tranche reading, and the directory that is the rule.
+    source = (Path(__file__).resolve().parent
+              / "run_answer_sweep.py").read_text(encoding="utf-8")
+    expect("PROBE_DIR" in source and "target_dir = PROBE_DIR" in source,
+           "GUARD a run below min_cases_per_sweep archives to probes/ and not "
+           "to sweeps/")
+    expect(source.find("min_cases = int(") < source.find("chat_calls = 0"),
+           "GUARD the floor is loaded BEFORE the run, so a floor.json that "
+           "will not load costs no embedding request")
+    calibrator = (Path(__file__).resolve().parent
+                  / "calibrate_floor.py").read_text(encoding="utf-8")
+    expect("sweep_dir.glob(\"*.json\")" in calibrator
+           and "PROBE_DIR" not in calibrator,
+           "GUARD calibrate_floor reads sweeps/ only, so a probe cannot "
+           "calibrate BY CONSTRUCTION rather than by being remembered")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -2376,6 +2571,7 @@ def main() -> int:
     test_skz_titulature_is_tracked_rather_than_corrected_away()
     test_the_floor()
     test_the_floor_state_a_case_declares()
+    test_the_corpus_is_part_of_the_scope()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0
 

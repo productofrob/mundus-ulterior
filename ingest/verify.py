@@ -331,6 +331,7 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     #     count, and the mix is the thing F1 exists to make countable.
     from .fidelity import (
         RECORD_TIERS,
+        check_allocation,
         check_declared_tiers,
         check_target_mix,
         derive_record_tier,
@@ -360,6 +361,18 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             tier_doc.get("target_mix") or {}, tier_doc.get("measured_at_24") or {}
         ):
             failures.append(f"target mix: {problem}")
+        # Ruling 51, F3. The mix at 60 says WHAT and the allocation says WHEN,
+        # and until F3 only the first existed. This FAILS the suite rather than
+        # noting it: unlike the tier histogram below, which is progress against
+        # a target for the END of the block, the allocation is arithmetic that
+        # is either right today or wrong today.
+        mix_doc = tier_doc.get("target_mix") or {}
+        for problem in check_allocation(
+            mix_doc,
+            mix_doc.get("records_by_region_at_24") or {},
+            mix_doc.get("source_language_records_by_region_at_24") or {},
+        ):
+            failures.append(f"allocation: {problem}")
 
         counts = Counter(t for t, _reason in derived.values())
         mix = tier_doc.get("target_mix") or {}
@@ -393,6 +406,26 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             f"{short or 'none'}. An aggregate tier target met entirely inside two "
             f"regions leaves the other five exactly as unable to answer a "
             f"source-text question as they are now."
+        )
+
+        allocation = mix_doc.get("allocation") or {}
+        tranches = allocation.get("sub_tranches") or []
+        placed = sum(
+            int(slot.get("n") or 0)
+            for tranche in tranches for slot in (tranche.get("slots") or [])
+        )
+        notes.append(
+            "allocation (ruling 51): "
+            + ", ".join(
+                f"{tranche.get('name')} "
+                f"{sum(int(s.get('n') or 0) for s in (tranche.get('slots') or []))}"
+                for tranche in tranches
+            )
+            + f" = {placed} record(s), every source-language record before "
+            + "every catalogue record. The sub-tranche a record was curated in "
+            + "is NOT a field on the record and is not derivable from one: "
+            + "this line reports the PLAN, and data/curation_cost.json in "
+            + "curation order reports what happened."
         )
 
     # 13. The curation-cost ledger (F2, rulings 46-48). data/curation_cost.json

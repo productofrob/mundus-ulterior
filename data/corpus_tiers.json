@@ -105,7 +105,201 @@
     "why_not_verbatim_machine_english": "A refusable_with_gloss case requires the answer to quote a PUBLISHED hedged reading. On a record with no published translation the only English is machine, and quoting a machine translation of a disputed reading -- attached to a citation -- is the single worst output this system can produce, which is the thing the gloss arm exists to catch. A gloss case on that tier would be testing for the defect by requiring it.",
     "why_eight": "The gloss arm is 3 cases against 22 answerable, and F1_START records that as a fact about the seed corpus rather than a defect: this corpus holds very few texts whose READING is genuinely in dispute. The sonnet arm then proved the assertions discriminate rather than being impossible -- vimose-runes went 0/12 to 5/5 with a real hedged gloss. So the arm is starved and its instruments work, which makes the supply of gloss-capable RECORDS the binding constraint, and the only moment it can be fixed is while the records are being chosen.",
     "min_expect_quoted_from_original_cases_at_60": 6,
-    "why": "expect_quoted_from_original is true on exactly ONE case in thirty-three, weilue-chinese-quotation, which is also the corpus's only promotion candidate. One case is not a measurement of whether the answer path quotes source texts; it is a measurement of whether it quotes THAT source text. Six, one per region that will hold source-language records, is the smallest number that can tell the two apart."
+    "why": "expect_quoted_from_original is true on exactly ONE case in thirty-three, weilue-chinese-quotation, which is also the corpus's only promotion candidate. One case is not a measurement of whether the answer path quotes source texts; it is a measurement of whether it quotes THAT source text. Six, one per region that will hold source-language records, is the smallest number that can tell the two apart.",
+    "allocation": {
+      "declared_on": "2026-08-31, F3, before the first new record was curated. Ruling 51.",
+      "why_this_file_carries_it": "Ruling 44 declared the mix at 60 and did not say which sub-tranche carries what, and F3-F7 curate roughly seven records at a time. An allocation decided at F7 is an allocation fitted to what was already curated: F7 would inherit every unmet constraint at once - four source-language records for Southeast Asia, eight gloss-capable records, six quoted-from-original cases - with no room left to fail and retry. Every aggregate tier target in this file is satisfiable inside Arabia and South Asia alone, which is why F1 declared the per-region floor and why the allocation has to name regions and not only counts.",
+      "the_ordering_principle": "EVERY source-language record is curated before EVERY catalogue record, and the check refuses an allocation where that is not true. Hard regions go first: Southeast Asia has ZERO records carrying retrieval-eligible source-language text today, which is why all four of its gold cases sit on find records, and it needs four. If the block runs out of days, what is missing is catalogue records - the tier this corpus already has eleven of and the cheapest to curate - rather than the records the product's central claim depends on.",
+      "what_this_does_to_the_cost_column": "It biases the AGGREGATE cost per record downward by construction, because the expensive tiers are curated first and the cheap tier last. That is not a defect to be corrected by re-ordering, it is the reason ruling 46 already reports per tier and in curation order: within a tier the ordering is untouched, and verbatim_with_provenance (14) and verbatim_machine_english (10) are the two tiers above min_n_to_read_as_a_trend and the two spread across four sub-tranches each. The aggregate is unreadable under this allocation and ruling 46 already forbids reading it. Said here so that nobody at G3 reads a falling total as efficiency.",
+      "gloss_and_quotation_are_CASE_quotas": "gloss_capable is a count of RECORDS the sub-tranche must leave capable of carrying a refusable_with_gloss case; expect_quoted_from_original_cases is a count of gold CASES written in that sub-tranche. Seven are allocated against a target of six - one per region that will hold source-language records - so that one may fail without the target failing with it.",
+      "sub_tranches": [
+        {
+          "name": "F3",
+          "slots": [
+            {
+              "region": "Southeast Asia",
+              "tier": "verbatim_with_provenance",
+              "n": 2
+            },
+            {
+              "region": "Southeast Asia",
+              "tier": "verbatim_machine_english",
+              "n": 2
+            },
+            {
+              "region": "Persia",
+              "tier": "verbatim_with_provenance",
+              "n": 1
+            },
+            {
+              "region": "Persia",
+              "tier": "verbatim_machine_english",
+              "n": 1
+            },
+            {
+              "region": "Scandinavia",
+              "tier": "verbatim_with_provenance",
+              "n": 1
+            },
+            {
+              "region": "Scandinavia",
+              "tier": "verbatim_machine_english",
+              "n": 1
+            }
+          ],
+          "gloss_capable": 2,
+          "expect_quoted_from_original_cases": 2,
+          "why_these": "The hardest eight in the tranche, first. Southeast Asia's four source-language records are the constraint no other region can pay for, and the four verbatim_machine_english records here are what turn on the machine-translation path: the verse and documentary confidence profiles are at n=1 and go load-bearing the moment the first one lands. Discovering that in F7 leaves no session to calibrate them in."
+        },
+        {
+          "name": "F4",
+          "slots": [
+            {
+              "region": "Sub-Saharan Africa",
+              "tier": "verbatim_with_provenance",
+              "n": 2
+            },
+            {
+              "region": "Sub-Saharan Africa",
+              "tier": "verbatim_machine_english",
+              "n": 2
+            },
+            {
+              "region": "East Asia",
+              "tier": "verbatim_with_provenance",
+              "n": 2
+            },
+            {
+              "region": "East Asia",
+              "tier": "verbatim_machine_english",
+              "n": 1
+            }
+          ],
+          "gloss_capable": 2,
+          "expect_quoted_from_original_cases": 2,
+          "why_these": "Africa is at one source-language record of four and Ge'ez has no published translation for most of what is open, so it is the second-hardest region and the second-largest verbatim_machine_english draw."
+        },
+        {
+          "name": "F5",
+          "slots": [
+            {
+              "region": "Persia",
+              "tier": "verbatim_with_provenance",
+              "n": 1
+            },
+            {
+              "region": "Persia",
+              "tier": "verbatim_machine_english",
+              "n": 1
+            },
+            {
+              "region": "Arabia",
+              "tier": "verbatim_with_provenance",
+              "n": 2
+            },
+            {
+              "region": "Arabia",
+              "tier": "verbatim_machine_english",
+              "n": 1
+            },
+            {
+              "region": "South Asia",
+              "tier": "verbatim_with_provenance",
+              "n": 1
+            },
+            {
+              "region": "South Asia",
+              "tier": "verbatim_machine_english",
+              "n": 1
+            }
+          ],
+          "gloss_capable": 2,
+          "expect_quoted_from_original_cases": 3,
+          "why_these": "The last source-language records for the three regions that already clear the per-region floor, and the sub-tranche that completes the quoted-from-original quota at seven cases across seven regions."
+        },
+        {
+          "name": "F6",
+          "slots": [
+            {
+              "region": "East Asia",
+              "tier": "verbatim_with_provenance",
+              "n": 1
+            },
+            {
+              "region": "Scandinavia",
+              "tier": "verbatim_with_provenance",
+              "n": 1
+            },
+            {
+              "region": "Southeast Asia",
+              "tier": "catalogue_record",
+              "n": 2
+            },
+            {
+              "region": "Persia",
+              "tier": "published_translation_only",
+              "n": 1
+            },
+            {
+              "region": "Persia",
+              "tier": "catalogue_record",
+              "n": 1
+            },
+            {
+              "region": "Sub-Saharan Africa",
+              "tier": "published_translation_only",
+              "n": 1
+            }
+          ],
+          "gloss_capable": 1,
+          "expect_quoted_from_original_cases": 0,
+          "why_these": "The last two source-language records sit here rather than in F7, so that the boundary between the expensive tiers and the cheap one falls inside a sub-tranche that still has a session after it."
+        },
+        {
+          "name": "F7",
+          "slots": [
+            {
+              "region": "Sub-Saharan Africa",
+              "tier": "catalogue_record",
+              "n": 1
+            },
+            {
+              "region": "East Asia",
+              "tier": "published_translation_only",
+              "n": 1
+            },
+            {
+              "region": "East Asia",
+              "tier": "catalogue_record",
+              "n": 1
+            },
+            {
+              "region": "Scandinavia",
+              "tier": "catalogue_record",
+              "n": 1
+            },
+            {
+              "region": "Arabia",
+              "tier": "catalogue_record",
+              "n": 1
+            },
+            {
+              "region": "South Asia",
+              "tier": "published_translation_only",
+              "n": 1
+            },
+            {
+              "region": "South Asia",
+              "tier": "catalogue_record",
+              "n": 1
+            }
+          ],
+          "gloss_capable": 1,
+          "expect_quoted_from_original_cases": 0,
+          "why_these": "Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last."
+        }
+      ]
+    }
   },
   "how_curation_cost_is_reported": "PER TIER, and against this mix. See ruling 45: G3's box 'curation cost per record recorded and trending down' is satisfiable by curating cheaper records, and the tier is the only thing that makes the number readable.",
   "no_content_hash_is_stamped_here": "Deliberate. An entry could record the record's content_hash at declaration time, so a record edited after its tier was declared would flag. It does not need to: the tier is DERIVED from the record on every verify run, so a record that moves into a different tier fails declared-vs-derived immediately, and a record that moves without changing tier has nothing to report. Stamping a hash would add a re-declaration to every corpus edit in F3-F7 and detect nothing the derivation does not."

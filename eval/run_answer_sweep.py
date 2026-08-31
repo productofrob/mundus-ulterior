@@ -98,6 +98,20 @@ SWEEP_DIR = Path(__file__).resolve().parent / "sweeps"
 # is the guard. This is the ordinary path that means nobody has to rely on it.
 ARM_DIR = Path(__file__).resolve().parent / "arms"
 
+# Ruling 51, F3, 2026-08-31. A run below the floor's own min_cases_per_sweep is
+# archived HERE, for the reason ARM_DIR exists one clause over. F3-F7 move the
+# corpus from 24 records to 60 in five sub-tranches, and the floor has to stay
+# in force across the move without a full sweep at 33, 42 and 51: G3 asks for
+# one sweep at 60 and nothing at any of those, and ~198 chat calls times four
+# is the rest of the block. The mid-tranche reading is therefore the three
+# required cases at min_repetitions -- about nine calls -- and a run that small
+# must never be poolable with a stratified one. calibrate_floor.load_sweeps
+# globs sweeps/*.json, so a probe archived here cannot calibrate BY
+# CONSTRUCTION, and floor.json's excluded_by_rule does not grow one entry per
+# sub-tranche. The scope rule is still the guard if a file is moved across by
+# hand; this is the ordinary path that means nobody has to rely on it.
+PROBE_DIR = Path(__file__).resolve().parent / "probes"
+
 # The arm the entire archive was made on, and the only one that writes to
 # SWEEP_DIR. Not read from floor.json: floor.json names the arm its CALIBRATION
 # accepts, and a runner that took its idea of "default" from the file it is
@@ -695,6 +709,15 @@ def main(argv: list[str] | None = None) -> int:
 
     session = session_identity(args.session_label)
 
+    # Ruling 51. Loaded here rather than after the database connection: the
+    # probe notice below needs min_cases_per_sweep, and a floor.json that will
+    # not load should fail before the run spends an embedding request rather
+    # than after.
+    floor_doc = load_floor()
+    min_cases = int((floor_doc.get("calibration_scope") or {}).get(
+        "min_cases_per_sweep") or 0)
+    is_probe = is_default_arm and bool(min_cases) and len(cases) < min_cases
+
     chat_calls = 0 if args.dry_run else len(cases) * len(versions) * args.repeat
     print(f"{len(cases)} question(s) x {len(versions)} prompt version(s) x "
           f"{args.repeat} repetition(s)")
@@ -711,6 +734,12 @@ def main(argv: list[str] | None = None) -> int:
               f"  It cannot calibrate the floor, it is not comparable with "
               f"the greedy archive,\n  and eval.calibrate_floor will refuse "
               f"it by rule if it is ever moved across.")
+    if is_probe:
+        print(f"PROBE: {len(cases)} case(s), below the {min_cases} this floor "
+              f"calibrates from.\n  archives to {PROBE_DIR} and NOT to "
+              f"{SWEEP_DIR}.\n  It computes a floor verdict and that verdict "
+              f"is a REGRESSION reading; it cannot\n  calibrate, and it is "
+              f"not poolable with a stratified sweep (ruling 51).")
 
     import psycopg
 
@@ -783,7 +812,6 @@ def main(argv: list[str] | None = None) -> int:
     # govern, printed in the words of a real verdict and archived under the
     # same key. So a foreign arm gets no verdict AT ALL, rather than one a
     # later reader has to know to discard.
-    floor_doc = load_floor()
     applies, scope_arm = floor_applies(arm, floor_doc)
     floor_not_applicable = None if applies else {
         "reason": "ruling 36: this sweep's arm is not the arm this floor "
@@ -808,6 +836,12 @@ def main(argv: list[str] | None = None) -> int:
         target_dir = SWEEP_DIR if is_default_arm else ARM_DIR
         suffix = "" if is_default_arm else (
             f"-{args.model}-t{args.temperature:g}")
+        # Ruling 51. The arm branch above is untouched: a foreign arm is a
+        # foreign arm whatever it ran, and it already never reaches sweeps/.
+        if is_probe:
+            target_dir = PROBE_DIR
+            suffix = f"-probe{len(cases)}"
+
         target_dir.mkdir(parents=True, exist_ok=True)
         stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y%m%dT%H%M%S")
         path = target_dir / (

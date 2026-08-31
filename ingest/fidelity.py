@@ -582,6 +582,175 @@ def check_target_mix(
     return problems
 
 
+# The tiers that carry retrieval-eligible source-language text, and therefore
+# the ones the per-region floor is counted over. Named here rather than written
+# out at each use, because it is the same pair in check_target_mix's
+# reachability arithmetic and in check_allocation's per-region one, and a pair
+# that is spelled out twice is a pair that disagrees once.
+SOURCE_LANGUAGE_TIERS = ("verbatim_with_provenance", "verbatim_machine_english")
+
+
+def check_allocation(
+    mix: "dict", records_by_region_at_24: "dict[str, int]",
+    source_language_by_region_at_24: "dict[str, int]",
+) -> "list[str]":
+    """Does the sub-tranche allocation deliver the declared mix? Problems.
+
+    Ruling 51, F3, 2026-08-31. Ruling 44 declared the mix AT 60 and said
+    nothing about which sub-tranche carries what. Curated by convenience, F7
+    inherits every unmet constraint at once, and every aggregate tier target in
+    corpus_tiers.json is satisfiable inside Arabia and South Asia alone - which
+    is the failure the per-region floor already exists to catch, one level up.
+
+    The allocation is a table of SLOTS, each a (region, tier, n). Nothing here
+    is a count declared beside a list: the counts ARE the list, summed, which
+    is F1's own correction and the reason two suite counts and a harness count
+    drifted in two days. A sub-tranche's `records` is not a field.
+
+    The ordering rule is the one that has teeth. EVERY source-language slot
+    precedes EVERY catalogue_record slot, so an allocation that puts the cheap
+    tier first - which is what a block short of days will drift toward - is
+    refused rather than noticed. A tranche curated cheap-first also reports a
+    RISING aggregate cost per record, which is the flattering direction for
+    kill trigger 3 and the one nobody would check.
+    """
+    problems: list[str] = []
+
+    allocation = mix.get("allocation") or {}
+    tranches = allocation.get("sub_tranches") or []
+    if not tranches:
+        return ["target_mix.allocation declares no sub_tranches. The mix at 60 "
+                "is then a target with no plan, and F7 inherits every unmet "
+                "constraint at once"]
+
+    names = [str(t.get("name") or "") for t in tranches]
+    if not all(names) or len(set(names)) != len(names):
+        problems.append(
+            f"sub_tranche names are {names}; each must be present and distinct"
+        )
+
+    new = mix.get("by_tier_new") or {}
+    by_region_at_60 = mix.get("records_by_region_target_at_60") or {}
+
+    per_tier: dict[str, int] = {}
+    per_region: dict[str, int] = {}
+    per_region_source: dict[str, int] = {}
+    first_catalogue: int | None = None
+    last_source_language: int | None = None
+    total = 0
+
+    for index, tranche in enumerate(tranches):
+        slots = tranche.get("slots") or []
+        if not slots:
+            problems.append(f"{names[index] or index}: no slots. A sub-tranche "
+                            f"that curates nothing is not one")
+        for slot in slots:
+            region = str(slot.get("region") or "")
+            tier = str(slot.get("tier") or "")
+            try:
+                n = int(slot.get("n"))
+            except (TypeError, ValueError):
+                n = -1
+            if n < 1:
+                problems.append(f"{names[index] or index}: slot "
+                                f"{region}/{tier} has n {slot.get('n')!r}")
+                continue
+            if tier not in RECORD_TIERS:
+                problems.append(f"{names[index] or index}: slot names tier "
+                                f"{tier!r}, which is outside the vocabulary")
+            if region not in by_region_at_60:
+                problems.append(f"{names[index] or index}: slot names region "
+                                f"{region!r}, which has no target at 60")
+            total += n
+            per_tier[tier] = per_tier.get(tier, 0) + n
+            per_region[region] = per_region.get(region, 0) + n
+            if tier in SOURCE_LANGUAGE_TIERS:
+                per_region_source[region] = per_region_source.get(region, 0) + n
+                last_source_language = index
+            if tier == "catalogue_record" and first_catalogue is None:
+                first_catalogue = index
+
+    want_new = mix.get("new_records")
+    if total != want_new:
+        problems.append(
+            f"the allocation places {total} record(s); by_tier_new adds "
+            f"{want_new}"
+        )
+
+    for tier in sorted(set(per_tier) | set(new)):
+        if per_tier.get(tier, 0) != new.get(tier, 0):
+            problems.append(
+                f"the allocation places {per_tier.get(tier, 0)} {tier} "
+                f"record(s); by_tier_new declares {new.get(tier, 0)}"
+            )
+
+    for region in sorted(set(per_region) | set(by_region_at_60)):
+        want = by_region_at_60.get(region, 0) - records_by_region_at_24.get(region, 0)
+        if per_region.get(region, 0) != want:
+            problems.append(
+                f"the allocation places {per_region.get(region, 0)} record(s) "
+                f"in {region}; the target at 60 is {by_region_at_60.get(region)} "
+                f"against {records_by_region_at_24.get(region, 0)} today, so it "
+                f"needs {want}"
+            )
+
+    per_region_floor = int(mix.get("min_source_language_records_per_region") or 0)
+    for region in sorted(by_region_at_60):
+        at_60 = (source_language_by_region_at_24.get(region, 0)
+                 + per_region_source.get(region, 0))
+        if at_60 < per_region_floor:
+            problems.append(
+                f"{region} ends the tranche with {at_60} source-language "
+                f"record(s) and the floor is {per_region_floor}. An aggregate "
+                f"met inside two regions leaves the other five exactly as "
+                f"unable to answer a source-text question as they are now"
+            )
+
+    # The ordering rule. Equality is allowed - one sub-tranche may hold the
+    # last source-language record and the first catalogue record - and anything
+    # earlier is the cheap tier jumping the queue.
+    if (first_catalogue is not None and last_source_language is not None
+            and first_catalogue < last_source_language):
+        problems.append(
+            f"the first catalogue_record slot is in "
+            f"{names[first_catalogue] or first_catalogue} and the last "
+            f"source-language slot is in "
+            f"{names[last_source_language] or last_source_language}. Every "
+            f"source-language record is curated before every catalogue record: "
+            f"the cheap tier last, so that a block which runs out of days is "
+            f"missing the records this corpus already has eleven of"
+        )
+
+    gloss = sum(int(t.get("gloss_capable") or 0) for t in tranches)
+    if gloss != int(mix.get("gloss_capable_records") or 0):
+        problems.append(
+            f"the allocation places {gloss} gloss-capable record(s); the mix "
+            f"declares {mix.get('gloss_capable_records')!r}"
+        )
+    for index, tranche in enumerate(tranches):
+        capacity = sum(
+            int(slot.get("n") or 0) for slot in (tranche.get("slots") or [])
+            if str(slot.get("tier")) in GLOSS_CAPABLE_TIERS)
+        if int(tranche.get("gloss_capable") or 0) > capacity:
+            problems.append(
+                f"{names[index] or index}: {tranche.get('gloss_capable')} "
+                f"gloss-capable record(s) allocated over {capacity} slot(s) on "
+                f"a tier that can carry a gloss case"
+            )
+
+    quoted = sum(int(t.get("expect_quoted_from_original_cases") or 0)
+                 for t in tranches)
+    want_quoted = int(mix.get("min_expect_quoted_from_original_cases_at_60") or 0)
+    if quoted < want_quoted:
+        problems.append(
+            f"the allocation writes {quoted} expect_quoted_from_original "
+            f"case(s) and the mix requires {want_quoted}. One case is a "
+            f"measurement of whether the answer path quotes THAT source text"
+        )
+
+    return problems
+
+
 # ---------------------------------------------------------------------------
 # Flags the MANIFEST names that this module deliberately no longer honours
 # ---------------------------------------------------------------------------

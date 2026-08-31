@@ -63,6 +63,14 @@ GLOSS_SET = (
     ')'
 )
 
+# Ruling 51's ordering rule, which is two lines and therefore cannot be
+# mutated by a one-line anchor. Written out here for the same reason
+# ELIGIBLE_SET and GLOSS_SET are.
+ORDER_RULE = (
+    "    if (first_catalogue is not None and last_source_language is not None\n"
+    "            and first_catalogue < last_source_language):"
+)
+
 MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         "a find record is no longer decided by source_type",
@@ -169,6 +177,55 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           '     "catalogue_record", "verbatim_machine_english"}\n'
           ')')],
     ),
+    # Ruling 51, F3. check_allocation, one branch at a time.
+    (
+        "the allocation no longer has to place every record in the tranche",
+        [("    if total != want_new:", "    if False:")],
+    ),
+    (
+        "the allocation's tier totals no longer have to match by_tier_new",
+        [("        if per_tier.get(tier, 0) != new.get(tier, 0):",
+          "        if False:")],
+    ),
+    (
+        "the allocation's per-region totals no longer have to reach the target at 60",
+        [("        if per_region.get(region, 0) != want:", "        if False:")],
+    ),
+    (
+        "a region may be left below the source-language floor",
+        [("        if at_60 < per_region_floor:", "        if False:")],
+    ),
+    (
+        "the cheap tier may jump the queue",
+        [(ORDER_RULE, "    if False:")],
+    ),
+    (
+        "a gloss-capable record may be dropped from the allocation",
+        [('    if gloss != int(mix.get("gloss_capable_records") or 0):',
+          "    if False:")],
+    ),
+    (
+        "gloss-capable records may be allocated to a sub-tranche that cannot carry one",
+        [('        if int(tranche.get("gloss_capable") or 0) > capacity:',
+          "        if False:")],
+    ),
+    (
+        "fewer quoted-from-original cases than the mix requires becomes allowed",
+        [("    if quoted < want_quoted:", "    if False:")],
+    ),
+    (
+        "an allocation with no sub-tranches stops being refused",
+        [("    if not tranches:", "    if False:")],
+    ),
+    (
+        "two sub-tranches may share a name",
+        [("    if not all(names) or len(set(names)) != len(names):",
+          "    if False:")],
+    ),
+    (
+        "a slot may name a region that has no target at 60",
+        [("            if region not in by_region_at_60:", "            if False:")],
+    ),
     (
         "a manifest flag the code neither honours nor lifts stops being reported",
         [("    if unaccounted:", "    if False:")],
@@ -208,6 +265,17 @@ EXPECTED = [
     "GUARD a target mix that allows a new pointer_only record is refused",
     "GUARD a per-region minimum the aggregate targets cannot reach is refused",
     "GUARD a gloss case may not be declared possible on verbatim_machine_english",
+    "GUARD an allocation that does not place every record in the tranche is refused",
+    "GUARD an allocation whose tier totals differ from by_tier_new is refused",
+    "GUARD an allocation whose per-region totals miss the target at 60 is refused",
+    "GUARD a region left below the source-language floor is refused",
+    "GUARD an allocation that curates a catalogue record before a source-language record is refused",
+    "GUARD an allocation that drops a gloss-capable record is refused",
+    "GUARD gloss-capable records allocated to a sub-tranche that cannot carry one are refused",
+    "GUARD an allocation writing fewer quoted-from-original cases than the mix requires is refused",
+    "GUARD an allocation with no sub-tranches is refused",
+    "GUARD two sub-tranches with the same name are refused",
+    "GUARD a slot naming a region with no target at 60 is refused",
     "GUARD a manifest flag the code neither honours nor lifts is refused",
     "GUARD a lift with no written reason is refused",
     "GUARD a flag cannot be honoured and lifted at once",
@@ -225,6 +293,7 @@ EXPECTED = [
 # mutation here because this harness mutates code.
 UNMUTATED_BY_DESIGN = (
     "GUARD the measured histogram the target mix is arithmetic over still holds",
+    "GUARD the declared allocation delivers the declared mix",
     "GUARD a declaration that matches the derivation reports no problem",
     "GUARD every tier the derivation returns is in the declared vocabulary",
     "GUARD the declared target mix is internally coherent",

@@ -1,4 +1,4 @@
-# Rulings register — 1 to 48
+# Rulings register — 1 to 51
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
 same day with 27-31, declared during TASK 2 (D2's schema change and D3's case
@@ -32,6 +32,9 @@ section anywhere — they exist only as one-line entries in a numbered list in
 27-31       D3_RULINGS.md             full text, "## Ruling N" headings
 32-35       D4_RULINGS.md             full text, "## Ruling N" headings
 36-42       F0_RULINGS.md             full text, "## Ruling N" headings
+43-45       F1_RULINGS.md             full text, "## Ruling N" headings
+46-48       F2_RULINGS.md             full text, "## Ruling N" headings
+49-51       F3_RULINGS.md             full text, "## Ruling N" headings
 ```
 
 ## The register
@@ -160,6 +163,46 @@ a line in a summary list is a ruling nobody can quote, check, or argue with
 later. The cost of writing the declaration at the time is a few paragraphs. The
 cost of not writing it is that the code becomes the only authority for what was
 decided, and code says what a thing does rather than why it was chosen.
+
+## 49-51, declared in F3 before record 25 was ingested
+
+Full text in `F3_RULINGS.md`, in the same session, together with FINDING 33.
+
+```
+49  the CORPUS is part of the calibration scope. floor.json gains a corpus
+    clause -- a seed record count and a digest -- and a sweep calibrates only
+    at the declared corpus. Ruling 36's sentence one dimension over: without
+    it, the moment record 25 lands, the file's own anti-loophole would have
+    INSISTED that a 33-record sweep calibrate a floor set at 24. FINDING 14
+    put corpus_version into every archive so a corpus that moved could not go
+    unnoticed; calibration_scope was written twice without reaching for it.
+    The floor is NOT suspended for the tranche: a run at a moved corpus still
+    computes a verdict, and what it may not do is RE-CALIBRATE.
+50  the THIRD UTC date at 60 records is BOOKED, as a ninth session. Three
+    rules require three dates at 60 -- min_distinct_dates, the promotion bar
+    and vimose's reinstatement condition -- and G3's amendment booked two.
+    The F8 spike is not spent on it: the two records it would promote are the
+    corpus's only pointer_only record and its companion.
+51  a sub-tranche re-runs the RANKING check and a floor PROBE; the answer
+    sweep runs at 60 and nowhere else. A mid-tranche sweep produces a number
+    no rule here may read. The probe is the three required cases at
+    min_repetitions, archived to eval/probes/ and never to eval/sweeps/, so it
+    cannot calibrate BY CONSTRUCTION. And the 36 records are ALLOCATED across
+    F3-F7 as slots, hard regions first, every source-language record before
+    every catalogue record, checked by ingest.verify.
+```
+
+Ruling 49 is the one to read before archiving or quoting any sweep run after
+record 25. Ruling 51 is the one to read before running anything at a
+sub-tranche.
+
+FINDING 34 is the one to read before writing a date into anything: rulings
+49-51 were stamped 2026-08-29 on 2026-08-31, from `F3_START.md`'s opening line
+rather than from a clock, and the host suite caught it.
+
+FINDING 33 is the one to read before booking a day: three rules required a
+third date at 60, two of them written on the same day as the gate that booked
+two, and no document held the sum.
 
 ## 46-48, declared in F2 before a single record was timed
 

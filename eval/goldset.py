@@ -1342,6 +1342,41 @@ def load_floor(path: Path | None = None) -> dict:
                     f"a recorded quantity; an arm that does not state one is "
                     f"half a pair, and the pair is the whole point."
                 ) from None
+        # Ruling 49, F3, 2026-08-31. The corpus clause is optional for exactly
+        # the reason the arm clause is - a floor file written before it existed
+        # does not silently acquire one - and a HALF-declared corpus is worse
+        # than none for the same reason too: calibration_eligibility would
+        # compare against a None digest and admit every archive that also
+        # recorded None, which is the three pre-D4 sweeps precisely.
+        corpus = scope.get("corpus")
+        if corpus is not None:
+            digest = ""
+            if isinstance(corpus, dict):
+                digest = str(corpus.get("seed_corpus_digest", "")).strip()
+            if len(digest) != 64:
+                raise GoldSetError(
+                    f"{path.name}: calibration_scope.corpus names no "
+                    f"64-character seed_corpus_digest. A corpus clause that "
+                    f"cannot say which corpus it means admits every sweep that "
+                    f"also says nothing, which is the loophole it was written "
+                    f"to close."
+                )
+            try:
+                count = int(corpus.get("seed_record_count"))
+            except (TypeError, ValueError):
+                raise GoldSetError(
+                    f"{path.name}: calibration_scope.corpus.seed_record_count "
+                    f"is {corpus.get('seed_record_count')!r}. The digest is "
+                    f"what the rule tests and the count is what a person "
+                    f"reads; a clause carrying only the first is one nobody "
+                    f"can argue with."
+                ) from None
+            if count < 1:
+                raise GoldSetError(
+                    f"{path.name}: calibration_scope.corpus.seed_record_count "
+                    f"is {count}. A floor calibrated on no records is not a "
+                    f"floor."
+                )
     return data
 
 

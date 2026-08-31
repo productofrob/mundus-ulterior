@@ -30,6 +30,7 @@ from pathlib import Path
 
 from .fidelity import (
     GLOSS_CAPABLE_TIERS,
+    check_allocation,
     PARAPHRASE_FLAG_LIFTED,
     PARAPHRASE_ID_HINTS,
     RECORD_TIERS,
@@ -323,6 +324,130 @@ def test_target_mix():
     )
 
 
+def test_allocation():
+    """Ruling 51, F3. The mix at 60 says WHAT; the allocation says WHEN.
+
+    Every aggregate target in corpus_tiers.json is satisfiable inside Arabia
+    and South Asia alone, and F3-F7 curate roughly seven records at a time. An
+    allocation decided at F7 is an allocation fitted to what was already
+    curated, so it is declared before the first new record and checked here.
+
+    Guard labels are ASCII, like every label in this file.
+    """
+    print("check_allocation")
+    doc = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
+    mix = doc["target_mix"]
+    at24 = mix["records_by_region_at_24"]
+    sl24 = mix["source_language_records_by_region_at_24"]
+
+    expect(
+        not check_allocation(mix, at24, sl24),
+        "GUARD the declared allocation delivers the declared mix",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"] = []
+    expect(
+        any("declares no sub_tranches" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD an allocation with no sub-tranches is refused",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][0]["slots"][0]["n"] -= 1
+    expect(
+        any("by_tier_new adds" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD an allocation that does not place every record in the tranche is refused",
+    )
+
+    # One slot relabelled. The count is untouched, so only the tier totals move.
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][0]["slots"][0]["tier"] = "catalogue_record"
+    expect(
+        any("by_tier_new declares" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD an allocation whose tier totals differ from by_tier_new is refused",
+    )
+
+    # Two slots swap regions. Tier totals hold; the per-region ones do not.
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][0]["slots"][0]["region"] = "Arabia"
+    expect(
+        any("the target at 60 is" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD an allocation whose per-region totals miss the target at 60 is refused",
+    )
+
+    # Southeast Asia's four source-language records become catalogue records
+    # somewhere else: the aggregate still adds up and the region is left where
+    # it started, which is the failure the per-region floor exists to catch.
+    broken = json.loads(json.dumps(mix))
+    for tranche in broken["allocation"]["sub_tranches"]:
+        for slot in tranche["slots"]:
+            if slot["region"] == "Southeast Asia":
+                slot["tier"] = "catalogue_record"
+    expect(
+        any("source-language record(s) and the floor is" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD a region left below the source-language floor is refused",
+    )
+
+    # The cheap tier jumps the queue: the same 36 records, curated in the order
+    # a block short of days drifts toward.
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"].reverse()
+    expect(
+        any("is curated before every catalogue record" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD an allocation that curates a catalogue record before a source-language record is refused",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][0]["gloss_capable"] = 0
+    expect(
+        any("gloss-capable record(s); the mix" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD an allocation that drops a gloss-capable record is refused",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][0]["slots"] = [
+        {"region": "Southeast Asia", "tier": "verbatim_machine_english", "n": 8}
+    ]
+    expect(
+        any("on a tier that can carry a gloss case" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD gloss-capable records allocated to a sub-tranche that cannot carry one are refused",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    for tranche in broken["allocation"]["sub_tranches"]:
+        tranche["expect_quoted_from_original_cases"] = 0
+    expect(
+        any("expect_quoted_from_original" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD an allocation writing fewer quoted-from-original cases than the mix requires is refused",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][1]["name"] = \
+        broken["allocation"]["sub_tranches"][0]["name"]
+    expect(
+        any("each must be present and distinct" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD two sub-tranches with the same name are refused",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    broken["allocation"]["sub_tranches"][0]["slots"][0]["region"] = "Antarctica"
+    expect(
+        any("has no target at 60" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD a slot naming a region with no target at 60 is refused",
+    )
+
+
 def test_against_the_live_corpus():
     print("the 24 seed records")
     doc = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
@@ -368,6 +493,7 @@ def main() -> int:
     test_declaration_checking()
     test_paraphrase_flags()
     test_target_mix()
+    test_allocation()
     test_against_the_live_corpus()
 
     print()

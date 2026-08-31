@@ -851,6 +851,38 @@ def _has_content_assertion(raw: dict) -> bool:""")],
         [("    if not floor_path.exists():\n        floor_path = GOLD_DIR / \"floor.json\"",
           "    if False:\n        floor_path = GOLD_DIR / \"floor.json\"")],
     ),
+    # F3, ruling 49. The corpus clause: the arm's argument one dimension over,
+    # on data FINDING 14 put in every archive and no rule ever read.
+    (
+        "the corpus stops being part of the calibration scope",
+        [("        if declared_corpus:", "        if False:")],
+    ),
+    (
+        "a corpus that moved UNDER a sweep stops blocking it",
+        [('            elif corpus["moved"]:', "            elif False:")],
+    ),
+    (
+        "a sweep recording no corpus is given one instead of being unidentifiable",
+        [("    if not digest:\n        return {\"seed_corpus_digest\": None,",
+          "    if False:\n        return {\"seed_corpus_digest\": None,")],
+    ),
+    (
+        "a corpus clause with no digest loads",
+        [("            if len(digest) != 64:", "            if False:")],
+    ),
+    (
+        "a corpus clause with no record count loads",
+        [('                count = int(corpus.get("seed_record_count"))',
+          "                count = 24")],
+    ),
+    (
+        "a corpus clause declaring zero records loads",
+        [("            if count < 1:", "            if False:")],
+    ),
+    (
+        "a probe archives to sweeps/ after all",
+        [("            target_dir = PROBE_DIR", "            target_dir = SWEEP_DIR")],
+    ),
 ]
 
 EXPECTED = [
@@ -1003,6 +1035,20 @@ EXPECTED = [
     "GUARD a case that declares nothing is asserting none, so a case the floor holds is refused",
     "GUARD a floor file holding one case in two states is refused before any case is compared against it",
     "GUARD a gold file copied away from floor.json is still checked against the canonical one",
+
+    # F3, ruling 49 and ruling 51, in the order above.
+    "GUARD a sweep at a moved corpus cannot calibrate, even when it satisfies "
+    "every other clause of the rule",
+    "GUARD a sweep whose corpus MOVED under it cannot calibrate even when "
+    "both ends match the declared one",
+    "GUARD a sweep with no corpus_version is unidentifiable and is not given "
+    "a digest",
+    "GUARD a corpus clause with no digest is refused at load, not silently "
+    "matched against every archive that also says nothing",
+    "GUARD a corpus clause with no record count is refused at load",
+    "GUARD a corpus clause declaring zero records is refused at load",
+    "GUARD a run below min_cases_per_sweep archives to probes/ and not to "
+    "sweeps/",
 ]
 
 
