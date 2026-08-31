@@ -543,6 +543,18 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
       this shape whose label says otherwise is reported here with the label it
       actually carries, on the `case_only` precedent — the archive records what
       was claimed at the time and is never re-labelled retroactively.
+    - `whitespace_only` — the characters at the offset are the quoted
+      characters once runs of whitespace are collapsed, and nothing else
+      differs. FINDING 42, F3. `cite.locate_in_text` matches on
+      whitespace-collapsed text BY DESIGN and says so in its own header, so
+      `match="exact"` beside a collapsed match is not an overstatement the way
+      `case_only` is: the offset is right, the label is right, and what differs
+      is the ARCHIVE'S RENDERING of a line break the record still holds. It is
+      reported rather than smoothed away, because an edit that changed only
+      spacing must stay visible — and it is not a defect, so it does not fail
+      the check. Before this category existed such a span fell all the way
+      through to `absent`, which is what a fabricated citation looks like, and
+      it did so on a correctly grounded Tamil quotation.
     - `moved`        — the quote is still in the field, at a different offset.
       The record was edited after this answer was archived. **This is the failure
       a naive viewer would render silently and convincingly**, showing whatever
@@ -607,6 +619,32 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
                 "why": f"differs from the quotation only in letter case; "
                        f"cite.py matched case-insensitively but recorded "
                        f"match={recorded!r}"}
+
+    # FINDING 42. The verifier was stricter than the matcher it verifies, and
+    # it failed into the loudest category it has. `collapse` is IMPORTED from
+    # the matcher rather than re-implemented here: a second whitespace rule
+    # written beside the first is a rule that disagrees once, which is the
+    # argument SOURCE_LANGUAGE_TIERS already makes in ingest/fidelity.py.
+    #
+    # Placed BELOW the case branches and ABOVE `moved`: the offset is right, and
+    # "the offset is right" is the stronger statement about a span than "the
+    # quotation is elsewhere in the field".
+    from answer.cite import collapse
+    collapsed_found, collapsed_quote = collapse(found), collapse(quote)
+    if _same_characters(collapsed_found, collapsed_quote):
+        return {"state": "whitespace_only", "found": found,
+                "why": "the characters at this offset are the quoted characters "
+                       "once runs of whitespace are collapsed - the archive and "
+                       "the record disagree about a line break, and cite.py "
+                       "matches on collapsed text by design, so the offset and "
+                       "its label are both right"}
+    if _same_characters(collapsed_found.casefold(), collapsed_quote.casefold()):
+        return {"state": "whitespace_only", "found": found,
+                "why": f"the characters at this offset are the quoted characters "
+                       f"once runs of whitespace are collapsed AND letter case is "
+                       f"folded; the span records match={recorded!r}. The offset "
+                       f"is right; read the label with the case branch above in "
+                       f"hand"}
 
     at = text.find(quote)
     if at < 0 and quote:
@@ -686,6 +724,7 @@ def verify_spans(runs: list[dict], corpus: dict[str, dict]) -> dict[str, list]:
     """
     buckets: dict[str, list] = {"resolved": [], "case_folded": [],
                                 "article_added": [], "case_only": [],
+                                "whitespace_only": [],
                                 "moved": [], "absent": []}
     today_hashes = seed_record_hashes(CORPUS_DIR)
     for run in runs:
@@ -770,7 +809,7 @@ def main(argv: list[str] | None = None) -> int:
     total = sum(len(v) for v in buckets.values())
     print(f"\n{total} claimed character span(s) checked against the seed corpus:")
     for state in ("resolved", "case_folded", "article_added", "case_only",
-                  "moved", "absent"):
+                  "whitespace_only", "moved", "absent"):
         print(f"  {state:<14} {len(buckets[state])}")
 
     # D1. The SECOND axis. `moved`/`absent` say a claim no longer holds; this
@@ -790,7 +829,7 @@ def main(argv: list[str] | None = None) -> int:
               f"unchanged. Their runs predate the corpus version, so whether "
               f"the record moved is not knowable from the archive.")
 
-    for state in ("moved", "absent", "case_only"):
+    for state in ("moved", "absent", "case_only", "whitespace_only"):
         for item in buckets[state][:6]:
             print(f"\n  {state.upper()}  {item['doc_id']}.{item['field']}"
                   f"{item['at']}  ({item['run']})")
@@ -801,7 +840,13 @@ def main(argv: list[str] | None = None) -> int:
             print(f"  ... and {len(buckets[state]) - 6} more {state}")
 
     # `moved` and `absent` mean an archived citation no longer points at what it
-    # claimed. `case_only` is a labelling defect in cite.py, not a broken claim,
+    # claimed. `whitespace_only` means the archive and the record disagree about
+    # a line break: FINDING 42, and it is neither a broken claim nor a labelling
+    # defect, because cite.py matches on whitespace-collapsed text by design. It
+    # is COUNTED and PRINTED rather than tolerated silently - a verifier made
+    # whitespace-insensitive would hide an edit that changed only spacing, which
+    # is a real edit to a record whose offsets other runs depend on.
+    # `case_only` is a labelling defect in cite.py, not a broken claim,
     # so it is reported but does not fail the check — and since C1a it can only
     # be produced by a run archived before the third match state existed. A
     # `case_only` span on a run archived after 2026-08-14 would mean the label

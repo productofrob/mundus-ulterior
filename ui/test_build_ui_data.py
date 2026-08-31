@@ -263,12 +263,85 @@ def test_case_folded_is_told_from_the_labelling_defect() -> None:
            "a span whose characters match verbatim is unaffected by either label")
 
 
+def test_whitespace_only_is_a_category_and_not_a_fabrication() -> None:
+    """FINDING 42, F3: the verifier was stricter than the matcher it verifies.
+
+    `cite.locate_in_text` matches on whitespace-collapsed text and the gold
+    suite asserts that it does, so a quotation that reflowed a line break is
+    correctly resolved and its offsets are correctly recorded. This checker then
+    re-checked the same claim under equality, and a newline the model rendered
+    as a space fell through every tolerant branch to `absent` -- which is what a
+    FABRICATED citation looks like, and which `--verify` FAILS on.
+
+    The remedy is a CATEGORY, not a tolerance. The three assertions below are
+    one rule each: the disagreement is named, a real fabrication is still named,
+    and a record edited under an archived run is still named. A verifier made
+    whitespace-insensitive would pass all three by seeing nothing.
+    """
+    print("\nclassify_span: whitespace_only is told from a fabrication")
+
+    # The span from the run that produced the finding, shortened. The record
+    # holds a line break where the archived quotation holds a space.
+    field = "\u0ba8\u0ba9\u0bcd\u0b95\u0bb2\u0bae\u0bcd\n\u0baa\u0bca\u0ba9\u0bcd\u0ba9\u0bca\u0b9f\u0bc1"
+    quoted = field.replace("\n", " ")
+    corpus = {"doc-1": {"fields": {"original_text_excerpt": field}}}
+    span = {
+        "quote": quoted, "doc_id": "doc-1",
+        "source_field": "original_text_excerpt",
+        "abs_start": 0, "abs_end": len(field), "match": "exact",
+    }
+    ws = bud.classify_span(span, corpus)
+    expect(ws["state"] == "whitespace_only",
+           "GUARD a quotation differing from the record only by a collapsed "
+           "line break is reported as whitespace_only, not as absent")
+    expect(ws["state"] not in ("moved", "absent"),
+           "GUARD a collapsed line break does not fail the verify gate, which "
+           "counts only moved and absent as broken claims")
+
+    # Anti-vacuity, and it is the assertion that keeps the category honest: the
+    # branch must not become a place where anything unmatched lands quietly.
+    gone = bud.classify_span(
+        {"quote": "gamma delta", "doc_id": "doc-1",
+         "source_field": "original_text_excerpt",
+         "abs_start": 0, "abs_end": 11, "match": "exact"},
+        {"doc-1": {"fields": {"original_text_excerpt": "alpha beta"}}})
+    expect(gone["state"] == "absent",
+           "GUARD a quotation that is genuinely not in the field is still "
+           "absent once the whitespace category exists")
+
+    # `moved` is the record having been EDITED under an archived run. The
+    # whitespace branch sits above it and must not take its cases: same
+    # characters, same whitespace, different offset.
+    body = "the tribute brought was neither precious nor rare"
+    moved = bud.classify_span(
+        {"quote": body, "doc_id": "doc-2",
+         "source_field": "reference_translation",
+         "abs_start": 0, "abs_end": len(body), "match": "exact"},
+        {"doc-2": {"fields": {"reference_translation": "xx" + body}}})
+    expect(moved["state"] == "moved",
+           "GUARD a record edited under an archived run is still reported as "
+           "moved, not swallowed by the whitespace category")
+
+    # Case AND whitespace still lands in the category, and says so, rather than
+    # falling through to absent because neither single-axis branch caught it.
+    both = bud.classify_span(
+        {"quote": quoted.upper(), "doc_id": "doc-1",
+         "source_field": "original_text_excerpt",
+         "abs_start": 0, "abs_end": len(field), "match": "exact"},
+        corpus)
+    expect(both["state"] in ("whitespace_only", "resolved", "case_folded",
+                             "case_only"),
+           "a quotation differing by whitespace and case is classified by a "
+           "tolerant branch rather than reported as a fabrication")
+
+
 def main() -> int:
     test_authored_coordinate()
     test_identified_without_citation()
     test_verify_placement_shape_aggregates()
     test_uncached_id_fails_the_build()
     test_case_folded_is_told_from_the_labelling_defect()
+    test_whitespace_only_is_a_category_and_not_a_fabrication()
 
     print()
     if failures:

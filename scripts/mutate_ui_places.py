@@ -88,6 +88,30 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
             and _same_characters(found.casefold(), unarticled.casefold())):""",
           """    if False:""")],
     ),
+    (
+        # FINDING 42, F3, fixed in F4. The whitespace category REMOVED, which is
+        # the code as it stood when a correctly grounded Tamil quotation was
+        # reported ABSENT because a newline had been rendered as a space. Both
+        # branches go together: with only the first removed the second catches
+        # the same span and the mutation would report MISS while the defect it
+        # models was gone.
+        "the verifier has no whitespace category, so a collapsed line break "
+        "falls through to absent",
+        [("""    if _same_characters(collapsed_found, collapsed_quote):""",
+          """    if False:"""),
+         ("""    if _same_characters(collapsed_found.casefold(), collapsed_quote.casefold()):""",
+          """    if False:""")],
+    ),
+    (
+        # The other direction, and the one that matters more. FINDING 42 says
+        # the fix is a CATEGORY and not a TOLERANCE: a verifier that quietly
+        # accepts anything it cannot classify reports nothing and fails nothing,
+        # which is the state a reader cannot tell from a clean corpus.
+        "the whitespace category swallows every span that reaches it, so a "
+        "quotation that is genuinely absent is reported as a line break",
+        [("""    if _same_characters(collapsed_found, collapsed_quote):""",
+          """    if True:""")],
+    ),
 ]
 
 EXPECTED = [
@@ -99,14 +123,28 @@ EXPECTED = [
     # Ruling 40.
     "a span recording match='article_added' is classified as such, and not "
     "as the case labelling defect it fell into on the first run",
+
+    # FINDING 42, F4.
+    "GUARD a quotation differing from the record only by a collapsed line "
+    "break is reported as whitespace_only, not as absent",
+    "GUARD a quotation that is genuinely not in the field is still absent "
+    "once the whitespace category exists",
 ]
 
 
 def failures_from(output: str) -> set[str]:
+    # The SPACE is load-bearing. FINDING 37, 2026-08-31, found in
+    # scripts/mutate_places.py and fixed only there: `ui/test_build_ui_data.py`
+    # ends a red run with a summary line reading `FAILED (1)`, so a bare
+    # startswith("FAIL") harvests a phantom guard named `ED (1)` beside the real
+    # ones -- and a harness that invents a failing guard reports a BASELINE
+    # block against a suite that is green. Third harness, same defect, and it
+    # survived here for the same reason it survived there: this one had not been
+    # run since.
     return {
-        line.split("FAIL", 1)[1].strip()
+        line.split("FAIL ", 1)[1].strip()
         for line in output.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 
