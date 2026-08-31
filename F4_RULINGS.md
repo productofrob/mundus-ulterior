@@ -983,3 +983,158 @@ it in a harness fix applied to one file of four (FINDING 46) — and here in a
 convention stated, argued and then not carried across the directory boundary.
 The remedy is the same every time and it is never the number: **derive it, or
 put it where no matcher reads it.**
+
+---
+
+## Ruling 59 — a retired ledger row may be REINSTATED when its record lands, and the anti-loophole moves with it unchanged
+
+**`python -m ingest.cost_log reinstate <record-id> --because "..."` stamps a
+retired row with a second date and a second reason. It is not an un-retire: the
+row stays in `retired`, keeps its minutes, its `retired_on` and its original
+`because`. A reinstated row is exempt from ruling 52's two retirement checks
+ONLY while an ACTIVE row in `records` carries minutes for the same record.**
+
+### Ruling 52 wrote a permanent property and an event, and they disagree
+
+> *"A row may be retired ONLY if its record is NOT in the corpus."*
+
+That is checked on **every run of `check_ledger`**, not at the moment of
+retirement. So a retirement that is legal when made becomes illegal the moment
+the record is curated — and ruling 52 provided no way back, because it
+deliberately made retirement not a delete.
+
+It is not hypothetical. It happened four hours after ruling 52 was quoted
+approvingly in this same session:
+
+```
+17:2x  africa-04-silko-talmis retired.  LEGAL: the record was not in the corpus.
+       Adulis was curated first, because its published English was readable.
+18:0x  africa-04-silko-talmis curated.  The ledger is now permanently red, and
+       ingest.verify refuses the tree, on a retirement nobody did wrong.
+```
+
+### What was NOT done, and why
+
+**The check was not weakened.** The obvious fix is to make the clause read
+*"...unless the record was curated later"*, which is the anti-loophole deleted
+by anyone who curates the record afterwards — and curating the record
+afterwards is precisely what an expensive record's owner would do.
+
+**The row was not deleted.** Ruling 52's sentence is that excluding by a
+recorded rule is a diff and excluding by making a row vanish is not. A
+reinstatement is the diff that says the exclusion ended, and it belongs beside
+the exclusion rather than in place of it.
+
+### The anti-loophole, carried across intact
+
+Reinstatement means the minutes are **back in a mean**, not that a row escaped
+one. So the exemption is conditional on an active row existing:
+
+```
+retire an expensive record, declare it reinstated, file nothing
+  -> "reinstated, but no row in `records` carries its minutes"
+     A reinstated row with nothing filed against it is a retirement wearing a
+     different word.
+```
+
+A reinstatement also needs a written reason and a real date, on the same
+argument ruling 52 makes about retirement: an unexplained reinstatement is the
+retirement rule waived by whoever was inconvenienced by it.
+
+### The report prints them under their own heading, with the opposite sentence
+
+Retired rows are announced as *counted in NO mean below*. Reinstated rows say
+the reverse — *their minutes ARE counted below* — because a reader who saw them
+under the first heading would subtract them twice. Ruling 52's *"named, never
+merely subtracted"*, in the direction it did not anticipate.
+
+### The cost this leaves standing, which is ruling 52's and not a defect
+
+The minutes stay **`estimated`**. They were MEASURED, against this very record
+id, and ruling 52 forbids carrying measured minutes across a retirement because
+*"a span measured against a record id the hunt had not settled is not a
+measurement of the record that landed"*. Here the subject never moved — only
+the ORDER did — so the downgrade is a real loss of precision for a reason that
+does not apply.
+
+**It is accepted rather than carved out.** An exception for *"the subject did
+not really change"* is an exception whose test is the curator's account of
+their own intent, and ruling 48 already settles the tie-break: the weaker
+provenance wins. The price of that rule is visible here and it is small; the
+price of a rule that reads intent is not payable at all.
+
+```
+ingest/test_cost.py     58 -> 64 assertions
+scripts/mutate_cost.py  48 -> 51 mutations
+```
+
+---
+
+# FINDING 50 — a model cannot be the capture path, and it can be the diff
+
+FINDING 48 established that source text is copied by a person from the page,
+because an automated fetch silently dropped a lacuna marker and substituted
+U+0027 for U+2019. **Silko is that finding's second measurement, and its
+correction.**
+
+## The second measurement
+
+The same PHI page, fetched and then copied by hand, compared character by
+character:
+
+```
+431 characters compared
+  1 difference:  fetched U+0027 '   <-   page U+2019 ’
+```
+
+One substitution in 431, and it is the SAME substitution measured on the Adulis
+page. **The normalisation is systematic, not incidental** — which is worse than
+a random corruption, because a systematic one produces a corpus that looks
+internally consistent and is uniformly wrong about one character.
+
+## And then the human path drifted too
+
+The English for this record exists only as JPEG images on a personal
+university page, so the curator typed it out. Compared against the image:
+
+```
+line  1   all THE Ethiopians,        ->  all Ethiopians
+line  3   gave me THE victory.       ->  gave me victory.
+line  5   with my troops.            ->  with my troops,
+line  6   themselves to me           ->  themselves to me,
+line 10   I withdrew to MY upper     ->  I withdrew to THE upper part OF
+          part (of the country).         (of the country)
+```
+
+Five divergences in ten short lines: two dropped definite articles, two altered
+stops, and one that changes the meaning — *my* upper part is Silko's own
+territory and *the* upper part is anywhere. **This is FINDING 42's class of
+defect exactly**, and FINDING 42 was a whole finding about a newline.
+
+## The correction to FINDING 48, which is the useful part
+
+FINDING 48 says *"nothing between the page and the record is allowed to be a
+model."* That is right and it stays. What it does not say, and what this record
+establishes, is that **nothing forbids a model from comparing them afterwards.**
+
+The five divergences above were found by reading the image against the typing.
+The capture stayed with the curator, who confirmed each one; the check was
+automatic. Those are different jobs and only the first has to be human.
+
+**And it is the check FINDING 48 said did not exist.** Its own words: *"Nothing
+in this project compares a record to its source. The curator is that check, and
+a summarising fetch is the curator not looking."* One paragraph later there was
+something else that could look — not as the authority, but as the second pair
+of eyes that had never been in the loop at all.
+
+## What this does not license
+
+It does not license the model correcting the record. Every one of the five was
+put back to the curator, and the curator confirmed the reading. **The
+difference between proposing a diff and applying one is the whole of the
+rule**, and a check that silently repairs its input is a check that has become
+the capture path by another route.
+
+**The sentence that travels: the automated path was wrong once in 431
+characters and the human path was wrong five times in ten lines, and the useful
+arrangement is not to pick one but to make them check each other.**

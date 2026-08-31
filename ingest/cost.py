@@ -408,7 +408,41 @@ def check_ledger(
             )
         problems.extend(_check_record_entry(entry, where, max_span))
 
-    in_corpus = sorted(set(retired_ids) & set(derived_tiers))
+    # RULING 59, F4, 2026-08-31. Ruling 52 wrote its anti-loophole as a
+    # PERMANENT property of the ledger -- a retired row's record must not be in
+    # the corpus -- and retirement as an EVENT. The two disagree the moment a
+    # record that did not exist comes to exist, which is not a hypothetical: it
+    # happened to africa-04-silko-talmis, whose row was retired legitimately
+    # when Adulis was curated first, and which was then curated four hours
+    # later. A legal retirement became an illegal ledger, and ruling 52 gave
+    # nobody a way back.
+    #
+    # A retired row may therefore be REINSTATED, and the anti-loophole is kept
+    # exactly where it was: a reinstated row is exempt from both checks below
+    # ONLY while an ACTIVE row for the same record exists. Reinstatement means
+    # the minutes are back in a mean, not that a row escaped one. Retire it,
+    # declare it reinstated, and file nothing, and the first check still fires.
+    reinstated = {rid for rid, e in retired_ids.items()
+                  if str(e.get("reinstated_on") or "").strip()}
+    for rid in sorted(reinstated):
+        entry = retired_ids[rid]
+        if not _ISO_DATE.match(str(entry.get("reinstated_on", "") or "")):
+            problems.append(
+                f"retired[{rid}]: reinstated_on "
+                f"{entry.get('reinstated_on')!r} is not a date")
+        if not str(entry.get("reinstated_because") or "").strip():
+            problems.append(
+                f"retired[{rid}]: reinstated with no written reason. An "
+                f"unexplained reinstatement is the retirement rule waived by "
+                f"whoever was inconvenienced by it")
+        if rid not in set(timed):
+            problems.append(
+                f"retired[{rid}]: reinstated, but no row in `records` carries "
+                f"its minutes. Reinstatement means the minutes are back in a "
+                f"mean; a reinstated row with nothing filed against it is a "
+                f"retirement wearing a different word")
+
+    in_corpus = sorted((set(retired_ids) - reinstated) & set(derived_tiers))
     if in_corpus:
         problems.append(
             f"{in_corpus} are RETIRED and are in the corpus. A row may be "
@@ -416,7 +450,7 @@ def check_ledger(
             f"is a way to take the expensive records out of the column kill "
             f"trigger 3 reads."
         )
-    clash = sorted(set(retired_ids) & (set(timed) | set(not_timed)))
+    clash = sorted((set(retired_ids) - reinstated) & (set(timed) | set(not_timed)))
     if clash:
         problems.append(
             f"{clash} are retired AND timed or excused. One record, one answer."
@@ -591,16 +625,35 @@ def format_report(
     # of this report that is about minutes NOT in it.
     retired = [e for e in (ledger.get("retired") or []) if isinstance(e, dict)]
     if retired:
-        lines.append(f"retired rows: {len(retired)} -- minutes recorded "
-                     f"against a record that will never exist, kept and named "
-                     f"here, counted in NO mean below.")
-        for entry in retired:
-            lines.append(
-                f"  {entry.get('record_id', '?')}   "
-                f"{record_total(entry):.1f} min   "
-                f"retired {entry.get('retired_on', '?')}")
-            lines.append(f"      {entry.get('because', '')}")
-        lines.append("")
+        live = [e for e in retired if str(e.get("reinstated_on") or "").strip()]
+        gone = [e for e in retired if e not in live]
+        if gone:
+            lines.append(f"retired rows: {len(gone)} -- minutes recorded "
+                         f"against a record that will never exist, kept and "
+                         f"named here, counted in NO mean below.")
+            for entry in gone:
+                lines.append(
+                    f"  {entry.get('record_id', '?')}   "
+                    f"{record_total(entry):.1f} min   "
+                    f"retired {entry.get('retired_on', '?')}")
+                lines.append(f"      {entry.get('because', '')}")
+            lines.append("")
+        # Ruling 59. Printed SEPARATELY and with the opposite sentence, because
+        # these minutes ARE in a mean below -- re-filed on the record that
+        # landed, as `estimated`. A reader who saw them under the heading above
+        # would subtract them twice.
+        if live:
+            lines.append(f"reinstated rows: {len(live)} -- retired while the "
+                         f"record did not exist, and reinstated when it did. "
+                         f"Their minutes ARE counted below, re-filed on the "
+                         f"record as `estimated`; the row here is the history.")
+            for entry in live:
+                lines.append(
+                    f"  {entry.get('record_id', '?')}   "
+                    f"retired {entry.get('retired_on', '?')}   "
+                    f"reinstated {entry.get('reinstated_on', '?')}")
+                lines.append(f"      {entry.get('reinstated_because', '')}")
+            lines.append("")
 
     timed = sum(b["n"] for b in by_tier.values())
     excused = len(ledger.get("not_timed") or {})

@@ -291,6 +291,65 @@ def cmd_retire(args) -> int:
     return 0
 
 
+def cmd_reinstate(args) -> int:
+    """Ruling 59, F4. Reinstate a retired row whose record has since landed.
+
+    Ruling 52 wrote its anti-loophole as a permanent property of the ledger --
+    a retired row's record must not be in the corpus -- and wrote retirement as
+    an event. The two disagree the moment a record that did not exist comes to
+    exist, and that is not hypothetical: africa-04-silko-talmis was retired
+    legitimately when another record was curated first, and curated four hours
+    later. A legal retirement became an illegal ledger with no way back.
+
+    This is NOT an un-retire. The retired row stays exactly where it is, keeps
+    its minutes, its date and its written reason, and gains a second date and a
+    second reason. Ruling 52's sentence holds: excluding by a recorded rule is
+    a diff, and this is the diff that says the exclusion ended.
+
+    The anti-loophole moves with it and does not weaken. A reinstated row is
+    exempt from the retirement checks ONLY while an ACTIVE row for the same
+    record carries minutes. Retire an expensive record, declare it reinstated,
+    and file nothing, and `check_ledger` fires exactly as before -- because
+    reinstatement means the minutes are back in a mean, not that a row escaped
+    one.
+    """
+    ledger = read_ledger()
+    if not args.because.strip():
+        print("`reinstate` needs --because. An unexplained reinstatement is "
+              "the retirement rule waived by whoever was inconvenienced by it.")
+        return 1
+    for entry in ledger.get("retired") or []:
+        if entry.get("record_id") == args.record_id:
+            break
+    else:
+        print(f"{args.record_id} has no row in `retired`.")
+        return 1
+    if str(entry.get("reinstated_on") or "").strip():
+        print(f"{args.record_id} is already reinstated "
+              f"({entry['reinstated_on']}).")
+        return 1
+    filed = any(r.get("record_id") == args.record_id
+                for r in ledger.get("records") or [])
+    if not filed:
+        print(
+            f"{args.record_id} has no row in `records`. Reinstatement means "
+            f"the minutes are back in a mean, so re-file them first with `add`. "
+            f"  python -m ingest.cost_log add {args.record_id} <phase> "
+            f"--minutes N --because \"...\"\n"
+            f"A reinstated row with nothing filed against it is a retirement "
+            f"wearing a different word."
+        )
+        return 1
+    entry["reinstated_on"] = _now().strftime("%Y-%m-%d")
+    entry["reinstated_because"] = args.because
+    write_ledger(ledger)
+    print(f"reinstated {args.record_id}. The retired row is kept with both "
+          f"dates and both reasons; its minutes are the ones already re-filed "
+          f"on the record, and `report` prints it under its own heading so "
+          f"nobody subtracts them twice.")
+    return 0
+
+
 def cmd_status(args) -> int:
     ledger = read_ledger()
     open_entry = ledger.get("open_entry")
@@ -363,6 +422,12 @@ def main(argv: "list[str] | None" = None) -> int:
     p.add_argument("record_id")
     p.add_argument("--because", required=True)
     p.set_defaults(func=cmd_retire)
+
+    p = sub.add_parser("reinstate",
+                       help="reinstate a retired row whose record has landed")
+    p.add_argument("record_id")
+    p.add_argument("--because", required=True)
+    p.set_defaults(func=cmd_reinstate)
 
     sub.add_parser("status").set_defaults(func=cmd_status)
     sub.add_parser("report").set_defaults(func=cmd_report)

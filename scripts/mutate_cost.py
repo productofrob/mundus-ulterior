@@ -370,8 +370,28 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         "the ledger no longer has to carry a retired list",
         [('    "retired",\n    "not_timed",', '    "not_timed",')],
     ),
+    (
+        # RULING 59, F4. The exemption removed: a reinstated row is refused
+        # again the moment its record exists, which is the state that made the
+        # ledger permanently red and gave nobody a way back.
+        "a reinstated row is not exempt from the retirement checks",
+        [("""    reinstated = {rid for rid, e in retired_ids.items()
+                  if str(e.get("reinstated_on") or "").strip()}""",
+          """    reinstated = set()""")],
+    ),
+    (
+        # The anti-loophole itself. Without this clause, retire an expensive
+        # record, declare it reinstated, file nothing, and the minutes are out
+        # of every mean with every check green.
+        "a reinstated row no longer has to have its minutes filed anywhere",
+        [("""        if rid not in set(timed):""", """        if False:""")],
+    ),
+    (
+        "a reinstatement no longer needs a written reason",
+        [("""        if not str(entry.get("reinstated_because") or "").strip():""",
+          """        if False:""")],
+    ),
 ]
-
 EXPECTED = [
     'GUARD a declared phase list in the wrong order is refused',
     'GUARD a declared phase list missing a phase is refused',
@@ -421,6 +441,12 @@ EXPECTED = [
     "GUARD the report prints the retirement's written reason",
     "GUARD the report says a retired row is in no mean, so a reader cannot take it for a timed record",
     "GUARD the required ledger terms are exactly the seven declared here, and a term removed from the set is refused rather than untested",
+    # RULING 59, F4 -- in the order above.
+    "GUARD a REINSTATED row whose record is in the corpus and whose minutes "
+    "are filed against it reports nothing",
+    "GUARD a reinstated row with nothing filed against it is refused -- "
+    "otherwise reinstatement is retirement wearing a different word",
+    "GUARD a reinstatement with no written reason is refused",
 ]
 
 # NOT mutation-verified from this source, and said so rather than left to be

@@ -631,6 +631,56 @@ def test_retirement():
         "GUARD a retired_on that is not a date is refused",
     )
 
+    # RULING 59, F4. Ruling 52 wrote its anti-loophole as a permanent property
+    # of the ledger and retirement as an event, and the two disagree the moment
+    # a record that did not exist comes to exist. The four assertions below are
+    # the four ways reinstatement could become the loophole ruling 52 closed.
+    def reinstated(record_id="a-01", **overrides):
+        out = retired(record_id=record_id, tier="verbatim_with_provenance")
+        out.update({"reinstated_on": "2026-08-31",
+                    "reinstated_because": "the record was curated after the "
+                                          "row was retired, and the minutes "
+                                          "are re-filed against it"})
+        out.update(overrides)
+        return out
+
+    good = ledger(records=[entry(record_id="a-01",
+                                 tier="verbatim_with_provenance"),
+                           entry(record_id="a-02", tier="catalogue_record")],
+                  retired=[reinstated()])
+    expect(
+        not check_ledger(good, TIERS),
+        "GUARD a REINSTATED row whose record is in the corpus and whose "
+        "minutes are filed against it reports nothing",
+    )
+
+    # The anti-loophole, carried across intact: reinstatement means the minutes
+    # are back in a mean, not that a row escaped one.
+    bad = ledger(records=[entry(record_id="a-02", tier="catalogue_record")],
+                 retired=[reinstated()])
+    expect(
+        fired(check_ledger(bad, TIERS), "no row in `records` carries its "
+              "minutes"),
+        "GUARD a reinstated row with nothing filed against it is refused -- "
+        "otherwise reinstatement is retirement wearing a different word",
+    )
+
+    bad = ledger(records=[entry(record_id="a-01",
+                                tier="verbatim_with_provenance")],
+                 retired=[reinstated(reinstated_because="  ")])
+    expect(
+        fired(check_ledger(bad, TIERS), "reinstated with no written reason"),
+        "GUARD a reinstatement with no written reason is refused",
+    )
+
+    bad = ledger(records=[entry(record_id="a-01",
+                                tier="verbatim_with_provenance")],
+                 retired=[reinstated(reinstated_on="later that day")])
+    expect(
+        fired(check_ledger(bad, TIERS), "reinstated_on"),
+        "GUARD a reinstated_on that is not a date is refused",
+    )
+
     bad = ledger(retired=[retired(), retired()])
     expect(
         fired(check_ledger(bad, TIERS), "retired twice"),

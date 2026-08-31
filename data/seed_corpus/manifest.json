@@ -1,7 +1,7 @@
 {
   "corpus_name": "Mundus Ulterior Phase 1 Part 2 — Seed Corpus",
   "generated": "2026-08-09",
-  "total_documents": 31,
+  "total_documents": 32,
   "regions": [
     "Arabia",
     "East Asia",
@@ -435,6 +435,19 @@
       "path": "subsaharan_africa/adulis-throne.json",
       "has_reference_translation": true,
       "citation": "https://epigraphy.packhum.org/text/219054"
+    },
+    {
+      "id": "africa-04-silko-talmis",
+      "region": "Sub-Saharan Africa",
+      "title": "Silko, βασιλίσκος of the Nobades, in the temple of Mandulis at Talmis",
+      "source_type": "inscription",
+      "language_code": [
+        "grc"
+      ],
+      "date": "5th c. CE (PHI: '5th c. AD?')",
+      "path": "subsaharan_africa/silko-talmis.json",
+      "has_reference_translation": true,
+      "citation": "https://epigraphy.packhum.org/text/219058"
     }
   ]
 }

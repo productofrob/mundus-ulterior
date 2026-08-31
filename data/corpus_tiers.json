@@ -21,6 +21,7 @@
     "verbatim_with_provenance": 11
   },
   "tiers": {
+    "africa-04-silko-talmis": "verbatim_with_provenance",
     "africa-05-adulis-throne": "verbatim_with_provenance",
     "africa-01-ezana-stone": "published_translation_only",
     "africa-02-aksumite-coin": "catalogue_record",

@@ -1232,6 +1232,42 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD. Written in the same commit as the record, per ruling 54, so its first result is a measurement and not a regression, and deliberately in NO floor state: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
       "note": "Both content groups are Greek that the English translation does not contain, which is my-son-b6-isananatha's shape and for its reason: a case whose groups appear in both chunks cannot tell a source quotation from a translated one. The second group takes the two bare verbs `πλέεσθαι` and `ὁδεύεσθαι` rather than the phrase `ὁδεύεσθαι μετ’ εἰρήνης`, because matching is case-insensitive and whitespace-collapsing but NOT punctuation-insensitive and that phrase carries U+2019 -- the character FINDING 48 caught an automated fetch replacing with U+0027. A case that asserts a punctuation mark asserts the capture path as well as the answer."
+    },
+    {
+      "id": "silko-basiliskos-title",
+      "question": "What title does Silko give himself in the Greek of his inscription at Talmis, and who does he say gave him the victory?",
+      "why": "The record's whole argument in one question. βασιλίσκος is the Greco-Roman diminutive for a client king on the empire's frontier, and Silko applies it to himself, in Greek, on the wall of a Roman-built temple in the Dodecaschoenus. The published English renders it flatly as 'king', so the discriminator is in the source text and nowhere else -- which is what makes this a genuine which-chunk case under ruling 56 rather than a case the translation could satisfy. The second group asks who gave the victory: ὁ θεός, a Nubian king in a temple of Mandulis crediting a single God.",
+      "expected_behaviour": "answerable",
+      "region": "Sub-Saharan Africa",
+      "expect_cited_docs": [
+        "africa-04-silko-talmis"
+      ],
+      "expect_quoted_docs": [
+        "africa-04-silko-talmis"
+      ],
+      "expect_quoted_from_original": [
+        "africa-04-silko-talmis"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "βασιλίσκος",
+          "βασιλισκος",
+          "basiliskos",
+          "Basiliskos"
+        ],
+        [
+          "ὁ θεὸς",
+          "ὁ θεός",
+          "the God",
+          "the god"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD. Written in the same commit as the record, per ruling 54, so its first result is a measurement and not a regression, and in NO floor state.",
+      "note": "THE FIRST GROUP ADMITS TRANSLITERATIONS and the second admits the English, which is a deliberate weakening and is declared rather than hidden. On adulis-throne-leuke-kome both groups are Greek-only, so an English paraphrase fails outright; here the point of the case is the TITLE, and an answer that says 'basiliskos, a diminutive of basileus' has understood the record better than one that pastes the Greek without it. expect_quoted_from_original still carries the which-chunk discrimination, because the assertion is about which FIELD the resolved quotation came from and not about which script the answer is written in."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",
