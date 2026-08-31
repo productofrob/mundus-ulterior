@@ -62,7 +62,16 @@ not a pass. This is exactly the reporting F2 built: the suite now names the
 skipped assertion in its summary line instead of a hundred and fifty lines
 above it.
 
-## 2. COMMIT FIRST, then the mutation harnesses
+## 2. COMMIT FIRST, then the mutation harnesses — DONE 2026-08-31 at `a1af62d`
+
+**288 mutations, six harnesses, no MISS, no UNVERIFIED and no BASELINE block:**
+`mutate_part8` 94, `mutate_fidelity` 35, `mutate_cost` 37, `mutate_ranking`
+100, `mutate_part7b` 18, `mutate_ui_places` 4. Sources restored byte for byte
+and `git status --porcelain` empty afterwards. F3's owed item 1 is closed: the
+seven new `mutate_part8` mutations were each caught by their own guard, which
+is what the one-function pre-verification could not have shown.
+
+The ordering below stands for the next thread and is why the run was safe.
 
 **AMENDED before step 2 was run.** The commit was at step 6 and that is wrong
 for THIS session, because three of the six harnesses mutate files carrying

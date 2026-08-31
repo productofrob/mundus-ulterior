@@ -346,6 +346,18 @@ elsewhere in the file, which is exactly what the full harness reports as
 repository. All seven fire. **The full harness still owes a run on the host**,
 and `F3_RUNBOOK.md` step 2 is where it is claimed.
 
+**CLOSED 2026-08-31, at `a1af62d`, and the claim held.** All six harnesses ran
+on the host against the committed tree: `mutate_part8` 94, `mutate_fidelity`
+35, `mutate_cost` 37, `mutate_ranking` 100, `mutate_part7b` 18,
+`mutate_ui_places` 4 — **288 mutations, no MISS, no UNVERIFIED, no BASELINE
+block in any of them**, sources restored byte for byte, and `git status`
+empty afterwards. Each of the seven new mutations was caught by the guard
+written for it and by no other, which is the part the one-function
+pre-verification could not have shown. **The pre-verification agreed with the
+full harness this time and that is not a reason to trust it next time** — it
+would have agreed just as loudly if a guard elsewhere had been doing the work,
+because it never ran the guards that would have.
+
 ---
 
 # The sentences that travel

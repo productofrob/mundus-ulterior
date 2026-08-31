@@ -13083,11 +13083,14 @@ UI              ui\test_build_ui_data.py     14   GREEN
 
 mutations       mutate_fidelity  35  +11, all eleven verified here in three
                                      slices (the suite costs 3.9s)
-                mutate_part8     94  +7, anchors checked and all seven fire
-                                     against ONE test function -- NOT the full
-                                     harness, which costs 21.7s x 94 through
-                                     the bridge. CLAIMED, not verified.
-                                     F3_RUNBOOK step 2 settles it on the host.
+                mutate_part8     94  +7, and the full harness RAN on the host
+                                     after the commit: all seven caught by
+                                     their own guard.
+                TOTAL           288  six harnesses on the host at a1af62d,
+                                     no MISS, no UNVERIFIED, no BASELINE block
+                                     in any of them, sources restored byte for
+                                     byte, git status empty afterwards.
+                                     Was 270 at the close of F2.
 
 cost ledger     0 records timed / 24 excused. Comparator within_tranche.
 floor           calibrated TRUE, ELIGIBLE, 4 sweeps, 3 dates, all at 24 records
@@ -13117,8 +13120,13 @@ block           NINE sessions, not eight.
 - **No record has been timed, and the corpus has not moved.** F3 spent its
   session on the three things `F3_START` said had to be settled before a single
   record was curated. Curation starts at the top of F3_RUNBOOK step 4.
-- **`mutate_part8`'s seven new mutations are claimed, not verified.** The full
-  harness cannot run through the bridge at 21.7 seconds a suite.
+- ~~`mutate_part8`'s seven new mutations are claimed, not verified.~~
+  **CLOSED at `a1af62d`.** All six harnesses ran on the host against the
+  committed tree — 288 mutations, no MISS, no UNVERIFIED, no BASELINE block —
+  and each of the seven was caught by the guard written for it. The
+  one-function pre-verification agreed with the full harness, which is not a
+  reason to trust it next time: it would have agreed just as loudly if a guard
+  elsewhere had been doing the work.
 - **`ingest/verify.py` check 9 still asserts `len(docs) == 24`**, and it is
   broken on purpose in the same commit as the records or not at all.
 - **The BASELINE check is in five harnesses of eight.** `mutate_ranking`,
