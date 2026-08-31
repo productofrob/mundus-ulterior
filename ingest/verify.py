@@ -211,7 +211,7 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     # obeys: "it is correct today and F3 breaks it on purpose, in the same
     # commit as the records or not at all. Loosening it in advance is the floor
     # lowered to what is currently passing."
-    check(len(docs) == 25, f"expected 25 documents, got {len(docs)}")
+    check(len(docs) == 26, f"expected 26 documents, got {len(docs)}")
     orphans = {c.doc_id for c in chunks} - {d.doc_id for d in docs}
     check(not orphans, f"chunks reference unknown docs: {orphans}")
 

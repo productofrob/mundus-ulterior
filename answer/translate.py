@@ -94,6 +94,7 @@ LANG_NAMES: dict[str, str] = {
     "xsa": "Ancient South Arabian (Sabaic), in scholarly Latin transliteration",
     "gmq-pro": "Proto-Norse, in runic transliteration",
     "ocm": "Old Cham, in scholarly Latin transliteration",
+    "san": "Sanskrit, in scholarly Latin transliteration (IAST)",
     "arc": "Aramaic",
     "gez": "Ge'ez (Classical Ethiopic)",
     "la": "Latin",
@@ -104,7 +105,7 @@ LANG_NAMES: dict[str, str] = {
 # characters. Back-translating into these means producing a transliteration, and
 # the prompt has to say so or the model will answer in Arabic or Devanagari
 # script and every character-level score will read as a total failure.
-TRANSLITERATED_LANGS = {"xpr", "xna", "xsa", "gmq-pro", "ocm"}
+TRANSLITERATED_LANGS = {"xpr", "xna", "xsa", "gmq-pro", "ocm", "san"}
 
 # The other half of the same rule, and the half that was missing in v1. These
 # languages are stored in their own characters, so a back-translation must come

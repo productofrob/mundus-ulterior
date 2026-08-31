@@ -1029,6 +1029,40 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and that is the point of writing the case now rather than after the first sweep at 60. Every other case in this file was written against a corpus that already held its record; this one is written against record 25 on the day it was curated, so its first result is a MEASUREMENT and not a regression. It is deliberately NOT placed in floor.json in any state: the floor is calibrated on four sweeps at 24 records (ruling 49) and a case with no observation at all cannot be required, cannot be known-failing, and has not met any promotion bar. Absent from floor.json means floor_state `none`, which is what this case asserts by declaring nothing.",
       "note": "The question names the inscription rather than the region, because match_case returns the FIRST case whose question matches and Southeast Asia already carries four cases. The second content group is the discriminator: `saribu thun`, `davam di naraka` and `tijuh kulo` appear only in the Old Cham. `nāga` is admitted in both spellings because matching is case-insensitive and whitespace-collapsing but NOT punctuation-insensitive, and a case must say which spelling it accepts rather than let the matcher decide."
+    },
+    {
+      "id": "my-son-b6-isananatha",
+      "question": "In the Sanskrit of the Mỹ Sơn B6 stela, which god is said to triumph always, and what is he called there?",
+      "why": "F3's SECOND expect_quoted_from_original case, and the pair to dong-yen-chau-old-cham. The two are deliberately different shapes on the same assertion: the Old Cham case asks for a threat and can be answered from a narrative clause, while this one turns on a NAME that appears only in the source text. `īśānanātha` is in the Sanskrit and in the English translation; `jayaty ajasram` is only in the Sanskrit. An answer that paraphrases the English will satisfy the first content group and fail the second, which is exactly the discrimination expect_quoted_from_original exists to make and which no aggregate over the two cases could show.",
+      "expected_behaviour": "answerable",
+      "region": "Southeast Asia",
+      "expect_cited_docs": [
+        "seasia-05-my-son-b6"
+      ],
+      "expect_quoted_docs": [
+        "seasia-05-my-son-b6"
+      ],
+      "expect_quoted_from_original": [
+        "seasia-05-my-son-b6"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "īśānanātha",
+          "isananatha",
+          "Īśānanātha"
+        ],
+        [
+          "jayaty ajasram",
+          "sarvvadevās",
+          "tattattvavidaś"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD. Written on the day the record was curated, so its first result is a measurement and not a regression, and deliberately in NO floor state: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
+      "note": "The second content group is the discriminator and every member of it is Sanskrit that the English does not contain. The first group admits three spellings of one name because matching is case-insensitive and whitespace-collapsing but NOT punctuation-insensitive, and a case must say which spelling it accepts rather than let the matcher decide. The question names the stela rather than Champa or Mỹ Sơn, because match_case returns the FIRST case whose question matches and Southeast Asia now carries five."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

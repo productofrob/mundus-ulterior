@@ -1,0 +1,25 @@
+{
+  "id": "seasia-05-my-son-b6",
+  "region": "Southeast Asia",
+  "title": "Stela from Mỹ Sơn B6 (C. 87) — invocation of Īśānanātha, 687 CE",
+  "source_type": "inscription",
+  "language_code": [
+    "san"
+  ],
+  "language_note": "Sanskrit, in the Cham variety of the Pallava-derived script, stored here in the scholarly Latin transliteration the edition prints. The stela is a Cham monument in an Indian language: Sanskrit is the register of Champa's royal and religious epigraphy for eight centuries, and the record is evidence of that transmission rather than of Indian settlement.",
+  "date": "2 waxing Śuci (Jyeṣṭha), 609 Śaka = 19 May 687 CE",
+  "findspot": "Mỹ Sơn, Duy Xuyên district, Quảng Nam province, Vietnam. Found in 1903 near the western side of monument B6.",
+  "original_text_excerpt": "yaṁ sarvvadevās s(a)sureśamukhyā / dhyāyanti tattattvavidaś ca santaḥ / svasthaḥ suśuddhaḥ paramo vareṇya / īśānanāthas sa jayaty ajasram ||",
+  "original_text_note": "Face A, stanza I, as edited by Arlo Griffiths for the Corpus of the Inscriptions of Campā. Round brackets in `s(a)sureśa` are the edition's, marking a reading restored from the estampage rather than read directly from the stone — the corpus's own apparatus, kept rather than silently normalised, because a transliteration that hides its restorations is a reading presented as an observation. The stanza is a benedictory invocation of Śiva under the name Īśānanātha, the god of the sanctuary itself.",
+  "reference_translation": "Him upon whom all the gods, together with Sureśa (Indra) at their head, as well as all good people who know His nature, meditate; independent, very pure, ultimate, sublime; He, Īśānanātha, triumphs always!",
+  "translation_source": "Arlo Griffiths (ed.), 'C. 87 Stela from Mỹ Sơn B6', Corpus of the Inscriptions of Campā, École française d'Extrême-Orient with the Institute for the Study of the Ancient World, New York University. Copyright (c) 2012 by Arlo Griffiths, licensed under a Creative Commons Attribution 3.0 Unported License. https://isaw.nyu.edu/publications/inscriptions/campa/inscriptions/C0087.html",
+  "citation": "https://isaw.nyu.edu/publications/inscriptions/campa/inscriptions/C0087.html",
+  "notes": "THE FIRST RECORD IN THIS CORPUS UNDER AN EXPLICIT OPEN LICENCE. Every other record's text is quoted from a copyrighted edition at quotation length and attributed; this one carries CC BY 3.0 from a named institutional publisher, which is the rights position the project's brief asks for — museums, cultural and governmental institutions, openly accessible scholarly research. The licence is stated on the inscription page itself, with its copyright holder, so `rights_and_licence` was settled inside the hunt rather than after it. NOT DIRECTLY ABOUT ROME, and admitted with the reason attached, as arabia-04-jabal-dabub is: Mỹ Sơn is the dynastic sanctuary of Champa, the polity holding the coast where Roman-derived objects reached Óc Eo and Khao Sam Kaeo — both already in this corpus as find records. The Sanskrit is the same maritime network arriving as language and liturgy rather than as objects, and dated to the day. WHY C. 87 AND NOT KEDUKAN BUKIT: the Old Malay Srivijaya inscription was the first candidate and was refused because the English translation available for it is UNATTRIBUTED — the article printing it names Coedès 1930 and de Casparis 1975 in a bibliography without saying whose English it prints — and `verbatim_with_provenance` requires a published translation that is cited. See data/curation_cost.json.retired.",
+  "findspot_places": [
+    {
+      "name": "Mỹ Sơn (Duy Xuyên, Quảng Nam)",
+      "ground": "regional",
+      "note": "NO GAZETTEER ID RESOLVED, for the reason recorded on seasia-04-dong-yen-chau: no GeoNames dump is cached in this repository, so no candidate could be examined, accepted or refused. Mỹ Sơn is a UNESCO World Heritage site and is certain to be resolvable once a dump is present; `stated` requires a gazetteer_id and an authored coordinate is refused outright, so this records what can be resolved without asserting what cannot. The two Quảng Nam findspots in this sub-tranche — Mỹ Sơn and Đông Yên Châu near Trà Kiệu — are about 20 km apart and are the sanctuary and the citadel of the same polity; that relation is NOT encoded either, because it is an argument rather than a gazetteer fact."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "corpus_name": "Mundus Ulterior Phase 1 Part 2 — Seed Corpus",
   "generated": "2026-08-09",
-  "total_documents": 25,
+  "total_documents": 26,
   "regions": [
     "Arabia",
     "East Asia",
@@ -357,6 +357,19 @@
       "path": "southeast_asia/dong-yen-chau.json",
       "has_reference_translation": true,
       "citation": "https://en.wikipedia.org/wiki/%C4%90%C3%B4ng_Y%C3%AAn_Ch%C3%A2u_inscription"
+    },
+    {
+      "id": "seasia-05-my-son-b6",
+      "region": "Southeast Asia",
+      "title": "Stela from Mỹ Sơn B6 (C. 87) — invocation of Īśānanātha, 687 CE",
+      "source_type": "inscription",
+      "language_code": [
+        "san"
+      ],
+      "date": "2 waxing Śuci (Jyeṣṭha), 609 Śaka = 19 May 687 CE",
+      "path": "southeast_asia/my-son-b6.json",
+      "has_reference_translation": true,
+      "citation": "https://isaw.nyu.edu/publications/inscriptions/campa/inscriptions/C0087.html"
     }
   ]
 }

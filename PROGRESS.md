@@ -13104,6 +13104,31 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **RECORD 26: `seasia-05-my-son-b6`, and it is the FIRST record in this corpus
+  under an explicit open licence.** The Stela from Mỹ Sơn B6 (C. 87), Sanskrit,
+  dated to the day — 19 May 687 CE — edited by Arlo Griffiths for the Corpus of
+  the Inscriptions of Campā (EFEO with ISAW/NYU) and carrying **CC BY 3.0 with
+  its copyright holder named on the inscription page itself**. Every other
+  record in this corpus quotes a copyrighted edition at quotation length and
+  attributes it; this one is licensed. That is the rights position the
+  project's brief asks for, and it made `rights_and_licence` a phase settled
+  inside the hunt rather than after it. **4.1 minutes** against record 25's
+  11.7, and the report still says `NOT A TREND (n=2, floor 10)`.
+- **Ruling 52 was used a SECOND time within the hour, for its own reason.** The
+  clock opened on `seasia-05-kedukan-bukit`; the hunt then found that the
+  English translation available for Kedukan Bukit is UNATTRIBUTED — the article
+  printing it names Coedès 1930 and de Casparis 1975 in a bibliography without
+  saying whose English it prints — and `verbatim_with_provenance` requires a
+  published translation that is CITED. Attributing an anonymous translation
+  would have put a name in `translation_source` that no page supports. Two
+  retirements in two records is not the ruling being over-used: it is source
+  hunting deciding which record exists, twice, which is what the ruling says
+  it does.
+- **The estimated share is 36% at n=2 and worth watching.** Both of record 26's
+  first two phases are estimates — the re-filed hunt and a licence read inside
+  it — and ruling 48 exists so that a column mostly built out of recollection
+  cannot be mistaken for one that was measured. The report prints the split
+  beside every mean.
 - **RECORD 25 EXISTS. The corpus is 25 records and the digest has moved.**
   `seasia-04-dong-yen-chau` — the Đông Yên Châu inscription, Old Cham in
   Pallava script, c. 350 CE, the oldest attested text in any Austronesian

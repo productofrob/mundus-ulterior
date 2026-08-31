@@ -71,6 +71,44 @@
         }
       },
       "note": "PHASE BOUNDARIES, first record: rights_and_licence and placement read 0.3 min each because the work they name happened earlier under other clocks -- the Campa corpus's CC BY 3.0 was checked during source_hunting, and the gazetteer investigation that decided this record's placement ran under text_capture. The seven phases assume work arrives in phase order and investigation for a later phase routinely happens during an earlier one. The numbers are honest about when the clock ran and understate two phases. Not corrected by re-filing: nobody times a record twice, and moving measured minutes by estimate would be worse than leaving them where they were measured. authoring window 1: the record JSON, the manifest entry, the declared tier, the new language in answer.translate and the check-9 raise. The gold case is a second window. authoring window 2: the gold case, written against record 25 on the day it was curated. rework: two guards encoded 'the corpus is 24 records' and 'the column is empty' as invariants rather than as snapshots, and record 25 turned both red. Neither was named in advance the way ingest/verify.py check 9 was. Corrected so the claims survive a moving corpus: the tier histogram is counted over the ledger's excused seed set, and the excused list is now guarded as FROZEN -- a record excused after the column opened is the column being routed around, which nothing in this repository would otherwise notice."
+    },
+    {
+      "record_id": "seasia-05-my-son-b6",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 2.1,
+          "provenance": "estimated",
+          "because": "measured against seasia-05-kedukan-bukit before the hunt had settled which record would exist; that row is retired (ruling 52) and these are the same minutes"
+        },
+        "rights_and_licence": {
+          "minutes": 1.0,
+          "provenance": "estimated",
+          "because": "the licence was read during the hunt rather than after it: the Campa corpus states 'Licensed under a Creative Commons Attribution 3.0 Unported License' and 'Copyright (c) 2012 by Arlo Griffiths' on the inscription page itself, which is the whole of the rights position and was settled in the same window as the source"
+        },
+        "text_capture": {
+          "minutes": 0.7,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0.3,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "text_capture: stanza I of Face A, the English beside it, and the edition's own restoration brackets kept rather than normalised. authoring: the gold case. PLACEMENT reads 0 and is not zero work: the findspot block was written inside the text_capture window, and moving those minutes here by estimate would double-count what was already measured there. Same phase-boundary caveat as seasia-04-dong-yen-chau."
     }
   ],
   "retired": [
@@ -111,6 +149,44 @@
       "note": "",
       "retired_on": "2026-08-31",
       "because": "The hunt that these minutes measured is what ruled Vo Canh out: no open transliteration is published for it, so the record could only have been published_translation_only, a tier Southeast Asia's allocation carries none of. The minutes are real curation minutes for the SEA sub-tranche and are re-filed on the record that lands."
+    },
+    {
+      "record_id": "seasia-05-kedukan-bukit",
+      "tier": "",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 2.1,
+          "provenance": "measured"
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "",
+      "retired_on": "2026-08-31",
+      "because": "The hunt these minutes measured moved off Kedukan Bukit and onto C. 87. Wikipedia's English translation of Kedukan Bukit is UNATTRIBUTED -- the article names Coedes 1930 and de Casparis 1975 in its bibliography but does not say whose English it prints -- and verbatim_with_provenance requires a published translation that is CITED. Attributing an anonymous translation would have put a name in translation_source that no page supports. The Campa corpus carries C. 87 with an English translation, a named editor and an explicit CC BY 3.0 licence, so the record that lands is seasia-05-my-son-b6."
     }
   ],
   "retirement": {
