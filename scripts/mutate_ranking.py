@@ -738,6 +738,32 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
             if key not in CALL_SCOPED_STACK_KEYS}""",
           """    return dict(stack or {})""")],
     ),
+    (
+        # FINDING 43, F3, fixed in F4. The coverage prose as it stood: one rank
+        # written into a string, printed under every view and every corpus.
+        # This mutation restores exactly that, and the module-level rule is what
+        # has to catch it -- a rule about the NEXT sentence, not about this one.
+        "the coverage prose states its rank as a string literal again",
+        [('    return f"at rank {rank} in {view}"',
+          '    return "at rank 309"')],
+    ),
+    (
+        # The half that makes a sentence quotable: a rank without the view it
+        # was measured in is the 2026-08-14 defect in prose, and 460 chunks and
+        # 67 chunks are not two readings of one number.
+        "the coverage prose states a rank without naming the view",
+        [('    return f"at rank {rank} in {view}"',
+          '    return f"at rank {rank}"')],
+    ),
+    (
+        # The two guards are independent and this proves it: a hardcoded rank
+        # that is not in a STRING passes the module-level rule and must still be
+        # caught by the derivation one.
+        "the rank is hardcoded outside a string, where the module-level rule "
+        "cannot see it",
+        [("""    rank = next((p.rank for p in pairs if p.id == BROKEN_CROSSLINGUAL_PAIR), None)""",
+          """    rank = 309""")],
+    ),
 ]
 
 EXPECTED = [
@@ -862,14 +888,28 @@ EXPECTED = [
     "GUARD the echoed `model` is excluded from the stack identity",
     "GUARD a Block E archive's recorded stack has an EMPTY identity — which "
     "is what the 99-distinct-stacks line was counting",
+
+    # FINDING 43, F4 — in the order above.
+    "GUARD no string in run_ranking_check.py states a literal rank; a report "
+    "derives every rank it prints",
+    "GUARD the coverage prose names the view its rank was measured in",
+    "GUARD the coverage prose derives the broken link's rank from THIS run's "
+    "pairs",
 ]
 
 
 def failures_from(output: str) -> set[str]:
+    # The SPACE, for the third time. FINDING 37 found it in
+    # scripts/mutate_places.py and fixed it only there: `eval.test_ranking_check`
+    # ends a red run with `FAILED: <name>` lines, so a bare startswith("FAIL")
+    # harvests a phantom guard named `ED: <name>` beside the real ones -- and a
+    # harness that invents a failing guard reports a BASELINE block against a
+    # suite that is green, which is the one thing a mutation harness must never
+    # do quietly.
     return {
-        line.split("FAIL", 1)[1].strip()
+        line.split("FAIL ", 1)[1].strip()
         for line in output.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 

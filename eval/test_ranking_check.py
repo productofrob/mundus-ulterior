@@ -2070,6 +2070,65 @@ def test_a_lost_gold_pair_kills_the_run() -> None:
           f"guard at {guard_at}, embedding at {embed_at}")
 
 
+def test_report_prose_derives_every_rank_it_states() -> None:
+    """FINDING 43, F3, fixed in F4: a rank stated in English that no check read.
+
+    The coverage prose printed `at rank 309` as a string literal for weeks. It
+    printed 309 while its own table said 313, and 309 while the baseline-view
+    table said 54 -- two views, twenty minutes apart, one number. Nothing was
+    wrong with the tables.
+
+    Two assertions, and they are different rules. The first is about the ONE
+    sentence: it must derive its rank from the run's pairs and name the view it
+    was measured in, so the sentence stays true when lifted into a document
+    beside another run. The second is about the MODULE: no string literal in it
+    may state a rank at all, which is the guard that stops the next sentence
+    from being written the same way. `run_ranking_check.py:471` records that
+    this confusion has bitten here before at the level of data; this is the
+    same rule for prose.
+    """
+    import ast as _ast
+    import re as _re
+
+    from eval import run_ranking_check as rc
+
+    class _P:
+        def __init__(self, pid, rank): self.id, self.rank = pid, rank
+
+    pairs = [_P("tc-jabal-dabub", 3),
+             _P(rc.BROKEN_CROSSLINGUAL_PAIR, 313)]
+    phrase = rc.broken_link_phrase(pairs, rc.VIEW_WITH_DISTRACTORS)
+    check("GUARD the coverage prose derives the broken link's rank from THIS "
+          "run's pairs", "313" in phrase and "309" not in phrase, phrase)
+    check("GUARD the coverage prose names the view its rank was measured in",
+          rc.VIEW_WITH_DISTRACTORS in phrase, phrase)
+
+    other = rc.broken_link_phrase([_P(rc.BROKEN_CROSSLINGUAL_PAIR, 54)],
+                                  rc.VIEW_BASELINE)
+    check("the same pair at a different rank in a different view produces a "
+          "different sentence", "54" in other and rc.VIEW_BASELINE in other,
+          other)
+
+    absent = rc.broken_link_phrase([_P("tc-jabal-dabub", 3)],
+                                   rc.VIEW_WITH_DISTRACTORS)
+    check("a run whose pairs do not include it states no rank rather than the "
+          "last one anybody saw",
+          "rank" not in absent or "no rank" in absent, absent)
+
+    # The module-level rule. Comments and this test are not the target: a
+    # literal rank in a STRING is what gets printed into a report and quoted
+    # into a document.
+    source = Path(rc.__file__).read_text(encoding="utf-8")
+    offenders = []
+    for node in _ast.walk(_ast.parse(source)):
+        if isinstance(node, _ast.Constant) and isinstance(node.value, str):
+            if _re.search(r"\brank\s+\d", node.value):
+                offenders.append(node.value.strip()[:60])
+    check("GUARD no string in run_ranking_check.py states a literal rank; a "
+          "report derives every rank it prints", not offenders,
+          f"{len(offenders)} offender(s): {offenders[:3]}")
+
+
 def main() -> int:
     test_gold_set()
     test_loader_is_strict()
@@ -2090,6 +2149,7 @@ def main() -> int:
     test_the_fusion_is_a_max_and_says_what_won()
     test_the_two_arm_report_cannot_kill_a_run()
     test_a_lost_gold_pair_kills_the_run()
+    test_report_prose_derives_every_rank_it_states()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     if FAIL:
         for name in FAIL:

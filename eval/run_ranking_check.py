@@ -110,6 +110,12 @@ _DEFAULT_RENDERINGS = Path(__file__).parent / "gold" / "query_renderings.json"
 # The two views, named here rather than interpolated at the call site so that
 # "which index was this measured against" is one grep and appears in the
 # archived run.
+# The pair the coverage prose points at: the corpus's one genuinely broken
+# cross-lingual link. Named here rather than written into the sentence, so the
+# sentence can DERIVE its rank instead of stating one. FINDING 43.
+BROKEN_CROSSLINGUAL_PAIR = "muziris-cargo-akananuru"
+
+
 VIEW_BASELINE = "retrievable_chunks"
 VIEW_WITH_DISTRACTORS = "retrievable_chunks_with_distractors"
 
@@ -460,6 +466,35 @@ def corpus_on_disk() -> tuple[int, int]:
     result = load_corpus()
     eligible = sum(1 for c in result.chunks if c.eligible_for_retrieval)
     return len(result.chunks), eligible
+
+
+def broken_link_phrase(pairs, view: str) -> str:
+    """Where the corpus's one broken cross-lingual link sits IN THIS RUN.
+
+    FINDING 43, F3, fixed in F4. The coverage prose beneath the unit table
+    stated one rank as a string literal: the same number under every view,
+    under every corpus, and under whatever the table above it happened to say.
+    It disagreed with its own table in the with-distractors view and with the
+    baseline table twenty minutes later -- three numbers, one sentence, and no
+    check able to compare them. The numbers are in FINDING 43, which is where
+    an incident belongs; this docstring states the rule.
+
+    `reachability_problems` above records the same confusion at the level of
+    data -- a count taken from one surface printed over ranks taken from
+    another -- and the resolution then was to make the view explicit. The PROSE
+    was not brought along, because prose is where no check could reach it.
+
+    So the rank is derived from the run's own pairs and the phrase names the
+    view it was measured in, which is the thing that makes a sentence safe to
+    quote in a document beside a different run. Pure, so it can be tested and
+    mutated without a database, and `eval/test_ranking_check.py` additionally
+    refuses a literal rank in any string in this module.
+    """
+    rank = next((p.rank for p in pairs if p.id == BROKEN_CROSSLINGUAL_PAIR), None)
+    if rank is None:
+        return ("not among this run's pairs, so this report states no rank "
+                "for it")
+    return f"at rank {rank} in {view}"
 
 
 def reachability_problems(view: str, n_index: int, n_hits: int) -> list[str]:
@@ -1689,11 +1724,12 @@ def print_report(report: Report) -> None:
         if u["multi_target_coverage"] is not None:
             print(f"             over the {u['multi_target_units']} multi-target "
                   f"unit(s) alone: {u['multi_target_coverage']:.3f}")
-        print("  Coverage is REPORTED, never gated. Ruling 1 reaches the gate "
-              "partly by no\n  longer counting the two hardest Muziris targets — "
-              "one of them the corpus's\n  only genuinely broken cross-lingual "
-              "link, at rank 309. That failure is real\n  whatever this table "
-              "says, and belongs on the same page as any G2 number.")
+        where = broken_link_phrase(report.pairs, report.view)
+        print(f"  Coverage is REPORTED, never gated. Ruling 1 reaches the gate "
+              f"partly by no\n  longer counting the two hardest Muziris targets "
+              f"— one of them the corpus's\n  only genuinely broken "
+              f"cross-lingual link, {where}. That failure is real\n  whatever "
+              f"this table says, and belongs on the same page as any G2 number.")
 
         admitted = [r for r in report.pairs if len(r.accepted_chunk_ids) > 1]
         asked = [r for r in report.pairs if r.alternate_ground is not None]
