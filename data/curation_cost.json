@@ -147,6 +147,43 @@
         }
       },
       "note": "text_capture: the two sequences, the competing divisions, and the uncertainty statement placed in reference_translation ON PURPOSE, because only that field and original_text_excerpt are chunked. authoring: the gold case, and it is a refusable_with_gloss -- the fourth in a set that had three. rework: ingest.verify check 10 flagged the new record for triage -- translation_source declares a summary while the chunk classifies as translation. The check is right and it is not automatic: it carries a written triage decision per record from the 2026-08-10 audit, and a new record of the same shape must be judged rather than inherit one. One curatorial sentence was removed from the record, the gold case's hedge group was narrowed to words the corpus still holds, and the decision was written where the audit's decisions live."
+    },
+    {
+      "record_id": "persia-04-bronze-heracles",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "because": "pre-selection hunting, filed as an estimate for the reason the two retired rows demonstrate. This one was expensive and the cost is the finding: Paikuli, Kartir at Naqsh-e Rajab and Kartir generally all failed on the same wall -- no accessible verbatim transliteration -- and the obvious record, the SKZ campaign narrative, was refused by FINDING 39 because skz-roman-emperors is a passing refusal case that excludes Valerian."
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 0.7,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0.3,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "text_capture: eleven lines with the epigraphic apparatus kept -- restored date, uncertain letters, heterograms -- and Nabel's translation quoted whole. authoring: the gold case. Start and stop in separate calls this time, so the clock spans the work rather than the command."
     }
   ],
   "retired": [

@@ -13104,6 +13104,27 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **RECORD 28: `persia-04-bronze-heracles`, and the object is the argument.**
+  A GREEK statue of Heracles inscribed in Greek on one thigh and Parthian on
+  the other, 151 CE — and the Parthian text calls the figure **Verethragna**.
+  One bronze, two religious vocabularies, the Greco-Roman and the Iranian,
+  naming the same body. Vologaeses IV, who set it up, is the king Rome fought
+  ten years later under Lucius Verus. Persia's source-language records 1 → 2.
+  **Not declared gloss-capable, deliberately**: the text carries a real
+  epigraphic apparatus — a RESTORED date, uncertain letters — but no worded
+  statement of uncertainty, and writing one would mean adding editorial prose
+  to a quotable field, which is what check 10 caught on record 27. **F3 will
+  therefore deliver 1 gloss-capable record of the 2 its allocation asks for**,
+  reported as a shortfall and not as unreachable.
+- **AND THE `vme` PROBLEM WAS PARTLY MY OWN READING.** FINDING 38 concluded the
+  tier is hard because published inscriptions come with translations. That
+  holds — but the tier's operative fact is no ENGLISH translation, not no
+  translation at all. A text edited and translated into FRENCH, with no citable
+  English, is exactly what the tier describes: `resolve_english` reaches it
+  with `machine` or nothing. Kedukan Bukit was refused for the `vwp` slot
+  BECAUSE its English is unattributed; that same fact QUALIFIES it for a `vme`
+  slot. Southeast Asia's two are reachable on that reading. Persia's and
+  Scandinavia's remain hard.
 - **FINDING 39: a record can falsify a `correctly_refusable` case, and nothing
   connected the two files.** Found while choosing Persia's record. The
   strongest Rome-facing Persian text in existence is the Res Gestae's account

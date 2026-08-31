@@ -1102,6 +1102,38 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts. It is the FOURTH gloss case in a set that had three, and the first added since the corpus began moving.",
       "note": "The hedge group is drawn from words the record's own reference_translation contains — 'disputed', 'It is possible', 'No single reading is established' — because expect_hedge_any is scored as one more alternatives group and a hedge the corpus cannot support is a case that can never pass. That is corpus_tiers.json's own sentence about what gloss-capable means mechanically, applied to the case rather than to the record. The second content group admits 'renowned' alone: both published readings agree the epithet is there and disagree about whose it is, so requiring the disagreement in group one and the agreement in group two is what makes the case test the gloss rather than the vocabulary. CORRECTED 2026-08-31, in the same rework: the hedge group named 'no single reading' and 'not established', and the sentence carrying them was removed from the record as a curatorial summary. A hedge the corpus cannot support is a case that can never pass, so the group now names only words the record still holds."
+    },
+    {
+      "id": "bronze-heracles-verethragna",
+      "question": "In the Parthian text on the bronze statue taken from Mesene, which god is the statue said to be?",
+      "why": "The THIRD expect_quoted_from_original case, against a mix that requires six at 60, and the one where the source text and its translation give different answers to the same question. The Parthian calls the figure `wrtrgn` — Verethragna — while the statue is a Greek Heracles and the Greek inscription on its other thigh calls him Heracles. This corpus holds only the Parthian half, so the answerable question is what the PARTHIAN says, and an answer that reaches for Heracles is reaching outside the evidence. That makes the case a quotation test with a discriminator built in: `wrtrgn` appears in the source text and nowhere else in the corpus, and `Verethragna` appears only in this record's translation.",
+      "expected_behaviour": "answerable",
+      "region": "Persia",
+      "expect_cited_docs": [
+        "persia-04-bronze-heracles"
+      ],
+      "expect_quoted_docs": [
+        "persia-04-bronze-heracles"
+      ],
+      "expect_quoted_from_original": [
+        "persia-04-bronze-heracles"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Verethragna",
+          "wrtrgn"
+        ],
+        [
+          "Mesene",
+          "myšn"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`.",
+      "note": "The question says 'the Parthian text' rather than 'the inscription', because the object carries TWO inscriptions and this corpus holds one of them. A question about the statue as such would be partly unanswerable from the evidence, and a case that is partly unanswerable scores the retrieval rather than the answer. The second content group admits the findspot in either language for the same reason the first admits the god: `myšn` is in the source and `Mesene` is in the translation, so the group is satisfied by either half and the quotation requirement is what forces the source."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

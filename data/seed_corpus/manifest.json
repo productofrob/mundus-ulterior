@@ -1,7 +1,7 @@
 {
   "corpus_name": "Mundus Ulterior Phase 1 Part 2 — Seed Corpus",
   "generated": "2026-08-09",
-  "total_documents": 27,
+  "total_documents": 28,
   "regions": [
     "Arabia",
     "East Asia",
@@ -383,6 +383,19 @@
       "path": "scandinavia/thorsberg-chape.json",
       "has_reference_translation": true,
       "citation": "https://en.wikipedia.org/wiki/Thorsberg_chape"
+    },
+    {
+      "id": "persia-04-bronze-heracles",
+      "region": "Persia",
+      "title": "The Bronze Heracles of Mesene (BHM) — Parthian inscription on a Greek statue, 151 CE",
+      "source_type": "inscription",
+      "language_code": [
+        "xpr"
+      ],
+      "date": "151 CE (year 398 of the Arsacid era — the numeral is RESTORED, not read)",
+      "path": "persia/bronze-heracles.json",
+      "has_reference_translation": true,
+      "citation": "http://parthiansources.com/texts/bhm/bhm-parthian-text/"
     }
   ]
 }
