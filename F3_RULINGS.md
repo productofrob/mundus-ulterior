@@ -714,6 +714,69 @@ defect was found is a check written before it was tried.
 
 ---
 
+# FINDING 40 — a quota counts cases, and two of the six are not the same case
+
+`corpus_tiers.json` requires **six `expect_quoted_from_original` cases at 60**.
+With records 29 and 30's cases written, the file holds six:
+`weilue-chinese-quotation`, `dong-yen-chau-old-cham`, `my-son-b6-isananatha`,
+`bronze-heracles-verethragna`, `kedukan-bukit-expedition-figures`,
+`talang-tuo-punta-hiyang`. **The quota is met and it is not worth what the
+number says.**
+
+## What the assertion actually tests
+
+`answer_eval` builds `quoted_from_original` from the resolved quote spans whose
+`source_field` is `original_text_excerpt`. On the first four records that is a
+CHOICE the model made: each of those records carries a `reference_translation`
+as a second retrieval-eligible chunk, both chunks are in front of the model,
+and the assertion records which one the quotation came out of. The choice is
+not hypothetical — across 16 archived runs of `chinese-da-qin`, **45 of 45
+resolved quotations came from the English while the source chunk sat at [S1]**.
+That is the defect the assertion was invented to see.
+
+Records 29 and 30 carry no `reference_translation`. Their only
+retrieval-eligible chunk is `original_text_excerpt`. The competing English is a
+Part 6 machine translation living in `current_translations`, which is **not a
+corpus field**, so a quotation of it cannot resolve to characters on disk at
+all: `resolved` would not count it and `source_field` could never be
+`original_text_excerpt`. On these two records the assertion is satisfied by
+**any resolved quotation whatsoever**, and `expect_min_resolved_quotes: 1` on
+the same case already required that.
+
+So one name covers two questions. On a `verbatim_with_provenance` record it
+asks **which chunk**. On a `verbatim_machine_english` record it asks **whether
+anything resolved**. Six of six is four of the first and two of the second.
+
+## What is NOT done here
+
+Both cases keep the assertion. It is true of them, and removing it would leave
+the two records with no quotation assertion beyond the count. The mix's
+minimum is **not** lowered either: lowering a bar because the cases behind it
+turned out to be weaker is a ruling, not a correction, and the number that
+belongs there at 60 is not known from six.
+
+What changes is the reading. Anyone taking the quota as evidence that this
+system quotes sources rather than translations should count **four**.
+
+## The direction, which is the part that matters
+
+`PHASE2_PLAN` predicted `verbatim_machine_english` would become the common
+tier, and FINDING 38 found it to be the hard one to source rather than the rare
+one. As the corpus fills with records that have no published English, the
+quoted-from-original quota gets **easier to satisfy and weaker at the same
+time** — every new vme record supplies a case that passes the assertion by
+construction. A measure that improves as the thing it measures gets harder to
+observe is a measure drifting toward decoration, and it drifts silently because
+the count is the only thing anyone reads.
+
+The fix belongs to F4 and is stated so it is not re-derived: the mix should
+require its six against records that **hold** a `reference_translation`, and
+count vme quotation cases in a separate line with its own minimum. That is a
+change to `corpus_tiers.json`'s `target_mix` and to whatever derives it, and
+`check_allocation` is where the disagreement would have to fail.
+
+---
+
 # The trap this session walked into, recorded because it is a new mechanism
 
 **A mutation harness cannot be run through the bridge because of what the SUITE
@@ -790,3 +853,8 @@ of days costs the corpus least.**
 **Eleven documents said 2026-08-29 and the machine that stamps every sweep said
 2026-08-31. The date was read off another document, in the repository where a
 UTC date is the thing a ninth session was just booked to buy.**
+
+**A quota counts cases and assumes the cases are the same case. Six
+quoted-from-original cases at 60 are four that ask WHICH chunk was quoted and
+two that ask only WHETHER anything resolved — and the tier that made them
+different is the one the plan says will become the common one.**

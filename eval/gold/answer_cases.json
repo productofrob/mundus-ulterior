@@ -1134,6 +1134,72 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`.",
       "note": "The question says 'the Parthian text' rather than 'the inscription', because the object carries TWO inscriptions and this corpus holds one of them. A question about the statue as such would be partly unanswerable from the evidence, and a case that is partly unanswerable scores the retrieval rather than the answer. The second content group admits the findspot in either language for the same reason the first admits the god: `myšn` is in the source and `Mesene` is in the translation, so the group is satisfied by either half and the quotation requirement is what forces the source."
+    },
+    {
+      "id": "kedukan-bukit-expedition-figures",
+      "question": "The Kedukan Bukit inscription counts an expedition. In its own Old Malay, what words does it use for the numbers it gives?",
+      "why": "THE FIRST GOLD CASE EVER WRITTEN AGAINST A RECORD THIS CORPUS HOLDS NO ENGLISH FOR. Records 29 and 30 are verbatim_machine_english: translation_source is empty, there is no reference_translation, and until Part 6 runs the evidence block says ENGLISH: NONE AVAILABLE. assemble's prompt rule 4 then PERMITS the model to quote the source text verbatim and say what the record is, and FORBIDS it saying what the text means. This case is written to be answerable under that rule and under no other: both content groups are Old Malay strings the answer can only obtain by quoting, and neither asks what the words mean. A case that asked how many troops sailed would be asking the model to break rule 4 in order to pass, and would flip to passing for a different reason on the day the machine translation lands - which is the failure mode a gold case is supposed to be immune to, not an early warning of it.",
+      "expected_behaviour": "answerable",
+      "region": "Southeast Asia",
+      "expect_cited_docs": [
+        "seasia-06-kedukan-bukit"
+      ],
+      "expect_quoted_docs": [
+        "seasia-06-kedukan-bukit"
+      ],
+      "expect_quoted_from_original": [
+        "seasia-06-kedukan-bukit"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "dua lakṣa",
+          "dua laksa"
+        ],
+        [
+          "sarivu tlu ratus sapulu dua",
+          "dua ratus cāra di sāmvau",
+          "dua ratus"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts. It is additionally the first case in this file whose record carries NO English at all, so its first result measures the verbatim_machine_english path rather than any regression in it.",
+      "note": "The three figures are `vala dua lakṣa` (the host), `dua ratus cāra di sāmvau` (in boats) and `sarivu tlu ratus sapulu dua` (on foot); the second group admits the bare `dua ratus` as well, which is a substring of one of its own members and is there so that an answer naming two of the three still passes. `sarivu tlu ratus sapulu dua` is broken across a line in the source, and both the matcher and cite.locate_in_text collapse runs of whitespace, so an answer that reflows it still resolves. READ THE expect_quoted_from_original ASSERTION HERE WITH FINDING 40 IN HAND: on a record that also carries a reference_translation the assertion says WHICH chunk was quoted, and on this record there is no second chunk to quote, so it says only that something resolved. It is declared because it is true and because dropping it would leave this record with no quotation assertion at all, not because it carries the weight the same words carry on seasia-05-my-son-b6."
+    },
+    {
+      "id": "talang-tuo-punta-hiyang",
+      "question": "In the Old Malay of the Talang Tuo inscription, who is named as having the Śrīksetra park made, and what title does the text give him?",
+      "why": "The pair to kedukan-bukit-expedition-figures and deliberately a different shape on the same constraint. That case asks for FIGURES, which an answer can carry across as strings without claiming to understand them; this one asks for a NAME and a TITLE, which the record's own title and language_note supply the sense of without the model translating anything. Both are answerable under assemble's rule 4 and neither requires an English the corpus does not have. The two records are thirteen months apart and describe the same polity in two registers - one counts an expedition, one dedicates a park - so the pair also tests that retrieval separates them: `punta hiyang` and `ḍapunta hiyaṃ` are the same title in two spellings across the two records, and a case that resolved to the wrong one would still look plausible in prose.",
+      "expected_behaviour": "answerable",
+      "region": "Southeast Asia",
+      "expect_cited_docs": [
+        "seasia-07-talang-tuo"
+      ],
+      "expect_quoted_docs": [
+        "seasia-07-talang-tuo"
+      ],
+      "expect_quoted_from_original": [
+        "seasia-07-talang-tuo"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "śrī jayanāga",
+          "jayanāga",
+          "jayanaga"
+        ],
+        [
+          "punta hiyang",
+          "parwānda punta hiyang"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts. It is additionally the first case in this file whose record carries NO English at all, so its first result measures the verbatim_machine_english path rather than any regression in it.",
+      "note": "Both content groups are strings that occur ONLY in original_text_excerpt: the name appears nowhere in this record's title, notes or language_note, and `punta hiyang` appears in the source text of this record and, in the spelling `ḍapunta hiyaṃ`, in seasia-06-kedukan-bukit. The first group admits three spellings of the name because matching is case-insensitive and whitespace-collapsing but NOT punctuation-insensitive, and a case must say which spelling it accepts rather than let the matcher decide. The question names the inscription rather than Srivijaya or Palembang, because match_case returns the FIRST case whose question matches and Southeast Asia now carries seven. FINDING 40 applies to expect_quoted_from_original here exactly as it does to the Kedukan Bukit case."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

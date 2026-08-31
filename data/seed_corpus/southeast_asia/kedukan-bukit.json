@@ -1,0 +1,24 @@
+{
+  "id": "seasia-06-kedukan-bukit",
+  "region": "Southeast Asia",
+  "title": "Kedukan Bukit inscription — Srivijaya's expedition, 683 CE (Old Malay)",
+  "source_type": "inscription",
+  "language_code": [
+    "omy"
+  ],
+  "language_note": "Old Malay in the Pallava script, stored in the scholarly Latin transliteration. The oldest dated document in any Malay language and the earliest text naming Srivijaya.",
+  "date": "605 Saka = 683 CE (the inscription dates itself to the day)",
+  "findspot": "Kedukan Bukit, on the Tatang river near Bukit Seguntang, Palembang, South Sumatra, Indonesia. Discovered 29 November 1920. Now in the National Museum of Indonesia, Jakarta (D.161).",
+  "original_text_excerpt": "svasti śrī śaka varṣātīta 605 ekādaśī śukla-\npakṣa vulan vaiśākha ḍapunta hiyaṃ nāyik di\nsāmvau maṅalap siddhayātra di saptamī śuklapakṣa\nvulan jyeṣṭha ḍapunta hiyaṃ marlapas dari mināṅa\ntāmvan mamāva yaṃ vala dua lakṣa daṅan kośa\ndua ratus cāra di sāmvau daṅan jālan sarivu\ntlu ratus sapulu dua vañakña dātaṃ di mukha upaṃ\nsukhacitta di pañcamī śuklapakṣa vulan āsāḍha\nlaghu mudita dātaṃ marvuat vanua ...\nśrīvijaya jaya siddhayātra subhikṣa nityakāla",
+  "original_text_note": "Ten lines. The hyphen at the end of line 1 is the edition's, marking a word broken across the line; the ellipsis in line 9 is the source's and marks text omitted there rather than lost from the stone. The text carries FIGURES and they are the reason this record is here: `vala dua lakṣa` is twenty thousand troops, `dua ratus cāra di sāmvau` two hundred in boats, `sarivu tlu ratus sapulu dua` one thousand three hundred and twelve on foot. PROVENANCE OF THE TRANSLITERATION, stated rather than assumed. The Old Malay is reproduced from the Wikipedia article named in `citation`, which cites Coedes (1930) -- the standard edition -- in its bibliography but does NOT state whose transliteration it prints. The reading of these inscriptions has been established for a century and the text is not in doubt; what is not established is whose transliteration this is, and that is recorded here rather than resolved by attributing it to Coedes. The inscription itself is 7th-century and out of copyright.",
+  "translation_source": "",
+  "citation": "https://en.wikipedia.org/wiki/Kedukan_Bukit_inscription",
+  "notes": "NO reference_translation, and that is the record rather than a gap in it. This is a verbatim_machine_english record: the tier PHASE2_PLAN predicted would become the common case and which F3 found, in FINDING 38, to be the hard one. An English translation of this inscription circulates, and it is UNATTRIBUTED -- the article printing it names Coedes (1930) and de Casparis (1975) in a bibliography without saying whose English it prints. That fact REFUSED this text a verbatim_with_provenance slot earlier in this session, because that tier requires a published translation that is CITED, and the same fact QUALIFIES it here: no citable English exists, so resolve_english reaches the passage with `machine` or with nothing, which is the tier's own definition. Coedes published a FRENCH translation; the tier's operative fact is the absence of English, not the absence of translation. THE CONNECTION IS THE ROUTE, and it is stated rather than implied. Srivijaya held the Straits of Malacca -- the chokepoint of the maritime road that carried goods between the Mediterranean and China. This corpus already holds seasia-01-oc-eo-medallion, a gold imitation of a Roman aureus of Antoninus Pius, and seasia-03-khao-sam-kaeo, a Roman intaglio, as find records ON that road. These records are the polity's OWN VOICE on the same road, five centuries later and inside this project's window. The inscription does not mention Rome and is admitted with the reason attached, which is the standard arabia-04-jabal-dabub set. Kedukan Bukit is the logistics document of the pair: it counts an expedition. seasia-07-talang-tuo, dated one year later, is its religious counterpart.",
+  "findspot_places": [
+    {
+      "name": "Kedukan Bukit, Palembang (South Sumatra)",
+      "ground": "regional",
+      "note": "NO GAZETTEER ID RESOLVED, for the reason recorded on every F3 record: no GeoNames dump is cached here, so no candidate could be examined, accepted or refused. Palembang is a major city and certain to resolve once a dump is present; the findspot is a site on the Tatang river within it, which is the same town-versus-site distinction seasia-01-oc-eo-medallion's note already draws."
+    }
+  ]
+}

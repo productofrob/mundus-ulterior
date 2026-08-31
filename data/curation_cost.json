@@ -184,6 +184,81 @@
         }
       },
       "note": "text_capture: eleven lines with the epigraphic apparatus kept -- restored date, uncertain letters, heterograms -- and Nabel's translation quoted whole. authoring: the gold case. Start and stop in separate calls this time, so the clock spans the work rather than the command."
+    },
+    {
+      "record_id": "seasia-06-kedukan-bukit",
+      "tier": "verbatim_machine_english",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 2.0,
+          "provenance": "estimated",
+          "because": "the candidate was already known and was REFUSED for a vwp slot earlier in this session; what this covers is the re-reading that qualified it for a vme slot -- no citable English is exactly what the tier describes -- plus the fetch that obtained the verbatim transliteration. Filed as an estimate because pre-selection reasoning cannot be clocked against a record id the hunt has not chosen."
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 1.1,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "text_capture: both Srivijaya texts captured in one window; talang-tuo's share is filed as an estimate rather than double-counted here."
+    },
+    {
+      "record_id": "seasia-07-talang-tuo",
+      "tier": "verbatim_machine_english",
+      "curated_on": "2026-08-31",
+      "phases": {
+        "source_hunting": {
+          "minutes": 2.0,
+          "provenance": "estimated",
+          "because": "same window and same reasoning as seasia-06-kedukan-bukit: both Srivijaya inscriptions were qualified by one re-reading and captured from one pair of fetches. Split evenly between the two records rather than loaded onto whichever was written first, and estimated because the span covered both."
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 1.5,
+          "provenance": "estimated",
+          "because": "captured in seasia-06-kedukan-bukit's text_capture window -- one pair of fetches produced both transliterations -- so this is that window's share rather than a second measured span, and an estimate is the honest provenance for a figure split from a measurement."
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": ""
     }
   ],
   "retired": [

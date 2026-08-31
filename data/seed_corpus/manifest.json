@@ -1,7 +1,7 @@
 {
   "corpus_name": "Mundus Ulterior Phase 1 Part 2 — Seed Corpus",
   "generated": "2026-08-09",
-  "total_documents": 28,
+  "total_documents": 30,
   "regions": [
     "Arabia",
     "East Asia",
@@ -396,6 +396,32 @@
       "path": "persia/bronze-heracles.json",
       "has_reference_translation": true,
       "citation": "http://parthiansources.com/texts/bhm/bhm-parthian-text/"
+    },
+    {
+      "id": "seasia-06-kedukan-bukit",
+      "region": "Southeast Asia",
+      "title": "Kedukan Bukit inscription — Srivijaya's expedition, 683 CE (Old Malay)",
+      "source_type": "inscription",
+      "language_code": [
+        "omy"
+      ],
+      "date": "605 Saka = 683 CE (the inscription dates itself to the day)",
+      "path": "southeast_asia/kedukan-bukit.json",
+      "has_reference_translation": false,
+      "citation": "https://en.wikipedia.org/wiki/Kedukan_Bukit_inscription"
+    },
+    {
+      "id": "seasia-07-talang-tuo",
+      "region": "Southeast Asia",
+      "title": "Talang Tuo inscription — the Śrīksetra park dedication, 684 CE (Old Malay)",
+      "source_type": "inscription",
+      "language_code": [
+        "omy"
+      ],
+      "date": "606 Saka = 684 CE",
+      "path": "southeast_asia/talang-tuo.json",
+      "has_reference_translation": false,
+      "citation": "https://en.wikipedia.org/wiki/Talang_Tuo_inscription"
     }
   ]
 }
