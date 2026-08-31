@@ -301,7 +301,9 @@
           "why_these": "Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last."
         }
       ]
-    }
+    },
+    "gloss_capable_declared": [],
+    "why_gloss_capability_is_DECLARED": "Because it cannot be derived. what_gloss_capable_MEANS_mechanically defines it as a hedged reading AND a statement that the reading is uncertain, both inside a RETRIEVAL-ELIGIBLE chunk -- and only original_text_excerpt and reference_translation are chunked, which is the trap this list exists to make visible. Whether a passage hedges is a judgement about prose and no classifier here can read it, so the declaration is the claim and ingest.fidelity.check_delivery guards everything mechanical about it: that the record is one this tranche curated, that its tier can carry a gloss case at all, that the count does not exceed the quota, and that the quota is still REACHABLE from the slots the allocation has left. EMPTY AT F3 RECORD 26, and that is the finding this list was added for: two records were curated and neither carries its hedge in a chunked field, because the hedge was written into original_text_note, which the loader does not chunk."
   },
   "how_curation_cost_is_reported": "PER TIER, and against this mix. See ruling 45: G3's box 'curation cost per record recorded and trending down' is satisfiable by curating cheaper records, and the tier is the only thing that makes the number readable.",
   "no_content_hash_is_stamped_here": "Deliberate. An entry could record the record's content_hash at declaration time, so a record edited after its tier was declared would flag. It does not need to: the tier is DERIVED from the record on every verify run, so a record that moves into a different tier fails declared-vs-derived immediately, and a record that moves without changing tier has nothing to report. Stamping a hash would add a re-declaration to every corpus edit in F3-F7 and detect nothing the derivation does not."

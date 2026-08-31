@@ -215,7 +215,11 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     ),
     (
         "an allocation with no sub-tranches stops being refused",
-        [("    if not tranches:", "    if False:")],
+        # Two functions now open with this line, so the anchor carries the
+        # NEXT one. An ambiguous target resolves first-occurrence-wins in
+        # silence, which is the defect this harness refuses to have.
+        [("    if not tranches:\n        return [\"target_mix.allocation",
+          "    if False:\n        return [\"target_mix.allocation")],
     ),
     (
         "two sub-tranches may share a name",
@@ -225,6 +229,32 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
     (
         "a slot may name a region that has no target at 60",
         [("            if region not in by_region_at_60:", "            if False:")],
+    ),
+    # F3, check_delivery. The plan was guarded eleven ways and delivery not at
+    # all, which is how two records missed the gloss quota in silence.
+    (
+        "a record curated outside the plan stops being reported",
+        [("        if key not in planned:", "        if False:")],
+    ),
+    (
+        "a cell may be curated past its planned count",
+        [("        if count > planned.get(key, 0):", "        if False:")],
+    ),
+    (
+        "a gloss declaration may name a record the tranche never curated",
+        [("        if record_id not in delivered:", "        if False:")],
+    ),
+    (
+        "a gloss case becomes declarable on a tier that cannot carry one",
+        [("        elif tier_of not in GLOSS_CAPABLE_TIERS:", "        elif False:")],
+    ),
+    (
+        "the gloss quota stops being a ceiling",
+        [("    if len(gloss_declared) > want_gloss:", "    if False:")],
+    ),
+    (
+        "an unreachable gloss quota is reported as a shortfall instead of a failure",
+        [("    if len(gloss_declared) + capacity < want_gloss:", "    if False:")],
     ),
     (
         "a manifest flag the code neither honours nor lifts stops being reported",
@@ -276,6 +306,12 @@ EXPECTED = [
     "GUARD an allocation with no sub-tranches is refused",
     "GUARD two sub-tranches with the same name are refused",
     "GUARD a slot naming a region with no target at 60 is refused",
+    "GUARD a record curated into a cell the allocation does not place is refused",
+    "GUARD a cell curated past its planned count is refused",
+    "GUARD a gloss-capable declaration naming a record the tranche did not curate is refused",
+    "GUARD a gloss-capable declaration on a tier whose only English is machine is refused",
+    "GUARD more gloss-capable records than the mix asks for is refused",
+    "GUARD a gloss quota the remaining slots cannot carry is refused, rather than reported as a shortfall nobody acts on",
     "GUARD a manifest flag the code neither honours nor lifts is refused",
     "GUARD a lift with no written reason is refused",
     "GUARD a flag cannot be honoured and lifted at once",
@@ -294,6 +330,10 @@ EXPECTED = [
 UNMUTATED_BY_DESIGN = (
     "GUARD the measured histogram the target mix is arithmetic over still holds",
     "GUARD the declared allocation delivers the declared mix",
+    "GUARD a tranche that has curated nothing yet reports no problem",
+    "GUARD records curated into cells the allocation places report nothing",
+    "GUARD a gloss-capable declaration on a tier that CAN carry one reports nothing",
+    "GUARD an empty tranche is not called unreachable — every slot is still there",
     "GUARD a declaration that matches the derivation reports no problem",
     "GUARD every tier the derivation returns is in the declared vocabulary",
     "GUARD the declared target mix is internally coherent",

@@ -342,8 +342,10 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     #     an untiered or mis-tiered record is a record the target mix cannot
     #     count, and the mix is the thing F1 exists to make countable.
     from .fidelity import (
+        GLOSS_CAPABLE_TIERS,
         RECORD_TIERS,
         check_allocation,
+        check_delivery,
         check_declared_tiers,
         check_target_mix,
         derive_record_tier,
@@ -468,6 +470,50 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
         ledger = json.loads(cost_path.read_text(encoding="utf-8"))
         for problem in check_ledger(ledger, derived if tiers_path.exists() else {}):
             failures.append(f"curation cost: {problem}")
+
+        # F3, 2026-08-31. check_allocation guards the PLAN; this guards
+        # DELIVERY. The tranche's records are the ledger's `records` by
+        # definition -- the seed 24 are its `not_timed` -- so the two files that
+        # have to agree are the allocation and the column, and neither of them
+        # is the record.
+        regions_by_doc = {d.doc_id: d.region for d in docs}
+        derived_tiers = derived if tiers_path.exists() else {}
+        tranche_records = {
+            entry.get("record_id"): (
+                regions_by_doc.get(entry.get("record_id"), ""),
+                (derived_tiers.get(entry.get("record_id")) or ("", ""))[0],
+            )
+            for entry in (ledger.get("records") or [])
+        }
+        mix_for_delivery = (tier_doc.get("target_mix") or {}) if tiers_path.exists() else {}
+        for problem in check_delivery(
+            mix_for_delivery, tranche_records,
+            set(mix_for_delivery.get("gloss_capable_declared") or ()),
+        ):
+            failures.append(f"delivery: {problem}")
+
+        allocation_cells: dict = {}
+        for tranche in (mix_for_delivery.get("allocation") or {}).get("sub_tranches") or []:
+            for slot in tranche.get("slots") or []:
+                key = (str(slot.get("region")), str(slot.get("tier")))
+                allocation_cells[key] = allocation_cells.get(key, 0) + int(slot.get("n") or 0)
+        done_cells: dict = {}
+        for region, tier in tranche_records.values():
+            done_cells[(region, tier)] = done_cells.get((region, tier), 0) + 1
+        gloss_declared = mix_for_delivery.get("gloss_capable_declared") or []
+        gloss_capacity = sum(
+            n - done_cells.get(k, 0) for k, n in allocation_cells.items()
+            if k[1] in GLOSS_CAPABLE_TIERS)
+        notes.append(
+            f"delivery against the allocation: {len(tranche_records)} of "
+            f"{sum(allocation_cells.values())} tranche record(s) curated. "
+            f"Gloss-capable declared {len(gloss_declared)}/"
+            f"{mix_for_delivery.get('gloss_capable_records', '?')}, with "
+            f"{gloss_capacity} slot(s) left on a tier that can carry one. A "
+            f"SHORTFALL is progress and is reported here; an UNREACHABLE quota "
+            f"is a failure above, because a target the remaining slots cannot "
+            f"carry has already been missed and nobody re-curates a record."
+        )
 
         timed = len(ledger.get("records") or [])
         retired = len(ledger.get("retired") or [])

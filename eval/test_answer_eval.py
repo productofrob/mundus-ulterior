@@ -2538,6 +2538,52 @@ def test_the_corpus_is_part_of_the_scope() -> None:
            "calibrate BY CONSTRUCTION rather than by being remembered")
 
 
+def test_the_quoted_from_original_quota() -> None:
+    """F3. The other half of the delivery check, and it lives HERE because the
+    thing being counted is a CASE and not a record.
+
+    `ingest.fidelity.check_delivery` guards what the corpus delivers against
+    the allocation. This quota is different in kind: min_expect_quoted_from_
+    original_cases_at_60 is a claim about the GOLD SET, and the gold set is
+    this suite's file. Counting it in ingest would mean ingest importing eval;
+    counting it nowhere is how it would be discovered at G3.
+
+    Under-delivery is progress and is not asserted -- the target is for 60
+    records. What IS asserted is REACHABILITY, on check_delivery's argument:
+    a shortfall that the remaining source-language slots cannot make up is a
+    target that has already failed, and the difference is the whole point.
+    """
+    print("\nthe quoted-from-original quota, counted rather than assumed")
+
+    cases = load_answer_cases()
+    delivered = sum(1 for c in cases if c.expect_quoted_from_original)
+    tiers = json.loads(
+        (Path(__file__).resolve().parent.parent / "data" / "corpus_tiers.json")
+        .read_text(encoding="utf-8"))
+    mix = tiers["target_mix"]
+    want = int(mix.get("min_expect_quoted_from_original_cases_at_60") or 0)
+
+    expect(delivered >= 1 and want >= 1,
+           f"the quota is counted from the gold set ({delivered}) against the "
+           f"mix's own minimum ({want}), not transcribed into a document")
+
+    # A case can only require a quotation from an original where a record
+    # HAS one, so the ceiling is the source-language records: those already
+    # curated plus those the allocation still places.
+    source_tiers = ("verbatim_with_provenance", "verbatim_machine_english")
+    planned = sum(
+        int(slot.get("n") or 0)
+        for tranche in (mix.get("allocation") or {}).get("sub_tranches") or []
+        for slot in tranche.get("slots") or []
+        if slot.get("tier") in source_tiers)
+    at_24 = sum(int(v) for k, v in (mix.get(
+        "source_language_records_by_region_at_24") or {}).items())
+    expect(delivered + planned + at_24 >= want,
+           "GUARD the quoted-from-original quota is still REACHABLE from the "
+           "source-language records curated and the ones the allocation has "
+           "left to place")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -2572,6 +2618,7 @@ def main() -> int:
     test_the_floor()
     test_the_floor_state_a_case_declares()
     test_the_corpus_is_part_of_the_scope()
+    test_the_quoted_from_original_quota()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0
 

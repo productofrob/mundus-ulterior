@@ -13104,6 +13104,38 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **THE DELIVERY CHECK, and the gap it closed was found by two records rather
+  than by a check.** `check_allocation` guards the PLAN — eleven branches of
+  arithmetic over a table of slots — and nothing guarded DELIVERY. Two records
+  into Block F the gloss-capable quota was already missed and no check said so,
+  because the only question anyone had asked was whether the plan added up.
+  The reason it was missed is mechanical and worth knowing before the remaining
+  six are curated: **only `original_text_excerpt` and `reference_translation`
+  are chunked.** `original_text_note` and `notes` are not, so a hedge written
+  into a note is invisible to retrieval, and `what_gloss_capable_MEANS_
+  mechanically` requires the hedge to be in a RETRIEVAL-ELIGIBLE chunk.
+  `ingest.fidelity.check_delivery` now guards the corpus side and
+  `eval.test_answer_eval` the case side, and the division is by what is being
+  counted: a record for the first, a gold case for the second.
+  **Over-delivery FAILS** — a record curated into a cell the allocation does
+  not place, or a cell curated past its count, is a slot taken from somewhere
+  that can never be refilled, because nobody re-curates a record.
+  **A shortfall is a NOTE**, for verify's own reason about the tier histogram.
+  **UNREACHABILITY FAILS, and it is the point**: a shortfall that can still be
+  made up is progress; a shortfall larger than the slots remaining is a target
+  that has already failed, and the difference between those two is exactly what
+  nobody would notice until F7. Gloss-capability is DECLARED in the sidecar,
+  because whether a passage hedges is a judgement about prose — what is checked
+  is everything mechanical about the declaration, including that the record's
+  tier can carry a gloss case at all.
+  **Delivered today: 2 of 36 records, gloss-capable 0/8 with 24 slots left,
+  quoted-from-original cases 3/6.** All reachable, all notes.
+- **The mutation harness made the code better, twice.** Two of the six new
+  guards were load-bearing for the line beneath them, so removing them RAISED
+  instead of producing a wrong answer — and `mutate_fidelity` reported
+  `crash, not a guard failure` rather than counting it green. A checker that
+  crashes when its own guard is removed cannot be mutation-verified at all.
+  Both now degrade into a wrong answer, which is what makes a guard observable.
 - **RECORD 26: `seasia-05-my-son-b6`, and it is the FIRST record in this corpus
   under an explicit open licence.** The Stela from Mỹ Sơn B6 (C. 87), Sanskrit,
   dated to the day — 19 May 687 CE — edited by Arlo Griffiths for the Corpus of

@@ -751,6 +751,130 @@ def check_allocation(
     return problems
 
 
+def check_delivery(
+    mix: "dict", delivered: "dict[str, tuple[str, str]]",
+    gloss_declared: "set[str] | None" = None,
+) -> "list[str]":
+    """Do the records actually CURATED deliver the allocation? Returns problems.
+
+    F3, 2026-08-31, and it exists because `check_allocation` above does not do
+    this. That function guards the PLAN -- eleven branches of arithmetic over a
+    table of slots -- and nothing guarded DELIVERY. Two records into Block F the
+    gloss-capable count was already missed and no check said so, because the
+    only thing anyone had asked was whether the plan added up.
+
+    `delivered` is {record_id: (region, tier)} for the TRANCHE'S records only.
+    The seed 24 are excluded by their own definition: they are the ledger's
+    `not_timed`, and this check is about the 36 the allocation places.
+
+    What fails, and what is only reported
+    -------------------------------------
+
+    OVER-DELIVERY FAILS. A record curated into a (region, tier) cell the
+    allocation does not place, or a cell curated past its planned count, is a
+    slot taken from somewhere else -- and since nobody re-curates a record, the
+    place it was taken from can never be refilled. That is detectable on the day
+    it happens and it fails on the day it happens.
+
+    A SHORTFALL IS A NOTE, for `ingest.verify`'s own reason about the tier
+    histogram: the mix is a target for the END of Block F, and a suite that
+    failed on it from F3 to F7 would be ignored from F3 to F7.
+
+    UNREACHABILITY FAILS, and it is the point of the whole function. A shortfall
+    that can still be made up is progress; a shortfall larger than the slots
+    remaining is a target that has already failed, and the difference between
+    those two is exactly what nobody would notice until F7. This is
+    `check_target_mix`'s reachability clause one level down: there, a per-region
+    minimum the aggregate cannot reach is refused at declaration; here, a quota
+    the remaining sub-tranches cannot carry is refused the moment curation makes
+    it so.
+    """
+    problems: list[str] = []
+    gloss_declared = set(gloss_declared or ())
+
+    allocation = mix.get("allocation") or {}
+    tranches = allocation.get("sub_tranches") or []
+    if not tranches:
+        return problems
+
+    planned: dict[tuple[str, str], int] = {}
+    for tranche in tranches:
+        for slot in tranche.get("slots") or []:
+            key = (str(slot.get("region")), str(slot.get("tier")))
+            planned[key] = planned.get(key, 0) + int(slot.get("n") or 0)
+
+    done: dict[tuple[str, str], int] = {}
+    for record_id, (region, tier) in sorted(delivered.items()):
+        key = (region, tier)
+        if key not in planned:
+            problems.append(
+                f"{record_id} is curated as {tier} in {region}, which the "
+                f"allocation places nowhere. A record outside the plan spends a "
+                f"slot the plan still expects to fill"
+            )
+            continue
+        done[key] = done.get(key, 0) + 1
+
+    # `planned.get(key, 0)` rather than `planned[key]`: with the membership
+    # test above removed, an unplanned cell reaches here and a subscript would
+    # RAISE. A checker that crashes when its own guard is removed cannot be
+    # mutation-verified -- scripts/mutate_fidelity.py reports "crash, not a
+    # guard failure" and says nothing about whether the guard works. Degrading
+    # into a wrong answer is what makes a guard observable.
+    for key, count in sorted(done.items()):
+        if count > planned.get(key, 0):
+            problems.append(
+                f"{key[0]} / {key[1]}: {count} curated against "
+                f"{planned.get(key, 0)} "
+                f"planned. Over-delivering a cell takes the slot from another, "
+                f"and nobody re-curates a record"
+            )
+
+    remaining = {k: planned[k] - done.get(k, 0) for k in planned}
+
+    # The gloss quota, and the only part of this that is DECLARED rather than
+    # derived. corpus_tiers.json defines gloss-capable mechanically -- a hedged
+    # reading AND a statement that the reading is uncertain, both inside a
+    # RETRIEVAL-ELIGIBLE chunk -- and that is a judgement about prose, not
+    # something a classifier here can read. So it is declared in the sidecar,
+    # beside the tiers, and what IS checked is everything mechanical about the
+    # declaration.
+    for record_id in sorted(gloss_declared):
+        # Same reason as the `.get` above: with the membership test removed,
+        # the tier lookup must still return something rather than raise.
+        tier_of = (delivered.get(record_id) or ("", ""))[1]
+        if record_id not in delivered:
+            problems.append(
+                f"{record_id} is declared gloss-capable and is not a record "
+                f"this tranche curated"
+            )
+        elif tier_of not in GLOSS_CAPABLE_TIERS:
+            problems.append(
+                f"{record_id} is declared gloss-capable on tier "
+                f"{tier_of}, which cannot carry a gloss case. "
+                f"A refusable_with_gloss case requires the answer to quote a "
+                f"PUBLISHED hedged reading"
+            )
+
+    want_gloss = int(mix.get("gloss_capable_records") or 0)
+    if len(gloss_declared) > want_gloss:
+        problems.append(
+            f"{len(gloss_declared)} records are declared gloss-capable and the "
+            f"mix asks for {want_gloss}"
+        )
+    capacity = sum(n for (region, tier), n in remaining.items()
+                   if tier in GLOSS_CAPABLE_TIERS)
+    if len(gloss_declared) + capacity < want_gloss:
+        problems.append(
+            f"the gloss quota is UNREACHABLE: {len(gloss_declared)} declared "
+            f"and {capacity} slot(s) left on a tier that can carry one, against "
+            f"{want_gloss} required. Every remaining slot could be used for it "
+            f"and the target would still be missed"
+        )
+
+    return problems
+
+
 # ---------------------------------------------------------------------------
 # Flags the MANIFEST names that this module deliberately no longer honours
 # ---------------------------------------------------------------------------

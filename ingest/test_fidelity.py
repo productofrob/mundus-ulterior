@@ -31,6 +31,7 @@ from pathlib import Path
 from .fidelity import (
     GLOSS_CAPABLE_TIERS,
     check_allocation,
+    check_delivery,
     PARAPHRASE_FLAG_LIFTED,
     PARAPHRASE_ID_HINTS,
     RECORD_TIERS,
@@ -448,6 +449,101 @@ def test_allocation():
     )
 
 
+def test_delivery():
+    """F3. check_allocation guards the PLAN; this guards what was CURATED.
+
+    The gap it closes was found by two records rather than by a check: the
+    gloss-capable quota was already missed at record 26 and nothing said so,
+    because the only question anyone had asked was whether the plan added up.
+
+    OVER-DELIVERY fails, SHORTFALL is progress, and UNREACHABILITY fails --
+    that last one is the whole point. A shortfall that can still be made up is
+    progress; a shortfall bigger than the slots remaining is a target that has
+    already failed, and the difference is what nobody would notice until F7.
+    """
+    print("check_delivery")
+    doc = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
+    mix = doc["target_mix"]
+
+    expect(
+        not check_delivery(mix, {}, set()),
+        "GUARD a tranche that has curated nothing yet reports no problem",
+    )
+
+    good = {"seasia-04-x": ("Southeast Asia", "verbatim_with_provenance"),
+            "seasia-05-y": ("Southeast Asia", "verbatim_machine_english")}
+    expect(
+        not check_delivery(mix, good, set()),
+        "GUARD records curated into cells the allocation places report nothing",
+    )
+
+    expect(
+        any("places nowhere" in p for p in check_delivery(
+            mix, {"x": ("Persia", "pointer_only")}, set())),
+        "GUARD a record curated into a cell the allocation does not place is refused",
+    )
+
+    # Southeast Asia is allocated two verbatim_with_provenance. A third is a
+    # slot taken from a cell that still expects to be filled.
+    over = {f"x{i}": ("Southeast Asia", "verbatim_with_provenance")
+            for i in range(3)}
+    expect(
+        any("Over-delivering a cell" in p for p in check_delivery(mix, over, set())),
+        "GUARD a cell curated past its planned count is refused",
+    )
+
+    expect(
+        any("not a record this tranche curated" in p for p in check_delivery(
+            mix, good, {"nobody"})),
+        "GUARD a gloss-capable declaration naming a record the tranche did not curate is refused",
+    )
+    expect(
+        any("cannot carry a gloss case" in p for p in check_delivery(
+            mix, good, {"seasia-05-y"})),
+        "GUARD a gloss-capable declaration on a tier whose only English is machine is refused",
+    )
+    expect(
+        not check_delivery(mix, good, {"seasia-04-x"}),
+        "GUARD a gloss-capable declaration on a tier that CAN carry one reports nothing",
+    )
+
+    # The quota lowered to one, so that TWO legitimate declarations exceed it.
+    # Nine real ones cannot be built against the live mix without over-
+    # delivering a cell first, and a fixture that trips two rules at once
+    # cannot say which of them fired.
+    small = json.loads(json.dumps(mix))
+    small["gloss_capable_records"] = 1
+    pair = {"seasia-04-x": ("Southeast Asia", "verbatim_with_provenance"),
+            "seasia-06-z": ("Southeast Asia", "verbatim_with_provenance")}
+    expect(
+        any("the mix asks for" in p for p in check_delivery(
+            small, pair, set(pair))),
+        "GUARD more gloss-capable records than the mix asks for is refused",
+    )
+
+    # The reachability clause. Every gloss-capable slot in the plan is spent on
+    # records that were NOT declared gloss-capable, so the quota can no longer
+    # be met however the rest of the tranche is curated.
+    spent: dict = {}
+    n = 0
+    for tranche in mix["allocation"]["sub_tranches"]:
+        for slot in tranche["slots"]:
+            if slot["tier"] in GLOSS_CAPABLE_TIERS:
+                for _ in range(int(slot["n"])):
+                    spent[f"spent-{n}"] = (slot["region"], slot["tier"])
+                    n += 1
+    problems = check_delivery(mix, spent, set())
+    expect(
+        any("UNREACHABLE" in p for p in problems),
+        "GUARD a gloss quota the remaining slots cannot carry is refused, "
+        "rather than reported as a shortfall nobody acts on",
+    )
+    expect(
+        not any("UNREACHABLE" in p for p in check_delivery(mix, {}, set())),
+        "GUARD an empty tranche is not called unreachable — every slot is still there",
+    )
+
+
 def test_against_the_live_corpus():
     print("the 24 seed records")
     doc = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
@@ -516,6 +612,7 @@ def main() -> int:
     test_paraphrase_flags()
     test_target_mix()
     test_allocation()
+    test_delivery()
     test_against_the_live_corpus()
 
     print()
