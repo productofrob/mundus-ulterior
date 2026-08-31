@@ -13104,6 +13104,34 @@ block           NINE sessions, not eight.
 
 ## Open, and deliberately not closed
 
+- **FINDING 39: a record can falsify a `correctly_refusable` case, and nothing
+  connected the two files.** Found while choosing Persia's record. The
+  strongest Rome-facing Persian text in existence is the Res Gestae's account
+  of Shapur's campaigns — Antioch taken, Valerian captured, thirty-six cities
+  named — and the corpus holds only §1. Curating it was the obvious move and
+  would have been a mistake: `skz-roman-emperors` expects a REFUSAL and
+  excludes Valerian, Gordian and Philip the Arab. **That case is correct
+  because of what the corpus does not hold** — a statement about this corpus's
+  slice, not about the Res Gestae — and `expect_refusal` is a SCORED
+  assertion, so the change would have re-scored every archived run of the case
+  on the way past. Eight cases make this claim; thirty-six records are being
+  added against them. The check is one direction and cheap: a fabrication
+  marker must not appear as a whole word in any retrieval-eligible chunk.
+  `check_delivery` guards the plan against the corpus; this is the gold set
+  against the corpus, and it was the missing third edge.
+- **Its first run found a latent defect from Part 8, and it is NOT fixed.**
+  `gudme-bracteate-runes` excludes the three-letter `alu`; the corpus contains
+  "value" and "valuation". The check needed word boundaries — but the CASE does
+  not have them, because `expect_answer_excludes` is scored by SUBSTRING
+  against the answer. That case therefore fails any answer containing the word
+  "value", fabrication or not. It is `oc-eo-cattigara`'s hazard in a
+  three-letter form. Correcting it changes a scored assertion and re-scores
+  every archived run of the case, which deserves its own ruling rather than
+  being a side effect — FINDING 32's precedent exactly.
+- **Persia's `vwp` slot therefore cannot be the ŠKZ campaign section**, and the
+  hunt continues. The gloss quota may end F3 at 1 of 2, which is a shortfall
+  the delivery check reports and not an unreachable target: 23 slots that could
+  carry one remain.
 - **RECORD 27: `scandinavia-05-thorsberg-chape`, and it is the first record
   curated DELIBERATELY to be gloss-capable.** Proto-Norse runes, c. 200 CE, on
   a scabbard chape of Roman military pattern from the Thorsberg votive

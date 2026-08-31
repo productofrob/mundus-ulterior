@@ -646,6 +646,74 @@ problem and one that cannot.
 
 ---
 
+# FINDING 39 — a record can falsify a `correctly_refusable` case, and nothing connected the two files
+
+Found while choosing Persia's record, not by a check.
+
+The strongest Rome-facing Persian text in existence is the Res Gestae Divi
+Saporis's account of Shapur's campaigns: Antioch taken, Valerian captured
+alive, thirty-six cities listed by name. The corpus holds only §1, the
+titulature. Curating the campaign section was the obvious move and it would
+have been a mistake, because of a case written in Part 8:
+
+```
+skz-roman-emperors
+  question               "Which Roman emperors does the Res Gestae Divi
+                          Saporis name?"
+  expected_behaviour     correctly_refusable
+  expect_refusal         true
+  expect_answer_excludes ["Valerian", "Gordian", "Philip the Arab"]
+```
+
+**That case is correct BECAUSE of what the corpus does not hold.** It is not a
+statement about the Res Gestae; it is a statement about this corpus's slice of
+it. A record carrying the campaign narrative would have turned a passing
+refusal case into a case asserting a falsehood — and `expect_refusal` and
+`expect_answer_excludes` are SCORED assertions, unlike `archived_status`, so
+the change would have re-scored every archived run of the case on the way past.
+
+**Eight cases make this shape of claim and thirty-six records are being added
+against them.** Until now nothing in this repository connected a record to a
+case that says the corpus cannot answer something. `check_delivery` guards the
+plan against the corpus; this is the gold set against the corpus, and it was
+the missing third edge.
+
+## The check, and what it deliberately cannot do
+
+One direction, and cheap: a fabrication marker a refusal case names must not
+appear as a whole word in any retrieval-eligible chunk. It cannot catch every
+way a question becomes answerable — a record can supply an answer without using
+the excluded words — and it catches the strongest signal, which is a case
+naming the very content that has just arrived. It FAILS rather than reports: a
+refusal case whose exclusion is in the corpus is not a shortfall against a
+target, it is a case asserting something untrue about the corpus it is scored
+against, today.
+
+It is a data check rather than a code guard, so no mutation watches it. The
+guard that it is not vacuous is inside it: a word every ŠKZ record contains is
+searched for and found, so a clean result is a reading and not an empty
+haystack.
+
+## What its first run found, and why that is NOT fixed here
+
+`gudme-bracteate-runes` excludes the three-letter runic word `alu`, and the
+corpus contains "value" and "valuation". Neither is the runic word, so the
+check needed word boundaries — but the underlying case does not have them:
+
+**`expect_answer_excludes` is scored by SUBSTRING against the ANSWER.**
+`gudme-bracteate-runes` therefore fails any answer containing the word "value",
+whether or not it fabricated anything. That is the hazard `oc-eo-cattigara` was
+corrected for — an exclusion that fires on the right answer — in a
+three-letter form, and it has been latent since Part 8.
+
+It is recorded and not corrected, for two reasons. Correcting it changes a
+SCORED assertion and re-scores every archived run of the case, which deserves
+its own ruling rather than being a side effect of building a different check.
+And FINDING 32 is the precedent: a check specified and built in the hour its
+defect was found is a check written before it was tried.
+
+---
+
 # The trap this session walked into, recorded because it is a new mechanism
 
 **A mutation harness cannot be run through the bridge because of what the SUITE

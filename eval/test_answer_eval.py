@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import json
+import re
 import tempfile
 from pathlib import Path
 
@@ -2584,6 +2585,85 @@ def test_the_quoted_from_original_quota() -> None:
            "left to place")
 
 
+def test_a_record_cannot_falsify_a_refusal_case() -> None:
+    """F3. A `correctly_refusable` case asserts the corpus does NOT hold
+    something. Curating a record can make that assertion false, and until now
+    nothing connected the two files.
+
+    Found while choosing Persia's record. The strongest Rome-facing Persian
+    text in existence is the Res Gestae Divi Saporis's account of Shapur's
+    campaigns -- Antioch taken, Valerian captured, thirty-six cities listed --
+    and the corpus holds only §1, the titulature. `skz-roman-emperors` asks
+    "Which Roman emperors does the Res Gestae Divi Saporis name?", expects a
+    REFUSAL, and excludes Valerian, Gordian and Philip the Arab as fabrication
+    markers. That case is correct BECAUSE of what the corpus does not hold.
+    Curating the campaign section would have made a passing refusal case assert
+    a falsehood, and would have re-scored twelve archived runs on the way --
+    `expect_refusal` is a scored assertion, unlike `archived_status`.
+
+    Eight cases make this shape of claim and thirty-six records are being added
+    against them. The check is one direction and deliberately cheap: a
+    fabrication marker a refusal case names must not appear in any
+    retrieval-eligible chunk. It cannot catch every way a question becomes
+    answerable -- a record can supply an answer without using the excluded
+    words -- and it catches the strongest signal, which is a case naming the
+    very content that has just arrived.
+
+    It FAILS rather than reports. A refusal case whose exclusion is in the
+    corpus is not a shortfall against a target; it is a case asserting
+    something untrue about the corpus it is scored against, today.
+    """
+    print("\na record that would falsify a refusal case")
+
+    from ingest.loader import SEED_CORPUS_DIR, load_corpus
+
+    cases = load_answer_cases()
+    corpus = load_corpus(SEED_CORPUS_DIR)
+    haystack = "\n".join(
+        c.text for c in corpus.chunks if c.eligible_for_retrieval).lower()
+
+    refusal_cases = [c for c in cases
+                     if c.expected_behaviour == "correctly_refusable"]
+    expect(len(refusal_cases) >= 5,
+           f"the refusal cases are found and counted ({len(refusal_cases)}) — "
+           f"a collapsed list would make every check below vacuous")
+
+    # WORD BOUNDARIES, and the first run is why. Naive substring matching
+    # fired on gudme-bracteate-runes, which excludes the three-letter runic
+    # word `alu` -- and the corpus contains "value" and "valuation". Neither is
+    # the runic word. A check that reports those has not found a record
+    # falsifying a case; it has found its own matcher.
+    #
+    # THE UNDERLYING CASE IS STILL FRAGILE AND THAT IS RECORDED RATHER THAN
+    # FIXED HERE. `expect_answer_excludes` is scored by SUBSTRING against the
+    # ANSWER, so gudme-bracteate-runes fails any answer containing the word
+    # "value" whether or not it fabricated anything. That is the hazard
+    # oc-eo-cattigara was corrected for, in a three-letter form. Correcting it
+    # changes a SCORED assertion and re-scores every archived run of the case,
+    # which deserves its own ruling rather than being a side effect of building
+    # this one -- FINDING 32's lesson about fixing a defect in the hour it was
+    # found.
+    problems = []
+    for case in refusal_cases:
+        for phrase in (case.expect_answer_excludes or []):
+            if re.search(rf"\b{re.escape(phrase.lower())}\b", haystack):
+                problems.append(f"{case.id}: excludes {phrase!r}, which the "
+                                f"corpus now contains as a whole word")
+    for problem in problems:
+        print(f"       {problem}")
+    expect(not problems,
+           "GUARD no correctly_refusable case names a fabrication marker the "
+           "corpus has since acquired — a record that answers a question the "
+           "gold set says is unanswerable falsifies the case rather than the "
+           "corpus")
+
+    # The check must be able to fire, or it is a guard nobody has watched work.
+    expect(bool(re.search(r"\bshapur\b", haystack)),
+           "GUARD the corpus really is being searched — a word every ŠKZ "
+           "record contains is found, so a clean result above is a reading and "
+           "not an empty haystack")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -2619,6 +2699,7 @@ def main() -> int:
     test_the_floor_state_a_case_declares()
     test_the_corpus_is_part_of_the_scope()
     test_the_quoted_from_original_quota()
+    test_a_record_cannot_falsify_a_refusal_case()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0
 

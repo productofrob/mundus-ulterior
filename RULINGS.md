@@ -207,6 +207,10 @@ Ruling 49 is the one to read before archiving or quoting any sweep run after
 record 25. Ruling 51 is the one to read before running anything at a
 sub-tranche.
 
+FINDING 39 is the one to read before curating ANY record: a
+correctly_refusable case asserts what the corpus does NOT hold, and a record
+can falsify it. Eight cases make that claim.
+
 FINDING 38 is the one to read before hunting a verbatim_machine_english
 record: publishing an inscription means translating it, so the tier cannot be
 filled from English-language scholarship at all.
