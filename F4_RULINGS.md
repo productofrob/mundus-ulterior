@@ -1138,3 +1138,177 @@ the capture path by another route.
 **The sentence that travels: the automated path was wrong once in 431
 characters and the human path was wrong five times in ten lines, and the useful
 arrangement is not to pick one but to make them check each other.**
+
+---
+---
+
+# Ruling 60 and FINDING 51 — declared 2026-09-01, F4 PART 2's FIRST ACT
+
+*Date from the host, not from a document: `date -u +%F` printed `2026-09-01`.
+This is a THIRD distinct UTC date in Block F, which three rules want and ruling
+50 booked.*
+
+*Written before the stele's excerpt has been selected, before any East Asian
+record exists, and before anything has been pasted. Ruling 39's discipline for
+the seventh time in this block. It is worth the paragraph here because this
+ruling's subject is a quota the handoff says F4 is most likely to miss, and a
+rule about a likely miss is worthless if it is written after the miss.*
+
+---
+
+## Ruling 60 — F4's two gloss-capable records are FORCED, and the shortfall outcome is declared before the first excerpt is chosen
+
+**The stele and the Liangshu are F4's two gloss-capable records. There is no
+third candidate inside this tranche, the choice was made by arithmetic rather
+than by curation, and the three outcomes are written here so that F4's close
+reads as a result rather than as an account of what happened.**
+
+### The two records are not a choice, and F4_PART2_START does not say so
+
+```
+GLOSS_CAPABLE_TIERS = {verbatim_with_provenance,
+                       published_translation_only,
+                       catalogue_record}      -- ingest/fidelity.py
+
+F4's slots on those tiers    Sub-Saharan Africa vwp 2    East Asia vwp 2
+Spent in Part 1              africa-05-adulis-throne     africa-04-silko-talmis
+Left                         East Asia vwp 2, and one vme that cannot carry one
+```
+
+Neither Africa record is gloss-capable, and record 32's own notes say so in
+terms: Satzinger's bare `(?)` against Telelis is outside the excerpt and is a
+hedge about a place-name reading, not a published alternative reading with a
+statement that the reading is uncertain. The third remaining slot is
+`verbatim_machine_english`, barred by the frozenset for the reason held beside
+it — a gloss case there would require the answer to quote a MACHINE translation
+of a disputed reading, which is the output the gloss arm exists to catch.
+
+**So both East Asia `verbatim_with_provenance` records must carry a gloss case.**
+F4_PART2_START names the stele as *"the strongest gloss-capable candidate in the
+tranche"* and says nothing at all about the Liangshu. That silence is what this
+ruling is written against: it reads as though the second record were still to be
+found, and there is nothing left to find it in.
+
+### The three outcomes, declared now
+
+**TWO.** Both records carry a published alternative or hedged reading AND a
+statement that the reading is uncertain, both inside a RETRIEVAL-ELIGIBLE chunk
+— `original_text_excerpt` or `reference_translation`, never `notes`, which is
+the trap `gloss_capable_declared` was added to make visible. Declared 1 -> 3 of
+8. **This is the quota met and it is not the target met**, for the reason
+FINDING 51 gives below, and F4_RESULT states both numbers in the same sentence.
+
+**ONE.** The Liangshu cannot be made to carry one. Reported as a SHORTFALL in
+F4_RESULT **with the passage named** — which Hirth page and which Kanripo lines
+were examined, and what they lacked — carried into F5 as a named debt, and NOT
+absorbed. The allocation is not re-cut: ruling 53 declined one mid-tranche
+re-cut of `corpus_tiers.json` and ruling 58 declined a second, and a third in
+the same block would be a block editing its instruments to fit what it found.
+
+**ZERO.** The stele's disputed readings do not survive into a chunked field.
+**That is not a supply problem and F4_RESULT may not report it as one.** Legge
+1888 prints the alternative readings and the uncertainty in his own notes, so a
+zero here is a failure to design the excerpt around them, and the result
+document says so in those words. Recorded as a third outcome for ruling 53's
+reason: a close that can only say MET or MISSED can satisfy itself by choosing.
+
+### What the gloss case actually requires, restated because it is where F3 lost its second record
+
+`what_gloss_capable_MEANS_mechanically`: a genuine alternative or hedged
+reading **and** a statement that the reading is uncertain, both inside a chunk
+the model can retrieve. F3 curated two records intending both to be
+gloss-capable and declared one, because the hedge went into
+`original_text_note`, which the loader does not chunk. The excerpt is therefore
+chosen for the gloss BEFORE it is chosen for the passage, and if the two pull
+apart the record says which won.
+
+### What is NOT done
+
+**No check is added.** A per-sub-tranche gloss delivery check needs
+`gloss_capable_declared` to be attributable to a tranche, and it is a flat list;
+attributing it is a data-structure change to the file two rulings have just
+declined to re-cut mid-tranche. **It is owed, it is named here, and F5 takes it
+beside ruling 53's deferred vme ruling and ruling 58's per-region language rule
+— three owed instrument changes, one re-cut, two tranches of evidence.**
+
+**The mix is not touched.** F3's declared 2 stays 2. Restating a delivered plan
+to match what happened is the move this project refuses everywhere else, and
+ruling 56 refused it four hours before this was written.
+
+**The sentence that travels: a quota declared per tranche and checked only in
+aggregate is a quota that can be missed one tranche at a time with every check
+green.**
+
+---
+
+# FINDING 51 — the gloss target at 60 is already out of reach by DECLARATION, and the guard that watches it is counting slots
+
+F4_START records that *"the gloss-capable quota is at 1 of 8 declared with 22
+slots left — F3 was allocated 2 and delivered 1."* Both halves of that sentence
+are true, both have been on file since F4 opened, and **the arithmetic between
+them has never been done.**
+
+```
+declared to date                                     1
+still declared by the plan   F4 2 + F5 2 + F6 1 + F7 1 = 6
+                                                     --
+maximum deliverable without a tranche exceeding
+its own declaration                                  7        against 8
+```
+
+**The target of 8 cannot be reached by every remaining sub-tranche delivering
+exactly what it declared.** It can only be reached if one of them quietly
+over-delivers — and nothing forbids that, because `gloss_capable` is a
+per-tranche declaration and no check compares a tranche's declaration to its
+delivery at all.
+
+## Three checks look at this and all three pass
+
+```
+check_target_mix    sum(sub_tranche.gloss_capable) == 8            PASSES -- it
+                    reads the PLAN, and the plan has always summed to 8
+check_delivery      len(declared) > 8 ?                            PASSES at 1
+                    is the quota REACHABLE from remaining SLOTS?   PASSES: 26
+                    gloss-capable-tier slots are planned across F3-F7 and 20 are
+                    still unspent at record 32, against 7 declarations wanted
+verify note         "Gloss-capable declared 1/8, with N slot(s) left"
+                    PRINTS the true numbers and invites the wrong reading
+```
+
+**The reachability guard asks whether enough SLOTS remain. The scarce thing is
+DECLARATIONS.** Slots are plentiful by construction — every `vwp`,
+`published_translation_only` and `catalogue_record` slot in F5, F6 and F7 counts
+toward that 20, including the twelve `catalogue_record` and
+`published_translation_only` slots in F6 and F7 that no plan intends to spend on
+a gloss case. Declarations are four. So the guard
+answers a question nobody is asking, in the reassuring direction, and it will go
+on passing until the last tranche.
+
+## This is ruling 49's shape, and ruling 56's, arriving in the third place
+
+Ruling 49: a rule that could not see the data it was written to protect. Ruling
+56: a measure that improves as its subject gets harder to observe. This one does
+not even drift — **it was aimed at the wrong quantity on the day it was
+written**, and it reads as correct because SLOTS and DECLARATIONS are both
+counts of records and the sentence works either way.
+
+The same family as FINDING 34, FINDING 46 and FINDING 49: the number is right
+and something about its provenance or its subject is wrong. Fourth instance in
+this block, first where the guard is not transcribing anything.
+
+## What is NOT claimed
+
+**F3 did nothing wrong.** It curated six records and delivered one gloss case,
+recorded the shortfall, and F4_START carried it forward in the first table it
+prints. Nobody hid anything.
+
+**And this finding does not make the target unreachable — the target was
+already unreachable and now somebody has said so.** The remedy is F5's and is
+one of two: raise a later tranche's declaration, which is a plan change with a
+reason attached, or lower `gloss_capable_records` from 8, which is a re-cut and
+belongs with the other two owed. **Not fixed today, because a quota changed in
+the session that noticed it is a quota fitted to the session.**
+
+**The sentence that travels: the guard asked whether enough slots remained when
+the scarce thing was declarations, and both are counts of records, so the
+sentence read correctly for two sub-tranches.**
