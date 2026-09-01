@@ -1453,3 +1453,174 @@ rewrite in a file you edited three lines of is the signal, and it is free.
 
 **The sentence that travels: the repository forbade git from rewriting a single
 byte, and then seven files were rewritten by the tool that was reading them.**
+
+---
+
+# FINDING 53 — `_djvu.txt` is not the page, it is somebody else's OCR of the page, and this project has been reading it as a page since F3
+
+`F4_CANDIDATES.md` lists `archive.org _djvu.txt` under **CLEAN, no difficulty**,
+with one failure mode named: *"LONG BOOKS TRUNCATE — front matter and TOC
+arrive, body text deep in the volume often does not."*
+
+**Truncation is the safe failure and it is not the dangerous one.** A truncated
+fetch is visibly missing. What arrives instead is a machine transcription that
+looks like text, reads like text, and is treated as a page by a rule — FINDING
+48's — written to keep models out of the capture path.
+
+## Measured on the curator's own capture of Legge 1888, paragraph 9
+
+```
+Western Re¬ gions       a soft hyphen and a space where the printed line broke
+ap¬ pointed             the same, mid-word
+brilliant 3.            a footnote MARKER, inline, indistinguishable from text
+0r^n,^ry ... la ism.    a MARGINAL side-note, garbled, sitting INSIDE the
+                        sentence, between "Coral Sea," and "and reaches on the
+                        north"
+```
+
+The first three are cosmetic and a careful curator removes them. **The fourth is
+not cosmetic.** It is foreign text spliced into the middle of a quotation, it is
+in the position a reader expects a clause, and a curator working at speed pastes
+it. Legge's page has marginal headings; the OCR has no column model, so a
+heading beside line 3 lands between the words that were beside it.
+
+## Why FINDING 48 did not already cover this
+
+FINDING 48's rule is *"nothing between the page and the record is allowed to be
+a model"*, and it was written against `WebFetch` — a model summarising a page in
+this session, now. `_djvu.txt` is a model too. It is just somebody else's, run
+years ago, and its output is stored as a file with a `.txt` extension on a
+domain this project has already decided is clean.
+
+**The rule was about the actor and the exception was read as being about the
+mechanism.** A fetch of `_djvu.txt` returns the OCR faithfully, so the fetch is
+innocent and the characters are still not the ones on the page.
+
+FINDING 50 is the other half and it stands: the human path drifts too, and the
+useful arrangement is to make them check each other. What this finding adds is
+that **`_djvu.txt` is not the second party.** Diffing a typed capture against
+the OCR of the same page checks the typist against a machine that has already
+made its own errors in the same places — a hyphenated word, a marginal note, a
+footnote marker — and agrees with itself.
+
+## What changes, narrowly
+
+`archive.org _djvu.txt` moves out of CLEAN. It stays an excellent way to FIND a
+passage, to establish that a book contains one, and to locate a page number —
+which is what ruling 57's whole evidence base is built from, and none of that is
+weakened. **It is not a capture source.** Characters taken from a public-domain
+volume on archive.org are read off the PAGE IMAGES by a person, exactly as
+record 32's English was read off a JPEG.
+
+And the cost lands where FINDING 48 said it would: `text_capture` has a floor no
+tooling removes, and this is the second region in which the floor turned out to
+be a human at a keyboard reading a picture.
+
+## The record this was found on chose around it
+
+`eastasia-04-jingjiao-stele` takes its English from a hand-corrected
+transcription rather than from OCR, and quotes Legge only for the four words the
+gloss needs — read off the page image, because the one piece of punctuation in
+them is the apostrophe of `Ta Ts'in`, and U+2019 becoming U+0027 is the exact
+substitution FINDING 48 and FINDING 50 measured twice.
+
+**The sentence that travels: a file with a .txt extension on a trusted domain is
+still a transcription, and the rule kept models out of the capture path without
+noticing that one had already been through it.**
+
+## FINDING 53, continued — the second measurement is a FALSE NEGATIVE, and the remedy is that a locating fetch must not speak
+
+The finding above was written from one measurement: a dropped diacritic and a
+marginal note spliced into a sentence. The record it was written on produced a
+second, and it is worse.
+
+Asked whether the CBETA file carried a critical apparatus near this passage, a
+summarising fetch answered:
+
+```
+"No <app>/<lem>/<rdg> apparatus exists for this passage."
+```
+
+The curator's capture of the same file's back matter:
+
+```xml
+<app from="#beg1289b2001" to="#end1289b2001">
+  <lem wit="#wit.cbeta" resp="#resp4">浣 <note type="cf1">T32n1675_p0754c21</note>
+                                        <note type="cf2">T48n2003_p0200a02</note></lem>
+  <rdg wit="#wit.orig">綄</rdg></app>
+```
+
+**A dropped character is a bad error and a false negative about the PRESENCE of
+evidence is a worse one**, because nothing downstream can falsify it. A curator
+told that an apparatus exists goes and reads it. A curator told that none exists
+stops looking, and the record is published without the one thing that would have
+made it gloss-capable. This record would have lost its statement of uncertainty
+to a sentence a model wrote.
+
+### The discipline this forces, which FINDING 53 did not state
+
+**A locating fetch must not reveal the characters it located.** It may say WHERE
+to look — which file, which section, which search string. The moment it says
+WHAT is there, the curator's capture stops being an independent second reading
+and becomes agreement with a model, and the model has entered the capture path
+through the curator's eyes instead of through the keyboard.
+
+That is not a hypothetical refinement. It is why this apparatus was captured
+blind, and why the disagreement between the fetch and the page was visible at
+all. The same paste also corrected the record's provenance — the author had
+written that the text descended from a book recension, and the Taishō note
+reads 【原】拓本石田幹之助氏藏, a rubbing held by Ishida Mikinosuke.
+
+**The sentence that travels: a fetch that tells you what it found has spent the
+evidence you were going to check it against.**
+
+---
+
+# FINDING 54 — the ledger's span cap is aimed at the spectacular failure, and the ordinary interruption walks under it
+
+`data/curation_cost.json` holds `max_measured_span_minutes: 240`, and `why_240`
+states what it is for:
+
+> *"A clock started and left running overnight writes a working day of
+> `measured` minutes into the one number kill trigger 3 depends on, and it
+> arrives labelled as the most trustworthy kind of figure this file holds."*
+
+**An overnight clock trips it. A coffee break does not.**
+
+```
+started_at  2026-09-01T09:41:45Z    text_capture, eastasia-04-jingjiao-stele
+session paused
+stopped     2026-09-01T11:5x        clock read 131.3 minutes
+real work   about 15
+cap         240 -- not reached, not approached, silent
+```
+
+`stop` with no arguments would have written **131 minutes of `measured`
+text_capture**: eight times the true figure, inside the cap, under the label the
+file itself calls the most trustworthy kind it holds.
+
+## Why this phase and this label
+
+`text_capture` is the phase FINDING 48 said has a floor no tooling removes, and
+ruling 46 says the per-tier means are the only place a curation-cost number may
+be read from. So it is the phase most likely to be quoted at a close, and an
+inflated figure there does not read as an error — **it reads as confirmation of
+FINDING 48**, which is exactly the shape of a number nobody checks.
+
+## What was done, and what was not
+
+Closed as an **ESTIMATE with a written reason**, which is `stop --minutes
+--because`, which is the tool's own escape hatch and is a diff. The 240 cap is
+**not lowered**: a cap that fires on real work is a cap people route around, and
+`why_240` argues that correctly at four hours. The defect is not the number.
+
+**What is owed is a different instrument: the clock has no idea whether anybody
+was at the keyboard.** A pause is not distinguishable from work by anything the
+ledger can see, and the only honest fixes are a `pause`/`resume` verb or a
+prompt on `stop` when a span is long relative to its phase's own history. Named
+here, not built today, and it joins F5's list — which is now four owed
+instrument changes and still one re-cut.
+
+**The sentence that travels: the guard was written against the clock left
+running overnight, and the clock left running over lunch writes the same kind of
+lie under the same trusted label.**

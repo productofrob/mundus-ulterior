@@ -1268,6 +1268,48 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD. Written in the same commit as the record, per ruling 54, so its first result is a measurement and not a regression, and in NO floor state.",
       "note": "THE FIRST GROUP ADMITS TRANSLITERATIONS and the second admits the English, which is a deliberate weakening and is declared rather than hidden. On adulis-throne-leuke-kome both groups are Greek-only, so an English paraphrase fails outright; here the point of the case is the TITLE, and an answer that says 'basiliskos, a diminutive of basileus' has understood the record better than one that pastes the Greek without it. expect_quoted_from_original still carries the which-chunk discrimination, because the assertion is about which FIELD the resolved quotation came from and not about which script the answer is written in."
+    },
+    {
+      "id": "jingjiao-stele-da-qin",
+      "question": "How does the Da Qin Jingjiao stele describe the country of Da Qin, and is it agreed which country that is?",
+      "why": "RULING 60's first payment. F4's two gloss-capable records were forced by arithmetic -- verbatim_machine_english cannot carry a gloss case, Sub-Saharan Africa's two verbatim_with_provenance slots are spent on records 31 and 32 and neither is gloss-capable -- so this record and the Liangshu are the two, and this is the stronger of them. It is also the first gloss case in the corpus where the disputed thing is not a damaged text but an IDENTIFICATION: the characters are legible, undisputed and unambiguous, and two published translators render them as two different countries. A confident answer here does not invent a reading of a broken word; it silently picks a country, which is the same defect wearing better clothes. The question asks the second half outright -- 'is it agreed which country that is' -- because a gloss case tests whether the answer will SHOW a disputed reading and mark it as disputed, and a question that does not ask leaves the model free to pick one and sound certain.",
+      "expected_behaviour": "refusable_with_gloss",
+      "region": "East Asia",
+      "expect_cited_docs": [
+        "eastasia-04-jingjiao-stele"
+      ],
+      "expect_quoted_docs": [
+        "eastasia-04-jingjiao-stele"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Coral Sea",
+          "coral"
+        ],
+        [
+          "Syria"
+        ],
+        [
+          "Ts'in",
+          "Ts’in"
+        ]
+      ],
+      "expect_hedge_any": [
+        [
+          "disputed",
+          "uncertain",
+          "two published readings",
+          "two readings",
+          "not settle",
+          "emendation"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts. It is the FIFTH gloss case in the corpus and the first outside Scandinavia, Arabia and Southeast Asia.",
+      "note": "EVERY ASSERTED STRING IS SUPPORTABLE FROM A RETRIEVAL-ELIGIBLE CHUNK, which is what corpus_tiers.json requires of gloss capability and what F3 got wrong by writing its hedge into original_text_note. 'Coral Sea', 'Syria' and \"Ts'in\" are all inside the record's reference_translation, as are the words behind the hedge group -- 'disputed', 'does not settle it', 'emendation'. A hedge assertion the corpus cannot support is a case that can never pass.\n\nTHE TWO CONTENT GROUPS ARE BOTH REQUIRED AND THAT IS THE ASSERTION. Groups are scored as a conjunction, so an answer satisfies this case only by producing BOTH 'Syria' and \"Ts'in\" -- that is, only by showing that one set of three characters is published as two countries. Admitting either alone would let a confident single-country answer pass, which is the exact output this arm exists to catch.\n\nTHE APOSTROPHE IS ADMITTED IN BOTH FORMS. \"Ts'in\" is listed with U+0027 and U+2019 because the record itself records that the distinction could not be made from the page scan, and a case that failed on which apostrophe a model happened to emit would be measuring typography rather than retrieval.\n\nWHAT THIS CASE DOES NOT ASSERT: it does not require the answer to name Rome, and it does not forbid it. Whether 大秦 is Rome, the Roman East or Syria is the disputed thing, and a gold case that required one of the answers would be adjudicating the dispute from inside the instrument built to observe it."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

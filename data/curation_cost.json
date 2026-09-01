@@ -332,6 +332,43 @@
         }
       },
       "note": ""
+    },
+    {
+      "record_id": "eastasia-04-jingjiao-stele",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-01",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 30.0,
+          "provenance": "estimated",
+          "because": "session paused mid-capture; the clock ran 126 minutes across a break and the span is not a measurement of the work. Two of three captures done: the Chinese excerpt from CBETA T54n2144 and Legge's paragraph, before the OCR route was refused under FINDING 53. (clock read 131.3 min from 2026-09-01T09:41:45Z) | authoring and the gloss design for record 33 (clock read 13.6 min from 2026-09-01T11:58:35Z)"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": ""
     }
   ],
   "retired": [
