@@ -272,6 +272,12 @@ class PairResult:
     observed_chunk_id: str | None = None
     observed_chunk_still_exists: bool | None = None
     observed_chunk_matches_resolved: bool | None = None
+    # RULING 54, F4. Carried onto the RESULT and not only held in the gold file,
+    # because the exclusion has to survive into the archive: a run read six
+    # months from now has the JSON and not the reasoning, and "these pairs may
+    # not be cited in a before/after claim" is a property of the measurement,
+    # not of the file it was loaded from.
+    written_after_the_records_entered_the_index: bool = False
     # ------------------------------------------------------------------
     # Block C3 — the cross-encoder, recorded beside everything above and never
     # over it. `rank` and `rank_accepted` keep their meaning, so a reranked run
@@ -887,6 +893,8 @@ def score_pair(p, hits, target_chunk_id: str, target_text: str = "",
             None if p.observed_chunk_id is None
             else p.observed_chunk_id == target_chunk_id
         ),
+        written_after_the_records_entered_the_index=(
+            p.written_after_the_records_entered_the_index),
         note=p.note,
     )
 
@@ -1753,6 +1761,8 @@ def print_report(report: Report) -> None:
         if report.fused:
             _print_fused(report)
 
+    _print_ruling_54(report)
+
     print()
     print("Phase 1's comparable number is `spread` (mean top-1 to rank-6): 0.105 "
           "overall,\n0.045-0.094 on the questions that matter. Nothing else in "
@@ -1808,6 +1818,42 @@ def print_report(report: Report) -> None:
               f"chunks retrieval\nitself returned, so they cannot contain the "
               f"case where retrieval missed a\npassage entirely — their recall is "
               f"partly true by construction.")
+
+
+def _print_ruling_54(report: Report) -> None:
+    """Ruling 54's exclusion, printed rather than remembered.
+
+    The pairs written after their records were already in the index are named
+    here, every run, with the sentence that says what may not be done with
+    them. The alternative was to drop them from the tables, and ruling 52's
+    argument applies unchanged: excluding by a recorded rule is a diff, and
+    excluding by making a row vanish is not. They are scored, they are in every
+    aggregate, and the aggregate is not a before/after number for them.
+
+    No count goes in this function's printed labels -- FINDING 49. The number
+    is in the detail line, where nothing matches on it.
+    """
+    stamped = [r for r in report.pairs
+               if r.written_after_the_records_entered_the_index]
+    print()
+    if not stamped:
+        print("  ruling 54: no pair in this run was written after its record "
+              "entered the index.")
+        return
+    print(f"  ruling 54: {len(stamped)} pair(s) were written AFTER their "
+          f"records were already")
+    print("  in the index. They are scored and they are in every aggregate "
+          "above. They may")
+    print("  NOT be cited as evidence that the tranche which added those "
+          "records improved")
+    print("  retrieval -- a pair written after the run is a pair written "
+          "knowing the rank.")
+    for r in stamped:
+        print(f"    {r.id:30.30s} {r.expect_doc:32.32s} "
+              f"rank {(str(r.rank) if r.rank else 'none'):>4s}")
+    print("  Every pair NOT listed here was written before its record was ever "
+          "ranked.")
+    print("  That absence is the claim.")
 
 
 def _print_collapse(report: Report) -> None:

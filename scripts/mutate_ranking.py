@@ -764,6 +764,49 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("""    rank = next((p.rank for p in pairs if p.id == BROKEN_CROSSLINGUAL_PAIR), None)""",
           """    rank = 309""")],
     ),
+    (
+        # RULING 54, F4 Part 2. The stamp says a pair was written after its
+        # record was already in the index. Its whole force is the ASYMMETRY:
+        # true or absent, never false. Accept an explicit false and every
+        # unstamped pair's claim -- written before its record was ever ranked --
+        # becomes something anyone can forge by typing a word.
+        "the loader accepts an explicit false stamp",
+        [("            if value is not True:",
+          "            if value is not True and value is not False:")],
+    ),
+    (
+        # The stamp is read from the file and thrown away. Every pair then looks
+        # blind, which is the state ruling 54 exists to make unreachable.
+        "the loader drops the stamp on the way into the pair",
+        [("""                written_after_the_records_entered_the_index=bool(
+                    raw.get("written_after_the_records_entered_the_index", False)),""",
+          """                written_after_the_records_entered_the_index=False,""")],
+    ),
+    (
+        # The gold file keeps the stamp and the RESULT does not, so the archive
+        # -- which is what anyone reads six months later -- loses the exclusion
+        # while the file that produced it still carries it.
+        "the stamp does not survive onto the pair result",
+        [("""        written_after_the_records_entered_the_index=(
+            p.written_after_the_records_entered_the_index),""",
+          """        written_after_the_records_entered_the_index=False,""")],
+    ),
+    (
+        # The printer looks at nothing, so a run with six excluded pairs
+        # announces that it has none. This is the quiet failure: the report is
+        # still green, still complete, and now says the opposite of the truth.
+        "the exclusion block finds no stamped pair to name",
+        [("""    stamped = [r for r in report.pairs
+               if r.written_after_the_records_entered_the_index]""",
+          """    stamped = []""")],
+    ),
+    (
+        # Inverted, so the two states swap: a run WITH stamped pairs prints the
+        # all-clear, and a run without prints an empty exclusion block. Both
+        # halves of the printer have to be asserted or only one of them is.
+        "the exclusion block reports the opposite state",
+        [("    if not stamped:", "    if stamped:")],
+    ),
 ]
 
 EXPECTED = [
@@ -897,6 +940,13 @@ EXPECTED = [
     "GUARD the coverage prose names the view its rank was measured in",
     "GUARD the coverage prose derives the broken link's rank from THIS run's "
     "pairs",
+
+    # RULING 54, F4 Part 2 -- in the same order as the five mutations above.
+    "an explicit false stamp is REFUSED -- absence is the claim",
+    "the debt is paid -- at least one pair carries the stamp",
+    "the stamp is carried onto the pair RESULT and into the archive",
+    "the exclusion block NAMES each stamped pair rather than counting them",
+    "a run with no stamped pair SAYS SO rather than printing nothing",
 ]
 
 

@@ -995,6 +995,20 @@ class RankingPair:
     # ranking check reports how many of these still name a chunk that exists, so
     # that re-chunking drift is a printed number rather than a silent pass.
     observed_chunk_id: str | None = None
+    # RULING 54, F4. The pair was written after its record was already in the
+    # index, so its query could have been chosen knowing the rank. F3 added six
+    # records and wrote no pairs for any of them; they are given pairs anyway,
+    # because a corpus where six records are invisible to the ranking check is
+    # worse, and the pairs are marked instead of being quietly equivalent to the
+    # ones written blind.
+    #
+    # ABSENCE IS THE CLAIM. The loader refuses an explicit `false`: a flag that
+    # can be written false is a flag somebody writes false, and every pair from
+    # F4 onward asserts its provenance by carrying nothing here. That is the
+    # same argument `archived_status` and `excluded_by_rule` make elsewhere in
+    # this project — excluding by a recorded rule is a diff, and excluding by
+    # making a row look ordinary is not.
+    written_after_the_records_entered_the_index: bool = False
     note: str = ""
 
     @property
@@ -1009,7 +1023,8 @@ _PAIR_REQUIRED = {"id", "query", "query_lang", "expect_doc",
                   "expect_text_contains", "provenance", "region"}
 _PAIR_OPTIONAL = {"expect_lang", "langs", "lang_pool", "roles", "pair",
                   "source_ref", "observed_chunk_id", "note",
-                  "unit_id", "accept_aligned_translation"}
+                  "unit_id", "accept_aligned_translation",
+                  "written_after_the_records_entered_the_index"}
 
 
 def load_ranking_pairs(path: Path | None = None) -> list[RankingPair]:
@@ -1073,6 +1088,18 @@ def load_ranking_pairs(path: Path | None = None) -> list[RankingPair]:
                 f"of its own answer."
             )
 
+        if "written_after_the_records_entered_the_index" in raw:
+            value = raw["written_after_the_records_entered_the_index"]
+            if value is not True:
+                raise GoldSetError(
+                    f"{where}: written_after_the_records_entered_the_index must "
+                    f"be true if it is present at all, not {value!r}. Ruling 54 "
+                    f"says the flag's ABSENCE is the claim, so a pair written "
+                    f"blind carries no key here — writing the key false states "
+                    f"the claim in a field that can be edited to say the "
+                    f"opposite, which is the loophole the ruling closes."
+                )
+
         if "accept_aligned_translation" in raw:
             if not isinstance(raw["accept_aligned_translation"], bool):
                 raise GoldSetError(
@@ -1108,6 +1135,8 @@ def load_ranking_pairs(path: Path | None = None) -> list[RankingPair]:
                 pair=raw.get("pair"),
                 source_ref=raw.get("source_ref", ""),
                 observed_chunk_id=raw.get("observed_chunk_id"),
+                written_after_the_records_entered_the_index=bool(
+                    raw.get("written_after_the_records_entered_the_index", False)),
                 note=raw.get("note", ""),
             )
         )

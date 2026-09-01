@@ -118,6 +118,10 @@ class StubPair:
     roles: list | None = None
     unit_id: str | None = None
     accept_aligned_translation: bool = False
+    # Ruling 54's stamp. Defaults FALSE here for the same reason it defaults
+    # false in the loader: absence is the claim, so the stub's ordinary state
+    # has to be the unstamped one.
+    written_after_the_records_entered_the_index: bool = False
     note: str = ""
 
     @property
@@ -2153,6 +2157,142 @@ def test_report_prose_derives_every_rank_it_states() -> None:
           f"{len(offenders)} offender(s): {offenders[:3]}")
 
 
+def test_ruling_54_stamp_is_a_field_and_its_absence_is_the_claim() -> None:
+    """Ruling 54's exclusion, held as a field rather than as prose.
+
+    F3 added six records and wrote no ranking pair for any of them. They are
+    given pairs in F4 Part 2, and the ruling says each one is stamped, is
+    excluded from every before/after claim, and may not be cited as evidence
+    that F3 improved retrieval.
+
+    A note saying so would have been cheaper and would have excluded nothing.
+    The whole of ruling 54's argument is that ORDER is the remedy and that
+    intention is not, which needs the order to be readable by something other
+    than a person who remembers it -- so the stamp is a loader-validated field,
+    it is carried onto the RESULT so it survives into the archive, and the run
+    prints it under its own heading every time.
+
+    The asymmetry is the point and it is asserted here: the flag may be TRUE or
+    ABSENT, never false. A field that can be written false is a field somebody
+    writes false, and then the claim made by every unstamped pair in this file
+    -- that it was written before its record had ever been ranked -- becomes a
+    claim anyone can forge by typing a word.
+    """
+    import io
+    import json
+    import tempfile
+    from contextlib import redirect_stdout
+
+    from eval.run_ranking_check import Report, print_report
+
+    base = json.loads((Path(__file__).parent / "gold" / "ranking_pairs.json")
+                      .read_text(encoding="utf-8"))
+
+    def load_variant(mutate) -> Exception | None:
+        data = json.loads(json.dumps(base))
+        mutate(data)
+        with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False,
+                                         encoding="utf-8") as fh:
+            json.dump(data, fh, ensure_ascii=False)
+            path = Path(fh.name)
+        try:
+            load_ranking_pairs(path)
+            return None
+        except GoldSetError as exc:
+            return exc
+        finally:
+            path.unlink(missing_ok=True)
+
+    KEY = "written_after_the_records_entered_the_index"
+
+    check("an explicit false stamp is REFUSED -- absence is the claim",
+          load_variant(lambda d: d["pairs"][0].__setitem__(KEY, False)) is not None)
+
+    check("a truthy string is not a stamp",
+          load_variant(lambda d: d["pairs"][0].__setitem__(KEY, "yes")) is not None)
+
+    check("a stamp of 1 is not a stamp either",
+          load_variant(lambda d: d["pairs"][0].__setitem__(KEY, 1)) is not None)
+
+    pairs = load_ranking_pairs()
+    stamped = [p for p in pairs if getattr(p, KEY)]
+
+    # NOT a census of which pairs are stamped. FINDING 47: an assertion that
+    # photographs the data has to be edited every time the data improves, and
+    # this file will gain stamped pairs whenever a record is paired late. What
+    # is asserted is the PROPERTY every stamped pair must have.
+    check("the debt is paid -- at least one pair carries the stamp",
+          bool(stamped), f"{len(pairs)} pairs, none stamped")
+
+    check("every stamped pair says in source_ref when it was written and "
+          "against what",
+          all(p.source_ref.strip() for p in stamped),
+          [p.id for p in stamped if not p.source_ref.strip()])
+
+    check("every stamped pair names ruling 54 in its own note, so the "
+          "exclusion travels with the row",
+          all("54" in p.note for p in stamped),
+          [p.id for p in stamped if "54" not in p.note])
+
+    # The stamp reaches the RESULT, not only the gold file. A run archived
+    # today is read by somebody who has the JSON and not the reasoning.
+    stub = StubPair(id="late", expect_doc="doc-a")
+    stub.written_after_the_records_entered_the_index = True
+    result = score_pair(stub,
+                        [StubHit("doc-a::original::000", "doc-a", 0.9)],
+                        "doc-a::original::000")
+    check("the stamp is carried onto the pair RESULT and into the archive",
+          result.written_after_the_records_entered_the_index)
+
+    def printed(results) -> str:
+        report = Report(timestamp="t", view="v", search_k=1, index_chunks=1,
+                        embedding_models=[], query_embedding_model="")
+        report.pairs = results
+        report.aggregate = summarise(report.pairs)
+        report.units = build_units(report.pairs)
+        report.aggregate_units = summarise_units(report.units)
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            print_report(report)
+        return buffer.getvalue()
+
+    blind = score_pair(StubPair(id="written-blind", expect_doc="doc-a"),
+                       [StubHit("doc-a::original::000", "doc-a", 0.9)],
+                       "doc-a::original::000")
+
+    out = printed([blind, result])
+    # Asserted on the ruling 54 BLOCK, never on the whole report. Every pair is
+    # named in the per-pair table above, so a check that greps the REPORT for a
+    # pair id passes against a printer whose exclusion block is empty -- which
+    # is not a hypothetical: it is what the first version of this assertion did,
+    # and scripts/mutate_ranking.py caught it on the mutation that empties the
+    # block. The guard that greps the widest text is the guard that fails last.
+    block_printed = out.split("ruling 54")[-1]
+    check("the exclusion block NAMES each stamped pair rather than counting them",
+          "late" in block_printed, block_printed)
+    check("the exclusion block does not name a pair that was written blind",
+          "written-blind" not in block_printed, block_printed)
+    check("the report states what may NOT be done with a stamped pair",
+          "may" in block_printed and "NOT" in block_printed, block_printed)
+
+    out_none = printed([blind])
+    check("a run with no stamped pair SAYS SO rather than printing nothing",
+          "no pair in this run was written after" in out_none, out_none)
+
+    # FINDING 49, one directory over: mutate_ranking names guards as exact
+    # strings, so a printed label carrying a computed number is a label the
+    # harness stops being able to name the moment the gold set grows -- which,
+    # from ruling 54 onward, is every tranche.
+    source = (Path(__file__).parent / "run_ranking_check.py").read_text(
+        encoding="utf-8")
+    block = source.split("def _print_ruling_54")[1].split("\ndef ")[0]
+    check("GUARD ruling 54's printer states no literal pair count",
+          not any(tok.isdigit() and tok not in ("54",)
+                  for line in block.splitlines() if "print(" in line
+                  for tok in line.replace('"', " ").replace("'", " ").split()),
+          [line.strip() for line in block.splitlines() if "print(" in line])
+
+
 def main() -> int:
     test_gold_set()
     test_loader_is_strict()
@@ -2174,6 +2314,7 @@ def main() -> int:
     test_the_two_arm_report_cannot_kill_a_run()
     test_a_lost_gold_pair_kills_the_run()
     test_report_prose_derives_every_rank_it_states()
+    test_ruling_54_stamp_is_a_field_and_its_absence_is_the_claim()
     print(f"\n{len(PASS)} passed, {len(FAIL)} failed")
     if FAIL:
         for name in FAIL:

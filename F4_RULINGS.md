@@ -1312,3 +1312,144 @@ the session that noticed it is a quota fitted to the session.**
 **The sentence that travels: the guard asked whether enough slots remained when
 the scarce thing was declarations, and both are counts of records, so the
 sentence read correctly for two sub-tranches.**
+
+---
+
+## Ruling 61 — a second pre-registered prediction, on FINDING 43's mechanism, made from WITHIN a single run
+
+**Prediction, registered 2026-09-01 before any ranking run in Part 2 and before
+ruling 55's archive has been re-read:**
+
+```
+kedukan-bukit-saka-605          best_other_doc_chunk_id names seasia-07-talang-tuo
+talang-tuo-sriksetra-park       best_other_doc_chunk_id names seasia-06-kedukan-bukit
+thorsberg-chape-niwajemariz     best_other_doc_chunk_id names scandinavia-03-vimose
+```
+
+### Why this is available and why it is nearly free
+
+FINDING 43's mechanism is crowding by a near neighbour: `vimose-runes` fell from
+rank 3 to rank 7 when `scandinavia-05-thorsberg-chape` entered the index — same
+language, script, period, object type and country. That was measured as a
+BEFORE and AFTER across two runs, which is the only way the project has ever
+looked at it, and it is exactly the claim ruling 54 now bars for the six pairs
+paying its debt.
+
+**It does not have to be looked at that way.** `best_other_doc_chunk_id` records
+WHICH chunk of another document sat closest behind the target, per pair, in
+every run since Block C — added because *"the run recorded the number and not
+the thing it was measured against."* If the mechanism is near-duplicate
+crowding, the nearest competitor to a Srivijayan Old Malay pair is the other
+Srivijayan Old Malay record, in the same run, with no earlier run to compare
+against.
+
+**So ruling 54's exclusion does not bar this, and saying so is part of the
+ruling.** The exclusion is on before/after claims — that a tranche improved
+retrieval — because those turn on when the pair was written relative to the
+records. A statement about which document sits second in one run turns on
+neither, and a rule that swallowed it would have made the six debt pairs
+worthless rather than merely unquotable in one direction.
+
+### The material, which is why these three and not others
+
+`seasia-06-kedukan-bukit` and `seasia-07-talang-tuo` are **the closest
+near-duplicate texts this corpus holds**: same language, same script, one year
+apart, the same polity, the same region, and both `verbatim_machine_english`
+with no English chunk of their own to intervene. They are a cleaner instance of
+FINDING 43's configuration than the Scandinavian pair that produced it, because
+the Scandinavian records are two OBJECTS and these are two TEXTS.
+
+That is precisely the distinction ruling 55's falsification clause turns on. If
+crowding is about near-duplicate objects, these two need not crowd each other.
+If it is about same-language-same-subject, they must.
+
+### What falsifies it
+
+**A nearest competitor sharing neither language nor object type with the
+target** — an English chunk, or a record from another region. Then the closest
+neighbour is being decided by topic or by embedding artefact rather than by
+near-duplication, and FINDING 43's mechanism is not what has been assumed.
+
+**Two of three, in either direction, is the informative outcome** and is
+reported as such rather than rounded to a verdict.
+
+### What it is NOT
+
+Not a gate, not a regression claim, and not a reason to curate differently. And
+**not a substitute for ruling 55**, which is a stronger prediction because it
+names a direction of movement and can be wrong in a way this one cannot: a
+prediction about who sits second is confirmed by the corpus being what it
+already is. It is registered because it costs nothing, because it is the only
+FINDING 43 statement the debt pairs are permitted to make, and because it is
+available today and will not be after the run.
+
+---
+
+# FINDING 52 — `.gitattributes` stops GIT rewriting line endings, and nothing stops the EDITOR
+
+`* -text` disables end-of-line conversion for every path in this repository, and
+the comment above it explains why in the only terms that matter here: a one-byte
+shift per line silently invalidates every character offset in the seed corpus
+and every archived citation span that points into it.
+
+**It works, and it protects against the wrong actor.** Git is not the only thing
+that writes these files. Anything that opens a file in TEXT mode, reads it,
+edits it and writes it back normalises the newlines on the way out — and because
+`-text` tells git to store exactly what it is handed, the normalised file is
+committed exactly as normalised.
+
+## Measured on this commit, before it was committed
+
+Editing four files through a text-mode read-modify-write, and running a mutation
+harness that restores its sources the same way, rewrote **seven** files:
+
+```
+eval/goldset.py            CRLF -> LF     1,393 lines, 29 of them the actual edit
+eval/run_ranking_check.py  CRLF -> LF     2,186 lines, 46 of them the actual edit
+retrieve/search.py         CRLF -> LF       302 lines, NONE of them an edit
+retrieve/rerank.py         CRLF -> LF       902 lines, NONE of them an edit
+retrieve/collapse.py, render.py, fuse.py, answer/translate.py   the same
+```
+
+Five of the seven had no intended change at all: the mutation harness restores
+its sources correctly, and restoring them through a text-mode write is what
+rewrote them. `git diff --stat` reported 1,562 insertions and 1,562 deletions
+across files nobody had touched.
+
+## The convention is per-file and historical, which is the part that makes this easy to miss
+
+```
+eval/goldset.py            CRLF        eval/test_ranking_check.py   LF
+eval/run_ranking_check.py  CRLF        scripts/mutate_ranking.py    LF
+                                       eval/gold/ranking_pairs.json LF
+```
+
+Six files in one commit, two conventions, no rule. So a tool that writes LF
+leaves four files byte-clean and mangles two, and the mangling appears in the
+same commit as a legitimate change to those same two files — **which is the
+worst available presentation, because the diff is not obviously wrong, it is
+obviously huge.**
+
+## Why no check here would have caught it
+
+`ingest.verify` asserts `source_text[char_start:char_end] == chunk.text` over
+`data/seed_corpus/`, and every offset survived, because none of the seven files
+is corpus data. `eval.test_ranking_check` passed at 253 before and after. **The
+whole suite is indifferent to the bytes of its own source.** That is correct —
+a test suite that asserted its own file's line endings would be absurd — and it
+means the detector for this class is `git diff --stat` and a reader who notices
+that a file with a three-line change has a four-thousand-line diff.
+
+## The rule, stated because the remedy is procedural and cannot be a test
+
+**Every write to a file in this repository preserves that file's existing
+newline convention, and the way to guarantee that is to write BYTES.** A
+read-modify-write in text mode is the capture path from FINDING 48 wearing
+different clothes: something in the middle is normalising, it is systematic
+rather than random, and it is invisible to every check downstream of it.
+
+**And `git diff --stat` is read before every commit, not after.** A whole-file
+rewrite in a file you edited three lines of is the signal, and it is free.
+
+**The sentence that travels: the repository forbade git from rewriting a single
+byte, and then seven files were rewritten by the tool that was reading them.**
