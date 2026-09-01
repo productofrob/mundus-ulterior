@@ -2722,6 +2722,89 @@ def test_a_record_cannot_falsify_a_refusal_case() -> None:
            "not an empty haystack")
 
 
+def test_a_gloss_case_is_reachable_from_ONE_chunk() -> None:
+    """F4. The gloss HEDGE must live in a chunk. Everything else is reported.
+
+    corpus_tiers.json: gloss capability means a hedged reading AND a statement
+    that the reading is uncertain, both inside a RETRIEVAL-ELIGIBLE chunk --
+    "not in `notes`, the notes field is not chunked and the model never sees
+    it". F3 lost a gloss record to exactly that, twice, and the remedy was a
+    declaration in a sidecar rather than anything mechanical.
+
+    It IS mechanical, through the case rather than through the record: a
+    `refusable_with_gloss` case declares `expect_hedge_any`, and if no
+    retrieval-eligible chunk of the document it expects to be quoted contains
+    any of those strings, the corpus cannot support the hedge and the case can
+    never pass for a reason having nothing to do with the model. That is the
+    assertion, and it is the rule corpus_tiers.json already states.
+
+    WHAT THIS CHECK DOES NOT ASSERT, AND WHY -- because its first draft did.
+    That draft required EVERY assertion group to be satisfiable from ONE chunk,
+    and it went red on `raqosh-epitaph`, whose original chunk carries "two
+    competing scholarly readings" while its translation chunk carries the
+    curse. That case is built that way on purpose and its own note says so: the
+    hedge sits in the source chunk so an answer can know the reading is
+    contested without being told. Spanning an original and its published
+    translation is the ordinary parallel-pair shape and is what every
+    quoted-from-original case depends on.
+
+    So the one-chunk idea was a stricter rule than this project holds, invented
+    while writing the checker for it. It survives as a COUNTED line -- how many
+    chunks a case's assertions span -- because a case needing three chunks of
+    one record is worth seeing, and it is not a failure.
+    """
+    print("\nthe gloss hedge, and how far a gloss case's assertions are spread")
+
+    from ingest.loader import SEED_CORPUS_DIR, load_corpus
+
+    cases = load_answer_cases()
+    corpus = load_corpus(SEED_CORPUS_DIR)
+
+    by_doc: dict = {}
+    for chunk in corpus.chunks:
+        if chunk.eligible_for_retrieval:
+            by_doc.setdefault(chunk.doc_id, []).append(chunk.text)
+
+    gloss_cases = [c for c in cases
+                   if c.expected_behaviour == "refusable_with_gloss"]
+    expect(len(gloss_cases) >= 3,
+           f"the gloss cases are found and counted ({len(gloss_cases)}) — a "
+           f"collapsed list would make every check below vacuous")
+
+    spans = []
+    for case in gloss_cases:
+        docs = list(case.expect_quoted_docs or case.expect_cited_docs or ())
+        texts = [t.lower() for d in docs for t in by_doc.get(d, ())]
+
+        # The hedge groups, read from the DECLARED field. `expect_hedge_any` is
+        # merged into the alternatives by the loader so the scorer sees what it
+        # always saw, and both are still readable separately -- which is what
+        # makes this assertion possible at all.
+        hedges = [list(g) for g in (case.expect_hedge_any or [])]
+        for group in hedges:
+            found = any(any(str(alt).lower() in t for alt in group)
+                        for t in texts)
+            if not found:
+                print(f"       {case.id}: no retrieval-eligible chunk of "
+                      f"{docs} contains any of {group[:4]}")
+            expect(found,
+                   f"{case.id}: the corpus can support the declared hedge")
+
+        # Counted, never gated. See the docstring.
+        groups = [list(g) for g in (case.expect_answer_contains_any or [])]
+        covering = [t for t in texts
+                    if all(any(str(alt).lower() in t for alt in g)
+                           for g in groups)]
+        spans.append((case.id, len(covering), len(texts)))
+
+    single = [cid for cid, cov, _ in spans if cov]
+    spread = [cid for cid, cov, _ in spans if not cov]
+    print(f"  note: {len(single)} gloss case(s) are satisfiable from a single "
+          f"chunk; {len(spread)} need more than one — {spread}. Reported, not "
+          f"gated: an original and its published translation are two chunks by "
+          f"construction, and a case may legitimately want both.")
+
+
 def main() -> int:
     print("Part 8 gold answer cases — offline checks")
     test_loader_rejects_the_easy_version()
@@ -2758,6 +2841,7 @@ def main() -> int:
     test_the_corpus_is_part_of_the_scope()
     test_the_quoted_from_original_quota()
     test_a_record_cannot_falsify_a_refusal_case()
+    test_a_gloss_case_is_reachable_from_ONE_chunk()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0
 

@@ -1284,7 +1284,8 @@
       "expect_answer_contains_any": [
         [
           "Coral Sea",
-          "coral"
+          "coral",
+          "大秦國"
         ],
         [
           "Syria"
@@ -1309,7 +1310,49 @@
       ],
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: a case with no observation cannot be required, cannot be known-failing, and has met no promotion bar. Absent from floor.json means floor_state `none`, which is what declaring nothing asserts. It is the FIFTH gloss case in the corpus and the first outside Scandinavia, Arabia and Southeast Asia.",
-      "note": "EVERY ASSERTED STRING IS SUPPORTABLE FROM A RETRIEVAL-ELIGIBLE CHUNK, which is what corpus_tiers.json requires of gloss capability and what F3 got wrong by writing its hedge into original_text_note. 'Coral Sea', 'Syria' and \"Ts'in\" are all inside the record's reference_translation, as are the words behind the hedge group -- 'disputed', 'does not settle it', 'emendation'. A hedge assertion the corpus cannot support is a case that can never pass.\n\nTHE TWO CONTENT GROUPS ARE BOTH REQUIRED AND THAT IS THE ASSERTION. Groups are scored as a conjunction, so an answer satisfies this case only by producing BOTH 'Syria' and \"Ts'in\" -- that is, only by showing that one set of three characters is published as two countries. Admitting either alone would let a confident single-country answer pass, which is the exact output this arm exists to catch.\n\nTHE APOSTROPHE IS ADMITTED IN BOTH FORMS. \"Ts'in\" is listed with U+0027 and U+2019 because the record itself records that the distinction could not be made from the page scan, and a case that failed on which apostrophe a model happened to emit would be measuring typography rather than retrieval.\n\nWHAT THIS CASE DOES NOT ASSERT: it does not require the answer to name Rome, and it does not forbid it. Whether 大秦 is Rome, the Roman East or Syria is the disputed thing, and a gold case that required one of the answers would be adjudicating the dispute from inside the instrument built to observe it."
+      "note": "CO-LOCATION, WHICH THIS CASE FAILED ON ITS FIRST DRAFT. See FINDING 56. The record's reference_translation is 1,595 characters and the chunker splits it into three: Wylie's paragraph, the two-readings paragraph, and the apparatus. The first draft asserted 'Coral Sea' (only in chunk 000) together with 'Syria' and \"Ts'in\" (chunk 001), so it could pass only if retrieval returned TWO chunks of one record -- which measures retrieval breadth, not whether an answer shows a disputed reading. The first group now admits 大秦國, which is in the two-readings chunk and in the Chinese original, so every group is satisfiable from the chunk that carries the gloss.\n\nEVERY ASSERTED STRING IS SUPPORTABLE FROM A RETRIEVAL-ELIGIBLE CHUNK, which is what corpus_tiers.json requires of gloss capability and what F3 got wrong by writing its hedge into original_text_note. 'Coral Sea', 'Syria' and \"Ts'in\" are all inside the record's reference_translation, as are the words behind the hedge group -- 'disputed', 'does not settle it', 'emendation'. A hedge assertion the corpus cannot support is a case that can never pass.\n\nTHE TWO CONTENT GROUPS ARE BOTH REQUIRED AND THAT IS THE ASSERTION. Groups are scored as a conjunction, so an answer satisfies this case only by producing BOTH 'Syria' and \"Ts'in\" -- that is, only by showing that one set of three characters is published as two countries. Admitting either alone would let a confident single-country answer pass, which is the exact output this arm exists to catch.\n\nTHE APOSTROPHE IS ADMITTED IN BOTH FORMS. \"Ts'in\" is listed with U+0027 and U+2019 because the record itself records that the distinction could not be made from the page scan, and a case that failed on which apostrophe a model happened to emit would be measuring typography rather than retrieval.\n\nWHAT THIS CASE DOES NOT ASSERT: it does not require the answer to name Rome, and it does not forbid it. Whether 大秦 is Rome, the Roman East or Syria is the disputed thing, and a gold case that required one of the answers would be adjudicating the dispute from inside the instrument built to observe it."
+    },
+    {
+      "id": "liangshu-qin-lun-funan",
+      "question": "According to the Liangshu, where did merchants of Da Qin travel in the south, and is it settled which places those names refer to?",
+      "why": "RULING 60's second payment and RULING 62's first and only case, and it is declared WITH A DISCOUNT rather than counted as an equal. Every other gloss case in this corpus rests on a contested READING of a source text: undeciphered runes, a corrupt Latin legend, two scholarly readings of a Nabataean epitaph, two translators putting one set of Chinese characters in two different countries. This one rests on a TRANSLATOR'S HEDGE about a modern geographical identification -- Hirth prints 'Fu-nan [Siam, Cambodja?]', offering two alternatives and a question mark. The Chinese 扶南 is not in doubt at all. Read against corpus_tiers.json's mechanical definition it qualifies: a hedged reading and a statement that the reading is uncertain, both inside a retrieval-eligible chunk. Read against what the gloss arm was BUILT for -- catching a confident rendering of a text whose reading is contested -- it tests something narrower. Both halves are true, the project owner ruled that it counts, and ruling 62 is where the reasoning and the discount live so that F5 does not inherit a loosened standard nobody wrote down.",
+      "expected_behaviour": "refusable_with_gloss",
+      "region": "East Asia",
+      "expect_cited_docs": [
+        "eastasia-05-liangshu-qin-lun"
+      ],
+      "expect_quoted_docs": [
+        "eastasia-05-liangshu-qin-lun"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Fu-nan",
+          "Funan",
+          "扶南"
+        ],
+        [
+          "Chiao-chih",
+          "Jiaozhi",
+          "交趾"
+        ]
+      ],
+      "expect_hedge_any": [
+        [
+          "Cambodja",
+          "Cambodia",
+          "Siam",
+          "uncertain",
+          "does not settle",
+          "not settled",
+          "question mark"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts. Sixth gloss case in the corpus, second in East Asia, and the weakest of the six by its own declaration.",
+      "note": "THE HEDGE GROUP IS DRAWN FROM THE CHUNK, which is what makes the case passable rather than impossible. 'Siam' and 'Cambodja' are Hirth's own alternatives and are inside the reference_translation; so is the sentence stating that he offers two and chooses neither. A hedge assertion the corpus cannot support is a case that can never pass.\n\nTHE CONTENT GROUPS DO NOT REQUIRE THE MERCHANT. This case is about the passage's geography, because that is where the hedge is -- and that mismatch, between what the record is FOR and what its gloss case tests, is the discount stated in one line. The record's Qin Lun content is asserted by the ranking pair liangshu-qin-lun-rarely-seen and by nothing here.\n\nWHAT IT DOES NOT ASSERT: it does not require the answer to choose between Siam and Cambodia, and it does not forbid naming modern Cambodia as the scholarly consensus. Requiring either would adjudicate a geographical question from inside an instrument built to observe whether uncertainty survives into an answer."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

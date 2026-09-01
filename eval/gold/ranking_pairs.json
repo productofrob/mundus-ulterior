@@ -571,6 +571,18 @@
       "provenance": "authored",
       "source_ref": "Written 2026-09-01 in the same commit as data/seed_corpus/east_asia/jingjiao-stele.json, per ruling 54, and before the record had ever been ranked.",
       "note": "RULING 54, and NO STAMP -- the absence of written_after_the_records_entered_the_index is this pair's claim, and it is the first East Asian pair the project can make it for. The anchor 南統珊瑚之海 is in this record's Chinese and in no other chunk of this corpus; the English 'Coral Sea' is Wylie's and is deliberately not asserted, so the pair cannot be satisfied by reaching the translation chunk instead. The query names Da Qin in ROMANISATION against a Literary Chinese target, on the precedent of silko-basiliskos: a query carrying 大秦 would be testing lexical overlap. RULING 55 SHOULD BE READ BESIDE THIS PAIR. It is written to be about the same subject, in the same language, as china-describes-rome-houhanshu and china-describes-rome-weilue, which is precisely the competition the prediction is about -- and it is written before the run, so it cannot have been tuned to the outcome."
+    },
+    {
+      "id": "liangshu-qin-lun-rarely-seen",
+      "query": "Which Chinese history records a merchant from the Roman empire remarking that such people are rarely seen in his own country?",
+      "query_lang": "en",
+      "expect_doc": "eastasia-05-liangshu-qin-lun",
+      "expect_text_contains": "大秦希見此人",
+      "expect_lang": "lzh",
+      "region": "east_asia",
+      "provenance": "authored",
+      "source_ref": "Written 2026-09-01 in the same commit as data/seed_corpus/east_asia/liangshu-qin-lun.json, per ruling 54, and before the record had ever been ranked.",
+      "note": "RULING 54, and NO STAMP -- its absence is the claim. The anchor 大秦希見此人 is the merchant's own reported words and is in this record's Chinese and in no other chunk of this corpus. The query paraphrases rather than quoting: Hirth's English for this clause is 'in Ta-ts'in these men are rarely seen', and asserting his wording would let the pair be satisfied by reaching the translation chunk. RULING 55 SHOULD BE READ BESIDE THIS PAIR, as beside jingjiao-stele-coral-sea: it is the second Literary Chinese pair about Rome written into this tranche, which is the competition the prediction concerns, and it was written before the run."
     }
   ],
   "on_units": "Block C ruling 1 (BLOCK_C_RULINGS.md): a query with several acceptable targets is ONE scored unit, scored on its best acceptable target, with per-unit COVERAGE - how many of its targets reached the top 6 - reported beside it and never gated. Two units are multi-target: `muziris-cargo` (3 pairs) and `china-describes-rome` (2). The unit is declared, not inferred from identical query strings, because a denominator inferred from text nobody declared changes the moment a query is edited by a character; the loader asserts both directions - one unit means one query text, and pairs sharing a query text must share a unit. Cost of the ruling, to be printed beside any G2 number: `muziris-cargo-akananuru` at rank 309 is the corpus's one genuinely broken cross-lingual link and no longer counts toward the gate.",

@@ -1451,6 +1451,21 @@ rather than random, and it is invisible to every check downstream of it.
 **And `git diff --stat` is read before every commit, not after.** A whole-file
 rewrite in a file you edited three lines of is the signal, and it is free.
 
+## And the convention was already known here, in a file that got it right
+
+`scripts/mutate_part8.py`, in its own header, before any of this:
+
+> *"It is LF where `eval/goldset.py` is CRLF; the harness reads and restores
+> each source under its own newline and compares BYTES, so this costs
+> nothing."*
+
+**So the per-file convention was noticed, written down and correctly handled by
+one harness, and every other tool touching this repository was free to ignore
+it.** That is a sharper statement than the finding above: this was not an
+unknown hazard, it was a documented one with a working local remedy that nobody
+generalised. FINDING 46's family again — a defect understood in the file where
+it was met, and the search for its siblings a separate act nobody scheduled.
+
 **The sentence that travels: the repository forbade git from rewriting a single
 byte, and then seven files were rewritten by the tool that was reading them.**
 
@@ -1624,3 +1639,242 @@ instrument changes and still one re-cut.
 **The sentence that travels: the guard was written against the clock left
 running overnight, and the clock left running over lunch writes the same kind of
 lie under the same trusted label.**
+
+---
+
+# FINDING 55 — ruling 57 drew a reachability boundary around the MACHINE-ENGLISH tier, and the same boundary is silently bounding the quality of the PUBLISHED-TRANSLATION one
+
+Ruling 57 redefined `verbatim_machine_english` as *"no English translation
+reachable by the curator, with the search recorded"*, because the old definition
+claimed a fact about the world that no curator could establish. That was the
+right correction and it stands.
+
+**What nobody noticed is that reachability bounds the other tier too, and in a
+way no check can see.** `verbatim_with_provenance` requires a CITED PUBLISHED
+translation. It says nothing about how good that translation is, how old it is,
+or whether anyone has disputed it — and for one whole genre this corpus is
+committed to, there is exactly one reachable English translation and it is from
+1885.
+
+## Measured on record 34
+
+FINDING 45 established that the nineteenth-century sinologists translated the
+dynastic histories and left the huiyao, the leishu and the geographies alone.
+The corollary is that for the dynastic histories they are still, in 2026, the
+only open English. Hirth 1885 renders 獲黝歙短人 as:
+
+```
+"they had caught blackish coloured dwarfs"
+```
+
+reading 黝 as a colour. 黝 and 歙 are also the names of two counties in Danyang
+commandery — the reading under which the sentence means *the short people of Yi
+and She*, local people of the Wu heartland, and not dark-skinned ones. The two
+readings say different things about who those people were, and the difference is
+of exactly the kind this corpus exists to be careful about.
+
+**This record does not adjudicate it and must not.** What it does is carry an
+1885 construal into the corpus as its English, cited and correct by every rule
+this repository has, with nothing anywhere able to ask the question.
+
+## The boundary, arriving from the other side
+
+The reason this could not be made a gloss case is the same reason ruling 57
+exists. A gloss requires a PUBLISHED alternative reading the curator can reach,
+and four searches found no second English translation of this passage and no
+open source stating the county reading. Leslie & Gardiner 1996 is print-only and
+may settle it; nothing available here can say.
+
+```
+ruling 57   vme tier   the tier is bounded by what English a curator can REACH
+FINDING 55  vwp tier   the tier's QUALITY is bounded by the same reachability,
+                       and unlike the vme tier it records nothing about it
+```
+
+A `verbatim_machine_english` record must now state where its search stopped. A
+`verbatim_with_provenance` record states only what it cited. **The tier that
+admits it does not know is the one that writes its ignorance down.**
+
+## What no check here can do
+
+`ingest.verify` asserts `source_text[char_start:char_end] == chunk.text` —
+internal consistency. `build_ui_data --verify` compares archived quotations to
+the seed record. FINDING 48's sentence covers the original: *nothing in this
+project compares a record to its source*. **Nothing compares a record's
+translation to its original either**, and that is a larger hole, because the
+English chunk is the one FINDING 13 measured the model quoting 45 times out of
+45.
+
+## What is NOT done
+
+**No field is added.** The obvious move is a `translation_age` or a
+`translation_contested` flag, and it is the wrong one twice over: it invents a
+distinction in the hour its first case appeared, which is FINDING 32's
+precedent, and both values would be curator judgements no check could verify —
+`why_gloss_capability_is_DECLARED`'s situation without its discipline.
+
+What is owed, and is stated so it is not re-derived: **the vwp tier should
+record the boundary of its translation search the way ruling 57 makes the vme
+tier record the boundary of its English search.** Not the age, not a verdict on
+quality — just what was looked at and what was not. That is F5's, beside the
+other four.
+
+**The sentence that travels: the tier that admits it could not find an English
+translation is the only one that writes down where it looked, and the tier that
+found one writes down nothing at all.**
+
+---
+
+## Ruling 62 — a translator's hedged IDENTIFICATION counts as gloss material, it is declared with a discount, and the distinction it exposes is owed to F5
+
+**`eastasia-05-liangshu-qin-lun` is gloss-capable on Hirth's `Fu-nan [Siam,
+Cambodja?]`. The gloss count goes to 3 of 8. It is reported at F4's close, and
+at G3, as *three, of which one is a hedged identification rather than a disputed
+reading* — never as three equivalent cases.**
+
+### The two readings of the definition, both of which are correct
+
+```
+what_gloss_capable_MEANS_mechanically
+  a genuine alternative or hedged reading
+  AND a statement that the reading is uncertain
+  both inside a RETRIEVAL-ELIGIBLE chunk
+```
+
+`Fu-nan [Siam, Cambodja?]` is two named alternatives and a question mark, inside
+`reference_translation`. **Mechanically it qualifies and there is no reading of
+that sentence on which it does not.**
+
+And the gloss arm was built to catch something else. Its four earlier cases are
+undeciphered runes, a corrupt Latin legend, two scholarly readings of a
+Nabataean epitaph, and one set of Chinese characters that two translators put in
+two different countries. **In every one of them the SOURCE TEXT is contested.**
+Here 扶南 is not in doubt at all; what Hirth is unsure of is which modern country
+it answers to. The instrument exists to see whether a model will render a
+disputed text confidently, and this case cannot see that, because nothing about
+the text is disputed.
+
+### Why it is taken, and by whom
+
+The project owner ruled it in, with the discount attached, and that is recorded
+because it matters who decided. **The alternative was for this session to refuse
+it — and this session had a quota riding on the answer.** A curator who has just
+seen the page and needs one more gloss record is not the right party to narrow a
+definition, and neither is the model drafting the record.
+
+Record 32 refused Satzinger's bare `(?)` four hours earlier, on two grounds
+stated independently: that it sat outside the excerpt, and that it was *"a hedge
+about a place-name reading rather than a published alternative reading with a
+statement that the reading is uncertain."* **The second ground is the one this
+ruling declines to apply here, and the difference is narrow and is named: a bare
+`(?)` offers no alternative, and `[Siam, Cambodja?]` offers two.** That is a real
+distinction and it is thin, and calling it thin in the ruling is cheaper than
+discovering in F6 that nobody knows where the line is.
+
+### The anti-loophole, which is the whole reason this is a ruling and not a note
+
+A count that includes a weaker case and reports one number is a count that gets
+easier to satisfy as the evidence gets thinner — ruling 56's sentence, one
+quota over. So:
+
+- **the discount travels with the number.** F4_RESULT, and any G3 reading, states
+  the composition and not just the total.
+- **the record says so itself**, in its own `reference_translation` and `notes`,
+  where a reader who never opens this file will still meet it.
+- **the gold case says so in its `why`**, which is the field a reader of the
+  gold set actually reads.
+
+Three places, because the count is the only thing anyone reads and the count is
+the only thing G3 will read.
+
+### What is owed
+
+**The definition should distinguish a contested READING from a translator's
+hedged IDENTIFICATION, and today it cannot.** Both are "a hedged reading and a
+statement that the reading is uncertain" to any checker, and they are different
+evidence about different failure modes. That is a change to
+`corpus_tiers.json`, which rulings 53 and 58 have each declined to re-cut
+mid-tranche and which ruling 60 declined a third time this session.
+
+It joins F5's list, which is now **five owed instrument changes** against one
+re-cut with two tranches of evidence: ruling 53's deferred vme ruling, ruling
+58's per-region language rule, FINDING 51's per-sub-tranche gloss delivery
+check, FINDING 55's translation-search boundary on the vwp tier, and this.
+
+**The sentence that travels: the definition could not tell a disputed text from
+an uncertain translator, and the quota could not tell a strong case from a weak
+one, so the ruling had to carry both distinctions in prose.**
+
+---
+
+# FINDING 56 — corpus_tiers.json's gloss rule was never mechanically checked, and writing the checker produced a STRICTER rule nobody had agreed to
+
+`corpus_tiers.json` has said since F1 what gloss capability means:
+
+> *"a genuine alternative or hedged reading AND a statement that the reading is
+> uncertain, both inside a RETRIEVAL-ELIGIBLE chunk. Not in `notes` — the notes
+> field is not chunked and the model never sees it."*
+
+F3 broke that rule twice in one session, declared one gloss record instead of
+two, and the remedy was `gloss_capable_declared`: a list in a sidecar, checked
+for everything mechanical ABOUT the declaration — that the record exists, that
+its tier can carry a case, that the quota is not exceeded — and **nothing at all
+about whether the hedge is in a chunk.** The one clause the rule actually turns
+on was the one clause no check read.
+
+It is checkable, through the CASE rather than the record. A
+`refusable_with_gloss` case declares `expect_hedge_any`; if no retrieval-eligible
+chunk of the document it expects to be quoted contains any of those strings, the
+corpus cannot support the hedge and the case can never pass for reasons that
+have nothing to do with the model. Added in F4, over all six gloss cases,
+failing rather than reporting.
+
+## The part worth recording is what the FIRST draft asserted
+
+It required **every** assertion group to be satisfiable from ONE chunk. It went
+red immediately, on `raqosh-epitaph` — a case curated long before this session:
+
+```
+arabia-03-jsnab17::original::000      Rqwš  +  "two competing scholarly readings"
+arabia-03-jsnab17::translation::000   Raqash  +  "curse"
+```
+
+**The case is built that way deliberately and its own note says so:** the hedge
+sits in the source chunk so that *"an answer CAN know the reading is contested
+without being told."* An original and its published translation are two chunks
+by construction, and every `expect_quoted_from_original` case in this gold set
+depends on both being reachable.
+
+So the check was wrong and the case was right. **`corpus_tiers.json` makes a
+claim about the RECORD's capability, and the first draft turned it into a claim
+about the CASE's assertions — a different and stricter rule, invented in the
+hour the checker for it was written, by the session that had a gloss quota
+riding on the outcome.** That is FINDING 32's precedent and ruling 62's
+situation, arriving in a checker instead of a definition.
+
+The stricter idea survives as a COUNTED line rather than an assertion — five of
+six gloss cases resolve from a single chunk, `raqosh-epitaph` needs two — because
+a case needing three chunks of one record is worth seeing and is not a failure.
+
+## What caught it
+
+Not a review, and not the session that wrote it. **A record curated in an
+earlier tranche, by a curator who had written down why it was shaped that way.**
+The note that saved this was defensive prose in a gold case, aimed at nobody in
+particular, and it is the reason the wrong rule did not become the rule.
+
+## What is NOT covered, stated rather than implied
+
+`scripts/mutate_part8.py` mutates `eval/goldset.py`, `eval/answer_eval.py` and
+`eval/run_answer_sweep.py`. It does not mutate `eval/test_answer_eval.py`, so
+assertions there that read the CORPUS and the GOLD SET rather than a module's
+behaviour have no mutation proving they can fail. This new check joins
+`test_a_record_cannot_falsify_a_refusal_case` and the quoted-from-original quota
+in that class. **Three data-driven guards, none of them mutation-covered, and
+this is the first time it has been written down.** Owed, and it is a different
+kind of owed from the other five: those are instrument changes, this is coverage
+of instruments that already exist.
+
+**The sentence that travels: writing the checker for a rule is an invitation to
+write a stricter rule by accident, and what caught it was a record curated
+before this session by somebody who explained themselves in a note.**

@@ -369,6 +369,43 @@
         }
       },
       "note": ""
+    },
+    {
+      "record_id": "eastasia-05-liangshu-qin-lun",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-01",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 20.0,
+          "provenance": "estimated",
+          "because": "clock not running; minutes reconstructed after the fact"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": ""
     }
   ],
   "retired": [
