@@ -54,7 +54,8 @@
     "southasia-03-muziris-papyrus": "verbatim_with_provenance",
     "southasia-04-pattanam": "catalogue_record",
     "eastasia-04-jingjiao-stele": "verbatim_with_provenance",
-    "eastasia-05-liangshu-qin-lun": "verbatim_with_provenance"
+    "eastasia-05-liangshu-qin-lun": "verbatim_with_provenance",
+    "eastasia-06-cefu-yuangui": "verbatim_machine_english"
   },
   "target_mix": {
     "declared_on": "2026-08-29, F1, before curation.",

@@ -1353,6 +1353,43 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts. Sixth gloss case in the corpus, second in East Asia, and the weakest of the six by its own declaration.",
       "note": "THE HEDGE GROUP IS DRAWN FROM THE CHUNK, which is what makes the case passable rather than impossible. 'Siam' and 'Cambodja' are Hirth's own alternatives and are inside the reference_translation; so is the sentence stating that he offers two and chooses neither. A hedge assertion the corpus cannot support is a case that can never pass.\n\nTHE CONTENT GROUPS DO NOT REQUIRE THE MERCHANT. This case is about the passage's geography, because that is where the hedge is -- and that mismatch, between what the record is FOR and what its gloss case tests, is the discount stated in one line. The record's Qin Lun content is asserted by the ranking pair liangshu-qin-lun-rarely-seen and by nothing here.\n\nWHAT IT DOES NOT ASSERT: it does not require the answer to choose between Siam and Cambodia, and it does not forbid naming modern Cambodia as the scholarly consensus. Requiring either would adjudicate a geographical question from inside an instrument built to observe whether uncertainty survives into an answer."
+    },
+    {
+      "id": "cefu-yuangui-fulin-tribute",
+      "question": "In the Chinese of the Cefu Yuangui's tribute register, what does the Fulin king's embassy present, and in what year?",
+      "why": "F4's ONE vme_quotation_case, declared in the allocation before the hunt began and paid here. Under ruling 56 this line asks only WHETHER anything resolved, not WHICH chunk was quoted, and the reason is structural rather than a lowered bar: this record has no reference_translation, so there is no second retrieval-eligible chunk competing for the quotation and no choice for the assertion to observe. On a verbatim_with_provenance record the same assertion asks something much harder, which is why ruling 56 split the two counters and why the six at 60 is counted only over the tier that can answer the harder question.\n\nIt is also the first case in this corpus to test the machine-translation path on a language that path can actually work in. F3's two vme cases are Old Malay; this is Literary Chinese, and FINDING 44 is the reason the distinction matters — the tier exists to turn the Part 6 path on, and a record whose language nothing can translate would turn it on to produce fluent nonsense attached to a resolving citation.",
+      "expected_behaviour": "answerable",
+      "region": "East Asia",
+      "expect_cited_docs": [
+        "eastasia-06-cefu-yuangui"
+      ],
+      "expect_quoted_docs": [
+        "eastasia-06-cefu-yuangui"
+      ],
+      "expect_quoted_from_original": [
+        "eastasia-06-cefu-yuangui"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "赤頗黎",
+          "red glass"
+        ],
+        [
+          "綠頗黎",
+          "green glass"
+        ],
+        [
+          "拂菻",
+          "Fulin",
+          "Fu-lin"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
+      "note": "EACH CONTENT GROUP ADMITS THE CHINESE OR AN ENGLISH RENDERING, deliberately. The record carries no published English, so any English in an answer is MACHINE English produced by the Part 6 path, and this case is one of the few places that path's output is scored at all. Requiring the Chinese alone would make the case pass only when the model quotes without translating; requiring the English alone would make it pass only when the model translates without quoting. Admitting either measures what the tier is for.\n\nTHE YEAR IS ASKED FOR AND NOT ASSERTED. The question asks in what year, and no group requires 643 or 十七年. The excerpt says 十七年 and the era name 貞觀 is established earlier in the juan, outside it — so an answer that says 'the seventeenth year' is correct from the evidence and an answer that says 643 has gone beyond it. Asserting either would score the model on a fact this record deliberately does not carry, and the record's own date field says so."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",

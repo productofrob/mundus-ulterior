@@ -406,6 +406,42 @@
         }
       },
       "note": ""
+    },
+    {
+      "record_id": "eastasia-06-cefu-yuangui",
+      "tier": "verbatim_machine_english",
+      "curated_on": "2026-09-01",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 5.5,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": ""
     }
   ],
   "retired": [

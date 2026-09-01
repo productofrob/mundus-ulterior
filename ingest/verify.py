@@ -218,7 +218,7 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     # is the one thing in this repository that has never been raised in advance
     # and never late, and a ranking pair written after the run is the same
     # defect as a count loosened before the record.
-    check(len(docs) == 34, f"expected 34 documents, got {len(docs)}")
+    check(len(docs) == 35, f"expected 35 documents, got {len(docs)}")
     orphans = {c.doc_id for c in chunks} - {d.doc_id for d in docs}
     check(not orphans, f"chunks reference unknown docs: {orphans}")
 
