@@ -313,14 +313,42 @@ def test_every_mutation_target_still_exists() -> None:
             print(f"       {h.name}: no MUTATIONS list -- its targets are inlined "
                   f"and cannot be read here. Counted, not failed on")
             continue
-        missing = sorted({t for t in targets
-                          if not any(t in s for s in sources.values())})
+        counts = {t: sum(s.count(t) for s in sources.values()) for t in targets}
+        missing = sorted({t for t, c in counts.items() if c == 0})
+        ambiguous = sorted({t for t, c in counts.items() if c > 1})
         expect(not missing,
                f"GUARD every mutation target in {h.name} still occurs in the "
                f"sources it names")
-        if missing:
-            for t in missing[:4]:
-                print(f"       gone: {t.strip()[:88]!r}")
+        # AMBIGUITY IS COUNTED, NOT GATED, and the demotion is the finding.
+        #
+        # A harness applies its mutation with str.replace, which changes EVERY
+        # occurrence, so a target matching twice is a mutation that breaks more
+        # than its label describes and whose named guard may fail for a reason
+        # the label does not name. That is a real weakness and the first draft
+        # of this line asserted it.
+        #
+        # It went red on THREE harnesses that have been green for the whole
+        # block -- mutate_fidelity's `if both:` at three places, mutate_ranking
+        # at three targets, mutate_recover at one. None of them is FALSE: the
+        # named guard does fail, and it fails because one of the replacements
+        # broke it. Widening six targets across three working harnesses is a
+        # change nobody asked for, made on the last afternoon by a session that
+        # has already made three mistakes.
+        #
+        # FINDING 56 is the precedent and it names this exact trap: writing the
+        # checker for a rule is an invitation to write a stricter rule by
+        # accident, and the stricter idea survives as a COUNTED line. Second time
+        # today. What would make it assertable is the same thing that made the
+        # line above assertable: a session that widens the six, finds the
+        # population clean, and asserts a rule the population already satisfies.
+        for t in missing[:4]:
+            print(f"       gone: {t.strip()[:88]!r}")
+        if ambiguous:
+            print(f"       {h.name}: {len(ambiguous)} target(s) match more than "
+                  f"one place, so str.replace changes all of them -- counted, "
+                  f"not failed on")
+            for t in ambiguous[:3]:
+                print(f"         {counts[t]}x {t.strip()[:74]!r}")
     if opaque_total:
         print(f"       {opaque_total} mutation target(s) are not string literals "
               f"and are not checked here -- counted, because a target this cannot "

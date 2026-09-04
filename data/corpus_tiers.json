@@ -62,17 +62,17 @@
     "total_at_60": 60,
     "new_records": 36,
     "by_tier_new": {
-      "verbatim_with_provenance": 14,
+      "verbatim_with_provenance": 16,
       "verbatim_machine_english": 10,
       "published_translation_only": 4,
-      "catalogue_record": 8,
+      "catalogue_record": 6,
       "pointer_only": 0
     },
     "by_tier_at_60": {
-      "verbatim_with_provenance": 25,
+      "verbatim_with_provenance": 27,
       "verbatim_machine_english": 10,
       "published_translation_only": 5,
-      "catalogue_record": 19,
+      "catalogue_record": 17,
       "pointer_only": 1
     },
     "why_these_numbers": "PHASE2_PLAN names the failure directly -- 'so the tranche is not accidentally all catalogue records' -- and the reason it would happen is cost: a museum object record is the cheapest record in this corpus to curate and a cited bilingual inscription is the dearest. At 24 the split is 11 source-language-bearing against 11 catalogue. The target takes source-language-bearing records from 11 to 35 (46% to 58%) and catalogue from 11 to 19 (46% to 32%), because the product's central claim is about non-English source text and 22/30 is whether that text was reachable.",
@@ -251,11 +251,6 @@
               "n": 1
             },
             {
-              "region": "Southeast Asia",
-              "tier": "catalogue_record",
-              "n": 2
-            },
-            {
               "region": "Persia",
               "tier": "published_translation_only",
               "n": 1
@@ -269,33 +264,34 @@
               "region": "Sub-Saharan Africa",
               "tier": "published_translation_only",
               "n": 1
+            },
+            {
+              "region": "Scandinavia",
+              "tier": "verbatim_with_provenance",
+              "n": 1
+            },
+            {
+              "region": "Sub-Saharan Africa",
+              "tier": "verbatim_with_provenance",
+              "n": 1,
+              "requires_provenance": "local_language"
             }
           ],
           "gloss_capable": 1,
           "expect_quoted_from_original_cases": 0,
           "vme_quotation_cases": 0,
-          "why_these": "The last two source-language records sit here rather than in F7, so that the boundary between the expensive tiers and the cheap one falls inside a sub-tranche that still has a session after it.",
+          "why_these": "REVISED by ruling 73, F5, 2026-09-04. It read: 'The last two source-language records sit here rather than in F7, so that the boundary between the expensive tiers and the cheap one falls inside a sub-tranche that still has a session after it.' THAT ARGUMENT IS WHY THE TWO RE-POINTED SLOTS CAME HERE TOO. F6 now holds four source-language records rather than two: the two it always had, plus one Scandinavia and one Sub-Saharan Africa slot re-pointed from catalogue_record slots in F7. Those two are the only records in the whole remaining allocation that change a per-region floor from missed to met, and they sit in the last sub-tranche with a session behind it precisely because one of them is a hunt rather than a known record. Its two Southeast Asian catalogue records went to F7 in exchange, so the tranches are 7/7/7 rather than 7/9/5 and no sub-tranche is larger than any this block has ever delivered.",
           "closed": false
         },
         {
           "name": "F7",
           "slots": [
             {
-              "region": "Sub-Saharan Africa",
-              "tier": "catalogue_record",
-              "n": 1
-            },
-            {
               "region": "East Asia",
               "tier": "published_translation_only",
               "n": 1
             },
             {
-              "region": "Scandinavia",
-              "tier": "catalogue_record",
-              "n": 1
-            },
-            {
               "region": "Arabia",
               "tier": "catalogue_record",
               "n": 1
@@ -314,12 +310,17 @@
               "region": "Arabia",
               "tier": "catalogue_record",
               "n": 1
+            },
+            {
+              "region": "Southeast Asia",
+              "tier": "catalogue_record",
+              "n": 2
             }
           ],
           "gloss_capable": 1,
           "expect_quoted_from_original_cases": 0,
           "vme_quotation_cases": 0,
-          "why_these": "Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last. AMENDED by ruling 67, F5: East Asia's catalogue_record slot is exchanged for Arabia's, against the verbatim_machine_english slot moved the other way in F5. Neither region's target at 60 moves and no tier total moves; what moves is WHERE the machine-English tier is tested.",
+          "why_these": "Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last. AMENDED by ruling 67, F5: East Asia's catalogue_record slot is exchanged for Arabia's, against the verbatim_machine_english slot moved the other way in F5. Neither region's target at 60 moves and no tier total moves; what moves is WHERE the machine-English tier is tested. AMENDED AGAIN by ruling 73: F7 gives up its Scandinavia and Sub-Saharan Africa catalogue_record slots, which become source-language slots in F6, and takes F6's two Southeast Asian catalogue records in exchange. F7 stays at seven and stays what it was: the cheapest tier, deliberately last.",
           "closed": false
         }
       ],
@@ -360,7 +361,8 @@
       "what_was_NOT_done": "Raising F5 to F7's allocation to absorb the four. It is the only route that leaves floor.json's three at-60 gates untouched, which is a real argument, and it was refused because four more records reach 60 only as records: unless all four were verbatim_machine_english the tier still ends at 6 while the headline reads met, and a corpus that hit its target and missed the thing the target was for is ruling 56's decoration arriving on the number the whole block is named for.",
       "what_this_costs_elsewhere": "FINDING 64. TWO clauses in eval/gold/floor.json are denominated in the literal number 60 -- calibration_scope.corpus.recalibration_at_60, and promotion_candidates.weilue-chinese-quotation.bar. At 56 neither can ever fire, nothing goes red, and the floor goes on describing itself as calibrated at a 24-record corpus for the life of the project. The bar is the sharper of the two: promotion_and_reinstatement_bar and demotions.vimose-runes.reinstated_when state the SAME standard as 'at the corpus in force when the claim is made', correctly, and only the per-case restatement carries a number. Both are re-denominated in the same commit as this decision.",
       "this_findings_number": "FINDING 65. Found first in F5 and numbered last, because FINDINGS 62 to 64 were put to the project owner under those numbers before this document existed and a number that has been communicated should not churn."
-    }
+    },
+    "what_a_slot_may_REQUIRE_of_the_record_that_fills_it": "Ruling 73, F5. A slot may carry `requires_provenance`, whose value is one of ingest.fidelity.SOURCE_LANGUAGE_PROVENANCE, and a record curated into that cell must classify that way. One slot carries it today: Sub-Saharan Africa's verbatim_with_provenance slot in F6 requires `local_language`. WHY A SLOT AND NOT A FLOOR. Ruling 58 asked for a per-region rule refusing a floor met entirely in Greek or Latin, and FINDING 62 showed both that the rule had to be about provenance rather than language and that Sub-Saharan Africa cannot satisfy it: the region holds zero local-language source records and, before this ruling, no source-language slot in which to acquire one. A floor nobody can meet is a floor somebody deletes, which is why FINDING 62 left the distinction COUNTED. A requirement on a slot created for that purpose is satisfiable by construction and fails loudly if the slot is filled with Greek, so ruling 58's rule gets its first teeth in the one place they can close. WHAT IT DOES NOT DO: it is not a claim that the record exists. F4_CANDIDATES establishes the supply -- Polish Nubiology edits Nubian texts with English translations and most of it is open, which is why F4 recorded that route as a DEAD END for verbatim_machine_english and everything on it as LIST A, the profile this tier wants. The two Nubian candidates F4 named are Greek. Whether an Old Nubian text inside the window touches Rome or Byzantium well enough is what the hunt settles, and ruling 73 declares its outcomes in advance."
   },
   "how_curation_cost_is_reported": "PER TIER, and against this mix. See ruling 45: G3's box 'curation cost per record recorded and trending down' is satisfiable by curating cheaper records, and the tier is the only thing that makes the number readable.",
   "no_content_hash_is_stamped_here": "Deliberate. An entry could record the record's content_hash at declaration time, so a record edited after its tier was declared would flag. It does not need to: the tier is DERIVED from the record on every verify run, so a record that moves into a different tier fails declared-vs-derived immediately, and a record that moves without changing tier has nothing to report. Stamping a hash would add a re-declaration to every corpus edit in F3-F7 and detect nothing the derivation does not."

@@ -528,6 +528,32 @@ def test_allocation():
         "GUARD two sub-tranches with the same name are refused",
     )
 
+    # Ruling 73, F5. A slot may REQUIRE a provenance of the record that fills it,
+    # and the declaration has to be coherent before delivery can be judged
+    # against it.
+    def _slot(m, name, region, tier):
+        tranche = [t for t in m["allocation"]["sub_tranches"] if t["name"] == name][0]
+        return [s for s in tranche["slots"]
+                if s["region"] == region and s["tier"] == tier][0]
+
+    broken = json.loads(json.dumps(mix))
+    _slot(broken, "F6", "Sub-Saharan Africa",
+          "verbatim_with_provenance")["requires_provenance"] = "interesting"
+    expect(
+        any("not one of" in p for p in check_allocation(broken, at24, sl24)),
+        "GUARD a slot requiring a provenance outside the vocabulary is refused",
+    )
+
+    broken = json.loads(json.dumps(mix))
+    _slot(broken, "F7", "Southeast Asia",
+          "catalogue_record")["requires_provenance"] = "local_language"
+    expect(
+        any("carries no source-language text" in p
+            for p in check_allocation(broken, at24, sl24)),
+        "GUARD a provenance requirement on a tier with no source-language text is "
+        "refused, because it names a field the record does not have",
+    )
+
     broken = json.loads(json.dumps(mix))
     broken["allocation"]["sub_tranches"][0]["slots"][0]["region"] = "Antarctica"
     expect(
@@ -686,6 +712,41 @@ def test_delivery():
         any("declares gloss kind" in p
             for p in check_delivery(badkind, {}, set())),
         "GUARD a gloss kind outside the declared vocabulary is refused",
+    )
+
+    # Ruling 73's requirement, delivered against. Sub-Saharan Africa's
+    # verbatim_with_provenance cell plans three records and one of them must be
+    # in a language of the region. It fails on the UNREACHABILITY shape, not the
+    # shortfall one -- the distinction this whole function turns on.
+    AF = ("Sub-Saharan Africa", "verbatim_with_provenance")
+    two_greek = {f"af-{i}": AF for i in range(2)}
+    three_greek = {f"af-{i}": AF for i in range(3)}
+    greek = {f"af-{i}": "empire_language_from_the_region" for i in range(3)}
+
+    expect(
+        not any("provenance" in p for p in
+                check_delivery(mix, two_greek, set(), greek)),
+        "GUARD a provenance requirement with a slot still left in the cell is "
+        "progress, not a failure",
+    )
+    expect(
+        any("can no longer be met" in p for p in
+            check_delivery(mix, three_greek, set(), greek)),
+        "GUARD a provenance requirement is refused once the cell is FULL and no "
+        "record in it satisfies the requirement",
+    )
+    met = dict(greek, **{"af-0": "local_language"})
+    expect(
+        not any("provenance" in p for p in
+                check_delivery(mix, three_greek, set(), met)),
+        "GUARD a full cell holding a record of the required provenance reports "
+        "nothing",
+    )
+    expect(
+        any("could not be checked" in p for p in
+            check_delivery(mix, three_greek, set(), {})),
+        "GUARD a record whose provenance was not supplied is REPORTED rather "
+        "than counted as satisfying the requirement",
     )
 
     # THE CHECK THAT DID NOT EXIST. F4 planned two gloss-capable records and

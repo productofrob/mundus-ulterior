@@ -566,8 +566,14 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             str(e.get("record")) if isinstance(e, dict) else str(e)
             for e in gloss_entries
         }
+        # Ruling 73: the provenance of every curated record, so a slot that
+        # REQUIRES one can be checked rather than merely declared.
+        provenance_of = {
+            doc.doc_id: source_language_provenance(doc.language_codes, doc.findspot)
+            for doc in docs
+        }
         for problem in check_delivery(
-            mix_for_delivery, tranche_records, gloss_ids,
+            mix_for_delivery, tranche_records, gloss_ids, provenance_of,
         ):
             failures.append(f"delivery: {problem}")
 

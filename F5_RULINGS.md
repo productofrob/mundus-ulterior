@@ -1,4 +1,4 @@
-# Rulings 67 to 72 and FINDINGS 62 to 66 — declared 2026-09-04, in F5, before any record was curated
+# Rulings 67 to 73 and FINDINGS 62 to 67 — declared 2026-09-04, in F5, before any record was curated
 
 *Date taken from the host, not from another document: `date -u +%F` printed
 `2026-09-04`. That is Block F's fourth distinct UTC date and the same date F4
@@ -450,6 +450,12 @@ guards rather than three.
 ends Block F at 56 with `verbatim_machine_english` at 6 of 10, and both numbers
 are reported against the targets they missed.**
 
+*AMENDED by ruling 73, later the same day, and amended on a measurement rather
+than an argument. What follows stands as the reading of the HEADLINE number
+and is unchanged. What ruling 73 revises is the assumption underneath it —
+that the four missing records were interchangeable, and that clearing a
+per-region floor needed MORE records rather than DIFFERENT ones.*
+
 A target the corpus missed, recorded as missed, is a result. **A target lowered
 to what was delivered is bookkeeping**, and it is the move ruling 56 refused for
 the quotation quota four days ago.
@@ -578,6 +584,145 @@ is not evidence for this prediction and F5_RESULT may not count it as such.
 
 ---
 
+# FINDING 67 — `total_at_60` is the size of the PLAN, and the file calls it a target
+
+Measured by building the modified mix and running the guards, not by reading them:
+
+```
+A   add two slots, change nothing else                   4 problems
+B   + new_records 38, by_tier_new vwp 16, at_60 vwp 27   2 problems
+C   + region targets Scandinavia 9, Sub-Saharan Africa 10
+    "records_by_region_target_at_60 sums to 62, not 60"  1 problem
+D   + total_at_60 = 62                                   no problems
+```
+
+**There is no configuration of this file in which the allocation places 38 records
+and `total_at_60` reads 60.** `check_target_mix` requires the region targets to sum
+to it. `check_allocation` requires each region's slots to equal its target minus
+its count at 24. The target is derived from the plan by construction.
+
+**A number that must equal the sum of the plan cannot be missed by the plan.** It
+can only be missed by delivery — and every figure denominated *"at 60"*, the
+per-region floor and the quotation quota and the gloss target and until this
+morning two clauses in `floor.json`, is denominated in a number that moves
+whenever the allocation moves.
+
+FINDING 51's family, and the deepest instance of it: the block is named for a
+number that is structurally its own plan's size. **Nothing is done about it
+today.** Separating the plan's total from the target is a re-cut of the field
+ruling 44 declared, and it would be made by a session that has already made three
+mistakes this afternoon. Named, measured, and owed — and ruling 73 is written so
+that it does not have to be taken.
+
+---
+
+# Ruling 73 — two slots are RE-POINTED rather than added, and one of them carries a requirement
+
+**The allocation moves Scandinavia's and Sub-Saharan Africa's `catalogue_record`
+slots out of F7 and re-points them as `verbatim_with_provenance` slots in F6;
+F6's two Southeast Asian catalogue records go to F7 in exchange. `total_at_60`
+and `new_records` do not move. The Sub-Saharan Africa slot declares
+`requires_provenance: "local_language"`, and `check_delivery` enforces it.**
+
+```
+                                          every guard green
+F5   7 slots   vwp 4, vme 3
+F6   7 slots   vwp 4, pto 2, cat 1
+F7   7 slots   pto 2, cat 5
+
+source-language records at the block's close, floor of 4:
+   Arabia 5   East Asia 7   Persia 4   Scandinavia 4   South Asia 5
+   Southeast Asia 4   Sub-Saharan Africa 4          ALL SEVEN CLEAR
+
+by_tier_at_60   verbatim_with_provenance 25 -> 27   catalogue_record 19 -> 17
+corpus at the close                                 56, unchanged
+```
+
+## Why re-pointing and not adding
+
+The session first put a **+2** to the project owner and he took it. Implementing
+it produced FINDING 67: two more slots force `total_at_60` to 62, so the number
+the block is named for would read *raised* on the afternoon it was recorded as
+missed. The re-point buys the same thing — **every region's floor, and Africa's
+local-language slot** — for no extra record and no field moving.
+
+**The question was framed badly and this ruling records whose fault that was.**
+Ruling 69 asked *how many more records*, and the session inherited the assumption
+that clearing a floor needs MORE records. It needs DIFFERENT ones. Ruling 67 had
+broken exactly that assumption for the machine-English tier four hours earlier —
+re-point, do not add — and the session did not carry it across. FINDING 46's
+sentence, twice in one day, by the same party.
+
+## What it costs, stated rather than buried
+
+`catalogue_record` lands at **17 of 19**. That tier is the one F7's own
+`why_these` calls *"the cheapest to curate and the one whose absence would cost
+the corpus least, deliberately last."* So the trade is the least valuable thing in
+the plan for the two most load-bearing records in it — and it is a trade, not a
+saving. F5_RESULT and any G3 reading state both numbers.
+
+## The requirement, and why a slot rather than a floor
+
+Ruling 58 asked for a per-region rule refusing a floor met entirely in Greek or
+Latin. FINDING 62 showed the rule had to be about PROVENANCE rather than
+language, and also that **Sub-Saharan Africa cannot satisfy it**: zero
+local-language source records and, before this ruling, no source-language slot in
+which to acquire one. A floor nobody can meet is a floor somebody deletes, which
+is why FINDING 62 left the distinction counted.
+
+**A requirement on a slot created for that purpose is satisfiable by
+construction.** It is declared in the slot, checked for coherence in
+`check_allocation` — the value must be in `SOURCE_LANGUAGE_PROVENANCE` and the
+tier must actually carry source-language text — and enforced in `check_delivery`
+against `source_language_provenance`.
+
+**And it fails on the UNREACHABILITY shape, not the shortfall one**, which is the
+distinction that function turns on. Africa's `verbatim_with_provenance` cell holds
+two Greek records today against three planned, so the requirement is still
+reachable through the slot this ruling created. It becomes a failure only when the
+cell is full and no record in it is local-language. **That is the anti-loophole:
+the slot cannot be quietly filled with a third Greek record.**
+
+## The supply, and the three outcomes declared before the hunt
+
+`F4_CANDIDATES.md` establishes it, in a passage that ruled the route out for the
+opposite reason:
+
+> *"The Polish Nubiological route … is a dead end for this tier for a reason worth
+> recording: Polish Nubiology publishes in ENGLISH. Łajtar, van der Vliet, Ochała
+> and van Gerven Oei all edit Nubian texts with English translations, and most of
+> it is open access. Everything found on that route belongs in LIST A."*
+
+F4 was hunting `verbatim_machine_english`. Nubian was a dead end **because the
+English exists and is open** — and LIST A, source text plus a reachable English
+translation, is exactly this tier. **What makes a tradition bad for the
+machine-English tier makes it good for the provenance tier**, which is the same
+asymmetry that moved Arabia's vme slot to East Asia this morning.
+
+Ge'ez is closed on the ROME criterion (ruling 63). Meroitic is closed as a class
+(FINDING 44) and closed rightly: it is undeciphered, so the translation path
+produces confident nonsense with a British Museum accession number. The two
+Nubian candidates F4 named — the Constantinopolitan Creed at Old Dongola and the
+Qasr Ibrim epitaphs — are **Greek**, and the requirement refuses both.
+
+**MET.** A local-language record from the region, inside 27 BC to 1204 AD,
+touching Rome or Byzantium. Africa's local-language count goes 0 → 1 and its
+floor is met with a record the region actually speaks.
+
+**FAILED ON SUPPLY.** No local-language African text inside the window touches
+Rome or Byzantium well enough. FINDING 38's problem, ruling 53's third outcome,
+and Africa's zero becomes a supply fact that was tested rather than an unexamined
+consequence of an allocation nobody revisited. Reported as a SHORTFALL with the
+search recorded — and NOT filled with Greek, because the requirement refuses it.
+
+**FAILED ON REACH.** The material exists and sits behind print-only or closed
+editions. Ruling 57's boundary, recorded in the same shape.
+
+**The third outcome is written for ruling 53's reason: a close that can only say
+MET or MISSED can satisfy itself by choosing.**
+
+---
+
 # FINDING 66 — a mutation whose target has moved proves nothing, and the only thing that noticed was a host run
 
 **This session's own defect, found by the host and recorded here rather than
@@ -646,6 +791,41 @@ one that proves something until somebody runs it.**
 
 ---
 
+# FINDING 66, continued — the check asked whether a target EXISTS, and the stricter question caught the next defect an hour later
+
+The guard above asks whether a mutation's target still occurs in the sources it
+names. Writing ruling 73's mutations produced one whose target — `if unknown:` —
+matches **three** lines in `ingest/fidelity.py`, two of them at the same indent.
+A harness applies its mutation with `str.replace`, which changes every
+occurrence, so that mutation would have broken three rules while claiming one.
+
+**The check passed it.** *Exists* and *occurs exactly once* are different
+questions and the weaker one was asked. Strengthened to exactly-once, it went red
+on **three harnesses that have been green for the whole block**:
+`mutate_fidelity`'s `if both:` at three places and `if stray:` at two,
+`mutate_ranking` at three targets, `mutate_recover` at one.
+
+**None of them is false.** The named guard does fail in every case, because one
+of the replacements broke it; the others are collateral. Widening six targets
+across three working harnesses is a change nobody asked for, on the last
+afternoon, by a session that has already made three mistakes.
+
+**So it is COUNTED, and the demotion is FINDING 56's precedent applied to
+itself:** *writing the checker for a rule is an invitation to write a stricter
+rule by accident*, and the stricter idea survives as a counted line. Second time
+today. What would make it assertable is what made the weaker line assertable — a
+session that widens the six, finds the population clean, and asserts a rule the
+population already satisfies.
+
+The one target written today was widened rather than counted, because a target
+written this afternoon has no claim on the exemption.
+
+**The sentence that travels: the check written to catch a mutation that proves
+nothing was, within the hour, the check that let one through — by asking the
+weaker of two questions it could have asked.**
+
+---
+
 # What is NOT done, and is owed beyond this document
 
 - **`scripts/mutate_part8.py` still does not mutate `eval/test_answer_eval.py`.**
@@ -659,8 +839,14 @@ one that proves something until somebody runs it.**
 - **`scripts/mutate_distractors.py` has no BASELINE block**, it declares no
   `MUTATIONS` list, and its targets cannot be verified either — three
   instruments blind to the one harness that mutates the SCHEMA (FINDING 66).
-- **`scripts/test_harnesses.py` is mutated by nothing.** Forty-three guards
-  with no mutation proving they can fail, and F5 added ten of them.
+- **`scripts/test_harnesses.py` is mutated by nothing.** Its guards have no
+  mutation proving they can fail, and F5 added ten of them.
+- **Six mutation targets across three harnesses match more than one line**
+  (FINDING 66, continued). Counted, not gated, and the condition for
+  asserting it is written there.
+- **`total_at_60` is the size of the plan and the file calls it a target**
+  (FINDING 67). Separating the two is a re-cut of the field ruling 44
+  declared, and ruling 73 was written so it did not have to be taken today.
 - **Ruling 65's renderings debt** — the eight Part 2 pairs. The C2 fused arm has
   now gone two tranches without a reading.
 - **The per-region floor is still checked against the PLAN only.** Scandinavia

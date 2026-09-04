@@ -356,6 +356,45 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           """    undefined = []""")],
     ),
     (
+        # Ruling 73, F5 -- the five below, in the same order as the guards
+        # appended to EXPECTED. A slot may REQUIRE a provenance, and the
+        # requirement is ruling 58's gate scoped to the one place it can close.
+        "a slot may require a provenance outside the vocabulary",
+        [("            if want not in SOURCE_LANGUAGE_PROVENANCE:",
+          "            if False:")],
+    ),
+    (
+        "a provenance may be required of a tier that has no source-language text",
+        [('            if str(slot.get("tier")) not in SOURCE_LANGUAGE_TIERS:',
+          "            if False:")],
+    ),
+    (
+        "a full cell may miss its provenance requirement without being refused",
+        [("        if have < n and left < n - have:", "        if False:")],
+    ),
+    (
+        # The shortfall/unreachability distinction this whole function turns on,
+        # inverted by one character: a cell with a slot still left in it becomes
+        # a failure instead of progress.
+        "an unmet provenance requirement fails while a slot is still left",
+        [("        if have < n and left < n - have:",
+          "        if have < n and left <= n - have:")],
+    ),
+    (
+        # A record whose provenance nobody supplied silently counted as not
+        # satisfying the requirement, rather than reported as unchecked.
+        # The target is WIDENED past `if unknown:` on purpose: that line occurs
+        # three times in ingest/fidelity.py, twice at this indent, and a harness
+        # applies its mutation with str.replace -- which would have changed all
+        # of them. Caught by the check test_harnesses.py gained an hour ago,
+        # while that check was still only asking whether a target EXISTS.
+        "an unsupplied provenance is counted rather than reported",
+        [("""        unknown = sorted(r for r in in_cell if r not in provenance_of)
+        if unknown:""",
+          """        unknown = sorted(r for r in in_cell if r not in provenance_of)
+        if False:""")],
+    ),
+    (
         # Ruling 58 / FINDING 62. Collapsed, every source-language record is
         # local and the Periplus reads as three regions speaking for themselves.
         "the provenance classifier calls every record local",
@@ -447,6 +486,15 @@ EXPECTED = [
     "planned is refused",
     "GUARD a gloss kind outside the declared vocabulary is refused",
     "GUARD a gloss kind the code accepts and the file does not explain is refused",
+    "GUARD a slot requiring a provenance outside the vocabulary is refused",
+    "GUARD a provenance requirement on a tier with no source-language text is "
+    "refused, because it names a field the record does not have",
+    "GUARD a provenance requirement is refused once the cell is FULL and no "
+    "record in it satisfies the requirement",
+    "GUARD a provenance requirement with a slot still left in the cell is "
+    "progress, not a failure",
+    "GUARD a record whose provenance was not supplied is REPORTED rather "
+    "than counted as satisfying the requirement",
     "GUARD Greek WITH a findspot in the region is the region speaking",
     "GUARD Greek with NO findspot is a Roman-world text ABOUT the region, "
     "not a source from it",

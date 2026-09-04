@@ -849,6 +849,29 @@ def check_allocation(
     # actually be observed: check_delivery refuses more DECLARATIONS than the
     # mix asks for. Under-placing is the failure that can never be recovered,
     # since nobody re-curates a record, and that is the direction still guarded.
+    # Ruling 73, F5. A slot may REQUIRE a provenance of the record that fills it.
+    # Checked here for coherence and in check_delivery for delivery: a value
+    # outside the vocabulary is a requirement nobody can satisfy, and one on a
+    # tier with no source-language text is a requirement about a field the
+    # record does not have.
+    for index, tranche in enumerate(tranches):
+        for slot in (tranche.get("slots") or []):
+            want = slot.get("requires_provenance")
+            if want is None:
+                continue
+            if want not in SOURCE_LANGUAGE_PROVENANCE:
+                problems.append(
+                    f"{names[index] or index}: slot {slot.get('region')!r}/"
+                    f"{slot.get('tier')!r} requires provenance {want!r}, which is "
+                    f"not one of {sorted(SOURCE_LANGUAGE_PROVENANCE)}"
+                )
+            if str(slot.get("tier")) not in SOURCE_LANGUAGE_TIERS:
+                problems.append(
+                    f"{names[index] or index}: slot {slot.get('region')!r}/"
+                    f"{slot.get('tier')!r} requires a provenance, and that tier "
+                    f"carries no source-language text for one to be read from"
+                )
+
     gloss = sum(int(t.get("gloss_capable") or 0) for t in tranches)
     if gloss < int(mix.get("gloss_capable_records") or 0):
         problems.append(
@@ -968,6 +991,7 @@ def split_quotation_cases(
 def check_delivery(
     mix: "dict", delivered: "dict[str, tuple[str, str]]",
     gloss_declared: "set[str] | None" = None,
+    provenance_of: "dict[str, str] | None" = None,
 ) -> "list[str]":
     """Do the records actually CURATED deliver the allocation? Returns problems.
 
@@ -1117,6 +1141,53 @@ def check_delivery(
                 f"Nothing else here compares a tranche's delivery to its own "
                 f"declaration, which is how an aggregate gets met one tranche at "
                 f"a time with every check green"
+            )
+
+    # Ruling 73, F5. A cell whose slots declare `requires_provenance` must end up
+    # holding at least that many records of that provenance.
+    #
+    # Cell granularity, because that is all this function has: a record's
+    # sub-tranche is not derivable from it, so a delivered Sub-Saharan Africa
+    # verbatim_with_provenance record could be F4's or F6's. Requiring the COUNT
+    # in the cell is the same claim without needing to know which slot it filled.
+    #
+    # And it fails on the UNREACHABILITY shape, not on the shortfall one: while
+    # the cell still has slots left, an unmet requirement is progress, exactly as
+    # this function treats every other target. Africa's cell holds two Greek
+    # records today against three planned, so the requirement is still reachable
+    # through the slot ruling 73 created, and it is not a failure until the cell
+    # is full and no local-language record is in it.
+    required: dict[tuple[str, str], int] = {}
+    for tranche in tranches:
+        for slot in (tranche.get("slots") or []):
+            want = slot.get("requires_provenance")
+            if want is None:
+                continue
+            key = (str(slot.get("region")), str(slot.get("tier")), str(want))
+            required[key] = required.get(key, 0) + int(slot.get("n") or 0)
+
+    provenance_of = provenance_of or {}
+    for (region, tier, want), n in sorted(required.items()):
+        in_cell = [r for r, (rg, ti) in delivered.items()
+                   if rg == region and ti == tier]
+        if not in_cell:
+            continue
+        unknown = sorted(r for r in in_cell if r not in provenance_of)
+        if unknown:
+            problems.append(
+                f"{region} / {tier}: the slot requires provenance {want!r} and the "
+                f"provenance of {unknown} was not supplied, so the requirement "
+                f"could not be checked rather than being met"
+            )
+            continue
+        have = sum(1 for r in in_cell if provenance_of.get(r) == want)
+        left = planned.get((region, tier), 0) - len(in_cell)
+        if have < n and left < n - have:
+            problems.append(
+                f"{region} / {tier}: {n} record(s) of provenance {want!r} are "
+                f"required, {have} delivered, and {left} slot(s) remain in the "
+                f"cell. The requirement can no longer be met, which is a target "
+                f"already missed rather than one still open"
             )
 
     want_gloss = int(mix.get("gloss_capable_records") or 0)
