@@ -363,12 +363,41 @@ scripts/mutate_distractors.py       6 verified   (schema and sources restored)
                                       UNVERIFIED, no phantom guard
 ```
 
-`mutate_ranking` (108), `mutate_fidelity` (46), `mutate_part8` (94) and
-`mutate_ui_places` (6) have still not been run since `a5c0ae6`. Their `EXPECTED`
-labels were checked statically against what their suites actually print (254 of
-254 still printed) and every mutation target still resolves, so no `MISS` from
-FINDING 37's family is waiting. **`mutate_ranking` was repaired before being
-run** — see FINDING 61.
+```
+scripts/mutate_ranking.py         108 verified   first run since a5c0ae6
+scripts/mutate_fidelity.py         46 verified
+scripts/mutate_part8.py            94 verified   sources restored byte for byte
+scripts/mutate_ui_places.py         6 verified
+                                  -- 254 mutations, and with the 92 above, 346
+                                     across eight of the nine harnesses, none
+                                     reporting a BASELINE line, an UNVERIFIED,
+                                     a MISS or a phantom guard
+```
+
+This paragraph said, until the harnesses were run, that these four *"have still
+not been run since `a5c0ae6`"*. They were run, at this tree, after
+`scripts/mutate_ranking.py` was repaired under FINDING 61 — and the repair has
+its direct measurement:
+
+```
+answer/translate.py    LF     after a 108-mutation mutate_ranking run
+retrieve/*.py (x7)     CRLF   unchanged
+digest                 9728581d164b0a4b...  unmoved
+```
+
+`answer/translate.py` is the LF file among seven CRLF ones, and before this
+morning that run would have returned it as CRLF. A pre-flight also checked all
+254 `EXPECTED` labels against what the suites actually print and every mutation
+target against its sources: 254 of 254 printed, 0 targets missing, so no `MISS`
+from FINDING 37's family was waiting.
+
+**`scripts/mutate_places.py` (43 mutations) has still not been run**, and the
+reason it is named here is that it took FINDING 61's own check to make it
+visible. It is the file FINDING 37 was found in, it was modified today, and
+**no state block in this project has ever carried a number for it** —
+F4_START mentions its BASELINE block in prose, and the last two state blocks
+list five harnesses by number without it. FINDING 57's shape, a second time, in
+the population that had just been given a check.
 
 The gold answer set is **44 cases**: 30 answerable, 8 correctly_refusable, 6
 refusable_with_gloss, every region at or above G4's minimum of 3.
