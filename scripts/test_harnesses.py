@@ -262,7 +262,15 @@ def _mutable_sources() -> "dict[str, str]":
             if f.parent.name == "scripts" and (
                     f.name.startswith("mutate_") or f.name == "test_harnesses.py"):
                 continue
-            out[str(f.relative_to(root))] = f.read_text(encoding="utf-8")
+            # as_posix(), and the reason is a red guard on the host. `str()` on a
+            # Windows PurePath gives "ingest\\fidelity.py"; the membership test
+            # below names "ingest/fidelity.py", so the anti-vacuity assertion
+            # FAILED on the host and PASSED on the bridge -- while every real
+            # guard passed on both, because those search the VALUES. A key
+            # shaped by the platform is a guard that is true on one interpreter
+            # and false on another, which is FINDING 57's rule arriving in an
+            # assertion instead of in a number.
+            out[f.relative_to(root).as_posix()] = f.read_text(encoding="utf-8")
     return out
 
 
