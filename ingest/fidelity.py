@@ -673,12 +673,24 @@ SOURCE_LANGUAGE_TIERS = ("verbatim_with_provenance", "verbatim_machine_english")
 # and in W1's findspot_places / subject_places split. The tier layer read
 # neither field.
 #
-# COUNTED, NOT GATED, and the reason is not timidity. Sub-Saharan Africa has
-# ZERO source-language records in a language of the region and no source-language
-# slot left in any sub-tranche, so a gate would fail the tree on a condition no
-# allocation Block F still has can satisfy -- and a gate that cannot be satisfied
-# is a gate somebody deletes. Ruling 56's shape: the teeth are the presence of
-# the number and the fact that it is printed, not a minimum.
+# COUNTED, NOT GATED -- and the REASON changed four hours after it was written,
+# which is why the old one is kept here rather than replaced. It read:
+#
+#   "Sub-Saharan Africa has ZERO source-language records in a language of the
+#    region and no source-language slot left in any sub-tranche, so a gate would
+#    fail the tree on a condition no allocation Block F still has can satisfy."
+#
+# RULING 73 GAVE THE REGION THAT SLOT. The second half of that sentence stopped
+# being true in the same commit as the ruling that made it false, which is the
+# defect this block keeps finding: a rule's stated reason outliving the reason.
+#
+# It stays counted for a better reason. The gate now EXISTS and it is narrower
+# than a per-region floor: `requires_provenance` sits on the one slot created to
+# meet it, check_delivery enforces it, and it fails only when that cell is full
+# with no local-language record in it. A blanket minimum would still be a claim
+# about six other regions nobody has evidence for. Ruling 56's shape either way
+# -- the teeth are the presence of the number and the fact that it is printed,
+# and now, on one slot, a requirement that can actually close.
 EMPIRE_LANGUAGES = frozenset({"grc", "lat"})
 
 SOURCE_LANGUAGE_PROVENANCE = (

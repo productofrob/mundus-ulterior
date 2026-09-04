@@ -903,10 +903,10 @@ def test_source_language_provenance():
     multi = sorted(len(v) for v in by_text.values() if len(v) > 1)
     print(f"  note: {len(source_docs)} source-language record(s) by provenance: "
           f"{dict(sorted(kinds.items()))}. Texts counted in more than one "
-          f"region, by region count: {multi}. Counted, not gated -- "
-          f"Sub-Saharan Africa has no source-language slot left in any "
-          f"sub-tranche, so a minimum here could not be satisfied by any "
-          f"allocation this block still has.")
+          f"region, by region count: {multi}. Counted, not gated -- ruling 73 "
+          f"put the gate on the one SLOT it can close on, Sub-Saharan Africa's "
+          f"verbatim_with_provenance slot in F6, rather than on a per-region "
+          f"floor that would claim six other regions nobody has evidence for.")
 
 
 def main() -> int:
