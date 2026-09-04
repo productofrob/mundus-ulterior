@@ -434,6 +434,30 @@ def failures_from(output: str) -> set[str]:
     }
 
 
+def _newline_of(raw: bytes) -> str:
+    """The file's own line ending, so a mutation run does not change it.
+
+    FINDING 61, 2026-09-04. FINDING 52 measured a text-mode read-modify-write
+    converting seven files in one session, and the remedy went into three
+    harnesses of the nine. This is one of the four it did not reach.
+    `write_text` translates a newline to os.linesep, so a run mangles every
+    source whose convention differs from the platform's -- and the byte-safe
+    RESTORE below only puts them back if the process is allowed to finish,
+    which is exactly what FINDING 59 says cannot be assumed.
+    """
+    crlf = raw.count(b"\r\n")
+    if crlf and raw.count(b"\n") - crlf:
+        raise SystemExit(
+            "a mutation source has MIXED line endings. Resolve that by hand "
+            "before running this harness, which would otherwise pick one."
+        )
+    return "\r\n" if crlf else "\n"
+
+
+def _write(path, text: str, newline: str) -> None:
+    path.write_bytes(text.replace("\n", newline).encode("utf-8"))
+
+
 def main() -> int:
     if len(MUTATIONS) != len(EXPECTED):
         print(f"{len(MUTATIONS)} mutations against {len(EXPECTED)} expectations")
@@ -449,6 +473,7 @@ def main() -> int:
     # os.linesep. The restore below writes the ORIGINAL BYTES and the check
     # compares BYTES, so this harness can no longer do that to its own sources.
     original_bytes = {f: f.read_bytes() for f in SOURCES}
+    newlines = {f: _newline_of(original_bytes[f]) for f in SOURCES}
     originals = {f: f.read_text(encoding="utf-8") for f in SOURCES}
     problems: list[str] = []
     try:
@@ -508,7 +533,7 @@ def main() -> int:
                 target = next(f for f in SOURCES if old in edited[f])
                 edited[target] = edited[target].replace(old, new, 1)
             for f in SOURCES:
-                f.write_text(edited[f], encoding="utf-8")
+                _write(f, edited[f], newlines[f])
 
             # FINDING 37, 2026-08-31. Without `encoding` and
             # PYTHONIOENCODING the child's stdout is decoded with the parent's

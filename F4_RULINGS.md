@@ -2420,3 +2420,426 @@ instead of it.
 **The sentence that travels: the remedy for a status that was remembered was to
 write down a number, and the first number it wrote was measured somewhere the
 document did not say.**
+
+---
+---
+
+# The two pre-registered predictions, read 2026-09-04 from `20260904T081155+0000-retrievable_chunks_with_distractors.json`
+
+*Index 473 chunks, against the baseline ruling 55 named:
+`20260831T150406+0000`, index 460. BASELINE arm, no `--fuse`, per ruling 65.
+Both readings were taken after the run was archived and neither ruling was
+edited afterwards.*
+
+---
+
+## Ruling 55 — CONFIRMED in direction, and the mechanism it argued from is not in the evidence
+
+```
+                                  rank      recall@6         dSim      dGapDoc
+china-describes-rome-houhanshu    4 -> 8    True -> False   -0.0004    -0.0008
+china-describes-rome-weilue       5 -> 9    True -> False   -0.0005    -0.0009
+```
+
+**Both pairs moved down. Both left the top 6.** Neither falsification condition
+fired: they did not hold, and it was not `houhanshu` alone that fell.
+
+### The ordering clause got no test, and that is not a quibble
+
+Ruling 55 named `weilue` as *"the more likely of the two to leave the top 6"*,
+on two grounds: it sat one rank lower, and its Chinese chunk has already been
+shown to lose the model's attention to its own English (45 of 45, FINDING 13).
+
+**Both left, by exactly four places each, preserving the one-rank gap.** A
+comparative claim resolved identically on both arms is a claim that was not
+discriminated. The prediction is confirmed on what it asserted and silent on
+what it explained, and those are reported as two different results rather than
+one verdict.
+
+### What the run says did NOT happen
+
+`sim_target` moved by four ten-thousandths. `gap_vs_other_doc` moved by eight.
+`best_other_doc_chunk_id` is the **same document before and after** for both
+pairs — `eastasia-01-weilue::translation::000` for `houhanshu`,
+`seasia-02-oc-eo-site::original::000` for `weilue`, and both of those documents
+predate F4. `top_doc` is `eastasia-01-weilue` in both runs.
+
+So the target did not get worse and its nearest competitor did not change.
+**Four chunks arrived between the two, and the archive does not record one of
+them.**
+
+### What DOES support the mechanism, and it is not the field that was supposed to
+
+Displacement among every shared pair inside the top 20:
+
+```
+china-describes-rome-houhanshu    4 -> 8     +4
+china-describes-rome-weilue       5 -> 9     +4
+probe-roman-embassy               1 -> 2     +1
+tc-frankincense-harvest          11 -> 12    +1
+adulis-exports                   14 -> 15    +1
+au-khao-sam-kaeo                 16 -> 17    +1
+```
+
+**The two pairs ruling 55 named lost four times what any other top-20 pair
+lost**, and they are the two whose queries are about Rome as described in
+Literary Chinese, in the tranche that added three Literary Chinese records about
+Rome. That is a real differential and it is in the predicted direction.
+
+It is also the whole of the support. **Which** records crowded them is not
+recoverable from this run, and the honest statement is that the direction is
+confirmed, the concentration is confirmed, and the attribution is unavailable.
+
+### One pair names its crowder, and nobody predicted it
+
+`probe-roman-embassy` is the only pair in the run whose nearest competitor
+changed:
+
+```
+best_other_doc_chunk_id   eastasia-01-weilue::original::000
+                       -> eastasia-05-liangshu-qin-lun::original::000
+gap_vs_other_doc          -0.1076
+```
+
+Record 34 crowded a retrieval probe about a Roman embassy. **The only measured
+instance of an F4 record displacing anything is in a pair no ruling named**, and
+it is the clean case ruling 55 was written to catch, arriving one pair over.
+
+---
+
+## Ruling 61 — ONE of three, which is toward FALSIFIED, and the asymmetry is the finding
+
+```
+talang-tuo-sriksetra-park      -> seasia-06-kedukan-bukit::original::000        CORRECT
+kedukan-bukit-saka-605         -> distractor-met-74991::distractor::000         WRONG
+thorsberg-chape-niwajemariz    -> scandinavia-02-gudme-hoard::original::000     WRONG
+```
+
+Ruling 61 declared its own falsifier: *"a nearest competitor sharing neither
+language nor object type with the target — an English chunk, or a record from
+another region."* Both misses meet it, and the second meets it twice.
+
+### The two directions of one pair disagree
+
+```
+talang-tuo   sim_target 0.4438   kedukan-bukit at 0.4354   rank 1, target wins
+kedukan-bukit sim_target 0.4014  distractor    at 0.4300   rank 3, top_doc is
+                                                           the DISTRACTOR
+```
+
+The ruling predicted **both directions of the same pair** because it treated
+near-duplication as a property of the pair. It is not. For `talang-tuo`'s query
+the other Srivijayan record is the nearest thing in the index; for
+`kedukan-bukit`'s query a Metropolitan Museum object description is nearer than
+the other Srivijayan record, and beats the target outright. **Two Old Malay
+inscriptions a year apart from one polity see different neighbourhoods, and only
+one of them sees the other.**
+
+That is a sharper statement than the prediction was built to make, and it was
+only available because the prediction named both directions instead of one.
+
+### And the Scandinavian miss is FINDING 13, at full strength
+
+```
+thorsberg-chape-niwajemariz
+  sim_target                0.3506   scandinavia-05-thorsberg-chape (source text)
+  best_other_chunk_id       0.5341   scandinavia-05-thorsberg-chape::translation::000
+  best_other_doc_chunk_id   0.4568   scandinavia-02-gudme-hoard::original::000
+```
+
+The nearest chunk in the entire index to this query is **the English translation
+of the very record the pair is looking for**, ahead of the source text it wants
+by 0.18. The pair asks whether the Proto-Norse is reachable; the answer is that
+its own English is 0.18 nearer, and a hoard from another site is nearer than
+that source text too.
+
+`29/30 is whether the RECORD was found. 22/30 is whether the NON-ENGLISH TEXT
+was reachable.` This is that sentence with a number on it.
+
+---
+
+## Ruling 66 — `vimose-runes` at rank 7: the rank is ACCEPTED, FINDING 43's diagnosis for this pair is SUPERSEDED, and the query is not rewritten
+
+**Owed since F4's opening decision, and taken on within-run evidence rather than
+on the F3 before/after that ruling 54 bars.**
+
+### What twenty-three archived runs say
+
+```
+run                    index   rank  r@6    gapDoc   best_other_doc_chunk_id
+20260814T132951         151      3   True  -0.0503   (field did not yet exist)
+20260814T144013 ..                                   arabia-04-jabal-dabub::original::000
+   ... nineteen runs ...  450     3   True  -0.0493
+20260831T150406         460      7   False -0.0493   arabia-04-jabal-dabub::original::000
+20260904T081155         473      7   False -0.0503   arabia-04-jabal-dabub::original::000
+```
+
+**One nearest competitor, in every run this project has ever archived, and a gap
+that has moved by one thousandth in three weeks — across the rank falling from 3
+to 7.**
+
+### FINDING 43's diagnosis for this pair does not survive that table
+
+FINDING 43, quoted in ruling 55 and in ruling 61 and in F4_START:
+
+> *"`vimose-runes` fell from 3 to 7 when a record arrived that was its near
+> neighbour in language, script, period, object type and country."*
+
+That record is `scandinavia-05-thorsberg-chape`. **It has never been this pair's
+nearest competitor — not after it arrived, not in the run where the rank fell,
+not now.** A Nabataean inscription from Arabia was and is. And
+`scandinavia-05-thorsberg-chape` is not sitting on `vimose-runes` from the other
+side either: its own pair's nearest other document is `scandinavia-02-gudme-hoard`.
+
+The diagnosis was **inferred from timing** — a record arrived and a rank fell in
+the same tranche — and the field that could have tested it was in every archive
+and was not read. That is ruling 49's sentence exactly, one instrument over:
+*the corpus IS on disk, in every archive, put there precisely so that it could
+not go unnoticed, and it was never read.*
+
+### What replaces it is a named absence, not another cause
+
+`superseded_diagnosis` exists in this repository because *"a corrected diagnosis
+names what was ruled out rather than guessing a replacement."* So:
+
+**RULED OUT** — near-duplicate crowding by `scandinavia-05-thorsberg-chape`.
+Never the nearest competitor, in twenty-three runs.
+
+**NOT ESTABLISHED** — what did displace it. Four documents entered between this
+target and a competitor that did not move, and **no instrument in this project
+records them.** That is a gap in the archive and it is not a fact about the
+corpus.
+
+### The rank is accepted and the query is not touched
+
+The pair is **stable, not decaying**: thirteen chunks and five records entered
+in F4 and it did not move a place, while its gap moved by 0.001. It is one place
+outside `recall@6` and its record remains reachable at the answer path's `k`.
+
+**The query is not rewritten.** A query rewritten until its pair re-enters the
+top 6 is `skz-titulature`'s refusal in reverse — *"the floor lowered to what is
+currently passing"* — and this pair's `anchor_points_home` has been `false`
+since it was written, which is a property it shares with the two pairs ruling 55
+was about. Rewriting it would also destroy the only twenty-three-run constant
+series this project has.
+
+**And it stays reported.** It is `known_failing`, no gate broke, and a demotion
+that stops being reported is a deletion.
+
+---
+
+# FINDING 60 — nine pairs moved, eight of them moved with nothing about them changing, and the archive cannot name one crowder
+
+Across the 33 pairs present in both the F3 baseline and this run:
+
+```
+9 changed rank        24 held
+of the 9:   8 kept the SAME best_other_doc_chunk_id, with |dSim| <= 0.001
+                                                     and |dGapDoc| <= 0.001
+            1 named a new competitor  (probe-roman-embassy, dGapDoc -0.1076)
+```
+
+**In eight of nine, every quantity the archive records about the pair is
+unchanged and only the rank moved.** The target is as similar to its query as it
+was. Its nearest competitor is the same document at the same distance. Something
+arrived in between, and the run records the thing ABOVE the target — which is
+the thing that never moves — and nothing about the things that do.
+
+## Why the field that exists is the wrong field
+
+`best_other_doc_chunk_id` was added because *"the run recorded the number and not
+the thing it was measured against."* That was right, and it recorded the
+CEILING: the best competitor, which is stable precisely because it is the best.
+Crowding happens in the interval between the target and that ceiling, and the
+interval is exactly what is not stored.
+
+So this project has spent three tranches attributing rank movements to specific
+arriving records — FINDING 43, ruling 55, ruling 61, and F4_START's opening
+decision — **using an instrument that cannot see the records it was naming.**
+Every one of those attributions was inferred from what arrived in the same
+tranche, which is the coincidence of timing and not a measurement.
+
+## What is owed, precisely enough that it is not re-derived
+
+The run should record, per pair, **the documents ranked between the target and
+`best_other_doc_chunk_id`** — their ids and their similarities, bounded to a
+handful. That turns *"the rank fell four places"* into *"these four documents
+arrived between it and the same competitor it always had"*, which is the
+sentence FINDING 43 has been asserting without evidence since F3.
+
+It is cheap: the ranking is already fully computed to depth 473, and only the
+extremes are being written down. `rerank_top_chunk_ids` already does exactly
+this for the rerank arm, so the shape exists and is not stored for the arm every
+number in this project is denominated in.
+
+**Not done today**, for ruling 65's own reason: it changes the archive schema in
+the session that reads two predictions off the archive. F5, and it is the item
+that makes FINDING 43 testable for the first time.
+
+**The sentence that travels: the field was added so the run would record what a
+number was measured against, and it records the one competitor that never moves,
+so three tranches of crowding claims were made against an instrument that cannot
+see a crowder.**
+
+---
+
+# FINDING 61 — the newline remedy reached five harnesses of nine, and the one it missed most is the only one with MIXED sources
+
+FINDING 52, three days old, measured a text-mode read-modify-write converting
+seven files in a single session — 1,562 insertions and 1,562 deletions across
+files nobody had touched — and stated the rule: **every write to a file in this
+repository preserves that file's existing newline convention, and the way to
+guarantee that is to write BYTES.**
+
+`scripts/` holds nine mutation harnesses. Before today, **five carried
+`_newline_of` and four applied their mutations with `write_text`:**
+
+```
+CARRIED   cost  fidelity  part7b  part8  ui_places
+TEXT MODE ranking      sources CRLF x7 + LF x1   <-- MIXED
+          places       sources LF x2             latent
+          recover      sources LF x2             latent
+          distractors  sources CRLF x2           latent
+```
+
+## The live one is the one FINDING 52 was measured on
+
+`scripts/mutate_ranking.py` has eight sources and **it is the only harness in
+this repository whose sources do not share a convention**: seven CRLF files and
+`answer/translate.py` at LF.
+
+`write_text` translates a newline to `os.linesep`. So there is no platform on
+which this harness leaves its sources alone. On the host it converts
+`answer/translate.py` LF to CRLF, 741 lines, for the duration of a 108-mutation
+run. Through the bridge it converts the other seven the other way — which is
+precisely the seven-file diff FINDING 52 measured, on precisely these files.
+
+The restore writes the original BYTES and the check compares BYTES, so the tree
+ends correct **if the process is allowed to finish.** FINDING 59, written four
+hours before this one, is about the fact that it may not be.
+
+## The mechanism, for the third time in two days
+
+FINDING 46: a defect found in one harness, fixed in one, and its siblings a
+separate act nobody scheduled. FINDING 58: that act performed by enumerating the
+four harnesses that were open, in a directory of eight. **And here the same
+remedy, arriving across four commits — `9ea1774`, `2091e03`, `577a0e2`,
+`a74a307` — landing in whichever harness the session in front of it happened to
+be editing, five times, and never once by looking at the directory.**
+
+Nobody was careless. Each of those commits fixed the file it was working in and
+said so accurately. The defect is that **there is no moment in this project's
+workflow at which a directory is enumerated**, and every finding of this family
+has been closed by a person rather than by a rule.
+
+Three of the four were safe today only by the accident of uniform sources —
+`places` and `recover` all LF, `distractors` all CRLF — which is the same
+sentence FINDING 46 wrote about `mutate_part8` and PROGRESS.md wrote about the
+restore checks at the close of Block D: *"three of six are exposed, and only by
+the accident of which files are CRLF."* That sentence has now been true three
+times about three different defects in the same nine files.
+
+## What was done
+
+All four given `_newline_of` and `_write`, copied from `scripts/mutate_fidelity.py`
+rather than rewritten, so nine harnesses now hold one implementation and no
+harness applies a mutation in text mode. `_newline_of` raises on a source with
+mixed endings rather than picking one, which is the behaviour the other five
+already had.
+
+Verified without running a harness — FINDING 59 — by importing each module and
+exercising the helpers directly: CRLF and LF detected, a mixed source refused,
+and `_write` round-tripping both conventions.
+
+**The sentence that travels: the remedy landed in whichever harness the session
+was already editing, five times across four commits, and the one it never
+reached is the only one whose sources disagree with each other.**
+
+## FINDING 61, continued — the check written to end this family committed FINDING 56's error on its first run, and the repository's one existing directory check caught it on its second
+
+`scripts/test_harnesses.py` is added: the mutation harnesses checked as a
+**directory** rather than one at a time. Four assertion groups, each quoting a
+finding that states the rule in prose, and everything else counted rather than
+gated.
+
+**Its first run went red on `scripts/mutate_places.py`** — the file FINDING 37
+was found in.
+
+```
+FAIL GUARD mutate_places.py matches `FAIL ` with the space
+     mutate_places.py: bare matcher(s) in ['split']
+```
+
+`mutate_places` filters with `startswith("FAIL ")` and slices with
+`split("FAIL", 1)`. **The harness is correct.** The phantom guard comes from the
+predicate that decides which lines are guards, not from the split that takes the
+label off one, and once the filter carries the space the first occurrence of
+`FAIL` is always the prefix — both spellings return the same string.
+
+So the check was stricter than any rule this project has written down, on its
+first run, in the file whose own docstring says *"writing the checker for a rule
+is an invitation to write a stricter rule by accident"* and cites FINDING 56 by
+number. **The warning was in the file and the file did it anyway**, which is
+worth more than the check is.
+
+The assertion is now on the FILTER alone, and the stricter idea survives as a
+counted line — the same remedy FINDING 56 chose for the same mistake:
+
+```
+1 harness(es) slice the label with split("FAIL", 1) rather than split("FAIL ", 1):
+  mutate_places.py
+Both spellings give the same label once the filter takes the space. Reported
+because nine copies of one matcher is the consolidation owed to F5, not because
+either is wrong.
+```
+
+### And the second run was caught by the check that already existed
+
+`eval.test_answer_eval`'s FINDING 10 guard globs `ui/ eval/ answer/ ingest/
+scripts/` for every file with a `__main__` and asserts each carries the stdout
+marker. Adding a ninth suite made it 53 entry points and immediately red:
+
+```
+FAIL GUARD every entry point carries the stdout guard (53 found)
+     — missing from ['scripts/test_harnesses.py']
+```
+
+The new file had a stdout guard. It did not have the MARKER, because the comment
+above it was reworded rather than copied. The block is now copied verbatim from
+`scripts/mutate_recover.py`.
+
+**This project already had exactly one check that enumerates a directory, and it
+worked perfectly the first time it was pointed at something new.** Its own
+comment says why:
+
+> *"THERE IS NO LIST HERE, and that is the point. A hand-written enumeration of
+> entry points was wrong four times in one afternoon: 7, then 20, then 22, then
+> 43 ... A list that has to be maintained is a list that will be wrong again."*
+
+That paragraph was written about entry points and it is the whole argument of
+FINDINGS 46, 58 and 61. It has been in the repository since Block D, in a suite
+about gold answer cases, and no other population in this project was ever given
+the same treatment. Note also what it does NOT do: it asserts `>= 40`, not a
+total, so a new entry point does not turn it red — FINDING 49's rule, applied
+before FINDING 49 existed.
+
+### What the new check reports rather than asserts
+
+```
+9 mutation harnesses found
+8 of 9 carry a BASELINE block — without one: mutate_distractors.py
+declared mutations: part8=94  places=43  ranking=108  recover=17  ui_places=6
+   (268 across the 5 that declare a literal MUTATIONS list; cost, fidelity,
+    part7b and distractors build theirs another way)
+```
+
+**`scripts/mutate_distractors.py` is the only harness with no BASELINE block**,
+and it is the one that mutates the SCHEMA. Counted here, not asserted, because a
+BASELINE block has never been written down as a requirement — it was added to
+four harnesses in F1 through F3 and to this one never. Owed to F5, and it is
+this family's fourth instance rather than a new defect.
+
+**The sentence that travels: the file said in its own docstring that writing a
+checker invites a stricter rule, then wrote one, and what caught it was the
+harness FINDING 37 was found in — still correct, four days later, in the way
+nobody had re-read.**

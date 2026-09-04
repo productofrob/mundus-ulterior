@@ -198,6 +198,30 @@ def check_prune_statements_match() -> str | None:
     return None
 
 
+def _newline_of(raw: bytes) -> str:
+    """The file's own line ending, so a mutation run does not change it.
+
+    FINDING 61, 2026-09-04. FINDING 52 measured a text-mode read-modify-write
+    converting seven files in one session, and the remedy went into three
+    harnesses of the nine. This is one of the four it did not reach.
+    `write_text` translates a newline to os.linesep, so a run mangles every
+    source whose convention differs from the platform's -- and the byte-safe
+    RESTORE below only puts them back if the process is allowed to finish,
+    which is exactly what FINDING 59 says cannot be assumed.
+    """
+    crlf = raw.count(b"\r\n")
+    if crlf and raw.count(b"\n") - crlf:
+        raise SystemExit(
+            "a mutation source has MIXED line endings. Resolve that by hand "
+            "before running this harness, which would otherwise pick one."
+        )
+    return "\r\n" if crlf else "\n"
+
+
+def _write(path, text: str, newline: str) -> None:
+    path.write_bytes(text.replace("\n", newline).encode("utf-8"))
+
+
 def main() -> int:
     from ingest import db
 
@@ -211,6 +235,7 @@ def main() -> int:
     # scripts/mutate_places.py. mutate_ui_places converted an LF source to CRLF
     # on a live run and its text-comparing restore check could not see it.
     original_bytes = {f: f.read_bytes() for f in PY_SOURCES}
+    newlines = {f: _newline_of(original_bytes[f]) for f in PY_SOURCES}
     originals = {f: f.read_text(encoding="utf-8") for f in PY_SOURCES}
 
     drift = check_prune_statements_match()
@@ -247,7 +272,7 @@ def main() -> int:
                 target = next(f for f in PY_SOURCES if old in edited[f])
                 edited[target] = edited[target].replace(old, new, 1)
             for f in PY_SOURCES:
-                f.write_text(edited[f], encoding="utf-8")
+                _write(f, edited[f], newlines[f])
             failed = run_suite()
             for f in PY_SOURCES:
                 f.write_bytes(original_bytes[f])
