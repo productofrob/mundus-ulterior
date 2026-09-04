@@ -1,4 +1,4 @@
-# Rulings 67 to 73 and FINDINGS 62 to 67 — declared 2026-09-04, in F5, before any record was curated
+# Rulings 67 to 73 and FINDINGS 62 to 68 — declared 2026-09-04, in F5, before any record was curated
 
 *Date taken from the host, not from another document: `date -u +%F` printed
 `2026-09-04`. That is Block F's fourth distinct UTC date and the same date F4
@@ -826,6 +826,93 @@ weaker of two questions it could have asked.**
 
 ---
 
+# FINDING 68 — the corpus holds two kinds of Greek record and the project's stated purpose separates them, in the direction nobody expected
+
+Asked at F5's close, by the project owner, in the plainest possible form: are
+Sub-Saharan Africa's Greek records **Africans writing in Greek**, or **Greeks
+writing about Africa**? And if the first, should authorship qualify a record
+whatever its language, given that the project exists to showcase non-Roman
+perspectives on Rome?
+
+**Two of the three are African authorship. One is not.** The texts settle it
+themselves, in their opening words:
+
+```
+africa-04-silko-talmis     ἐγὼ Σιλκώ, βασιλίσκος Νουβάδων καὶ ὅλων τῶν Αἰθιόπων
+                           "I, Silko, king of the Noubades and all the Ethiopians"
+
+africa-05-adulis-throne    αὐτὸς ἐγὼ ἐν ταῖς μάχαις παρὼν νικήσας καὶ ὑποτάξας
+                           "I myself, present in the battles, having conquered and subdued"
+
+africa-03-periplus-adulis  Μετὰ δὲ τὴν Πτολεμαΐδα … ἐμπόριόν ἐστι νόμιμον ἡ Ἀδουλὶ
+                           "After Ptolemais … there is a lawful trading-port, Adulis"
+```
+
+Two first-person royal African voices and one third-person foreign description of
+a harbour. **`source_language_provenance` reached the same split from `findspot`
+alone**, and the grammatical person agrees with it — two inputs that know nothing
+about each other, arriving at the same partition. That is the closest thing to an
+independent check this classifier will get.
+
+The caveat that is not glossed: the Adulis throne's author is an Aksumite king,
+but the text survives only because Cosmas Indicopleustes copied it there around
+520. **The composition is African and the transmission is Roman.** Silko carries
+no such qualification — it is cut on a temple wall at Talmis and read from the
+stone.
+
+## The proposal inverts under measurement
+
+It was offered as a RELAXATION — let African authorship in Greek qualify. But
+Silko and the Adulis throne are already counted by every check in this
+repository, and ruling 58 already argued for them in those words. Nothing
+excludes them and nothing proposed to.
+
+**Applied as a rule it TIGHTENS**, because it disqualifies the other side:
+
+```
+region               now  speaking  local   at close: any   speaking
+Arabia                 3        2      2               5          4
+East Asia              5        5      5               7          7
+Persia                 2        2      2               4          4
+Scandinavia            2        2      2               4          4
+South Asia             3        1      1               5          3   BELOW
+Southeast Asia         4        4      4               4          4
+Sub-Saharan Africa     3        2      0               4          3   BELOW
+
+below the floor counting ANY source-language record : none
+below the floor counting only the region SPEAKING   : South Asia, Sub-Saharan Africa
+```
+
+The four records that fail it are `africa-03-periplus-adulis`,
+`arabia-01-periplus`, `southasia-02-periplus-muziris` and
+`southasia-03-muziris-papyrus` — the Periplus family and one Egyptian commercial
+papyrus. **Three regions, none of them the region's own voice.** Ruling 73 had
+just cleared every region's floor; this reading puts two back below it.
+
+## What follows, and what does not
+
+**Ruling 73's slot requirement is NOT widened.** Letting the F6 slot take a third
+African-authored Greek record would spend the one remaining slot on a criterion
+Africa already satisfies twice, when the thing that slot can uniquely buy is the
+zero. Africa has two speaking records and none in any language of the region.
+
+**A speaking-only FLOOR is not adopted either**, for FINDING 62's reason one turn
+on: it would put South Asia below with no source-language slot left to fix it,
+and a gate nobody can satisfy is a gate somebody deletes.
+
+**What is owed is a REPORTED figure.** `ingest.verify` already prints the
+three-way split per region; what it does not print is the SPEAKING subtotal and
+which regions fall below the floor on that reading. The project's stated purpose
+— non-Roman perspectives on Rome — has no number of its own anywhere in this
+repository, and it should. Not added in the closing commit, which changes no
+code: named, measured here, and owed to F6.
+
+**The sentence that travels: four of the corpus's twenty-two source-language
+records are the Roman world describing the regions, and the project exists to
+carry the other side of that conversation.**
+
+---
+
 # What is NOT done, and is owed beyond this document
 
 - **`scripts/mutate_part8.py` still does not mutate `eval/test_answer_eval.py`.**
@@ -844,6 +931,9 @@ weaker of two questions it could have asked.**
 - **Six mutation targets across three harnesses match more than one line**
   (FINDING 66, continued). Counted, not gated, and the condition for
   asserting it is written there.
+- **The SPEAKING subtotal is not reported anywhere** (FINDING 68). The
+  three-way split is printed per region; the project's own purpose has no
+  number, and two regions sit below the floor on that reading.
 - **`total_at_60` is the size of the plan and the file calls it a target**
   (FINDING 67). Separating the two is a re-cut of the field ruling 44
   declared, and ruling 73 was written so it did not have to be taken today.

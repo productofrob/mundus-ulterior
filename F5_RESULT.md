@@ -25,6 +25,13 @@ answer.test_answer               150      ui/test_build_ui_data.py      19
 scripts/test_recover_baseline.py  56      scripts/test_harnesses.py     43
 ```
 
+*This document was committed at `c73e3a3` and FINDING 68 was appended after it,
+in a second commit that also changes no code. Both are documents, and documents
+do not feed suites, so the nine numbers above describe HEAD as well as the tree
+they were printed at — stated rather than implied, because FINDING 47 is about
+exactly the sentence that leaves it implied. FINDING 68 arrived from the project
+owner AFTER the close, which is why it is an addendum and not part of it.*
+
 **Mutation harnesses: `mutate_ranking` 111 verified at `bf85a4f`,
 `mutate_fidelity` 60 verified at `fedb2c9`.** Neither is re-run at `6c7b7cd`,
 and the reason is stated rather than assumed: the only commit between them and
@@ -114,6 +121,15 @@ of two questions and let the next one through within the hour.
 **67.** `total_at_60` is the size of the plan and the file calls it a target.
 Measured, not argued: no configuration places 38 records and reads 60.
 
+**68.** Asked at the close, by the project owner: are Africa's Greek records
+Africans writing Greek, or Greeks writing about Africa? **Two of three are
+African authorship** — `ἐγὼ Σιλκώ, βασιλίσκος Νουβάδων` and `αὐτὸς ἐγὼ ἐν ταῖς
+μάχαις παρὼν` against the Periplus's third-person harbour description — and the
+classifier reached that split from `findspot` alone, so the grammatical person
+confirms it independently. **The proposal inverts under measurement:** offered as
+a relaxation, it disqualifies four records the corpus already counts and puts two
+regions back below the floor ruling 73 had just cleared.
+
 ---
 
 ## What F5 got wrong
@@ -158,6 +174,12 @@ named are Greek, which the requirement refuses. **Whether an Old Nubian text
 inside the window touches Rome or Byzantium well enough is what F6 settles.**
 Three outcomes are declared in advance so that it cannot be settled by choosing.
 
+**The project's own purpose still has no number.** `ingest.verify` prints the
+three-way provenance split per region and not the SPEAKING subtotal — the count
+of records that are the region's own voice, in any language, which is what
+"non-Roman perspectives on Rome" actually means. FINDING 68 measures it; nothing
+reports it. That is F6's cheapest worthwhile change.
+
 **Owed, and none of it discharged here:** `mutate_part8` still does not mutate
 `eval/test_answer_eval.py`, and F5 took that debt from three guards to six.
 `scripts/test_harnesses.py` is mutated by nothing and F5 added ten guards to it.
@@ -192,3 +214,7 @@ could have asked.**
 
 **Clearing a floor did not need more records. It needed different ones, and the
 question that hid that was asked by the session, not by the file.**
+
+**Four of the corpus's twenty-two source-language records are the Roman world
+describing the regions, and the project exists to carry the other side of that
+conversation.**
