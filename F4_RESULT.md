@@ -391,13 +391,28 @@ morning that run would have returned it as CRLF. A pre-flight also checked all
 target against its sources: 254 of 254 printed, 0 targets missing, so no `MISS`
 from FINDING 37's family was waiting.
 
-**`scripts/mutate_places.py` (43 mutations) has still not been run**, and the
-reason it is named here is that it took FINDING 61's own check to make it
-visible. It is the file FINDING 37 was found in, it was modified today, and
-**no state block in this project has ever carried a number for it** —
+This paragraph also said, until it was run, that **`scripts/mutate_places.py`
+(43 mutations) has still not been run**. It has:
+
+```
+scripts/mutate_places.py           43 verified   sources restored
+                                                 ingest/places.py     LF
+                                                 ingest/gazetteer.py  LF
+```
+
+**All nine harnesses are now green at one tree — 389 mutations**, none reporting
+a BASELINE line, an UNVERIFIED, a MISS or a phantom guard. `mutate_places`'s
+BASELINE block, which F4_START recorded as *present but unexercised*, has now
+been exercised and found nothing already red.
+
+The reason it is named here at all is that it took FINDING 61's own check to
+make it visible. It is the file FINDING 37 was found in, it was modified today,
+and **no state block in this project had ever carried a number for it** —
 F4_START mentions its BASELINE block in prose, and the last two state blocks
-list five harnesses by number without it. FINDING 57's shape, a second time, in
-the population that had just been given a check.
+each list five harnesses by number without it. FINDING 57's shape, a second
+time, in the population that had just been given a check; and found by a line
+the check COUNTS rather than asserts, which is FINDING 56's discipline paying
+for itself twice in one session.
 
 The gold answer set is **44 cases**: 30 answerable, 8 correctly_refusable, 6
 refusable_with_gloss, every region at or above G4's minimum of 3.
