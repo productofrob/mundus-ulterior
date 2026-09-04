@@ -442,6 +442,43 @@
         }
       },
       "note": ""
+    },
+    {
+      "record_id": "eastasia-07-tang-huiyao",
+      "tier": "verbatim_machine_english",
+      "curated_on": "2026-09-04",
+      "phases": {
+        "source_hunting": {
+          "minutes": 25.0,
+          "provenance": "estimated",
+          "because": "ESTIMATE, AND NOT COMPARABLE TO F3's OR F4's HUNTING MINUTES -- stated here rather than left for a G3 reader to discover. The East Asia hunt for this record ran as a machine re-verification of F4_CANDIDATES' three standing candidates, in parallel with three other regions, and 25 minutes is the wall-clock span of that verification and its two corrections to F4_CANDIDATES (the Kanripo class, the file-number offset). It is not a human reading catalogues, which is what the same phase measured for records 25 to 35. Ruling 46's comparator is within_tranche, so a machine-assisted hunt entering the same column as a human one is a change in what the number MEANS, and F5_PART2_RESULT records it as such."
+        },
+        "rights_and_licence": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "text_capture": {
+          "minutes": 7.5,
+          "provenance": "measured"
+        },
+        "translation_and_fidelity": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "placement": {
+          "minutes": 0,
+          "provenance": "measured"
+        },
+        "authoring": {
+          "minutes": 2.5,
+          "provenance": "measured"
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "Curator's blind paste from Kanripo KR2m0002_099, in two messages; the 24a columns were pasted twice and agree byte for byte. The paste corrected the locating fetch twice -- the lemma's opening page, and a length reported in characters that had been measured in bytes. Record JSON with six subject_places, the tier declaration, the document-count raise in ingest/verify.py, and the tranche's one vme_quotation_case (tang-huiyao-fulin-clock). The case deliberately does NOT ask what the 643 embassy presented, because eastasia-06 and eastasia-07 disagree about that and a case answered from either would measure retrieval rather than the machine-translation path."
     }
   ],
   "retired": [

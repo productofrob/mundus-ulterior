@@ -218,7 +218,15 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     # is the one thing in this repository that has never been raised in advance
     # and never late, and a ranking pair written after the run is the same
     # defect as a count loosened before the record.
-    check(len(docs) == 35, f"expected 35 documents, got {len(docs)}")
+    #
+    # F5 Part 2, 2026-09-04. 35 -> 36 with eastasia-07-tang-huiyao, in that
+    # record's own commit. Third raise, third time in the same commit as the
+    # record that makes it true, and the discipline is worth restating on the
+    # occasion it would have been easiest to break: F5 Part 1 closed a session
+    # having curated nothing, so this line had gone a whole session without
+    # moving and a session that raised it in advance would have been raising it
+    # against records nobody had found yet.
+    check(len(docs) == 36, f"expected 36 documents, got {len(docs)}")
     orphans = {c.doc_id for c in chunks} - {d.doc_id for d in docs}
     check(not orphans, f"chunks reference unknown docs: {orphans}")
 

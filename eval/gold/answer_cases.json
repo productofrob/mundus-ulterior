@@ -1390,6 +1390,48 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
       "note": "EACH CONTENT GROUP ADMITS THE CHINESE OR AN ENGLISH RENDERING, deliberately. The record carries no published English, so any English in an answer is MACHINE English produced by the Part 6 path, and this case is one of the few places that path's output is scored at all. Requiring the Chinese alone would make the case pass only when the model quotes without translating; requiring the English alone would make it pass only when the model translates without quoting. Admitting either measures what the tier is for.\n\nTHE YEAR IS ASKED FOR AND NOT ASSERTED. The question asks in what year, and no group requires 643 or 十七年. The excerpt says 十七年 and the era name 貞觀 is established earlier in the juan, outside it — so an answer that says 'the seventeenth year' is correct from the evidence and an answer that says 643 has gone beyond it. Asserting either would score the model on a fact this record deliberately does not carry, and the record's own date field says so."
+    },
+    {
+      "id": "tang-huiyao-fulin-clock",
+      "question": "In the Chinese of the Tang Huiyao's account of Fulin, what marks each passing hour at the second gate, and what announces it?",
+      "why": "F5's ONE vme_quotation_case, declared in the allocation before the hunt began and paid here. Under ruling 56 this line asks only WHETHER anything resolved and not WHICH chunk was quoted, for the structural reason cefu-yuangui-fulin-tribute gives: the record carries no reference_translation, so there is no second retrieval-eligible chunk competing for the quotation and no choice for the assertion to observe.\n\nIT IS ALSO THE LAST CASE OF ITS KIND THIS PROJECT CAN WRITE. FINDING 63 established that F6 and F7 place no verbatim_machine_english slot, so eastasia-07-tang-huiyao is the last record on the tier and this is the last case written against one. Three vme quotation cases exist: two on Old Malay from F3, one on Literary Chinese from F4, and this one — and the machine-translation path is scored nowhere else.",
+      "expected_behaviour": "answerable",
+      "region": "East Asia",
+      "expect_cited_docs": [
+        "eastasia-07-tang-huiyao"
+      ],
+      "expect_quoted_docs": [
+        "eastasia-07-tang-huiyao"
+      ],
+      "expect_quoted_from_original": [
+        "eastasia-07-tang-huiyao"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "金丸",
+          "golden ball",
+          "gold ball"
+        ],
+        [
+          "金人",
+          "golden figure",
+          "gold figure",
+          "golden man",
+          "gold man",
+          "golden human"
+        ],
+        [
+          "拂菻",
+          "Fulin",
+          "Fu-lin"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
+      "note": "WHY THE CLOCK AND NOT THE EMBASSY, WHICH WAS THE OBVIOUS QUESTION. The obvious case to write against this record is the one cefu-yuangui-fulin-tribute already asks — what the Fulin king's embassy presented, and in what year — because both records carry that notice. That case must NOT be duplicated here, and the reason is the interesting one: THE TWO RECORDS DISAGREE. eastasia-06 has 赤頗黎綠頗黎石綠金精 and this record has 赤頗璃石綠金精, without the green glass and with the glass graph written 璃 rather than 黎. A gold case asking what was presented would pass or fail according to WHICH of two witnesses retrieval happened to reach, so it would be an instrument measuring retrieval while wearing the name of one measuring the machine-translation path. The clock passage is in this record and in no other, so the case scores the path it is for. The divergence itself belongs in a ranking pair or a rendering check, not here — and it is recorded in both records' notes so that whoever writes that instrument does not have to find it again.\n\nEACH CONTENT GROUP ADMITS THE CHINESE OR AN ENGLISH RENDERING, on cefu-yuangui-fulin-tribute's reasoning exactly: the record carries no published English, so any English in an answer is MACHINE English from the Part 6 path. Requiring the Chinese alone would pass only an answer that quotes without translating; requiring the English alone would pass only one that translates without quoting. Admitting either is what measures the tier.\n\nTHE NUMBER TWELVE IS NOT ASSERTED, AND NEITHER IS THE HOUR. The excerpt says the balls are twelve and that they mark the twelve hours of the day, but no group requires 十二 or 'twelve'. The question asks what marks an hour and what announces it, and an answer naming the falling ball and the figure that calls out has answered it from the evidence. A group requiring the count would score arithmetic the question did not ask for, which is the shape the year group was left out of in F4's case."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",
