@@ -244,6 +244,24 @@ class PairResult:
     # every run made from here on, at the cost of two strings per pair.
     best_other_doc_chunk_id: str | None = None
     best_other_chunk_id: str | None = None
+    # FINDING 60, 2026-09-04. The two fields above record the CEILING -- the
+    # single best competitor -- and a ceiling is stable precisely BECAUSE it is
+    # the best. Crowding happens in the interval underneath it, and until now
+    # that interval was not stored anywhere: four tranches of "record X crowded
+    # pair Y" claims were made against an instrument that cannot see a crowder,
+    # and four attributions in F4_RESULT are written as UNAVAILABLE for want of
+    # this one list.
+    #
+    # `beaten_by` is what the accepted set sits below, in rank order, capped at
+    # the recall window for `rerank_beaten_by`'s own stated reason -- an
+    # unranked target would otherwise record four hundred ids saying nothing.
+    # The cap is not silent: `rank` is recorded beside it and says how far the
+    # list falls short of the target.
+    #
+    # Its first entry from another document IS `best_other_doc_chunk_id`, so
+    # nothing above is restated and nothing is replaced. Recorded BESIDE, which
+    # is the rule every Block C field on this class was added under.
+    beaten_by: list[str] = field(default_factory=list)
     # ------------------------------------------------------------------
     # Block C. Everything above keeps the meaning it had when the B2 baseline
     # was recorded — `rank` is still the rank of the ONE chunk this pair's
@@ -852,6 +870,16 @@ def score_pair(p, hits, target_chunk_id: str, target_text: str = "",
     if len(hits) >= RECALL_AT:
         spread = hits[0].similarity - hits[RECALL_AT - 1].similarity
 
+    # FINDING 60. Mirrors `rerank_beaten_by` on the embedding arm: the same
+    # break on the accepted set and the same cap, so the two arms stay
+    # comparable. A divergence between them would be a rule nobody agreed to.
+    accepted_set = set(accepted)
+    beaten: list[str] = []
+    for hit in hits[:RECALL_AT]:
+        if hit.chunk_id in accepted_set:
+            break
+        beaten.append(hit.chunk_id)
+
     return PairResult(
         id=p.id,
         provenance=p.provenance,
@@ -877,6 +905,7 @@ def score_pair(p, hits, target_chunk_id: str, target_text: str = "",
         ),
         best_other_doc_chunk_id=others_doc[0].chunk_id if others_doc else None,
         best_other_chunk_id=others_any[0].chunk_id if others_any else None,
+        beaten_by=beaten,
         unit=p.unit,
         accepted_chunk_ids=accepted,
         alternate_ground=alternate_ground,

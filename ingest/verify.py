@@ -374,11 +374,13 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     from .fidelity import (
         GLOSS_CAPABLE_TIERS,
         RECORD_TIERS,
+        SOURCE_LANGUAGE_TIERS,
         check_allocation,
         check_delivery,
         check_declared_tiers,
         check_target_mix,
         derive_record_tier,
+        source_language_provenance,
         split_quotation_cases,
     )
 
@@ -553,9 +555,19 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             for entry in (ledger.get("records") or [])
         }
         mix_for_delivery = (tier_doc.get("target_mix") or {}) if tiers_path.exists() else {}
+        # F5. The declarations are objects carrying `record`, `sub_tranche` and
+        # `kind`; the id set is DERIVED from them here so that production has one
+        # source and the two views cannot disagree -- SOURCE_LANGUAGE_TIERS' own
+        # reason. A bare string is still read as an id rather than crashing,
+        # because check_delivery has to be allowed to REPORT it: a checker that
+        # raises on the shape it refuses says nothing about the file.
+        gloss_entries = mix_for_delivery.get("gloss_capable_declared") or []
+        gloss_ids = {
+            str(e.get("record")) if isinstance(e, dict) else str(e)
+            for e in gloss_entries
+        }
         for problem in check_delivery(
-            mix_for_delivery, tranche_records,
-            set(mix_for_delivery.get("gloss_capable_declared") or ()),
+            mix_for_delivery, tranche_records, gloss_ids,
         ):
             failures.append(f"delivery: {problem}")
 
@@ -567,19 +579,79 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
         done_cells: dict = {}
         for region, tier in tranche_records.values():
             done_cells[(region, tier)] = done_cells.get((region, tier), 0) + 1
-        gloss_declared = mix_for_delivery.get("gloss_capable_declared") or []
         gloss_capacity = sum(
             n - done_cells.get(k, 0) for k, n in allocation_cells.items()
             if k[1] in GLOSS_CAPABLE_TIERS)
+        # FINDING 51, F5. This line printed the true numbers and invited the
+        # wrong reading, because it reported the SLOTS left when the scarce
+        # thing was DECLARATIONS. Both are printed now, and which of them is
+        # scarce is stated rather than left to the reader.
+        sub_tranches = (mix_for_delivery.get("allocation") or {}).get("sub_tranches") or []
+        still_declarable = sum(int(t.get("gloss_capable") or 0)
+                               for t in sub_tranches if not t.get("closed"))
+        kinds: dict = {}
+        for e in gloss_entries:
+            if isinstance(e, dict):
+                k = str(e.get("kind") or "?")
+                kinds[k] = kinds.get(k, 0) + 1
+        kind_note = ", ".join(f"{v} {k}" for k, v in sorted(kinds.items()))
         notes.append(
             f"delivery against the allocation: {len(tranche_records)} of "
             f"{sum(allocation_cells.values())} tranche record(s) curated. "
-            f"Gloss-capable declared {len(gloss_declared)}/"
-            f"{mix_for_delivery.get('gloss_capable_records', '?')}, with "
-            f"{gloss_capacity} slot(s) left on a tier that can carry one. A "
-            f"SHORTFALL is progress and is reported here; an UNREACHABLE quota "
-            f"is a failure above, because a target the remaining slots cannot "
-            f"carry has already been missed and nobody re-curates a record."
+            f"Gloss-capable declared {len(gloss_entries)}/"
+            f"{mix_for_delivery.get('gloss_capable_records', '?')}"
+            + (f" ({kind_note})" if kind_note else "")
+            + f", with {still_declarable} declaration(s) left in sub-tranches "
+            f"still open and {gloss_capacity} slot(s) left on a tier that can "
+            f"carry one. The DECLARATIONS are the scarce number: slots are "
+            f"plentiful by construction, and a guard that read them reported an "
+            f"unreachable quota as progress for two sub-tranches (FINDING 51). "
+            f"A SHORTFALL is progress and is reported here; an UNREACHABLE "
+            f"quota is a failure above, because a target that can no longer be "
+            f"reached has already been missed and nobody re-curates a record."
+        )
+
+        # Ruling 58's owed per-region rule, in the shape FINDING 62 gave it, and
+        # PRINTED rather than gated -- see source_language_provenance for why a
+        # minimum here would be a gate no remaining allocation can satisfy.
+        buckets: dict = {}
+        no_language: list = []
+        by_text: dict = {}
+        for doc in docs:
+            if (derived.get(doc.doc_id) or ("", ""))[0] not in SOURCE_LANGUAGE_TIERS:
+                continue
+            if not [c for c in (doc.language_codes or []) if str(c).strip()]:
+                no_language.append(doc.doc_id)
+            kind = source_language_provenance(doc.language_codes, doc.findspot)
+            row = buckets.setdefault(doc.region, {})
+            row[kind] = row.get(kind, 0) + 1
+            key = (doc.citation_original or "").strip()
+            if key:
+                by_text.setdefault(key, []).append((doc.region, doc.doc_id))
+        shared = [sorted(v) for v in by_text.values()
+                  if len({r for r, _ in v}) > 1]
+        rows = "; ".join(
+            f"{region} {sum(b.values())} = {b.get('local_language', 0)} local + "
+            f"{b.get('empire_language_from_the_region', 0)} empire-language from the "
+            f"region + {b.get('empire_language_about_the_region', 0)} about it"
+            for region, b in sorted(buckets.items()))
+        zero = sorted(r for r, b in buckets.items() if not b.get("local_language", 0))
+        notes.append(
+            "source-language records by PROVENANCE rather than by language "
+            "(ruling 58, in the shape FINDING 62 gave it): is the region SPEAKING, "
+            f"or being SPOKEN ABOUT? {rows}. Regions with no source-language record "
+            f"in a language of the region: {zero}. "
+            + (f"One text counted as a source-language record in more than one "
+               f"region: {shared}. " if shared else
+               "No text is counted as a source-language record in more than one "
+               "region. ")
+            + (f"Source-language record(s) carrying no language code: "
+               f"{sorted(no_language)}. " if no_language else "")
+            + "COUNTED, NOT GATED. A language-only rule -- the one ruling 58 "
+              "proposed -- cannot tell a record whose findspot is in the region "
+              "from a Roman-world text about it, because both are grc, so it would "
+              "refuse the two records ruling 58 argued to keep and admit the one it "
+              "should refuse."
         )
 
         timed = len(ledger.get("records") or [])

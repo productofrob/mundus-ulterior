@@ -515,6 +515,32 @@ GLOSS_CAPABLE_TIERS = frozenset(
 # not a number, and a mutation has to be able to break it.
 QUOTATION_CHOICE_TIERS = frozenset({"verbatim_with_provenance"})
 
+# Ruling 62's owed distinction, F5. A `refusable_with_gloss` case can sit on two
+# quite different things and the definition could not tell them apart:
+#
+#   contested_reading        the SOURCE TEXT is disputed -- undeciphered runes, a
+#                            corrupt legend, two scholarly readings of one
+#                            epitaph. This is what the gloss arm was built to
+#                            see: whether a model renders a disputed text
+#                            confidently.
+#   hedged_identification    the source text is not in doubt and the TRANSLATOR
+#                            is unsure what it refers to. Hirth's
+#                            "Fu-nan [Siam, Cambodja?]" on record 35.
+#
+# Mechanically both satisfy what_gloss_capable_MEANS_mechanically -- a hedged
+# reading and a statement that the reading is uncertain, inside a retrieval-
+# eligible chunk -- and there is no reading of that sentence on which either
+# does not. Ruling 62 therefore had to carry the distinction in three separate
+# places of PROSE, and its own closing sentence was that the count is the only
+# thing anyone reads.
+#
+# Held in code beside GLOSS_CAPABLE_TIERS and QUOTATION_CHOICE_TIERS, for their
+# stated reason: it is a rule and not a number, and a mutation has to be able to
+# break it. Each member must also carry a written definition in
+# `what_the_two_gloss_KINDS_are` -- check_target_mix refuses one that does not,
+# on ingest.cost's precedent that a phase with no written definition is refused.
+GLOSS_KINDS = frozenset({"contested_reading", "hedged_identification"})
+
 REGION_COUNT = 7
 
 
@@ -594,6 +620,16 @@ def check_target_mix(
             f"case may only sit on {sorted(GLOSS_CAPABLE_TIERS)}"
         )
 
+    kinds_doc = mix.get("what_the_two_gloss_KINDS_are") or {}
+    undefined = sorted(k for k in GLOSS_KINDS
+                       if not str(kinds_doc.get(k) or "").strip())
+    if undefined:
+        problems.append(
+            f"gloss kind(s) {undefined} carry no written definition in "
+            f"what_the_two_gloss_KINDS_are. A kind the code accepts and the file "
+            f"does not explain is a distinction nobody agreed to"
+        )
+
     gloss = mix.get("gloss_capable_records") or 0
     if not 0 < gloss <= (want_new or 0):
         problems.append(
@@ -610,6 +646,66 @@ def check_target_mix(
 # reachability arithmetic and in check_allocation's per-region one, and a pair
 # that is spelled out twice is a pair that disagrees once.
 SOURCE_LANGUAGE_TIERS = ("verbatim_with_provenance", "verbatim_machine_english")
+
+
+# Ruling 58 owed a per-region language rule to F5. FINDING 62 changed its shape
+# before it could be written, and the change matters more than the rule.
+#
+# Ruling 58 read Sub-Saharan Africa's floor as MET IN GREEK and defended
+# africa-04-silko-talmis and africa-05-adulis-throne as Africans using the
+# empire's language to say something about themselves -- "a sharper statement
+# about influence than a local language would have made". That defence is right
+# and this does not disturb it.
+#
+# What it did not see is the third record beside them. FOUR of the corpus's
+# twenty-two source-language records are Greek with NO FINDSPOT AT ALL, and
+# three of those four are THE SAME TEXT: the Periplus of the Erythraean Sea
+# supplies one source-language record to Arabia, one to South Asia and one to
+# Sub-Saharan Africa, from one edition, one page and one citation_original. The
+# floor counts RECORDS, and the Periplus is one text wearing three.
+#
+# So the rule ruling 58 proposed -- refuse a floor met entirely in Greek or
+# Latin -- gets exactly the wrong records. It cannot tell Silko from the
+# Periplus, because both are `grc`: it would refuse the two records ruling 58
+# argued hardest to keep and admit the one it should refuse. The distinction
+# that does the work is not the LANGUAGE of the text but whether the region is
+# SPEAKING or being SPOKEN ABOUT, and the corpus already holds it, in `findspot`
+# and in W1's findspot_places / subject_places split. The tier layer read
+# neither field.
+#
+# COUNTED, NOT GATED, and the reason is not timidity. Sub-Saharan Africa has
+# ZERO source-language records in a language of the region and no source-language
+# slot left in any sub-tranche, so a gate would fail the tree on a condition no
+# allocation Block F still has can satisfy -- and a gate that cannot be satisfied
+# is a gate somebody deletes. Ruling 56's shape: the teeth are the presence of
+# the number and the fact that it is printed, not a minimum.
+EMPIRE_LANGUAGES = frozenset({"grc", "lat"})
+
+SOURCE_LANGUAGE_PROVENANCE = (
+    "local_language",
+    "empire_language_from_the_region",
+    "empire_language_about_the_region",
+)
+
+
+def source_language_provenance(language_codes, findspot) -> str:
+    """Is the region SPEAKING in this record, or being SPOKEN ABOUT?
+
+    ANY language outside EMPIRE_LANGUAGES makes a record local. persia-01-skz is
+    Parthian, Middle Persian AND Greek, and a trilingual a Persian king cut is
+    not a Roman text because one of its three columns is Greek.
+
+    An EMPTY language list is not read as local. The flattering direction is the
+    one a missing field must never take -- `a_named_sweep_must_actually_fail_the_rule`
+    one file over -- and ingest.verify reports any source-language record that
+    has no language code rather than letting this function absorb it.
+    """
+    codes = {str(c).strip().lower() for c in (language_codes or []) if str(c).strip()}
+    if codes and not codes <= EMPIRE_LANGUAGES:
+        return "local_language"
+    if str(findspot or "").strip():
+        return "empire_language_from_the_region"
+    return "empire_language_about_the_region"
 
 
 def check_allocation(
@@ -743,11 +839,22 @@ def check_allocation(
             f"missing the records this corpus already has eleven of"
         )
 
+    # Ruling 68, F5. This was an EQUALITY, and an equality is a plan with no
+    # tolerance for a sub-tranche closing short. Block F has now closed two
+    # short -- F3 6 of 8, F4 5 of 7 -- and all four missing records fell in one
+    # tier, in the two regions that had no headroom. A plan with no slack
+    # against a target is a target that fails on the first miss.
+    #
+    # Relaxing it costs nothing, because the ceiling is enforced where it can
+    # actually be observed: check_delivery refuses more DECLARATIONS than the
+    # mix asks for. Under-placing is the failure that can never be recovered,
+    # since nobody re-curates a record, and that is the direction still guarded.
     gloss = sum(int(t.get("gloss_capable") or 0) for t in tranches)
-    if gloss != int(mix.get("gloss_capable_records") or 0):
+    if gloss < int(mix.get("gloss_capable_records") or 0):
         problems.append(
             f"the allocation places {gloss} gloss-capable record(s); the mix "
-            f"declares {mix.get('gloss_capable_records')!r}"
+            f"declares {mix.get('gloss_capable_records')!r}, and a plan that "
+            f"places fewer than the target has already missed it"
         )
     for index, tranche in enumerate(tranches):
         capacity = sum(
@@ -963,20 +1070,87 @@ def check_delivery(
                 f"PUBLISHED hedged reading"
             )
 
+    # FINDING 51 and ruling 62, F5. The declarations are a LIST OF OBJECTS. A
+    # bare id cannot say which sub-tranche made it, and without that nothing in
+    # this repository could compare a sub-tranche's DELIVERY against its own
+    # DECLARATION -- which is both the blocker FINDING 51 named and the loophole
+    # it named, in one missing field. `kind` is ruling 62's owed distinction.
+    #
+    # These read the DOCUMENT's declarations. `gloss_declared` above is the set
+    # of ids, which ingest.verify derives from this same list so that production
+    # has one source; the unit tests pass the two apart on purpose, because the
+    # per-record guards above and the shape guards here are different rules.
+    tranche_names = {str(t.get("name")) for t in tranches}
+    declared_by_tranche: dict[str, int] = {}
+    for entry in (mix.get("gloss_capable_declared") or []):
+        if not isinstance(entry, dict):
+            problems.append(
+                f"gloss-capable declaration {entry!r} is a bare id and names no "
+                f"sub-tranche. An unattributed declaration is what kept "
+                f"FINDING 51 invisible for two sub-tranches"
+            )
+            continue
+        name = str(entry.get("sub_tranche") or "")
+        if name not in tranche_names:
+            problems.append(
+                f"{entry.get('record')!r} is declared gloss-capable in "
+                f"sub-tranche {name!r}, which the allocation does not place"
+            )
+        else:
+            declared_by_tranche[name] = declared_by_tranche.get(name, 0) + 1
+        kind = str(entry.get("kind") or "")
+        if kind not in GLOSS_KINDS:
+            problems.append(
+                f"{entry.get('record')!r} declares gloss kind {kind!r}, which is "
+                f"not one of {sorted(GLOSS_KINDS)}. Ruling 62: a contested "
+                f"READING and a translator's hedged IDENTIFICATION are different "
+                f"evidence about different failure modes"
+            )
+
+    for tranche in tranches:
+        name = str(tranche.get("name"))
+        planned_gloss = int(tranche.get("gloss_capable") or 0)
+        if declared_by_tranche.get(name, 0) > planned_gloss:
+            problems.append(
+                f"{name}: {declared_by_tranche[name]} gloss-capable record(s) "
+                f"declared against {planned_gloss} the sub-tranche planned. "
+                f"Nothing else here compares a tranche's delivery to its own "
+                f"declaration, which is how an aggregate gets met one tranche at "
+                f"a time with every check green"
+            )
+
     want_gloss = int(mix.get("gloss_capable_records") or 0)
     if len(gloss_declared) > want_gloss:
         problems.append(
             f"{len(gloss_declared)} records are declared gloss-capable and the "
             f"mix asks for {want_gloss}"
         )
+
+    # FINDING 51, and this clause is the finding. It asked whether enough SLOTS
+    # remained when the scarce thing was DECLARATIONS -- and both are counts of
+    # records, so the sentence read correctly for two sub-tranches while
+    # answering a question nobody was asking, in the reassuring direction. Slots
+    # are plentiful by construction: every gloss-capable-tier slot in every
+    # remaining sub-tranche counts, including twelve nobody intends to spend on
+    # a gloss case.
+    #
+    # The ceiling is now BOTH, because both bind: a declaration cannot be made
+    # without a slot on a tier that can carry one, and a slot cannot carry a
+    # declaration its sub-tranche never planned. WHICH ONE BINDS IS NAMED --
+    # reporting one number was how this went unnoticed.
     capacity = sum(n for (region, tier), n in remaining.items()
                    if tier in GLOSS_CAPABLE_TIERS)
-    if len(gloss_declared) + capacity < want_gloss:
+    still_declarable = sum(int(t.get("gloss_capable") or 0)
+                           for t in tranches if not t.get("closed"))
+    ceiling = len(gloss_declared) + min(still_declarable, capacity)
+    if ceiling < want_gloss:
+        binds = "declaration" if still_declarable <= capacity else "slot"
         problems.append(
-            f"the gloss quota is UNREACHABLE: {len(gloss_declared)} declared "
-            f"and {capacity} slot(s) left on a tier that can carry one, against "
-            f"{want_gloss} required. Every remaining slot could be used for it "
-            f"and the target would still be missed"
+            f"the gloss quota is UNREACHABLE: {len(gloss_declared)} declared, "
+            f"{still_declarable} declaration(s) left in sub-tranches still open "
+            f"and {capacity} slot(s) left on a tier that can carry one, so at "
+            f"most {ceiling} against {want_gloss} required. The {binds} count is "
+            f"what binds"
         )
 
     return problems

@@ -374,6 +374,38 @@ def test_metrics() -> None:
           score_pair(p, ranking(("doc-a::0", 0.9)), "doc-a::0")
           .best_other_chunk_id is None)
 
+    # FINDING 60. The ceiling above does not move -- it is the best, and the
+    # best is the last thing a new record displaces. FINDING 43's crowder
+    # arrives UNDERNEATH it, which is where this corpus's one measured instance
+    # arrived: scandinavia-05-thorsberg-chape took vimose-runes from rank 3 to
+    # rank 7 without ever being the ceiling. The interval is what was missing.
+    crowded = ranking(("doc-b::0", 0.95), ("doc-c::0", 0.92), ("doc-d::0", 0.90),
+                      ("doc-a::0", 0.80), ("doc-e::0", 0.70))
+    c = score_pair(p, crowded, "doc-a::0")
+    check("the run records the interval above the target, not only its ceiling",
+          c.beaten_by == ["doc-b::0", "doc-c::0", "doc-d::0"]
+          and c.best_other_doc_chunk_id == "doc-b::0",
+          f"beaten_by={c.beaten_by} ceiling={c.best_other_doc_chunk_id}")
+    check("a crowder that is NOT the ceiling is recoverable from the archive",
+          "doc-c::0" in c.beaten_by and c.best_other_doc_chunk_id != "doc-c::0",
+          f"beaten_by={c.beaten_by}")
+    check("a target nothing outranks is beaten by nothing",
+          score_pair(p, ranking(("doc-a::0", 0.9), ("doc-b::0", 0.5)),
+                     "doc-a::0").beaten_by == [])
+    # Capped for rerank_beaten_by's reason, and the cap is not silent: `rank`
+    # is recorded beside the list. muziris-cargo-akananuru at 319 would
+    # otherwise write three hundred ids that say nothing about crowding.
+    deep = ranking(*[(f"doc-x::{i}", 0.9 - i / 100) for i in range(12)],
+                   ("doc-a::0", 0.1))
+    check("the interval is capped at the recall window, not the whole ranking",
+          score_pair(p, deep, "doc-a::0").beaten_by
+          == [f"doc-x::{i}" for i in range(RECALL_AT)],
+          f"{score_pair(p, deep, 'doc-a::0').beaten_by}")
+    check("an accepted alternate above the target ends the interval, as on the rerank arm",
+          score_pair(p, crowded, "doc-a::0",
+                     alternates=["doc-c::0"]).beaten_by == ["doc-b::0"],
+          f"{score_pair(p, crowded, 'doc-a::0', alternates=['doc-c::0']).beaten_by}")
+
     # recall@6 must be exclusive at the boundary in the right direction.
     at6 = ranking(*[(f"doc-x::{i}", 0.9 - i / 100) for i in range(5)],
                   ("doc-a::0", 0.4), ("doc-y::0", 0.3))

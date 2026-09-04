@@ -205,6 +205,120 @@ def test_mutations_and_expected_are_the_same_length() -> None:
                f"{len(exp)} expected guard(s), and the two agree")
 
 
+def _mutation_targets(tree: ast.Module):
+    """Every string literal a MUTATIONS entry names as the text to REPLACE.
+
+    Not `_literal`, deliberately. `_literal` runs ast.literal_eval over the whole
+    list and returns None the moment one entry interpolates a module constant --
+    which is exactly what `scripts/mutate_fidelity.py` does, and which is why the
+    file where the stale target below was FOUND is the file this check would have
+    skipped if it reused the existing reader. Entries it cannot evaluate are
+    COUNTED and named rather than silently dropped.
+    """
+    node = None
+    for n in ast.walk(tree):
+        if isinstance(n, ast.Assign) and any(
+                isinstance(x, ast.Name) and x.id == "MUTATIONS" for x in n.targets):
+            node = n.value
+        elif (isinstance(n, ast.AnnAssign) and isinstance(n.target, ast.Name)
+              and n.target.id == "MUTATIONS"):
+            node = n.value
+    if node is None or not isinstance(node, (ast.List, ast.Tuple)):
+        return None, 0
+    targets, opaque = [], 0
+    for entry in node.elts:
+        if not isinstance(entry, (ast.Tuple, ast.List)) or len(entry.elts) < 2:
+            opaque += 1
+            continue
+        edits = entry.elts[1]
+        if not isinstance(edits, (ast.List, ast.Tuple)):
+            opaque += 1
+            continue
+        for pair in edits.elts:
+            if not isinstance(pair, (ast.Tuple, ast.List)) or not pair.elts:
+                opaque += 1
+                continue
+            old = pair.elts[0]
+            if isinstance(old, ast.Constant) and isinstance(old.value, str):
+                targets.append(old.value)
+            else:
+                opaque += 1
+    return targets, opaque
+
+
+def _mutable_sources() -> "dict[str, str]":
+    """Every Python source a harness could be pointed at, minus the harnesses.
+
+    The harness files are excluded because a mutation's target text is a literal
+    INSIDE the harness, so a search that included them would find every target
+    exactly where it was written and prove nothing.
+    """
+    root = ROOT
+    out = {}
+    for d in ("ingest", "eval", "answer", "retrieve", "scripts", "ui"):
+        for f in sorted((root / d).rglob("*.py")):
+            if f.parent.name == "__pycache__":
+                continue
+            if f.parent.name == "scripts" and (
+                    f.name.startswith("mutate_") or f.name == "test_harnesses.py"):
+                continue
+            out[str(f.relative_to(root))] = f.read_text(encoding="utf-8")
+    return out
+
+
+def test_every_mutation_target_still_exists() -> None:
+    """A mutation whose target text has moved proves nothing, and says so only
+    when somebody runs that harness on the host.
+
+    F5, and it is this session's own defect. Ruling 68 relaxed one clause in
+    `ingest/fidelity.py` from `!=` to `<` and FINDING 51 replaced a whole
+    reachability expression; two mutations in `scripts/mutate_fidelity.py` still
+    named the old text and reported MISS -- "mutation target not found". Nothing
+    caught it. The length check above passed, because 55 still equals 55; the
+    suites passed, because a suite is indifferent to what a harness names; and
+    the only detector was a host run of that one harness.
+
+    FINDING 46's sentence, in a new direction: a defect is fixed in the file
+    where it was found and the search for its siblings is a separate act nobody
+    scheduled. This is that act, scheduled. Eight of nine harnesses were clean
+    when it was written, which is what makes the ninth worth an assertion rather
+    than a note.
+    """
+    print("\nevery mutation target still exists in the source it names")
+    sources = _mutable_sources()
+
+    # Anti-vacuity, both directions. A search corpus that collapsed would report
+    # every target as present; a matcher that always said "found" would too.
+    expect(len(sources) > 20 and "ingest/fidelity.py" in sources,
+           "the searchable sources are found and counted -- a collapsed corpus "
+           "would pass every guard below by finding nothing to contradict them")
+    expect(not any("a mutation target that cannot exist in any source" in s
+                   for s in sources.values()),
+           "GUARD a target absent from every source really is reported absent, "
+           "so a clean result below is a reading and not an empty haystack")
+
+    opaque_total = 0
+    for h in HARNESSES:
+        targets, opaque = _mutation_targets(_tree(h))
+        opaque_total += opaque
+        if targets is None:
+            print(f"       {h.name}: no MUTATIONS list -- its targets are inlined "
+                  f"and cannot be read here. Counted, not failed on")
+            continue
+        missing = sorted({t for t in targets
+                          if not any(t in s for s in sources.values())})
+        expect(not missing,
+               f"GUARD every mutation target in {h.name} still occurs in the "
+               f"sources it names")
+        if missing:
+            for t in missing[:4]:
+                print(f"       gone: {t.strip()[:88]!r}")
+    if opaque_total:
+        print(f"       {opaque_total} mutation target(s) are not string literals "
+              f"and are not checked here -- counted, because a target this cannot "
+              f"read is not a target it has verified")
+
+
 def counted_lines() -> None:
     """Reported, never gated. FINDING 56: a count that surprises somebody is a
     conversation, and an assertion invented today is a rule nobody agreed to."""
@@ -242,6 +356,7 @@ def main() -> int:
     test_the_fail_matcher_takes_the_space()
     test_mutations_are_applied_as_bytes()
     test_mutations_and_expected_are_the_same_length()
+    test_every_mutation_target_still_exists()
     counted_lines()
     print(f"\n{PASSED} passed, {FAILED} failed")
     return 1 if FAILED else 0

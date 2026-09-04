@@ -2178,6 +2178,46 @@ def test_the_promotion_candidate_state() -> None:
            "ONE bar governs both directions, and the demotion carries the "
            "raised version of it")
 
+    # FINDING 64, F5. The bar above says "at the corpus in force when the claim
+    # is made". The promotion candidate's own restatement of it said "at 60
+    # records" -- a literal forecast, in the entry a reader of that case
+    # actually meets, for a corpus that lands at 56. Nothing would have gone
+    # red: a gate denominated in a forecast does not fail, it simply never
+    # fires, and a case passing 12/12 stays a candidate for ever.
+    #
+    # promotion_and_reinstatement_bar's own closing sentence is the diagnosis --
+    # a standard that exists only inside the record of the case it was applied
+    # to is a standard the next case gets to renegotiate. It was written twice
+    # and the SECOND copy drifted, in the direction that cannot be satisfied.
+    _bar_statements = {
+        "promotion_and_reinstatement_bar": str(
+            floor.get("promotion_and_reinstatement_bar", "")),
+        "demotions.vimose-runes.reinstated_when": str(
+            floor["demotions"]["vimose-runes"]["reinstated_when"]),
+    }
+    for _cid, _c in candidates.items():
+        _bar_statements[f"promotion_candidates.{_cid}.bar"] = str(_c.get("bar", ""))
+    # FINDING 49's rule, which this repository states and which the first draft
+    # of these three guards broke: the counts go on their own line and never
+    # into the guard text, because a label carrying a value it computes is a
+    # label a harness stops being able to name the moment the value moves.
+    _adrift = sorted(k for k, t in _bar_statements.items()
+                     if "at the corpus in force" not in t)
+    _literal = sorted(k for k, t in _bar_statements.items()
+                      if re.search(r"[^_]\b\d\d\s+record", t))
+    print(f"  note: the bar is stated in {len(_bar_statements)} place(s) and every "
+          f"one is checked here. Not naming the corpus in force: {_adrift}. "
+          f"Carrying a literal record count: {_literal}.")
+    expect(len(_bar_statements) >= 3,
+           "the statements of the bar are found and counted -- a collapsed "
+           "collection would make both guards below vacuous")
+    expect(not _adrift,
+           "GUARD every statement of the bar names the CORPUS IN FORCE rather "
+           "than a record count")
+    expect(not _literal,
+           "GUARD no statement of the bar carries a literal record count -- a "
+           "bar denominated in a forecast fires only if the forecast comes true")
+
     def floor_with(**rest):
         base = {**floor, **rest}
         with tempfile.TemporaryDirectory() as tmp:

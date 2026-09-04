@@ -807,6 +807,40 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         "the exclusion block reports the opposite state",
         [("    if not stamped:", "    if stamped:")],
     ),
+
+    # FINDING 60, F5 -- in the same order as the three guards appended to
+    # EXPECTED below. The field these break did not exist for four tranches,
+    # and its absence was invisible because nothing asserted it: an instrument
+    # that cannot see a crowder reports every run exactly as it reported the
+    # runs before the crowder arrived.
+    (
+        # The cap is what makes the field affordable. Removed, an unranked
+        # target writes the whole ranking into the archive, and the list stops
+        # being a statement about crowding at all.
+        "the interval is recorded to the whole ranking instead of the window",
+        [("""    for hit in hits[:RECALL_AT]:
+        if hit.chunk_id in accepted_set:""",
+          """    for hit in hits:
+        if hit.chunk_id in accepted_set:""")],
+    ),
+    (
+        # Breaking on the target rather than the accepted set makes the
+        # embedding arm disagree with the rerank arm about where the interval
+        # ends. Two arms measuring the same thing differently is the divergence
+        # the mirroring was written to prevent.
+        "the interval runs past an accepted alternate, diverging from the rerank arm",
+        [("""        if hit.chunk_id in accepted_set:
+            break""",
+          """        if hit.chunk_id == target_chunk_id:
+            break""")],
+    ),
+    (
+        # Truncated to one entry the field becomes best_other_doc_chunk_id
+        # under a second name -- the ceiling again, which is precisely the
+        # instrument FINDING 60 says cannot see a crowder.
+        "the interval is truncated back to its ceiling",
+        [("        beaten_by=beaten,", "        beaten_by=beaten[:1],")],
+    ),
 ]
 
 EXPECTED = [
@@ -947,6 +981,11 @@ EXPECTED = [
     "the stamp is carried onto the pair RESULT and into the archive",
     "the exclusion block NAMES each stamped pair rather than counting them",
     "a run with no stamped pair SAYS SO rather than printing nothing",
+
+    # FINDING 60, F5 -- in the same order as the three mutations above.
+    "the interval is capped at the recall window, not the whole ranking",
+    "an accepted alternate above the target ends the interval, as on the rerank arm",
+    "the run records the interval above the target, not only its ceiling",
 ]
 
 

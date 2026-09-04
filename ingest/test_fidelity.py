@@ -30,6 +30,8 @@ from pathlib import Path
 
 from .fidelity import (
     GLOSS_CAPABLE_TIERS,
+    SOURCE_LANGUAGE_TIERS,
+    source_language_provenance,
     check_allocation,
     check_delivery,
     PARAPHRASE_FLAG_LIFTED,
@@ -397,6 +399,18 @@ def test_allocation():
 
     # The cheap tier jumps the queue: the same 36 records, curated in the order
     # a block short of days drifts toward.
+    # Ruling 62, F5. ingest.cost's precedent: a phase with no written definition
+    # is refused. A gloss kind the code accepts and the file does not explain is
+    # the same defect, and FINDING 56 is the reason it is checked from the DATA
+    # side rather than by inventing a stricter rule in the checker.
+    broken = json.loads(json.dumps(mix))
+    broken["what_the_two_gloss_KINDS_are"].pop("hedged_identification")
+    expect(
+        any("no written definition" in p
+            for p in check_target_mix(broken, doc["measured_at_24"])),
+        "GUARD a gloss kind the code accepts and the file does not explain is refused",
+    )
+
     broken = json.loads(json.dumps(mix))
     broken["allocation"]["sub_tranches"].reverse()
     expect(
@@ -411,6 +425,20 @@ def test_allocation():
         any("gloss-capable record(s); the mix" in p
             for p in check_allocation(broken, at24, sl24)),
         "GUARD an allocation that drops a gloss-capable record is refused",
+    )
+
+    # Ruling 68, F5. This clause was an EQUALITY, and an equality is a plan with
+    # no tolerance for a sub-tranche closing short. Two have. The direction that
+    # can never be recovered is still guarded above; the direction that costs
+    # nothing is now allowed, because the ceiling is enforced at DELIVERY where
+    # it can actually be observed.
+    slack = json.loads(json.dumps(mix))
+    slack["allocation"]["sub_tranches"][3]["gloss_capable"] += 1
+    expect(
+        not any("gloss-capable record(s); the mix" in p
+                for p in check_allocation(slack, at24, sl24)),
+        "GUARD an allocation placing MORE gloss-capable records than the target "
+        "is accepted, because a plan with no slack fails on the first miss",
     )
 
     broken = json.loads(json.dumps(mix))
@@ -525,15 +553,25 @@ def test_delivery():
     doc = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
     mix = doc["target_mix"]
 
+    # F5. The fixtures below say "nothing has been curated yet", and the live
+    # file says F3 and F4 are CLOSED with three declarations already made. Those
+    # are two different states of the world, and asserting both at once is how
+    # the old slot-based ceiling passed a fixture it could not have passed if
+    # the two had agreed. `open_mix` is the state the labels actually describe.
+    open_mix = json.loads(json.dumps(mix))
+    for _t in open_mix["allocation"]["sub_tranches"]:
+        _t["closed"] = False
+    open_mix["gloss_capable_declared"] = []
+
     expect(
-        not check_delivery(mix, {}, set()),
+        not check_delivery(open_mix, {}, set()),
         "GUARD a tranche that has curated nothing yet reports no problem",
     )
 
     good = {"seasia-04-x": ("Southeast Asia", "verbatim_with_provenance"),
             "seasia-05-y": ("Southeast Asia", "verbatim_machine_english")}
     expect(
-        not check_delivery(mix, good, set()),
+        not check_delivery(open_mix, good, set()),
         "GUARD records curated into cells the allocation places report nothing",
     )
 
@@ -563,7 +601,7 @@ def test_delivery():
         "GUARD a gloss-capable declaration on a tier whose only English is machine is refused",
     )
     expect(
-        not check_delivery(mix, good, {"seasia-04-x"}),
+        not check_delivery(open_mix, good, {"seasia-04-x"}),
         "GUARD a gloss-capable declaration on a tier that CAN carry one reports nothing",
     )
 
@@ -599,8 +637,70 @@ def test_delivery():
         "rather than reported as a shortfall nobody acts on",
     )
     expect(
-        not any("UNREACHABLE" in p for p in check_delivery(mix, {}, set())),
+        not any("UNREACHABLE" in p for p in check_delivery(open_mix, {}, set())),
         "GUARD an empty tranche is not called unreachable — every slot is still there",
+    )
+
+    # FINDING 51's OTHER half, and the half nothing could see. Above, the slots
+    # ran out. Here every slot is still there and no sub-tranche is left that
+    # can declare one -- which is the state the live file was actually in while
+    # three checks reported it as progress, because slots and declarations are
+    # both counts of records and the sentence read correctly either way.
+    starved = json.loads(json.dumps(mix))
+    for _t in starved["allocation"]["sub_tranches"]:
+        _t["closed"] = True
+    starved["gloss_capable_declared"] = []
+    expect(
+        any("UNREACHABLE" in p and "declaration count is what binds" in p
+            for p in check_delivery(starved, {}, set())),
+        "GUARD a gloss quota no OPEN sub-tranche can still declare is refused, "
+        "with the slots plentiful and the DECLARATION named as what binds",
+    )
+
+    # The shape FINDING 51 needed and did not have. A bare id names no
+    # sub-tranche, so nothing can compare a sub-tranche's delivery against its
+    # own declaration -- which is the blocker and the loophole in one field.
+    bare = json.loads(json.dumps(mix))
+    bare["gloss_capable_declared"] = ["eastasia-04-jingjiao-stele"]
+    expect(
+        any("bare id" in p for p in check_delivery(bare, {}, set())),
+        "GUARD a gloss-capable declaration that is a bare id, naming no "
+        "sub-tranche, is refused",
+    )
+
+    astray = json.loads(json.dumps(mix))
+    astray["gloss_capable_declared"][0]["sub_tranche"] = "F9"
+    expect(
+        any("which the allocation does not place" in p
+            for p in check_delivery(astray, {}, set())),
+        "GUARD a declaration attributed to a sub-tranche the allocation does "
+        "not place is refused",
+    )
+
+    # Ruling 62. A kind outside the vocabulary is a distinction nobody agreed
+    # to, and the whole point of holding the kind in data is that the discount
+    # travels with the number.
+    badkind = json.loads(json.dumps(mix))
+    badkind["gloss_capable_declared"][0]["kind"] = "interesting"
+    expect(
+        any("declares gloss kind" in p
+            for p in check_delivery(badkind, {}, set())),
+        "GUARD a gloss kind outside the declared vocabulary is refused",
+    )
+
+    # THE CHECK THAT DID NOT EXIST. F4 planned two gloss-capable records and
+    # declared two; a third attributed to it is a tranche exceeding its own
+    # declaration, which is exactly how FINDING 51 says the aggregate could be
+    # met one tranche at a time with every check green.
+    overdeclared = json.loads(json.dumps(mix))
+    overdeclared["gloss_capable_declared"].append(
+        {"record": "eastasia-06-cefu-yuangui", "sub_tranche": "F4",
+         "kind": "contested_reading"})
+    expect(
+        any("declared against 2 the sub-tranche planned" in p
+            for p in check_delivery(overdeclared, {}, set())),
+        "GUARD a sub-tranche declaring more gloss-capable records than it "
+        "planned is refused",
     )
 
 
@@ -666,6 +766,88 @@ def test_against_the_live_corpus():
     )
 
 
+def test_source_language_provenance():
+    """Ruling 58's owed per-region rule, in the shape FINDING 62 gave it.
+
+    Ruling 58 asked for a rule refusing a floor met entirely in Greek or Latin.
+    That rule cannot tell africa-04-silko-talmis from africa-03-periplus-adulis,
+    because both are `grc` -- so it would refuse the two records ruling 58
+    argued hardest to keep and admit the one it should refuse. What separates
+    them is not the language but whether the region is SPEAKING or being SPOKEN
+    ABOUT, and `findspot` already held it.
+    """
+    print("source-language provenance (ruling 58 / FINDING 62)")
+
+    # persia-01-skz's shape: a trilingual a Persian king cut. One Greek column
+    # does not make it a Roman text.
+    expect(
+        source_language_provenance(["xpr", "pal", "grc"], "Naqsh-e Rostam")
+        == "local_language",
+        "GUARD any language outside Greek and Latin makes a record LOCAL, so a "
+        "trilingual is not read as an empire text for its Greek column",
+    )
+
+    # africa-04-silko-talmis: Greek, cut on a wall in the region. Ruling 58's
+    # sentence -- an African using the empire's language about himself.
+    expect(
+        source_language_provenance(["grc"], "Temple of Mandulis, Talmis")
+        == "empire_language_from_the_region",
+        "GUARD Greek WITH a findspot in the region is the region speaking",
+    )
+
+    # africa-03-periplus-adulis: Greek, source_type literary_text, findspot
+    # None. An Alexandrian merchant's handbook, counted as one of Sub-Saharan
+    # Africa's three source-language records.
+    expect(
+        source_language_provenance(["grc"], None)
+        == "empire_language_about_the_region",
+        "GUARD Greek with NO findspot is a Roman-world text ABOUT the region, "
+        "not a source from it",
+    )
+
+    # The flattering direction is the one a missing field must never take.
+    expect(
+        source_language_provenance([], None) != "local_language"
+        and source_language_provenance(["  "], None) != "local_language",
+        "GUARD an empty language list is not read as LOCAL, because a missing "
+        "field must never take the flattering branch",
+    )
+
+    result = load_corpus(SEED_CORPUS_DIR)
+    doc = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
+    declared = doc["tiers"]
+    source_docs = [d for d in result.documents
+                   if declared.get(d.doc_id) in SOURCE_LANGUAGE_TIERS]
+    expect(
+        len(source_docs) > 0,
+        "the source-language records are found and counted -- a collapsed list "
+        "would make the guard below vacuous",
+    )
+    expect(
+        all([c for c in (d.language_codes or []) if str(c).strip()]
+            for d in source_docs),
+        "GUARD every source-language record in the corpus carries a language "
+        "code, so none of them reaches the classifier's empty branch",
+    )
+
+    kinds: dict = {}
+    for d in source_docs:
+        k = source_language_provenance(d.language_codes, d.findspot)
+        kinds[k] = kinds.get(k, 0) + 1
+    by_text: dict = {}
+    for d in source_docs:
+        key = (d.citation_original or "").strip()
+        if key:
+            by_text.setdefault(key, set()).add(d.region)
+    multi = sorted(len(v) for v in by_text.values() if len(v) > 1)
+    print(f"  note: {len(source_docs)} source-language record(s) by provenance: "
+          f"{dict(sorted(kinds.items()))}. Texts counted in more than one "
+          f"region, by region count: {multi}. Counted, not gated -- "
+          f"Sub-Saharan Africa has no source-language slot left in any "
+          f"sub-tranche, so a minimum here could not be satisfied by any "
+          f"allocation this block still has.")
+
+
 def main() -> int:
     test_derivation()
     test_declaration_checking()
@@ -673,6 +855,7 @@ def main() -> int:
     test_target_mix()
     test_allocation()
     test_delivery()
+    test_source_language_provenance()
     test_against_the_live_corpus()
 
     print()

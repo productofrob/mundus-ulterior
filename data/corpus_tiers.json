@@ -5,7 +5,7 @@
   "why_it_is_not_under_data/seed_corpus/": "iter_seed_records REFUSES any .json under the corpus directory that is not at region/record.json depth -- glob('*/*.json') would not see a file at the top level and rglob('*.json') would, and a file some walks see and others do not is the exact failure that function exists to prevent. Only manifest.json is exempt, by name. So the sidecar lives one directory up, in data/, where no corpus walk reaches it. The layout guard did its job on the first file anyone tried to add since it was written.",
   "why_declared_AND_derived": "ingest.fidelity.derive_record_tier computes a tier from the record's chunks. If that were the only tier, it could never be wrong -- and could never be checked either. The declaration is what a curator believes the record is; the derivation is what the classifier reads it as; ingest.verify fails when they disagree. That is ruling 36's shape one level down: recorded and reconstructed are two kinds of knowledge and must be reported as two.",
   "vocabulary": {
-    "verbatim_with_provenance": "Retrieval-eligible source-language text, a published translation, and BOTH CITED -- translation_source is non-empty. The SKZ / Periplus treatment.",
+    "verbatim_with_provenance": "Retrieval-eligible source-language text, a published translation, and BOTH CITED -- translation_source is non-empty. The SKZ / Periplus treatment. FINDING 55, F5: a record in this tier states the BOUNDARY of its translation search in its own notes, the way ruling 57 makes verbatim_machine_english state the boundary of its English search. Not the age of the translation and not a verdict on its quality -- what was looked at, and what was not. Reachability bounds this tier exactly as it bounds that one, and only that one writes its ignorance down: for one whole genre this corpus is committed to there is exactly one reachable English translation and it is from 1885, and record 34 carries an 1885 construal of five characters into the corpus as its English, cited and correct by every rule in this repository, with nothing anywhere able to ask whether the two counties or the colour was meant. No check enforces this, for why_gloss_capability_is_DECLARED's reason: a checker that counted source names would be satisfied by a list.",
     "verbatim_machine_english": "Retrieval-eligible source-language text and NO ENGLISH TRANSLATION THE CURATOR COULD REACH, so resolve_english reaches the passage with `machine` or with nothing. RULING 57, F4, amends this from `no published translation`. The old wording claimed a fact about the world; derive_record_tier reads whether the record cites a translation_source, which is a fact about the record; and a curator can establish neither -- only that a search did not find one. FINDING 41 is the argument and this is the argument accepted rather than worked around: a definition satisfiable only by omniscience is satisfied in practice by whoever searched least. So the claim is about REACHABILITY, and every record in this tier carries in its notes the English-language search that failed -- the named sources consulted, any English found cited with its URL beside the reason it was refused as a translation_source, and the boundary where the search stopped. A record whose note says only that no English was found is not in this tier. Nothing checks this: whether a note names its sources is a judgement about prose, exactly as with why_gloss_capability_is_DECLARED, and a checker that counted source names would be satisfied by a list. AMENDED INTO THE VOCABULARY IN F1. PHASE2_PLAN's three tiers had no name for it, and F3-F7 predicts it becomes the common case: 'Local non-English sources mostly will not have published English, so resolve_english starts choosing machine and the Part 6 confidence machinery goes from dormant to load-bearing.' A mix cannot have a target for a tier that cannot be written down.",
     "published_translation_only": "No retrieval-eligible source-language text, and a cited published translation. No open original transcription available.",
     "catalogue_record": "source_type is a find, coin, object or artefact record. Both text fields are catalogue description whatever they contain, because classify_original forces object_description on these.",
@@ -106,7 +106,7 @@
       "Scandinavia": 8,
       "South Asia": 8
     },
-    "gloss_capable_records": 8,
+    "gloss_capable_records": 7,
     "what_gloss_capable_MEANS_mechanically": "The record carries, INSIDE A RETRIEVAL-ELIGIBLE CHUNK, both (a) a genuine alternative or hedged reading and (b) a statement that the reading is uncertain. Not in `notes` -- the notes field is not chunked and the model never sees it. This is not F1's invention: raqosh-epitaph's own note records that the case 'was nearly written' against the notes field, and oc-eo-medallion-legend's records that all three of the things it needs are retrieval-eligible. A hedge assertion the corpus cannot support is a case that can never pass.",
     "which_tiers_can_carry_a_gloss_case": [
       "verbatim_with_provenance",
@@ -164,7 +164,8 @@
           "gloss_capable": 2,
           "expect_quoted_from_original_cases": 2,
           "vme_quotation_cases": 2,
-          "why_these": "The hardest eight in the tranche, first. Southeast Asia's four source-language records are the constraint no other region can pay for, and the four verbatim_machine_english records here are what turn on the machine-translation path: the verse and documentary confidence profiles are at n=1 and go load-bearing the moment the first one lands. Discovering that in F7 leaves no session to calibrate them in."
+          "why_these": "The hardest eight in the tranche, first. Southeast Asia's four source-language records are the constraint no other region can pay for, and the four verbatim_machine_english records here are what turn on the machine-translation path: the verse and documentary confidence profiles are at n=1 and go load-bearing the moment the first one lands. Discovering that in F7 leaves no session to calibrate them in.",
+          "closed": true
         },
         {
           "name": "F4",
@@ -193,7 +194,8 @@
           "gloss_capable": 2,
           "expect_quoted_from_original_cases": 2,
           "vme_quotation_cases": 1,
-          "why_these": "Africa is at one source-language record of four and Ge'ez has no published translation for most of what is open, so it is the second-hardest region and the second-largest verbatim_machine_english draw."
+          "why_these": "Africa is at one source-language record of four and Ge'ez has no published translation for most of what is open, so it is the second-hardest region and the second-largest verbatim_machine_english draw.",
+          "closed": true
         },
         {
           "name": "F5",
@@ -214,11 +216,6 @@
               "n": 2
             },
             {
-              "region": "Arabia",
-              "tier": "verbatim_machine_english",
-              "n": 1
-            },
-            {
               "region": "South Asia",
               "tier": "verbatim_with_provenance",
               "n": 1
@@ -227,12 +224,18 @@
               "region": "South Asia",
               "tier": "verbatim_machine_english",
               "n": 1
+            },
+            {
+              "region": "East Asia",
+              "tier": "verbatim_machine_english",
+              "n": 1
             }
           ],
           "gloss_capable": 2,
           "expect_quoted_from_original_cases": 3,
           "vme_quotation_cases": 1,
-          "why_these": "The last source-language records for the three regions that already clear the per-region floor, and the sub-tranche that completes the quoted-from-original quota at seven cases across seven regions."
+          "why_these": "REVISED by ruling 67, F5, 2026-09-04, before the first candidate was examined, and the sentence it replaces is kept here because a plan quietly updated is the defect FINDING 47 is about. It read: 'the last source-language records for the three regions that already clear the per-region floor, and the sub-tranche that completes the quoted-from-original quota at seven cases across seven regions.' THE SECOND HALF STANDS. The first half was written when this sub-tranche held three verbatim_machine_english slots pointed at Persia, Arabia and South Asia -- Middle Persian epigraphy, Ancient North and South Arabian, and Old Tamil: three traditions with substantial English-language scholarship and no genre seam named in any of them. Ruling 53's complaint about F3 was that the tier had been tested where the tier is hardest to fill and the result reported as a property of the tier. Curating those three as written is that complaint for the third time, in the last sub-tranche that is allocated any vme record at all. So Arabia's vme slot moves to East Asia, onto FINDING 45's named seam, and Arabia takes a catalogue_record slot from F7 in exchange so that both regions keep their records_by_region_target_at_60. ARABIA'S SLOT AND NOT SOUTH ASIA'S, because Arabia ends at five source-language records and South Asia at four: the slack comes from the region that has some, which is the one lesson F3's and F4's misses actually taught. ONE SLOT AND NOT ALL THREE, because a tier met inside a single region is why_per_region's own complaint one field over, and because the seam has three named untranslated texts left in it and not nine.",
+          "closed": false
         },
         {
           "name": "F6",
@@ -271,7 +274,8 @@
           "gloss_capable": 1,
           "expect_quoted_from_original_cases": 0,
           "vme_quotation_cases": 0,
-          "why_these": "The last two source-language records sit here rather than in F7, so that the boundary between the expensive tiers and the cheap one falls inside a sub-tranche that still has a session after it."
+          "why_these": "The last two source-language records sit here rather than in F7, so that the boundary between the expensive tiers and the cheap one falls inside a sub-tranche that still has a session after it.",
+          "closed": false
         },
         {
           "name": "F7",
@@ -284,11 +288,6 @@
             {
               "region": "East Asia",
               "tier": "published_translation_only",
-              "n": 1
-            },
-            {
-              "region": "East Asia",
-              "tier": "catalogue_record",
               "n": 1
             },
             {
@@ -310,21 +309,58 @@
               "region": "South Asia",
               "tier": "catalogue_record",
               "n": 1
+            },
+            {
+              "region": "Arabia",
+              "tier": "catalogue_record",
+              "n": 1
             }
           ],
           "gloss_capable": 1,
           "expect_quoted_from_original_cases": 0,
           "vme_quotation_cases": 0,
-          "why_these": "Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last."
+          "why_these": "Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last. AMENDED by ruling 67, F5: East Asia's catalogue_record slot is exchanged for Arabia's, against the verbatim_machine_english slot moved the other way in F5. Neither region's target at 60 moves and no tier total moves; what moves is WHERE the machine-English tier is tested.",
+          "closed": false
         }
-      ]
+      ],
+      "why_a_sub_tranche_declares_whether_it_is_CLOSED": "FINDING 51's reachability arithmetic needs to know which declarations can still be made. A closed sub-tranche's unfilled declarations are gone -- nobody re-curates a record -- and an open one's are still available, and nothing in this file could tell the two apart. Declared rather than derived for the same reason the attribution is: F3 and F5 both place a Persia/verbatim_with_provenance slot, so 'has this tranche delivered anything' cannot be answered from the cells."
     },
     "gloss_capable_declared": [
-      "scandinavia-05-thorsberg-chape",
-      "eastasia-04-jingjiao-stele",
-      "eastasia-05-liangshu-qin-lun"
+      {
+        "record": "scandinavia-05-thorsberg-chape",
+        "sub_tranche": "F3",
+        "kind": "contested_reading"
+      },
+      {
+        "record": "eastasia-04-jingjiao-stele",
+        "sub_tranche": "F4",
+        "kind": "contested_reading"
+      },
+      {
+        "record": "eastasia-05-liangshu-qin-lun",
+        "sub_tranche": "F4",
+        "kind": "hedged_identification"
+      }
     ],
-    "why_gloss_capability_is_DECLARED": "Because it cannot be derived. what_gloss_capable_MEANS_mechanically defines it as a hedged reading AND a statement that the reading is uncertain, both inside a RETRIEVAL-ELIGIBLE chunk -- and only original_text_excerpt and reference_translation are chunked, which is the trap this list exists to make visible. Whether a passage hedges is a judgement about prose and no classifier here can read it, so the declaration is the claim and ingest.fidelity.check_delivery guards everything mechanical about it: that the record is one this tranche curated, that its tier can carry a gloss case at all, that the count does not exceed the quota, and that the quota is still REACHABLE from the slots the allocation has left. EMPTY AT F3 RECORD 26, and that is the finding this list was added for: two records were curated and neither carries its hedge in a chunked field, because the hedge was written into original_text_note, which the loader does not chunk."
+    "why_gloss_capability_is_DECLARED": "Because it cannot be derived. what_gloss_capable_MEANS_mechanically defines it as a hedged reading AND a statement that the reading is uncertain, both inside a RETRIEVAL-ELIGIBLE chunk -- and only original_text_excerpt and reference_translation are chunked, which is the trap this list exists to make visible. Whether a passage hedges is a judgement about prose and no classifier here can read it, so the declaration is the claim and ingest.fidelity.check_delivery guards everything mechanical about it: that the record is one this tranche curated, that its tier can carry a gloss case at all, that the count does not exceed the quota, and that the quota is still REACHABLE from the slots the allocation has left. EMPTY AT F3 RECORD 26, and that is the finding this list was added for: two records were curated and neither carries its hedge in a chunked field, because the hedge was written into original_text_note, which the loader does not chunk.",
+    "why_seven_and_not_eight": "Ruling 68, F5, 2026-09-04, before any record was curated. LOWERED from 8, and not because 8 was hard. The corpus lands at 56 rather than 60 -- see total_at_60_is_not_reachable -- and this is one of the four figures F5's opening document names as denominated 'at 60' and owed a re-reading against what the corpus will actually be. 8 records in 60 is one gloss-capable record per 7.5; the same proportion of 56 is 7.47, and the reachable integer is 7. FINDING 51's arithmetic reaches the same number from the other direction: 3 declared, plus F5 2 + F6 1 + F7 1 still to declare, is 7 and cannot be 8 unless some sub-tranche quietly exceeds its own declaration, which is the loophole that finding named. TWO INDEPENDENT ROUTES TO 7 is why this is a re-denomination and not a quota fitted to the session that noticed it. What is NOT done: F3's declared 2 stays 2 though it delivered 1. Restating a delivered plan to match what happened is the move ruling 56 refused, and the plan now places 8 against a target of 7, which reads as one record of slack -- see why_the_allocation_may_place_MORE_than_the_target.",
+    "why_the_allocation_may_place_MORE_than_the_target": "Ruling 68. check_allocation required the sub-tranches' gloss_capable to EQUAL gloss_capable_records, and an equality is an allocation with no tolerance for a sub-tranche closing short. Block F has now closed two short -- F3 6 of 8, F4 5 of 7 -- and F5's opening finding is that all four missing records fell in one tier and both regions that lost them had no headroom. A plan with no slack against a target is a target that fails on the first miss. The clause is now AT LEAST, and the ceiling is kept where it can actually be enforced: check_delivery already refuses more declarations than the mix asks for, so over-placing in the PLAN costs nothing and under-placing is the failure that can never be recovered, because nobody re-curates a record.",
+    "what_the_two_gloss_KINDS_are": {
+      "contested_reading": "The SOURCE TEXT is disputed. Undeciphered runes, a corrupt Latin legend, two scholarly readings of one Nabataean epitaph, one set of characters two translators put in two different countries. This is what the gloss arm was built to see: whether a model renders a disputed text confidently.",
+      "hedged_identification": "The source text is not in doubt at all and the TRANSLATOR is unsure what it refers to. Hirth's 'Fu-nan [Siam, Cambodja?]' on record 35, where the two characters are certain and the modern country they answer to is not.",
+      "why_the_distinction_is_DATA_and_no_longer_prose": "Ruling 62 owed this to F5. Mechanically both satisfy what_gloss_capable_MEANS_mechanically and there is no reading of that sentence on which either does not, so a checker cannot tell them apart and the count could not either. They are different evidence about different failure modes. Ruling 62 had to carry the distinction in three separate places of prose -- the result document, the record's own notes, and the gold case's `why` -- because no field held it, and its closing sentence was that the count is the only thing anyone reads. This field holds it, so the discount travels with the number wherever the number goes, including to G3.",
+      "why_a_kind_is_DECLARED_and_not_derived": "why_gloss_capability_is_DECLARED's own reason, one field down. Whether a hedge disputes the text or the translator's identification of it is a judgement about prose. A checker that tried would be satisfied by a bracket."
+    },
+    "why_a_declaration_names_its_sub_tranche": "FINDING 51, paid here. The list was flat, so no check could compare a sub-tranche's DELIVERY against its own DECLARATION, and the reachability guard asked instead whether enough SLOTS remained. Slots are plentiful by construction -- every verbatim_with_provenance, published_translation_only and catalogue_record slot in F5 to F7 counts toward that number, including twelve nobody intends to spend on a gloss case -- and declarations are scarce. Both are counts of records, so the sentence read correctly for two sub-tranches while answering a question nobody was asking, in the reassuring direction. The attribution is declared and not derived for the reason ingest.verify already prints: the sub-tranche a record was curated in is not a field on the record and is not derivable from one. F3 and F5 both place a Persia/verbatim_with_provenance slot, so a delivered record in that cell belongs to either.",
+    "total_at_60_is_not_reachable": {
+      "reachable_at_F7_close": 56,
+      "the_arithmetic": "seed 24 + delivered 11 (F3 6 of 8, F4 5 of 7) + still allocated 21 (F5 7 + F6 7 + F7 7) = 56, against total_at_60 = 60. The gap is 4.",
+      "all_four_are_one_tier": "F3 and F4 planned 8 verbatim_with_provenance records between them and delivered 8. They planned 7 verbatim_machine_english and delivered 3. Every other tier lands exactly on its target at 60: vwp 25 of 25, published_translation_only 5 of 5, catalogue_record 19 of 19, pointer_only 1 of 1. The corpus lands at 56 BECAUSE the machine-English tier lands at 6 of 10, and the two regions below the source-language floor are below it because the records they lost were vme records. Three unreachable targets, one shortfall, counted three times.",
+      "what_was_decided": "Ruling 69, F5, 2026-09-04. ACCEPT 56 and record it as missed. total_at_60 is NOT lowered: a target the corpus missed, recorded as missed, is a result, and a target lowered to what was delivered is bookkeeping. by_tier_at_60 is not lowered either, so verbatim_machine_english goes on reading 10 against a corpus that will hold 6, and says so.",
+      "what_was_NOT_done": "Raising F5 to F7's allocation to absorb the four. It is the only route that leaves floor.json's three at-60 gates untouched, which is a real argument, and it was refused because four more records reach 60 only as records: unless all four were verbatim_machine_english the tier still ends at 6 while the headline reads met, and a corpus that hit its target and missed the thing the target was for is ruling 56's decoration arriving on the number the whole block is named for.",
+      "what_this_costs_elsewhere": "FINDING 64. TWO clauses in eval/gold/floor.json are denominated in the literal number 60 -- calibration_scope.corpus.recalibration_at_60, and promotion_candidates.weilue-chinese-quotation.bar. At 56 neither can ever fire, nothing goes red, and the floor goes on describing itself as calibrated at a 24-record corpus for the life of the project. The bar is the sharper of the two: promotion_and_reinstatement_bar and demotions.vimose-runes.reinstated_when state the SAME standard as 'at the corpus in force when the claim is made', correctly, and only the per-case restatement carries a number. Both are re-denominated in the same commit as this decision.",
+      "this_findings_number": "FINDING 65. Found first in F5 and numbered last, because FINDINGS 62 to 64 were put to the project owner under those numbers before this document existed and a number that has been communicated should not churn."
+    }
   },
   "how_curation_cost_is_reported": "PER TIER, and against this mix. See ruling 45: G3's box 'curation cost per record recorded and trending down' is satisfiable by curating cheaper records, and the tier is the only thing that makes the number readable.",
   "no_content_hash_is_stamped_here": "Deliberate. An entry could record the record's content_hash at declaration time, so a record edited after its tier was declared would flag. It does not need to: the tier is DERIVED from the record on every verify run, so a record that moves into a different tier fails declared-vs-derived immediately, and a record that moves without changing tier has nothing to report. Stamping a hash would add a re-declaration to every corpus edit in F3-F7 and detect nothing the derivation does not."

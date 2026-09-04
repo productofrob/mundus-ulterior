@@ -200,8 +200,14 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [(ORDER_RULE, "    if False:")],
     ),
     (
+        # REPOINTED in F5: ruling 68 relaxed this clause from `!=` to `<`, and
+        # this mutation still named the old text. It reported MISS -- "mutation
+        # target not found" -- which is FINDING 37's family with the roles
+        # reversed: not a harness that cannot name its guard, but a harness
+        # naming source that no longer exists. A mutation whose target has moved
+        # proves nothing and says so, which is the only reason it was caught.
         "a gloss-capable record may be dropped from the allocation",
-        [('    if gloss != int(mix.get("gloss_capable_records") or 0):',
+        [('    if gloss < int(mix.get("gloss_capable_records") or 0):',
           "    if False:")],
     ),
     (
@@ -253,8 +259,11 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("    if len(gloss_declared) > want_gloss:", "    if False:")],
     ),
     (
+        # REPOINTED in F5 for the same reason: FINDING 51 replaced the
+        # slot-only ceiling with min(declarations, slots), so the line this
+        # named is gone. The guard it protects is unchanged.
         "an unreachable gloss quota is reported as a shortfall instead of a failure",
-        [("    if len(gloss_declared) + capacity < want_gloss:", "    if False:")],
+        [("    if ceiling < want_gloss:", "    if False:")],
     ),
     (
         "a manifest flag the code neither honours nor lifts stops being reported",
@@ -306,6 +315,70 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
             split["untiered"].append((case_id, sorted(unknown)))""",
           """        if False:
             split["untiered"].append((case_id, sorted(unknown)))""")],
+    ),
+
+    # F5 -- FINDING 51, ruling 62 and ruling 68, in the same order as the six
+    # guards appended to EXPECTED below. The first is the finding itself put
+    # back: for two sub-tranches this repository shipped that exact expression
+    # and read it as correct.
+    (
+        "the reachability ceiling counts SLOTS again and forgets declarations",
+        [("    ceiling = len(gloss_declared) + min(still_declarable, capacity)",
+          "    ceiling = len(gloss_declared) + capacity")],
+    ),
+    (
+        # Not `if False:` on the isinstance test -- with that removed a bare
+        # string reaches `entry.get` and the checker RAISES, and a checker that
+        # crashes when its own guard is removed says nothing about the guard.
+        # Emptying the loop degrades into a wrong answer instead.
+        "the declaration shape is never examined at all",
+        [('    for entry in (mix.get("gloss_capable_declared") or []):',
+          "    for entry in []:")],
+    ),
+    (
+        "a sub-tranche may exceed its own declaration by one",
+        [("        if declared_by_tranche.get(name, 0) > planned_gloss:",
+          "        if declared_by_tranche.get(name, 0) > planned_gloss + 1:")],
+    ),
+    (
+        # A kind admitted into the vocabulary without anybody agreeing it --
+        # which is the move ruling 62 refused to make in prose and this field
+        # exists to make visible.
+        "a third gloss kind is admitted to the vocabulary",
+        [('GLOSS_KINDS = frozenset({"contested_reading", "hedged_identification"})',
+          'GLOSS_KINDS = frozenset({"contested_reading", "hedged_identification", '
+          '"interesting"})')],
+    ),
+    (
+        "a gloss kind may be admitted with no written definition",
+        [("""    undefined = sorted(k for k in GLOSS_KINDS
+                       if not str(kinds_doc.get(k) or "").strip())""",
+          """    undefined = []""")],
+    ),
+    (
+        # Ruling 58 / FINDING 62. Collapsed, every source-language record is
+        # local and the Periplus reads as three regions speaking for themselves.
+        "the provenance classifier calls every record local",
+        [("    if codes and not codes <= EMPIRE_LANGUAGES:", "    if codes:")],
+    ),
+    (
+        "a Roman-world text about a region is read as a record from it",
+        [('    if str(findspot or "").strip():', "    if True:")],
+    ),
+    (
+        # The flattering branch. A record with no language code becoming LOCAL
+        # is a missing field counted as evidence for the region.
+        "an empty language list takes the flattering branch",
+        [("    if codes and not codes <= EMPIRE_LANGUAGES:",
+          "    if not codes or not codes <= EMPIRE_LANGUAGES:")],
+    ),
+    (
+        # Ruling 68 relaxed this to `<`. Put back to an equality it refuses a
+        # plan carrying slack, which is the plan Block F's delivery record says
+        # it needs.
+        "the allocation may not place more gloss-capable records than the target",
+        [("    if gloss < int(mix.get(\"gloss_capable_records\") or 0):",
+          "    if gloss != int(mix.get(\"gloss_capable_records\") or 0):")],
     ),
 ]
 
@@ -364,6 +437,23 @@ EXPECTED = [
     "verbatim_machine_english slots are refused",
     "GUARD a quotation case naming a record this corpus does not hold is "
     "counted in neither line rather than in the flattering one",
+
+    # F5 -- in the same order as the six mutations above.
+    "GUARD a gloss quota no OPEN sub-tranche can still declare is refused, "
+    "with the slots plentiful and the DECLARATION named as what binds",
+    "GUARD a gloss-capable declaration that is a bare id, naming no "
+    "sub-tranche, is refused",
+    "GUARD a sub-tranche declaring more gloss-capable records than it "
+    "planned is refused",
+    "GUARD a gloss kind outside the declared vocabulary is refused",
+    "GUARD a gloss kind the code accepts and the file does not explain is refused",
+    "GUARD Greek WITH a findspot in the region is the region speaking",
+    "GUARD Greek with NO findspot is a Roman-world text ABOUT the region, "
+    "not a source from it",
+    "GUARD an empty language list is not read as LOCAL, because a missing "
+    "field must never take the flattering branch",
+    "GUARD an allocation placing MORE gloss-capable records than the target "
+    "is accepted, because a plan with no slack fails on the first miss",
 ]
 
 # NOT mutation-verified from this source, and said so rather than left to be
