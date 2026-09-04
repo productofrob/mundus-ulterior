@@ -116,16 +116,31 @@ ABSENT = [
     "serving_stack — never persisted to `answers` at all. It exists only in "
     "the per-run archive, which is the thing being reconstructed, so no "
     "recovery from the database can produce it.",
-    "corpus_version — NOT rebuilt, and this one is a deferred DECISION rather "
-    "than an impossibility. `answers` does hold seed_corpus_digest, "
-    "corpus_digest_algorithm and cited_record_hashes, so a PARTIAL block "
-    "could be reconstructed; SELECT_ANSWERS does not read them. Whether a "
-    "recovered payload may carry a corpus identity that is missing "
-    "seed_record_count and record_hashes is a question about the field "
-    "FINDING 14 created to identify a run, and ruling 49 has just made that "
-    "field decide what may calibrate the floor. It is open, it belongs to F4, "
-    "and it is named here rather than settled in the last hour of F3.",
+    # Ruling 64, 2026-09-04, F4's close. FINDING 36 deferred this question to
+    # F4 by name and F4 has answered it: the evidence IS rebuilt, and it is NOT
+    # rebuilt under this key. `record_hashes` in a native corpus_version means
+    # the WHOLE corpus; `cited_record_hashes` is a subset by construction; and
+    # answer_eval.corpus_moved diffs those maps and reports `vanished` for
+    # every key present on one side only. A cited-only map filed under the
+    # whole-corpus name is a true measurement producing a false sentence.
+    "corpus_version — NOT rebuilt under this key, and DECIDED rather than "
+    "deferred (ruling 64). What `answers` can prove — seed_corpus_digest, "
+    "corpus_digest_algorithm and cited_record_hashes — is rebuilt into "
+    "`recovered_corpus_identity`, which states its own partiality and whose "
+    "`basis` is not one of ruling 49's two values, so sweep_corpus reads a "
+    "reconstruction as `unidentifiable` and never as `recorded`. "
+    "seed_record_count and record_hashes were never persisted to `answers` "
+    "and are named absent inside that block as well as here.",
 ]
+
+# Ruling 64. The word a reconstruction files itself under. It is deliberately
+# NEITHER of the two values answer_eval.sweep_corpus can return: a
+# reconstruction was not `recorded` at run time, and it is not
+# `unidentifiable` either, because the database can prove it. Adding a third
+# value to sweep_corpus would be a mid-block re-cut of the field ruling 49 made
+# decide what may calibrate the floor -- refused for the reason rulings 53, 58,
+# 60 and 62 each refused theirs. A separate key makes the refusal free.
+RECOVERED_BASIS = "recovered"
 
 SELECT_CENSUS = """
 SELECT answer_prompt_version,
@@ -149,7 +164,8 @@ ORDER BY question, answer_prompt_version;
 SELECT_ANSWERS = """
 SELECT answer_id, question, question_lang, answer_text,
        answer_model, answer_prompt_version, embedding_model, retrieval_k,
-       grounded, grounding, notes, created_at
+       grounded, grounding, notes, created_at,
+       seed_corpus_digest, corpus_digest_algorithm, cited_record_hashes
 FROM answers
 WHERE (%(prompt_version)s::text IS NULL
        OR answer_prompt_version = %(prompt_version)s::text)
@@ -281,6 +297,47 @@ def _citation_payload(row) -> dict:
     }
 
 
+def corpus_identity(seed_corpus_digest, algorithm, cited_hashes) -> dict:
+    """The corpus identity an `answers` row can prove. Pure. Ruling 64.
+
+    NOT a `corpus_version`, and the difference is the whole ruling.
+    `answer_store.corpus_version` carries `record_hashes`, meaning every seed
+    record; this carries `cited_record_hashes`, meaning the ones this answer
+    cited. The two maps have the same type and opposite scopes, and
+    `answer_eval.corpus_moved` diffs them by key, so the subset placed under
+    the whole-corpus name would report every uncited record as `vanished`.
+
+    A NULL digest is its own answer and is said rather than left blank. FINDING
+    14: `run_answer_sweep` never set `answer.corpus_version`, so every sweep
+    run before that fix wrote NULL here -- 60 in Part 7 and ~270 in Block E.
+    For those rows the corpus is unrecoverable from the database too, and a
+    block that simply omitted the digest would make "this answer's corpus was
+    never recorded" and "this recovery did not look" the same absence.
+    """
+    digest = str(seed_corpus_digest or "").strip()
+    if not digest:
+        return {
+            "basis": RECOVERED_BASIS,
+            "seed_corpus_digest": None,
+            "cited_record_hashes": dict(cited_hashes or {}),
+            "scope": "the `answers` row records NO seed_corpus_digest, so the "
+                     "corpus this answer was made against is not recoverable "
+                     "from the database either (FINDING 14: every sweep run "
+                     "before that fix wrote NULL here)",
+            "absent": ["seed_corpus_digest", "seed_record_count",
+                       "record_hashes"],
+        }
+    return {
+        "basis": RECOVERED_BASIS,
+        "algorithm": algorithm,
+        "seed_corpus_digest": digest,
+        "cited_record_hashes": dict(cited_hashes or {}),
+        "scope": "the digest this answer was stored with; the hash map is the "
+                 "CITED subset and is not the corpus",
+        "absent": ["seed_record_count", "record_hashes"],
+    }
+
+
 def build_payloads(conn, prompt_version: str | None,
                    question_contains: str | None) -> list[dict]:
     with conn.cursor() as cur:
@@ -309,6 +366,7 @@ def build_payloads(conn, prompt_version: str | None,
             answer_id, question, question_lang, answer_text, answer_model,
             answer_prompt_version, embedding_model, retrieval_k, grounded,
             grounding, notes, created_at,
+            seed_corpus_digest, corpus_digest_algorithm, cited_record_hashes,
         ) = row
         payloads.append({
             "timestamp": created_at.isoformat(timespec="seconds"),
@@ -320,6 +378,13 @@ def build_payloads(conn, prompt_version: str | None,
             "recovered": True,
             "recovered_from": "answers + answer_citations",
             "recovered_absent": ABSENT,
+            # Ruling 64. Its own key, never "corpus_version": no reader of that
+            # key can see this one, which is what keeps a reconstruction out of
+            # ruling 49's `recorded` basis without touching ruling 49.
+            "recovered_corpus_identity": corpus_identity(
+                seed_corpus_digest, corpus_digest_algorithm,
+                cited_record_hashes,
+            ),
             "question": question,
             "question_lang": question_lang,
             "answer": answer_text,

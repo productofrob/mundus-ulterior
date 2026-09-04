@@ -1878,3 +1878,545 @@ of instruments that already exist.
 **The sentence that travels: writing the checker for a rule is an invitation to
 write a stricter rule by accident, and what caught it was a record curated
 before this session by somebody who explained themselves in a note.**
+
+---
+---
+
+# Rulings 63 to 65 and FINDING 57 — declared 2026-09-04, F4 PART 3's FIRST ACT, BEFORE THE RANKING RUN
+
+*Date from the host, not from a document: `date -u +%F` printed `2026-09-04`.
+That is a FOURTH distinct UTC date in Block F. Ruling 50 booked a ninth session
+to buy a third; this one arrives for free because Part 3 is a separate day.*
+
+*Every line below was written before `eval/run_ranking_check.py` was invoked
+and before `eval/ranking_runs/` was opened. Rulings 55 and 61 are the only two
+pre-registered predictions this project has ever made, both are denominated in
+the BASELINE arm of the run this session is about to take, and both are cheap
+to spoil. So everything that had to be decided at F4's close and could be
+decided without a rank was decided while nobody had seen one — which is ruling
+39's discipline for the eighth time in this block, and the first time it has
+been applied to a session's own reading of its instruments rather than to its
+records.*
+
+---
+
+## Ruling 63 — Sub-Saharan Africa's two unfilled `verbatim_machine_english` slots are ruling 53's NEITHER outcome, and it is recorded in ruling 53's own words
+
+**F4 delivered 5 records against 7 allocated. Both missing records are Sub-Saharan
+Africa `verbatim_machine_english` slots. Ruling 53 wrote three outcomes before
+the hunt began and ruling 58 established, within four hours, which one fired:
+Ge'ez fails on the ROME criterion, not on the translation criterion. That is
+FINDING 38's supply problem and it is not FINDING 41's search problem. NEITHER.**
+
+### Why this is a reading and not an excuse
+
+Ruling 53's first two outcomes both require Africa's vme delivery to be evidence
+about a SEARCH:
+
+```
+NARROWS            Africa delivers 2 honest vme records, each with its failed
+                   English search written down -> FINDING 41 becomes a rule about
+                   where a hunt LOOKS rather than about the tier
+STANDS AS WRITTEN  Africa delivers 0 or 1 and the disqualifying reason is again
+                   somebody has already translated this well and posted it
+NEITHER            Africa delivers 0 or 1 for a different reason -- no open
+                   transliteration, a text outside the window, a source that
+                   refuses automated fetching
+```
+
+Africa delivered **0**, and no candidate was disqualified because somebody had
+translated it. Littmann's *Deutsche Aksum-Expedition* IV (1913) is public domain,
+downloadable in full, prints Aksumite inscriptions in original script with
+transliteration and **German translation only** — which is the
+`verbatim_machine_english` profile exactly, arriving in the region ruling 53
+named as its test, in the prestige genre FINDING 45 says gets translated. Its
+contents were read through. **Every text in it that touches Rome is either Ezana,
+which this corpus already holds, or Sembrouthes, disqualified because a Wikipedia
+editor attributed his English.** Kaleb (RIÉ 191) and Wa'zeb (RIÉ 192) are not in
+Littmann; the RIÉ is not open and the 2019 Drewes/Kropp edition is French and
+print-only.
+
+So the texts that were reachable and untranslated did not touch Rome, and the
+texts that touched Rome were held or attributed. **The window closed on the
+subject, not on the language.**
+
+### The part that costs something to write
+
+**Ruling 53 designed a test and the test did not run.** NEITHER is not a third
+result on the same axis as the first two; it is the statement that this tranche
+produced no evidence about the axis at all. F5's deferred vme ruling therefore
+inherits **an experiment that was not performed**, not a null result — and those
+are read differently by anyone deciding whether to keep the tier.
+
+East Asia's single vme slot was filled (record 35, `eastasia-06-cefu-yuangui`).
+Ruling 53 already said what to do with it: *"One slot in a tradition with its own
+enormous English-language scholarship decides nothing, and its outcome is
+reported without being read."* It is reported here and it is not read.
+
+**And FINDING 45's genre seam is untested in Africa.** The seam was discovered in
+the East Asia hunt and it predicts where to look before the looking starts — but
+in Africa the Ge'ez route closed on Rome before genre could be aimed at anything,
+and Littmann is itself the prestige genre and is fully translated into German,
+which FINDING 45 already says. So the one instrument F4 built for this tier has
+been exercised in one region.
+
+### The anti-loophole, and why a zero is the honest number here
+
+Ruling 53's anti-loophole exists because **F4 could have reached two vme records
+by not looking, and every check in this repository would have passed**: an empty
+`translation_source` is what a thorough search and no search both produce.
+
+A zero cannot be reached that way. It is the one delivery number that costs
+something to report, and the reason behind it is checkable in the direction that
+matters: **anybody who wants to falsify this ruling names a Ge'ez text that
+touches Rome, sits inside 27 BC to 1204 AD, and is printed in an open volume
+without an English translation.** That is a smaller thing to ask for than *"prove
+you searched"*, and it is the shape ruling 57 gave the whole tier.
+
+### What is NOT done
+
+**The allocation is not re-cut.** Ruling 53 declined one mid-tranche re-cut of
+`data/corpus_tiers.json`, ruling 58 declined a second, ruling 60 declined a
+third and ruling 62 declined a fourth. A fifth in the same block, in the session
+closing it, on the tranche that missed, would be a block editing its instruments
+to fit what it found.
+
+**The shortfall is not absorbed.** `check_delivery` already reports a shortfall
+as progress rather than failing, which is correct and is also exactly how a
+shortfall becomes invisible. F4_RESULT carries it as two named records that do
+not exist, in a region that is at 3 source-language records against a floor of
+4 — and ruling 58 has already said that three of those are Greek.
+
+---
+
+# FINDING 57 — a suite was fixed in the commit that found it broken, and three consecutive state blocks have reported it broken ever since
+
+`scripts/test_recover_baseline.py` is listed `RED, see below` in
+`F4_PART2_START.md`, and `STILL RED` in `F4_PART3_START.md`, both on
+`corpus_version` and `serving_stack`. Run today, at `935c35a`:
+
+```
+44 passed, 0 failed          (1 skip: sqlglot not in this interpreter)
+  ok   GUARD every native payload key is either recoverable or named in ABSENT
+```
+
+It is green, and it cannot have been anything else at any point in F4. The guard
+reads three files and nothing else, and all three are **byte-identical from
+`e7d932e` to `HEAD`**:
+
+```
+                                        e7d932e  58c6b77  4f95db2  HEAD
+scripts/recover_answer_baseline.py      f00c745  f00c745  f00c745  f00c745
+scripts/test_recover_baseline.py        58b1b8f  58b1b8f  58b1b8f  58b1b8f
+answer/run_answer.py                    1af810a  1af810a  1af810a  1af810a
+```
+
+`e7d932e` is F3's own commit, and its message is *"the baseline check pays for
+itself in an hour — FINDINGS 36 and 37"*. **The commit that discovered the
+redness is the commit that ended it**, by naming `serving_stack` in `ABSENT` as
+unrecoverable and `corpus_version` as a deferred decision. F4 Part 1's state
+block then wrote `RED`, Part 2 copied it, Part 3 wrote `STILL RED`, and F4 Parts
+1, 2 and 3 each carried a step for work that had already been done.
+
+## The remedy for the last one of these is what caused this one
+
+FINDING 36's closing move was *"`scripts/test_recover_baseline.py` is now listed
+as the EIGHTH suite"* — FINDING 31's lesson, one suite over. It went into
+`F3_RUNBOOK.md`'s command list. It did **not** go into the block underneath,
+which is where the other seven suites carry the number they printed:
+
+```
+ingest.verify            All integrity checks passed.
+ingest.test_fidelity     42 passed, 0 failed
+ingest.test_cost         59 passed, 0 failed
+eval.test_answer_eval   360 passed, 0 failed
+eval.test_ranking_check 236 passed, 0 failed
+answer.test_answer      150 passed, 0 failed
+ui\test_build_ui_data.py 14 passed, 0 failed
+scripts\test_recover_baseline.py            <- in the command list, and nowhere here
+```
+
+**It is the only one of the eight whose expected output is prose.** A suite with
+a number is compared. A suite with prose is transcribed — and this one was
+transcribed three times, each time by somebody reading the previous document
+rather than the suite, which is the exact mechanism FINDING 34 measured on a
+date and FINDING 47 measured on a commit.
+
+## What it actually cost, which is not the wasted step
+
+Three budgeted steps that were not needed is the cheap half. The expensive half
+is this: **a green suite carried as red is a suite whose next real failure reads
+as the old one.** `answer/run_answer.py`'s archived payload has grown a key twice
+in this project's life — `corpus_version` in D4 and `serving_stack` in Block E —
+and each time this guard went red. Had it grown a third in F4, the guard would
+have gone red for a NEW reason into a state block that already said RED, and the
+new reason would have been indistinguishable from the stale sentence describing
+the old one.
+
+That is FINDING 36's own defect turned inside out. FINDING 36 was a suite red and
+unlisted. This is **a suite listed, green, and reported red**, and the second is
+worse, because the first is silent and the second is reassuring in the wrong
+direction.
+
+## The rule, which is FINDING 47's applied one document earlier
+
+FINDING 47 established that *"a suite number in a result document should name the
+commit it was run at."* The state block at the head of a START document is the
+same claim made earlier and read more often. So:
+
+**A suite named in a state block carries the number it last printed and the
+commit it printed it at. A suite whose entry is a word rather than a number has
+not been run — it has been remembered.**
+
+`STARTUP.md` and the runbooks are amended in F4's close. Nothing else changes:
+the suite is green and there is nothing to fix in it.
+
+**The sentence that travels: the remedy for a suite nobody listed was to list it,
+and it was listed in the place that holds commands and not in the place that
+holds numbers, so for three sessions it was named and never read.**
+
+---
+
+## Ruling 64 — the `corpus_version` deferral is DECIDED: a recovered payload rebuilds the corpus identity it can prove, under its own key, and `corpus_version` stays absent
+
+**FINDING 36 deferred one question to F4 by name: whether a recovered payload may
+carry a corpus identity missing `seed_record_count` and `record_hashes`. It may
+not carry it under `corpus_version`. It carries what the `answers` row proves
+under `recovered_corpus_identity`, whose `basis` is the literal `"recovered"`,
+whose hash map is named `cited_record_hashes` and never `record_hashes`, and
+which no reader of `corpus_version` can see. `corpus_version` remains in
+`ABSENT`, with its reason rewritten from a deferral to a decision that points at
+the replacement.**
+
+### Why not under `corpus_version`, when the evidence is real
+
+`answer_store.corpus_version(conn)` has a shape, and the shape is a contract:
+
+```
+algorithm  scope  source  seed_record_count  seed_corpus_digest  record_hashes
+                                                                 ^ THE WHOLE CORPUS
+```
+
+`answers` holds `seed_corpus_digest`, `corpus_digest_algorithm` and
+`cited_record_hashes`. The last is **a subset by construction** — its own
+docstring says it is *"the subset of the corpus version the answer actually
+cited"*, and that it writes a null hash for a cited document absent from the
+version, precisely so that two different absences cannot be confused.
+
+`corpus_moved` diffs `record_hashes` before against after and reports
+`vanished` for every key on one side and not the other. **A cited-only map placed
+under `record_hashes` makes every uncited record in the corpus report as
+vanished** — a true measurement, correctly recovered, producing a false sentence
+because it was filed under a name that means something else. FINDING 34's family,
+and this project has now met it on a date, on a commit, on a quota's subject, and
+here on a field's scope.
+
+### And ruling 49's `basis` has two values on purpose
+
+`sweep_corpus` classifies a run's corpus as `recorded` or `unidentifiable`, and
+ruling 49 made that classification decide what may write `calibrated: true`.
+**A reconstruction is neither.** It is not `recorded`, because nothing recorded it
+at run time; it is not `unidentifiable`, because the database can prove it.
+
+Adding a third value is a change to the field ruling 49 made load-bearing for
+calibration, proposed in the session closing a tranche. Rulings 53, 58, 60 and 62
+each refused a mid-tranche re-cut of the file they turned on. **This is the fifth
+refusal and it is the first one outside `corpus_tiers.json`**, which is worth
+saying: the discipline is about the timing, not about the file.
+
+The separate key is what makes the refusal free. `sweep_corpus` reads
+`corpus_version`; it will not find one; it will answer `unidentifiable`, which is
+the true answer about a reconstruction and is already the safe one — *"an
+unidentifiable corpus is never read as the current one."*
+
+### And the evidence is not thrown away
+
+The alternative was to close the deferral as an impossibility. It is not one, and
+FINDING 36 already said so. `answers` genuinely holds the digest each answer was
+made against; discarding it because it does not fit an existing key would be the
+`pointer_only` mistake — refusing a partial record because it is not a whole one.
+
+```python
+"recovered_corpus_identity": {
+    "basis": "recovered",              # NOT one of ruling 49's two values
+    "algorithm": ...,                  # answers.corpus_digest_algorithm
+    "seed_corpus_digest": ...,         # answers.seed_corpus_digest
+    "cited_record_hashes": {...},      # answers.cited_record_hashes -- CITED ONLY
+    "scope": "the digest this answer was stored with; the hash map is the CITED "
+             "subset and is not the corpus",
+    "absent": ["seed_record_count", "record_hashes"],
+}
+```
+
+`absent` inside the block, as well as `corpus_version` inside `ABSENT`, because a
+reader who reaches this key has stopped reading the payload's top level.
+
+### The anti-loophole
+
+Four guards, and they are guards rather than notes because the failure mode here
+is a later session helpfully renaming the key:
+
+- **a recovered payload never carries `corpus_version`.** Asserted over the key
+  set, not over the code that builds it.
+- **`recovered_corpus_identity` never carries a key named `record_hashes`.** The
+  whole ruling is that the two names mean different things.
+- **`basis` is not `recorded` and not `unidentifiable`.** Asserted against
+  `answer_eval.sweep_corpus`'s own vocabulary, imported rather than re-spelled —
+  `SOURCE_LANGUAGE_TIERS`' reason, and ruling 56's.
+- **`ABSENT`'s `corpus_version` entry names the replacement key.** An entry that
+  says a thing was not rebuilt, in a payload that rebuilt part of it elsewhere,
+  is worse than either.
+
+### What is NOT done
+
+**The 16 recovered archives already on disk are not rewritten.** They were
+written before this ruling and their own `recovered_absent` correctly says
+`corpus_version` was not rebuilt. Backfilling would give a payload a corpus
+identity it did not have when it was written, which is a provenance moving
+backwards — the thing `archived_status` and `superseded_diagnosis` exist to
+refuse. Two shapes of recovered payload now exist on disk;
+`ui/build_ui_data.py` already handles two shapes for a different reason and this
+is named rather than tidied.
+
+**`SELECT_ANSWERS` gains three columns and nothing else changes about recovery.**
+It is read-only, it stays read-only, and the read-only guard already covers it.
+
+---
+
+## Ruling 65 — F4 closes on the BASELINE arm alone, and the C2 FUSED arm is recorded as DELIBERATELY NOT RUN
+
+**`eval/gold/query_renderings.json` has no entries for the eight ranking pairs
+ruling 54 added in Part 2. The BASELINE arm does not read that file and is
+unaffected. The fused arm is not run at F4's close, F4_RESULT prints its row as
+NOT RUN with this reason, and the eight pairs' missing renderings become a named
+debt for F5.**
+
+### Three reasons, and the second is the one that decides it
+
+**It answers no question F4 asked.** Rulings 55 and 61 are the only two
+pre-registered predictions this project has, and both are denominated in
+BASELINE. A fused number at F4's close would be a number with nothing to compare
+it to and no prediction riding on it.
+
+**Rebuilding the renderings moves the instrument inside the session that reads
+the predictions off it.** Every fused run records `renderings_digest`. Rebuilding
+for the eight new pairs changes that digest, in the same commit as the run whose
+two predictions are the whole point of taking it. That is FINDING 47 exactly — a
+suite reported at a tree by the run that the same commit moved — and FINDING 47
+is four days old.
+
+**It costs chat calls.** `scripts/build_query_renderings.py` spends them, and
+ruling 46's ledger is not the only budget in this project.
+
+### What it costs, said plainly rather than left as a gap
+
+C2's arm goes another tranche without a reading, and the eight new pairs have no
+renderings, so the *next* fused run cannot include them either without the same
+spend. **That is a debt and it is now the sixth item on F5's list** — five
+instrument changes, one coverage gap, and this.
+
+### The anti-loophole
+
+**An arm that was not run must be visible as an arm that was not run.** F4_RESULT
+prints the fused row with the word and the reason, never blank and never omitted.
+Ruling 52's sentence, one instrument over: *named, never merely subtracted.* A
+missing row and a row reading NOT RUN are the same absence to a reader who is
+skimming, and only one of them can be argued with.
+
+---
+
+# The sentences that travel, from F4 Part 3's opening
+
+**Ruling 53 designed a test and the test did not run, so F5 inherits an
+experiment that was not performed rather than a null result.**
+
+**The remedy for a suite nobody listed was to list it, and it was listed in the
+place that holds commands and not in the place that holds numbers, so for three
+sessions it was named and never read.**
+
+**A green suite carried as red is a suite whose next real failure reads as the
+old one.**
+
+**A cited-only hash map under a whole-corpus name is a true measurement producing
+a false sentence, and nothing in the payload would have said which.**
+
+**A missing row and a row reading NOT RUN are the same absence to a reader who is
+skimming, and only one of them can be argued with.**
+
+---
+
+# FINDING 58 — FINDING 46 went looking for a defect's siblings and enumerated four files by name; there were eight, and the one it missed is the only one that was live
+
+FINDING 46, five days old, found `startswith("FAIL")` — matching the `FAILED`
+of a suite's own summary line and harvesting a phantom guard named `ED (n)` —
+in three harnesses beyond the one FINDING 37 fixed, and a fourth where the same
+code is latent. Its closing move: *"All four fixed in F4, with the space."*
+
+**`scripts/` holds EIGHT files that harvest guard names out of a suite's
+stdout.** Today, at `935c35a`:
+
+```
+FIXED by FINDING 37/46      places  ui_places  fidelity  ranking  part8
+STILL BARE                  cost        LIVE  -- ingest/test_cost.py:728
+                                              prints FAILED (n)
+                            recover     latent
+                            part7b      latent
+                            distractors latent
+```
+
+## The live one is the ledger's
+
+`scripts/mutate_cost.py` drives `ingest.test_cost`, which ends a red run with
+`print(f"FAILED ({len(failures)})")`. So a bare matcher harvests `ED (n)` into
+that harness's BASELINE block — and the BASELINE block is the thing that decides
+whether a mutation is `verified` or `UNVERIFIED`. **A harness that invents a
+failing guard reports a green suite as partly red**, which FINDING 46 already
+named as the one thing a mutation harness must never do quietly.
+
+It is the ledger's harness. Ruling 46 says the per-tier means in
+`ingest.cost_log` are *the only place a curation-cost number may be read from*,
+ruling 52 and ruling 59 have both added rules to it this block, and
+`ingest.test_cost` went 46 → 59 → 64 assertions in two sessions. It has also not
+been run since `a5c0ae6`, which every state block since has said, and which is
+the same silence that hid the other four: *"it survived because it had not been
+run."*
+
+## The fourth latent one had never been searched for, because it is not called that
+
+`scripts/mutate_distractors.py` has no `failures_from`. It has the identical
+three lines inlined in `run_suite()`. **Every search for this defect — FINDING
+46's, and the first pass of this one — looked for a function name, and the
+defect is in the code.** It was found by grepping for
+`startswith("FAIL")` across the directory, which took one command and would have
+taken one command five days ago.
+
+## The mechanism is FINDING 46's own, happening to FINDING 46
+
+> *"A defect is fixed in the file where it was found, and the search for its
+> siblings is a separate act that nobody scheduled."*
+
+FINDING 46 **scheduled** that act. It then performed it by listing the harnesses
+it happened to have open. **An enumeration is not a search**, and the difference
+is invisible in the write-up, because a list of four names reads exactly like a
+complete list of four names. FINDING 49 said the same thing about a rule written
+down in one file; this is the same sentence about a fix applied in four.
+
+All four are fixed here, with the space, and the space alone is not the remedy.
+
+## What is owed, and why it is not done today
+
+**Eight copies of one three-line rule is FINDING 14's shape inside the machinery
+built to catch FINDING 14's shape.** The eighth careful copy is not the answer;
+one matcher in one module, imported by all eight, is — for
+`SOURCE_LANGUAGE_TIERS`' reason, which ruling 56 has already quoted this block:
+*a rule spelled out twice is a rule that disagrees once.* Spelled out eight
+times, it has now disagreed twice.
+
+Not done in F4's close: it edits eight harnesses at once, **none of them can be
+run through the bridge** — each call is killed at 45 seconds and a killed
+harness leaves a live mutation in the tree — and a consolidation nobody can
+execute in the session that writes it is a consolidation that lands unverified.
+It joins F5's list.
+
+**The sentence that travels: the remedy for a defect nobody had searched for was
+a search, and the search was performed by listing the files that were already
+open, which is why the only live instance is the one that was not on the list.**
+
+---
+
+# FINDING 59 — the rule against running a harness through the bridge is written against a TIMEOUT, and today it was a DISCONNECT
+
+`F1_RUNBOOK.md`, unchanged since F1:
+
+> *"Never run a suite or a harness through the Cowork bridge: each call is
+> killed at 45 seconds and a killed harness leaves a live mutation in the tree."*
+
+The bridge's per-call limit is no longer 45 seconds. `scripts/mutate_recover.py`
+ran through it today — 17 mutations, all verified, sources restored
+byte-identical — which is what made the next one look safe. `scripts/mutate_cost.py`
+was started the same way and the **workspace disconnected mid-run**:
+
+```
+git status   M ingest/cost.py
+
+-    direction = "down" if b < a else ("up" if b > a else "flat")
++    direction = "flat"
+```
+
+A live mutation, sitting in the tree, in the module ruling 46 names as the only
+place a curation-cost number may be read from — and it is a mutation that makes
+`trend_line` report every tier as flat, which is a plausible-looking sentence
+rather than a crash.
+
+## The reason the rule gives is not the reason the rule is right
+
+`mutate_cost.py` restores its sources in a `finally`, from bytes, and its
+restore check compares bytes — every remedy this project has built since Block D.
+**None of them run in a process that was killed.** So the exposure is not the
+45-second limit and never was; it is that the restore lives inside the process,
+and any way of ending that process early — a timeout, a disconnect, a laptop
+lid — leaves the tree mutated and every check downstream green against it.
+
+**A rule whose stated cause is fixed reads as a rule that has expired.** The
+limit changed, the sentence stopped describing the world, and the hazard did not
+move at all. That is the same shape as FINDING 57 one layer down: a written
+status carried forward while the thing it described went elsewhere.
+
+## What caught it, and what would not have
+
+`git --no-optional-locks status --porcelain`, run before the next edit — FINDING
+52's habit, which exists for a different defect and cost nothing here. **No suite
+would have caught it.** `ingest.test_cost` has 64 assertions and none of them
+asserts a direction word; `ingest.verify` does not read `ingest/cost.py`; the
+mutation harness that produced it had already exited. It was recovered with
+`git cat-file blob HEAD:ingest/cost.py` written back as BYTES, per
+`BLOCK_E_RUNBOOK.md` — `git checkout` through the bridge leaves an
+`.git/index.lock` the bridge cannot delete.
+
+## What changes
+
+The runbooks' sentence is amended to give the reason rather than the number:
+**a mutation harness restores its sources from inside itself, so it must be run
+where nothing else can end it — on the host, in a window somebody is watching.**
+`scripts/mutate_recover.py`'s 17 verified mutations are reported here as having
+been run through the bridge, and F4_PART3_RUNBOOK asks for them again on the
+host, because a harness run that happened to survive is not evidence that it was
+safe to take.
+
+**The sentence that travels: the restore lives inside the process, so every
+argument about how long the process is allowed to live is an argument about the
+wrong thing.**
+
+## FINDING 57, continued — the remedy was applied and the number it wrote was one short
+
+`F4_PART3_RUNBOOK.md` gave `scripts\test_recover_baseline.py` an expected total
+of **55**, which is what FINDING 57 asked for: a number instead of prose. The
+host printed **56**.
+
+```
+bridge      skip sqlglot not installed (pip install -r requirements-dev.txt)   55
+host        ok   every query parses as PostgreSQL                              56
+```
+
+The runbook already carried this exact caveat for `answer.test_answer` — *"reads
+149 through the bridge, because sqlglot is in the host venv and not in the
+bridge's interpreter; 150 is the number to expect on the host"* — because F3 had
+been bitten by it and written it down. **The caveat was carried for the suite
+that had it before, and not derived for the suite that had just been given a
+number.** Both suites parse SQL with sqlglot; only one of them was known to.
+
+So the rule FINDING 57 adopted is not enough, and the correction is one clause:
+
+**A suite number in a state block names the commit it was printed at AND the
+interpreter that printed it.** A number measured where an optional dependency is
+missing is a different number, and it is off by exactly the assertions that
+dependency enables — which is a silent, plausible, small discrepancy, and
+therefore the kind that gets reconciled by editing the expectation.
+
+Nothing is wrong with the suite. `56 passed, 0 failed` on the host is the number
+F4_RESULT carries, with `55 (bridge, sqlglot absent)` beside it rather than
+instead of it.
+
+**The sentence that travels: the remedy for a status that was remembered was to
+write down a number, and the first number it wrote was measured somewhere the
+document did not say.**

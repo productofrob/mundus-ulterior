@@ -88,7 +88,15 @@ _ANSWER_ROW = (
     {"claim_sentences": 1, "cited_sentences": 1, "quote_spans": []},
     None,                                         # notes
     _WHEN,                                        # created_at
+    # Ruling 64. The three columns SELECT_ANSWERS reads for the corpus identity.
+    "9728581d164b0a4b68520ecc0ff3e8eea0d21d475c9895788c4fcc8c0344da69",
+    "sha256-over-sorted-record-hashes",            # corpus_digest_algorithm
+    {"scandinavia-02-vimose": "aa11"},             # cited_record_hashes
 )
+
+# The same row as it exists for every sweep run archived before FINDING 14's
+# fix: the answer is there and the corpus it was made against is not.
+_ANSWER_ROW_NO_DIGEST = _ANSWER_ROW[:12] + (None, None, {})
 
 _CITATION_ROW = (
     "3b4489a4f7657729e397a3506eec3bf1", "S1", "scandinavia-02-vimose:0",
@@ -235,6 +243,85 @@ def test_recovered_payload() -> None:
            f"recovered payloads omit native-only keys {sorted(native_only)}")
 
 
+def test_recovered_corpus_identity() -> None:
+    """Ruling 64 — the corpus identity is rebuilt, and never under the native key."""
+    print("\nthe recovered corpus identity (ruling 64)")
+
+    conn = _FakeConn({
+        "FROM answers\nWHERE": [_ANSWER_ROW],
+        "FROM answer_citations": [_CITATION_ROW],
+    })
+    payload = rb.build_payloads(conn, None, None)[0]
+
+    # GUARD: the whole ruling. A reader of `corpus_version` -- sweep_corpus,
+    # corpus_moved, any census over eval/answer_runs/ -- must not find one here,
+    # because what is here is a subset wearing the same type.
+    expect("corpus_version" not in payload,
+           "GUARD a recovered payload never carries corpus_version")
+
+    identity = payload.get("recovered_corpus_identity") or {}
+    expect(bool(identity),
+           "the corpus identity the answers row can prove is rebuilt")
+    expect(identity.get("seed_corpus_digest", "").startswith("9728581d"),
+           "the stored digest survives — the evidence ruling 64 refused to discard")
+    expect("cited_record_hashes" in identity,
+           "the cited subset is carried under its own name")
+
+    # GUARD: the name is the ruling. `record_hashes` means the whole corpus and
+    # corpus_moved diffs it by key, so a cited-only map under that name would
+    # report every uncited record as vanished.
+    expect("record_hashes" not in identity,
+           "GUARD the cited subset is never named record_hashes")
+
+    # GUARD: partiality is stated inside the block as well as in ABSENT, because
+    # a reader who has reached this key has stopped reading the top level.
+    expect({"seed_record_count", "record_hashes"} <= set(identity.get("absent", [])),
+           "GUARD the block names what it could not rebuild")
+
+    # GUARD: the basis is neither of ruling 49's two values, read out of
+    # sweep_corpus itself rather than re-spelled here. A rule spelled out twice
+    # is a rule that disagrees once.
+    sweep_source = Path("eval/answer_eval.py").read_text(encoding="utf-8")
+    tree = ast.parse(sweep_source)
+    bases: set[str] = set()
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.FunctionDef) and node.name == "sweep_corpus"):
+            continue
+        for sub in ast.walk(node):
+            if not isinstance(sub, ast.Dict):
+                continue
+            for key, value in zip(sub.keys, sub.values):
+                if (isinstance(key, ast.Constant) and key.value == "basis"
+                        and isinstance(value, ast.Constant)
+                        and isinstance(value.value, str)):
+                    bases.add(value.value)
+    expect(bool(bases), "sweep_corpus's basis vocabulary was located, not assumed")
+    if rb.RECOVERED_BASIS in bases:
+        print(f"       sweep_corpus can return: {sorted(bases)}")
+    expect(rb.RECOVERED_BASIS not in bases,
+           "GUARD a reconstruction's basis is not one sweep_corpus can return")
+    expect(identity.get("basis") == rb.RECOVERED_BASIS,
+           "the block files itself under that basis")
+
+    # GUARD: ABSENT points at the replacement. An entry saying a key was not
+    # rebuilt, in a payload that rebuilt part of it elsewhere, is worse than
+    # either statement alone.
+    corpus_entry = next((e for e in rb.ABSENT if e.startswith("corpus_version")), "")
+    expect("recovered_corpus_identity" in corpus_entry,
+           "GUARD ABSENT's corpus_version entry names where the evidence went")
+
+    # A NULL digest is said, not left blank. FINDING 14's 330-odd sweep runs.
+    conn_null = _FakeConn({
+        "FROM answers\nWHERE": [_ANSWER_ROW_NO_DIGEST],
+        "FROM answer_citations": [_CITATION_ROW],
+    })
+    null_identity = rb.build_payloads(conn_null, None, None)[0][
+        "recovered_corpus_identity"]
+    expect(null_identity.get("seed_corpus_digest") is None
+           and "seed_corpus_digest" in null_identity.get("absent", []),
+           "a row with no stored digest says so rather than omitting the key")
+
+
 def test_archive_never_overwrites() -> None:
     print("\narchiving")
 
@@ -353,6 +440,7 @@ def main() -> int:
     print("recover_answer_baseline — offline checks")
     test_sql_casts()
     test_recovered_payload()
+    test_recovered_corpus_identity()
     test_archive_never_overwrites()
     test_inspect_existing()
     test_absent_list_is_honest()

@@ -320,10 +320,16 @@ def run_suites() -> tuple[set[str], bool]:
 
 
 def failures_from(output: str) -> set[str]:
+    # THE SPACE, seventh harness. Latent today: answer.test_answer and
+    # answer.test_translate print no line beginning FAIL that is not a guard.
+    # That is a property of those SUITES and not of this harness, and FINDING
+    # 46 already argued that a harness whose correctness depends on what its
+    # suite chooses to print is one print statement from inventing a failing
+    # guard. Made the same as the others so nobody establishes this again.
     return {
-        line.split("FAIL", 1)[1].strip()
+        line.split("FAIL ", 1)[1].strip()
         for line in output.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 

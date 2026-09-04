@@ -122,6 +122,53 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
           '        "sources_block": answer.sources_block,\n'
           '        "evidence_digest": None,')],
     ),
+    # ----------------------------------------------------------------------
+    # Ruling 64, 2026-09-04. Six mutations for the corpus identity, because the
+    # ruling's whole content is WHERE the evidence is filed and under WHAT
+    # NAMES -- and a rule about names is exactly the kind a later session
+    # "tidies" by renaming. Every one of these is a helpful edit.
+    # ----------------------------------------------------------------------
+    (
+        # The helpful edit: "this is a corpus version, why not call it one?"
+        "the recovered identity is filed under the native corpus_version key",
+        [('            "recovered_corpus_identity": corpus_identity(',
+          '            "corpus_version": corpus_identity(')],
+    ),
+    (
+        # The dangerous edit: same type, opposite scope. corpus_moved diffs
+        # record_hashes by key and would report every UNCITED record vanished.
+        "the cited subset is renamed to the whole-corpus name",
+        [('        "seed_corpus_digest": digest,\n'
+          '        "cited_record_hashes": dict(cited_hashes or {}),',
+          '        "seed_corpus_digest": digest,\n'
+          '        "record_hashes": dict(cited_hashes or {}),')],
+    ),
+    (
+        "the block stops naming what it could not rebuild",
+        [('        "absent": ["seed_record_count", "record_hashes"],',
+          '        "absent": [],')],
+    ),
+    (
+        # The quiet edit: one word, and a reconstruction becomes indistinguish-
+        # able from a run that recorded its corpus at the time.
+        "a reconstruction files itself under ruling 49's `recorded` basis",
+        [('RECOVERED_BASIS = "recovered"', 'RECOVERED_BASIS = "recorded"')],
+    ),
+    (
+        "ABSENT stops saying where the recovered evidence went",
+        [('    "`recovered_corpus_identity`, which states its own partiality '
+          'and whose "',
+          '    "a separate block, which states its own partiality and whose "')],
+    ),
+    (
+        # FINDING 14's ~330 sweep runs: the answer is there and the corpus it
+        # was made against is not. Omitting the key would make "never recorded"
+        # and "this recovery did not look" the same absence.
+        "a row with no stored digest omits the key instead of naming it",
+        [('            "absent": ["seed_corpus_digest", "seed_record_count",\n'
+          '                       "record_hashes"],',
+          '            "absent": ["seed_record_count", "record_hashes"],')],
+    ),
 ]
 
 EXPECTED = [
@@ -143,14 +190,31 @@ EXPECTED = [
     # MISS where it meant UNVERIFIED. The detail now prints beneath the label
     # in the suite, where a changing string costs nothing.
     "GUARD every native payload key is either recoverable or named in ABSENT",
+    # Ruling 64, 2026-09-04. Positional with MUTATIONS above.
+    "GUARD a recovered payload never carries corpus_version",
+    "GUARD the cited subset is never named record_hashes",
+    "GUARD the block names what it could not rebuild",
+    "GUARD a reconstruction's basis is not one sweep_corpus can return",
+    "GUARD ABSENT's corpus_version entry names where the evidence went",
+    "a row with no stored digest says so rather than omitting the key",
 ]
 
 
 def failures_from(output: str) -> set[str]:
+    # THE SPACE, and this is the SIXTH harness to need it. FINDING 37 found it
+    # in scripts/mutate_places.py and fixed it there; FINDING 46 went looking
+    # for siblings and enumerated four by name -- ui_places, fidelity, ranking,
+    # part8 -- which is four of the seven harnesses in this directory that have
+    # a failures_from at all. FINDING 58 is what the other three cost.
+    #
+    # This one is LATENT, exactly as mutate_part8 was: test_recover_baseline.py
+    # ends a red run with "N passed, N failed" and prints no line beginning
+    # FAIL that is not a guard. That is a property of the SUITE, not of the
+    # harness, and it is one print statement from being false.
     return {
-        line.split("FAIL", 1)[1].strip()
+        line.split("FAIL ", 1)[1].strip()
         for line in output.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 

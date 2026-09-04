@@ -142,10 +142,14 @@ def run_suite() -> set[str]:
     result = subprocess.run(
         [sys.executable, "-m", SUITE], cwd=ROOT, capture_output=True, text=True
     )
+    # THE SPACE, eighth harness and the one no search has ever reached,
+    # because its matcher is inlined in run_suite() and every grep for the
+    # defect has looked for `def failures_from`. FINDING 58. `is_distractor`
+    # aside, this is the same three lines as the other seven.
     return {
-        line.split("FAIL", 1)[1].strip()
+        line.split("FAIL ", 1)[1].strip()
         for line in result.stdout.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 

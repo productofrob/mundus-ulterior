@@ -479,10 +479,17 @@ UNMUTATED_BY_DESIGN = (
 )
 
 def failures_from(output: str) -> set[str]:
+    # THE SPACE, and this harness is LIVE, not latent. FINDING 37 found the
+    # defect in scripts/mutate_places.py; FINDING 46 went looking for its
+    # siblings and enumerated four harnesses by name. This is the fifth, it was
+    # not on that list, and `ingest/test_cost.py` ends a red run with
+    # `FAILED (n)` -- so a bare startswith("FAIL") harvested a phantom guard
+    # named `ED (n)` into this harness's BASELINE block, which would report the
+    # ledger suite as partly red while it was green. FINDING 58.
     return {
-        line.split("FAIL", 1)[1].strip()
+        line.split("FAIL ", 1)[1].strip()
         for line in output.splitlines()
-        if line.strip().startswith("FAIL")
+        if line.strip().startswith("FAIL ")
     }
 
 
