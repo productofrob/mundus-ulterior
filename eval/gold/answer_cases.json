@@ -1432,6 +1432,123 @@
       "expect_min_resolved_quotes": 1,
       "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
       "note": "WHY THE CLOCK AND NOT THE EMBASSY, WHICH WAS THE OBVIOUS QUESTION. The obvious case to write against this record is the one cefu-yuangui-fulin-tribute already asks — what the Fulin king's embassy presented, and in what year — because both records carry that notice. That case must NOT be duplicated here, and the reason is the interesting one: THE TWO RECORDS DISAGREE. eastasia-06 has 赤頗黎綠頗黎石綠金精 and this record has 赤頗璃石綠金精, without the green glass and with the glass graph written 璃 rather than 黎. A gold case asking what was presented would pass or fail according to WHICH of two witnesses retrieval happened to reach, so it would be an instrument measuring retrieval while wearing the name of one measuring the machine-translation path. The clock passage is in this record and in no other, so the case scores the path it is for. The divergence itself belongs in a ranking pair or a rendering check, not here — and it is recorded in both records' notes so that whoever writes that instrument does not have to find it again.\n\nEACH CONTENT GROUP ADMITS THE CHINESE OR AN ENGLISH RENDERING, on cefu-yuangui-fulin-tribute's reasoning exactly: the record carries no published English, so any English in an answer is MACHINE English from the Part 6 path. Requiring the Chinese alone would pass only an answer that quotes without translating; requiring the English alone would pass only one that translates without quoting. Admitting either is what measures the tier.\n\nTHE NUMBER TWELVE IS NOT ASSERTED, AND NEITHER IS THE HOUR. The excerpt says the balls are twelve and that they mark the twelve hours of the day, but no group requires 十二 or 'twelve'. The question asks what marks an hour and what announces it, and an answer naming the falling ball and the figure that calls out has answered it from the evidence. A group requiring the count would score arithmetic the question did not ask for, which is the shape the year group was left out of in F4's case."
+    },
+    {
+      "id": "ruwafa-thamud-in-two-languages",
+      "question": "In the al-Ruwāfa bilingual, what does the Greek text call the people who built the temple, and what does the Nabataean text call them?",
+      "why": "The first of F5's three expect_quoted_from_original cases, declared in the allocation before the hunt began. Under ruling 56 this line asks WHICH chunk was quoted and not merely whether anything resolved, because arabia-05-ruwafa carries a reference_translation and therefore a second retrieval-eligible chunk competing for the quotation.\n\nTHE QUESTION IS UNANSWERABLE FROM THE ENGLISH ALONE, WHICH IS THE WHOLE POINT. Petrantoni's translation renders BOTH languages with the same English words -- 'the natio of Thamud' in the Greek sections and 'the natio of Thamud' in the Nabataean -- so the translation flattens exactly the distinction the question asks about. An answer that quotes only the reference_translation has quoted a text in which the two names are identical, and cannot say what either language actually writes. This is the tier's own claim under test: that a corpus holding source text can answer what a corpus holding only translations cannot.",
+      "expected_behaviour": "answerable",
+      "region": "Arabia",
+      "expect_cited_docs": [
+        "arabia-05-ruwafa"
+      ],
+      "expect_quoted_docs": [
+        "arabia-05-ruwafa"
+      ],
+      "expect_quoted_from_original": [
+        "arabia-05-ruwafa"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "Θ](αμ)ουδην(ω)ν",
+          "Θ(α)μου(δ)ηνων",
+          "(Θ)[αμ](ου)δ(η)νω",
+          "Θαμουδηνων",
+          "Thamoudenon",
+          "Thamudenoi"
+        ],
+        [
+          "tmwdw",
+          "(š)rkt tmwdw",
+          "šrkt tmwdw"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
+      "note": "THE GREEK ALTERNATIVES CARRY THEIR EDITORIAL BRACKETS, DELIBERATELY, AND THE MATCHER IS WHY. Matching in this file is case-insensitive and collapses whitespace, and it is NOT punctuation-insensitive -- a case must say which spelling it accepts rather than let the matcher decide. The ethnonym occurs three times in this record's original and is bracketed differently every time, because the editor marks different letters as uncertain in each section: [Θ](αμ)ουδην(ω)ν in A, Θ(α)μου(δ)ηνων in C, (Θ)[αμ](ου)δ(η)νω in E. A group demanding an unbracketed Θαμουδηνων would fail an answer that quoted the record correctly. All three printed forms are admitted, and the unbracketed spelling and two romanisations are admitted beside them so that an answer transliterating rather than quoting the Greek script is not failed for a decision this case does not care about.\n\nTHE NABATAEAN NEEDS NO SUCH CARE: tmwdw is printed unbracketed in section B, which is why that group is short.\n\nWHAT IS NOT ASSERTED. No group requires the temple, the emperors, Claudius Modestus or Adventus. The question asks what each language calls one people, and an answer that names both forms has answered it. A group requiring the Roman officials would score a different question under this one's name -- the shape tang-huiyao-fulin-clock left the count of twelve out of."
+    },
+    {
+      "id": "abnun-fire-altar-name",
+      "question": "In the Middle Persian of the Abnūn inscription, what name is given to the fire that Abnūn established?",
+      "why": "The second of F5's three expect_quoted_from_original cases. Under ruling 56 it asks the WHICH-chunk question, because persia-05-abnun carries a reference_translation.\n\nIT IS DELIBERATELY NOT THE QUESTION THIS RECORD MOST OBVIOUSLY INVITES. The obvious case is what happened to the Romans -- Šābuhr struck them and they stood in servitude -- and that case must NOT be written here, for a reason peculiar to this record and recorded in it: THE PUBLISHED ENGLISH DOES NOT COVER THAT CLAUSE. It is in the Middle Persian and absent from the translation. A case asking it would be satisfiable only by an answer quoting an untranslated passage, and the Part 7 prompt forbids claims about untranslated passages while permitting verbatim quotation of them -- so the case would score the answer path's refusal rules rather than the quotation behaviour it is written to measure. The naming clause is in BOTH the Middle Persian and the English, so an answer can quote the original and still say what it means.",
+      "expected_behaviour": "answerable",
+      "region": "Persia",
+      "expect_cited_docs": [
+        "persia-05-abnun"
+      ],
+      "expect_quoted_docs": [
+        "persia-05-abnun"
+      ],
+      "expect_quoted_from_original": [
+        "persia-05-abnun"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "pt’y",
+          "Pattāy",
+          "Pattay",
+          "Remain"
+        ],
+        [
+          "šhpwhry",
+          "Šābuhr",
+          "Sabuhr",
+          "Šāpūr",
+          "Sapur",
+          "Shapur"
+        ],
+        [
+          "’bnwn",
+          "Abnūn",
+          "Abnun"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
+      "note": "EACH GROUP ADMITS THE TRANSLITERATION, THE TRANSCRIPTION AND AN ENGLISH RENDERING, and the three are genuinely different strings in this record rather than spelling variants of one. The transliteration writes the Aramaic heterograms and the Iranian words as the graphemes stand -- pt’y šhpwhry ’bnwn ŠM OBYDW[N] -- and the normalised transcription writes what the editors read them as, Pattāy- Šābuhr-Abnūn nām kard. THE RECORD CARRIES BOTH REGISTERS IN original_text_excerpt, so a quotation from either satisfies expect_quoted_from_original, and an answer should not be failed for choosing the register it found.\n\n'Remain' IS ADMITTED IN THE FIRST GROUP BECAUSE IT IS THE EDITION'S OWN RENDERING of pt’y, in the sentence 'and it was named Remain Šāpūr (and) Abnūn.' It reads oddly in English and it is not this project's word; admitting it is admitting the published translation on its own terms, which is what a corpus that cites its translators has to do.\n\nWHAT IS NOT ASSERTED. Not the vow, not the Romans, not Pārs or Pahlaw, and not the year. See `why` for the Romans; the rest would be a different question."
+    },
+    {
+      "id": "brihatsamhita-yavana-sanskrit",
+      "question": "In the Sanskrit of Bṛhatsaṃhitā 2.14, what word does Varāhamihira use for the Greeks, and what does he say they are honoured as?",
+      "why": "The third of F5's three expect_quoted_from_original cases, and the corpus's first gold case against a Sanskrit record. Under ruling 56 it asks the WHICH-chunk question, because southasia-05-brihatsamhita carries a reference_translation -- two of them, in fact, which makes the competing-chunk situation sharper here than on any other record in this tranche.\n\nTHE CASE IS WRITTEN SO THAT THE TWO TRANSLATIONS' DISAGREEMENT CANNOT DECIDE IT. Iyer 1884 and Subrahmanya Sastri & Bhat 1946 construe the verse's first clause incompatibly -- a list of two peoples against a predication about one -- and that dispute is this record's gloss, not its quotation case. Both translations agree that the Yavanas are honoured as ṛṣis, so a case built on that clause is answerable from the source text and from either English, and is not an instrument for the construal fight wearing a quotation case's name.",
+      "expected_behaviour": "answerable",
+      "region": "South Asia",
+      "expect_cited_docs": [
+        "southasia-05-brihatsamhita"
+      ],
+      "expect_quoted_docs": [
+        "southasia-05-brihatsamhita"
+      ],
+      "expect_quoted_from_original": [
+        "southasia-05-brihatsamhita"
+      ],
+      "expect_answer_contains_any": [
+        [
+          "यवन",
+          "yavan",
+          "Yavana"
+        ],
+        [
+          "ऋषिव",
+          "ṛṣivat",
+          "rsivat",
+          "Ṛṣi",
+          "Rsi",
+          "sage"
+        ]
+      ],
+      "expect_answer_excludes": [
+        "The sources retrieved do not answer this question"
+      ],
+      "expect_min_resolved_quotes": 1,
+      "archived_status": "NO ARCHIVED RUN HAS EVER SEEN THIS RECORD, and no floor state is declared: absent from floor.json means floor_state `none`, which is what declaring nothing asserts.",
+      "note": "BOTH GROUPS ADMIT DEVANAGARI AND IAST, because the record's original_text_excerpt carries the verse in BOTH and a quotation from either resolves. The Devanagari alternatives are given as the bare stems यवन and ऋषिव rather than as inflected words, because the verse inflects them -- यवनास्तेषु and ऋषिवत्तेऽपि -- and a group demanding the sandhied form would fail an answer that correctly quoted the stem in prose. The IAST alternatives are stems for the same reason.\n\nम्लेच्छ IS DELIBERATELY NOT A GROUP. Whether the verse calls the Yavanas mlecchas or lists mlecchas beside them is exactly what the two published translations disagree about, and it is what this record is declared gloss-capable ON. A quotation case requiring that word would pass or fail according to which construal an answer had adopted, which is a case measuring a scholarly dispute while wearing the name of one measuring quotation. Same discipline as tang-huiyao-fulin-clock's refusal to ask what the 643 embassy presented.\n\n'sage' IS ADMITTED IN THE SECOND GROUP as well as 'Ṛṣi', because Subrahmanya Sastri & Bhat render ऋषिवत् as 'worshipped as sages' where Iyer keeps 'Ṛṣis'. Admitting only the Sanskrit-derived word would fail an answer that had read the 1946 translation."
     }
   ],
   "why_quoted_not_merely_cited": "A dry run of the sweep showed expect_cited_docs was too weak on aksum-exports: three of the six retrieved passages carry one or more of the gold terms — `ivory` and `tortoise-shell` in the Muziris passage, `rhinoceros` in the Hou Hanshu — so an answer could satisfy every content term from India and China, cite the Aksum record once for something else, and pass while never using it. expect_quoted_docs requires a quotation from the named document that resolves to characters on disk. Citing a document is a proxy for using it; quoting it is the thing. Same lesson as the Part 4 pepper probe, which passed on doc_id while the passage it claimed was not in the database.",
