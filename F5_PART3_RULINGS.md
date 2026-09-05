@@ -716,6 +716,75 @@ sitting at rank 6.
 
 ---
 
+# FINDING 74 — `ui/data.js` is tracked so that it can be diffed at each gate, and it is one line
+
+## The observation
+
+The bundle was rebuilt on 2026-09-05, the first rebuild since D1 step 2 at
+`f54c585`. It went from 673 KB carrying about sixty archived runs to **9,312 KB
+carrying 685**, and `node ui/check_ui.mjs` passed every assertion — the eleventh
+instrument, red since before F3, is green.
+
+`git diff --stat` reports the rebuild like this:
+
+```
+ ui/data.js | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+```
+
+**Nine megabytes rewritten, one insertion and one deletion.** The file is a
+single line.
+
+## Why that defeats a stated purpose rather than merely looking odd
+
+`.gitignore` carries an explicit exemption for this file, with its reason:
+
+> *"ui/data.js is derived and 673K, but it IS tracked deliberately: --verify is a
+> criterion at G1 and G3, and having the bundle in history lets you diff what it
+> looked like at each gate. A result is comparable only within the thing that
+> produced it."*
+
+The bundle is in version control **so that it can be compared across gates**, and
+its format makes the comparison unavailable to every ordinary git instrument. A
+reviewer at G3 who wants to know what changed in the bundle since G1 gets one
+line against one line.
+
+**This is not a storage problem and the finding does not claim it is.** Git deltas
+blobs at byte level and packs the file perfectly well. What is lost is
+READABILITY: `diff`, `diff --stat`, `log -p` and every review tool built on them.
+
+## The third instrument in this repository to report a change it cannot show
+
+```
+data/seed_corpus/**   .gitattributes sets -diff=auto to protect citation
+                      offsets, so every record commits as `Bin 0 -> N bytes`
+                      with zero insertions.            FINDING 52, FINDING 61
+git diff --stat       made a rule to read before every commit, and blind to the
+                      one class of file this project cares about most.
+ui/data.js            tracked in order to be diffed, and one line long.
+```
+
+Each was a reasonable local decision. Together they mean the project's habitual
+pre-commit instrument is uninformative about the corpus, the bundle built from
+the corpus, and — at F4's close — seven modified harnesses were the only thing it
+could actually show.
+
+## Not fixed, and what fixing would cost
+
+**Pretty-printing the bundle is not free and is not obviously right.** It would
+multiply the file's line count into the millions, make every rebuild an enormous
+textual diff rather than an opaque one, and change what `check_ui.mjs` parses.
+The alternative — a manifest beside the bundle recording run count, record count,
+corpus digest and span audit, which IS diffable — is cheap, and would give a gate
+reviewer the comparison the exemption promises without touching the bundle.
+
+**Neither is done here.** F5 Part 3 rebuilt the bundle because it was 622 files
+stale and the instrument was red; deciding how the bundle should be reviewable is
+a separate question with its own trade-off, and F5 has no slack left to spend on
+it. **Named, with the cheap option written down.**
+
+---
+
 # What Part 3 has NOT ruled on
 
 - **The candidate finding from `F5_CANDIDATES.md`** — that the vme tier's yield
