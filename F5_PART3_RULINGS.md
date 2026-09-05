@@ -331,6 +331,186 @@ it.
 
 ---
 
+# Ruling 75 — South Asia's `verbatim_machine_english` slot is recorded as a FAILURE, and the cause is a capability of this project rather than a property of the source
+
+## What was tried, in order, and what each attempt established
+
+```
+browser pass 1   Is Bhattotpala's Vivrti on Brhatsamhita 2.14 reachable?
+                 YES. About ten printed lines on ONE page of the clean CC0
+                 Dvivedi scan, leaf n101, printed p. 82, legible at zoom, with
+                 a second open witness in Tripathi. The hunt's "the original
+                 cannot be reached" was WRONG, and F5_PART3_BROWSER_PASSES
+                 records it.
+
+capture 1        Curator's paste. WRONG PASSAGE, and machine-read: the
+                 geography-and-gnomon material, dozens of pages away, carrying
+                 a `®` and a `#` where Devanagari numerals belong, an ASCII
+                 pipe used as a danda, stray ZWNJ, and four sequences Devanagari
+                 cannot form.
+
+capture 2        Curator's paste. RIGHT PASSAGE -- verse 13's tail, verse 14,
+                 the gloss, the two quoted verses, `iti || 14 ||` and the start
+                 of verse 15 -- and still the text layer. Measured against the
+                 SAME verse already held clean in record 40 from wisdomlib:
+                 91.7% character agreement, nine divergences, including the
+                 verse number 1 read as 9.
+
+capture 3        Not attempted. The curator cannot type Devanagari.
+```
+
+## The two facts that compound, and neither alone would have been fatal
+
+**NO KEYED TEXT OF BHATTOTPALA EXISTS ANYWHERE THIS PROJECT CAN REACH.** GRETIL
+carries the Brhatsamhita and Brhajjataka in transliteration -- the mula only, not
+Utpala. SARIT advertises source texts and its holdings did not render. Forty
+archive.org items answer to `bhattotpala` and every one is a page-image edition.
+The item's own search-inside is dead, so even locating a string inside it is
+eyes-only. **This is a STRUCTURAL absence**, and by this session's own finding it
+is the class of negative an automated fetcher reads CORRECTLY -- confirmed
+independently on the Mojmal, whose missing search index defeated a person exactly
+as it defeated the fetch.
+
+**AND THE CURATOR CANNOT KEY DEVANAGARI.** Where no machine-readable text exists,
+the tier's source text has to be typed by a person, and on this project that
+person is one man who does not have the script.
+
+Either alone is survivable. A keyed text would make the curator's script
+irrelevant. A curator who could key it would make the absence of a digital
+edition merely expensive. Together they close the slot.
+
+## What was refused, and why each refusal was not close
+
+**The model transcribing from a page image.** Offered and declined. A
+`verbatim_machine_english` record has model-produced ENGLISH by construction --
+that is the tier -- so model-produced SOURCE TEXT as well would leave nothing in
+the record that a person had read. The tier exists to test the
+machine-translation path against a human-verified original; a record with no
+human-verified original tests the path against itself. This is also the second
+time in one session the same line had to be drawn: record 40 already carries a
+declared breach for a translation the model transcribed from an image, and doing
+it again on a source text would be that error promoted from a note to a method.
+
+**Accepting the OCR.** FINDING 53 forbids `_djvu.txt` as the page, and this item
+is the reason the rule is not merely procedural: the corruption was MEASURED at
+91.7% agreement against a known-good witness of one line.
+
+**An IAST transliteration by the curator.** Would still require reading the
+script.
+
+## The acceptance test this ruling was nearly written on, and why it was void
+
+A stopping rule was agreed in advance: if the curator's corrected mula verse
+matched record 40's character for character, record 41 would be written; if not,
+the slot would fail. **THE TEST WAS INVALID AND IT NEARLY RECORDED A FAILURE ON
+EVIDENCE OF A FINDING.**
+
+It compared a reading of **Dvivedi (VSS 18)** against record 40's text, which is
+**Achyutananda Jha (2001)** by way of wisdomlib. Two editions. When the curator
+reported no match, the reason was that **the Dvivedi page prints MORE characters
+in the second pada than the Jha text does** -- a textual variant between two
+printed editions, on the verse South Asia's records stand on, and Dvivedi is the
+edition scholarship conventionally cites.
+
+**One instrument, two questions, and the reassuring name on it: is this
+transcription faithful, against do these two editions agree.** Written three
+hours after FINDING 69 named that exact shape, by the session that named it.
+
+## The variant is REAL and is NOT recorded, because nobody has read it
+
+The divergence is reported by the curator from the page and **this project holds
+no transcription of it**. Record 40 is not amended: it carries Jha's text,
+correctly cited, and adding "another edition differs" without being able to say
+HOW is a claim no reader could act on and no reviewer could check.
+
+**What is owed is a reading of Dvivedi's mula verse 2.14**, which is two lines
+rather than ten and would let both records carry the divergence the way
+`eastasia-06` and `eastasia-07` carry their disagreement about the 643 embassy --
+recorded in both and corrected in neither. It needs the same script the slot
+failed on. **Recorded here as owed, and named as unfinished rather than
+described as absent.**
+
+## What this costs, and it is not hidden
+
+```
+F5 delivers          5 of 7          (was 6 of 7 on the strength of pass 1)
+vme tier             5 of 10
+corpus               54, RECORDED AS MISSED, not lowered
+```
+
+Ruling 69 recorded 56 as missed and did not lower `total_at_60` or
+`by_tier_at_60`; 54 is recorded the same way and neither is lowered here either.
+
+## Ruling 72's prediction is CONFIRMED and its mechanism is REFUTED
+
+Ruling 72 predicted both `verbatim_machine_english` slots in F5 would fail, and
+gave a mechanism: **English exists and was found.** Persia failed exactly that
+way -- thirteen candidates, thirteen open English translations.
+
+**South Asia did not.** No English translation of Bhattotpala's Vivrti exists,
+and the negative is checkable because two near misses do: Utpala's Prasnajnana
+IS translated and Sengupta translated the Khandakhadyaka WITH Utpala's
+commentary, different works both. The prediction came true on the other side of
+the record entirely -- not the translation, the ORIGINAL, and not its
+reachability either, which pass 1 disproved.
+
+**A pre-registered prediction that comes true for a reason its author did not
+name is worth more than one that comes true for the stated reason**, and it is
+worth more than the record would have been. It is also the only outcome in this
+tranche that could have distinguished the two mechanisms, because it is the only
+slot where they pointed in opposite directions.
+
+---
+
+# FINDING 72 — the tier needs a genre nobody translated, a text somebody keyed, AND a curator who can key it
+
+`F5_CANDIDATES.md` proposes, as a candidate finding this document is asked to
+rule on: the `verbatim_machine_english` tier's yield tracks a tradition's
+**digitisation** history -- "East Asia has Kanripo; Persia and South Asia have
+photographs of books."
+
+**IT CANNOT BE WRITTEN AS IT STANDS, AND THE SESSION THAT WOULD HAVE WRITTEN IT
+DISPROVED IT TWICE.** Browser pass 3 found DASI -- recorded as "the single most
+valuable thing lost in this hunt" -- fully open to a person, CC BY 4.0, DOI'd,
+9,102 keyed epigraphs, invisible only because a bot check stood in front of it.
+That vein was never a digitisation problem. And browser pass 1 found the South
+Asian "photographs of books" perfectly legible.
+
+**The corrected claim has three conditions and the third one is new:**
+
+```
+1  A GENRE NOBODY TRANSLATED       FINDING 45's seam. Necessary, not sufficient.
+2  A TEXT SOMEBODY KEYED           East Asia has Kanripo. Bhattotpala has
+                                   nothing: GRETIL the mula only, SARIT nothing,
+                                   forty archive.org items all page images.
+3  A CURATOR WHO CAN KEY IT        Where condition 2 fails, the source text must
+                                   be typed by a person, and that person must
+                                   have the script. THIS PROJECT'S CURATOR DOES
+                                   NOT HAVE DEVANAGARI.
+```
+
+**Condition 3 is a fact about this project and not about the world**, which is
+what makes it worth naming rather than embarrassing to name. It is also the only
+one of the three that no amount of hunting could have discovered: it is
+invisible until a slot reaches capture and it does not appear in any candidate's
+provenance. F5's hunt could not have found it, ran a full battery, and refused
+the right candidates for the wrong reason.
+
+**And it separates two words this project has been using as one.** REACHABLE is
+what pass 1 and pass 3 measured. KEYED is what the Mojmal and Bhattotpala lack.
+The hunt's failures were written as reachability failures and at least two of
+them were keying failures -- which is FINDING 69's shape a third time, on a third
+pair of words.
+
+**What follows for F6 and F7.** They place no `verbatim_machine_english` slot, so
+nothing in the remaining plan depends on this. What does depend on it is any
+future tranche that tries to fill one: **the question to ask of a candidate is
+not "can this be reached" but "can this be reached AND is it keyed AND can we key
+it if it is not"**, and the third clause is answered by looking at the project
+rather than at the source.
+
+---
+
 # What Part 3 has NOT ruled on
 
 - **The candidate finding from `F5_CANDIDATES.md`** — that the vme tier's yield
