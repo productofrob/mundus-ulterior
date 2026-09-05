@@ -56,7 +56,11 @@
     "eastasia-04-jingjiao-stele": "verbatim_with_provenance",
     "eastasia-05-liangshu-qin-lun": "verbatim_with_provenance",
     "eastasia-06-cefu-yuangui": "verbatim_machine_english",
-    "eastasia-07-tang-huiyao": "verbatim_machine_english"
+    "eastasia-07-tang-huiyao": "verbatim_machine_english",
+    "arabia-05-ruwafa": "verbatim_with_provenance",
+    "arabia-06-syllaeus": "verbatim_with_provenance",
+    "persia-05-abnun": "verbatim_with_provenance",
+    "southasia-05-brihatsamhita": "verbatim_with_provenance"
   },
   "target_mix": {
     "declared_on": "2026-08-29, F1, before curation.",
@@ -342,6 +346,16 @@
         "record": "eastasia-05-liangshu-qin-lun",
         "sub_tranche": "F4",
         "kind": "hedged_identification"
+      },
+      {
+        "record": "arabia-05-ruwafa",
+        "sub_tranche": "F5",
+        "kind": "contested_reading"
+      },
+      {
+        "record": "persia-05-abnun",
+        "sub_tranche": "F5",
+        "kind": "contested_reading"
       }
     ],
     "why_gloss_capability_is_DECLARED": "Because it cannot be derived. what_gloss_capable_MEANS_mechanically defines it as a hedged reading AND a statement that the reading is uncertain, both inside a RETRIEVAL-ELIGIBLE chunk -- and only original_text_excerpt and reference_translation are chunked, which is the trap this list exists to make visible. Whether a passage hedges is a judgement about prose and no classifier here can read it, so the declaration is the claim and ingest.fidelity.check_delivery guards everything mechanical about it: that the record is one this tranche curated, that its tier can carry a gloss case at all, that the count does not exceed the quota, and that the quota is still REACHABLE from the slots the allocation has left. EMPTY AT F3 RECORD 26, and that is the finding this list was added for: two records were curated and neither carries its hedge in a chunked field, because the hedge was written into original_text_note, which the loader does not chunk.",

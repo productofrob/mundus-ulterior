@@ -226,7 +226,20 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
     # having curated nothing, so this line had gone a whole session without
     # moving and a session that raised it in advance would have been raising it
     # against records nobody had found yet.
-    check(len(docs) == 36, f"expected 36 documents, got {len(docs)}")
+    #
+    # F5 Part 3, 2026-09-05. 36 -> 40, with arabia-05-ruwafa,
+    # arabia-06-syllaeus, persia-05-abnun and southasia-05-brihatsamhita, each in
+    # its own commit and this line moved once in each. Fourth to seventh raises, and the first
+    # three made by a session with NO
+    # SHELL ON THIS HOST: it could not run this check before changing the line
+    # it checks. Two things were done in place of running it. FINDING 66's
+    # condition was checked by hand -- no harness anywhere in the repository
+    # names this literal, so no mutation target moves with it. And each raise
+    # still landed in its record's own commit, which is the whole of the
+    # discipline; what is missing is the confirmation, not the timing. THIS
+    # LINE IS UNVERIFIED UNTIL THE NINE SUITES RUN ON THIS HOST, and a session
+    # that finds it red should suspect the count before it suspects the corpus.
+    check(len(docs) == 40, f"expected 40 documents, got {len(docs)}")
     orphans = {c.doc_id for c in chunks} - {d.doc_id for d in docs}
     check(not orphans, f"chunks reference unknown docs: {orphans}")
 

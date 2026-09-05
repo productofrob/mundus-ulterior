@@ -479,6 +479,174 @@
         }
       },
       "note": "Curator's blind paste from Kanripo KR2m0002_099, in two messages; the 24a columns were pasted twice and agree byte for byte. The paste corrected the locating fetch twice -- the lemma's opening page, and a length reported in characters that had been measured in bytes. Record JSON with six subject_places, the tier declaration, the document-count raise in ingest/verify.py, and the tranche's one vme_quotation_case (tang-huiyao-fulin-clock). The case deliberately does NOT ask what the 643 embassy presented, because eastasia-06 and eastasia-07 disagree about that and a case answered from either would measure retrieval rather than the machine-translation path."
+    },
+    {
+      "record_id": "arabia-05-ruwafa",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-05",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "estimated",
+          "because": "ZERO TODAY, AND IT IS AN ACCOUNTING GAP AND NOT EFFICIENCY. The hunt for this record ran on 2026-09-04, in F5 Part 2, across four regions, and those minutes were never booked against these records; they cannot now be reconstructed and nobody times a record twice. Entering 0 as `measured` would make this record look extraordinarily cheap for a reason that is bookkeeping -- which is exactly the re-labelling `why_seven_phases` warns makes cost 'trend down the moment source-hunting stops being counted as curation'. It arrives here by accident rather than by design, and it is marked `estimated` so that it cannot be read as a measurement of anything."
+        },
+        "rights_and_licence": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "because": "The licence had to be chased onto a second page: the chapter carries no front matter and the CC BY statement is the BOOK's, which F5_CANDIDATES had attributed to the chapter. THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "text_capture": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "because": "The curator's own figure, given after the fact: 'Each one took 6 minutes (average 5-7 minutes)'. Self-reported recollection with a stated range, not a closed span, so `estimated`. It covers opening the source, locating the passage and producing the paste."
+        },
+        "translation_and_fidelity": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "placement": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "authoring": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "Curator's blind paste of five lettered sections and five translations from the Ca' Foscari per-chapter PDF. The paste corrected the hunt twice: a Macdonald sentence quoted by two project documents as verbatim from p. 126 is not on that page and remains unlocated, and a second quotation was truncated at a comma, cutting away Macdonald's own alternative reading -- the reading the edition's own translation then adopts. Mechanical checks before writing: brackets balance across all five sections, diacritics precomposed NFC, ayin and alef U+2018/U+2019 and not the U+0027 FINDING 48 measured. Three findings recorded and not repaired, including the disputed sequence of section E being encoded three ways in one chapter with no two agreeing. Gloss declared."
+    },
+    {
+      "record_id": "arabia-06-syllaeus",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-05",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "estimated",
+          "because": "ZERO TODAY, AND IT IS AN ACCOUNTING GAP AND NOT EFFICIENCY. The hunt for this record ran on 2026-09-04, in F5 Part 2, across four regions, and those minutes were never booked against these records; they cannot now be reconstructed and nobody times a record twice. Entering 0 as `measured` would make this record look extraordinarily cheap for a reason that is bookkeeping -- which is exactly the re-labelling `why_seven_phases` warns makes cost 'trend down the moment source-hunting stops being counted as curation'. It arrives here by accident rather than by design, and it is marked `estimated` so that it cannot be read as a measurement of anything."
+        },
+        "rights_and_licence": {
+          "minutes": 12.0,
+          "provenance": "estimated",
+          "because": "HIGH, AND THE WHOLE OF IT IS BOOKED HERE RATHER THAN SPREAD. FINDING 69 and Ruling 74 were written on the occasion of this record, because its licence turned out not to be one and checking it revealed that three of the tranche's four remaining captures had no clean licence and no rule behind them. Spreading the cost would hide that ONE record's rights check produced a project-wide rule. This is also the first non-zero rights_and_licence figure in this ledger: every record from 25 to 36 books this phase at 0. THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "text_capture": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "because": "The curator's own figure, given after the fact: 'Each one took 6 minutes (average 5-7 minutes)'. Self-reported recollection with a stated range, not a closed span, so `estimated`. It covers opening the source, locating the passage and producing the paste."
+        },
+        "translation_and_fidelity": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "placement": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "authoring": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "Curator's paste from the REAL repository deposit. THE HEDGE IS NOT THE ONE THE HUNT PLANNED: F5_CANDIDATES proposed the y-restoration in s1l[y]; the pages the curator read carry a dispute about the DATING FORMULA itself, ngy, with three published senses each attested at a named siglum and Macdonald reading it against the editors. Stronger, and it falls on the clause that makes the record Rome-linked. One anomaly recorded and not repaired: the middle of three mourned names is 'lmlt in the transliteration and Mtl in the English, three consonants transposed, with its prefix run together where the other two are separated."
+    },
+    {
+      "record_id": "persia-05-abnun",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-05",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "estimated",
+          "because": "ZERO TODAY, AND IT IS AN ACCOUNTING GAP AND NOT EFFICIENCY. The hunt for this record ran on 2026-09-04, in F5 Part 2, across four regions, and those minutes were never booked against these records; they cannot now be reconstructed and nobody times a record twice. Entering 0 as `measured` would make this record look extraordinarily cheap for a reason that is bookkeeping -- which is exactly the re-labelling `why_seven_phases` warns makes cost 'trend down the moment source-hunting stops being counted as curation'. It arrives here by accident rather than by design, and it is marked `estimated` so that it cannot be read as a measurement of anything."
+        },
+        "rights_and_licence": {
+          "minutes": 2.0,
+          "provenance": "estimated",
+          "because": "The site's terms had to be found on a different page from the text, and the finding was a correction: F5_PART3_START states Sasanika 'states no licence, no terms of use and no citation guidance anywhere on its site'. It is a UC Irvine site with copyright terms at uci.edu/copyright/. THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "text_capture": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "because": "The curator's own figure, given after the fact: 'Each one took 6 minutes (average 5-7 minutes)'. Self-reported recollection with a stated range, not a closed span, so `estimated`. It covers opening the source, locating the passage and producing the paste."
+        },
+        "translation_and_fidelity": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "placement": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "authoring": {
+          "minutes": 7.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "Curator's paste from Sasanika, and the curator went back a second time to confirm the defect below is the page's and not the capture's. THE PUBLISHED ENGLISH DOES NOT COVER ITS OWN SOURCE TEXT: the clause where Sabuhr strikes the Romans, they stand in servitude, and the fire is begun -- the fulfilment of the vow, and the reason this candidate was chosen -- is in the Middle Persian and absent from the English, with no ellipsis and a resume on a lower-case 'and'. The record does not fill the gap. Heterogram case checked intact across all 110 tokens; two unbalanced brackets and one misplaced asterisk left as printed. Gloss declared."
+    },
+    {
+      "record_id": "southasia-05-brihatsamhita",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-05",
+      "phases": {
+        "source_hunting": {
+          "minutes": 0,
+          "provenance": "estimated",
+          "because": "ZERO TODAY, AND IT IS AN ACCOUNTING GAP AND NOT EFFICIENCY. The hunt for this record ran on 2026-09-04, in F5 Part 2, across four regions, and those minutes were never booked against these records; they cannot now be reconstructed and nobody times a record twice. Entering 0 as `measured` would make this record look extraordinarily cheap for a reason that is bookkeeping -- which is exactly the re-labelling `why_seven_phases` warns makes cost 'trend down the moment source-hunting stops being counted as curation'. It arrives here by accident rather than by design, and it is marked `estimated` so that it cannot be read as a measurement of anything."
+        },
+        "rights_and_licence": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "because": "Included a browser check of the archive.org item's rights field, which turned out to be ABSENT -- where the Mojmal item by comparison carries 'Public Domain Mark 1.0' -- correcting the hunt's implication that archive.org was the authorised home for a 1946 book. THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "text_capture": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "because": "The curator's own figure, given after the fact: 'Each one took 6 minutes (average 5-7 minutes)'. Self-reported recollection with a stated range, not a closed span, so `estimated`. It covers opening the source, locating the passage and producing the paste."
+        },
+        "translation_and_fidelity": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "placement": {
+          "minutes": 2.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "authoring": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "because": "THE AGENT CHANGED AND SIX OF SEVEN PHASES CHANGED HANDS. `text_capture` is the CURATOR's own figure, self-reported after the fact as 'each one took 6 minutes, average 5-7'. EVERY OTHER PHASE ON THIS RECORD IS MODEL WALL-CLOCK, bounded from file timestamps between 08:06Z and 09:55Z and apportioned across phases by judgement, not by a clock per phase. Record 36 flagged a machine-assisted HUNT entering the same column as a human one; this is that, in six phases instead of one. Ruling 46's comparator is within_tranche, so these four are NOT comparable to records 25 to 35 and a per-tier mean drawn through both is a mean over two different measurements. See FINDING 70."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured"
+        }
+      },
+      "note": "THREE SOURCES AND TWO BREACHES OF THE CAPTURE RULE, BOTH DECLARED IN THE RECORD. Carried forward: F5 Part 2 quoted BOTH English translations to the curator in a progress message, so their paste is a confirmation and not an independent second reading; the Devanagari was never shown and is the only genuinely blind capture here. NEW: Subrahmanya Sastri & Bhat arrived as a PAGE IMAGE and was transcribed by the MODEL rather than typed by the curator, which inverts the rule the capture path exists to enforce. A typed paste is owed. The capture also corrected the hunt: Iyer was truncated, dropping the sentence in which the two translations AGREE, which made the divergence look total when it is localised to six words."
     }
   ],
   "retired": [
