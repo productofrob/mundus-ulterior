@@ -14,16 +14,22 @@ that is the condition `F5_PART3_START.md` set.**
 ```
                             opened           closed
 HEAD                        7e6c021          this session's commits on top
-corpus                      36 records       40 records, 507 chunks indexed
+corpus                      36 records       40 records, 116 chunks, 27 pairs
 F5 delivered                1 of 7           5 OF 7
-verbatim_machine_english    4 of 10          5 of 10
+verbatim_with_provenance    19 of 27         23 of 27
+verbatim_machine_english    4 of 10          4 of 10   -- UNCHANGED
 gloss-capable declared      3 of 7           5 of 7
 records timed               12               16
 gold answer cases           45               48
-expect_quoted_from_original 4                7   -- the quota is now MET at 7
+quoted-from-original cases  6 of target 6    9 of target 6   -- ALREADY met at open
 ingest.gazetteer --check    RED since F4     GREEN
 node ui/check_ui.mjs        RED since D1     GREEN
 ```
+
+*The 507 that appears in the ranking-run section below is the INDEX depth with
+distractors, not the corpus. The corpus is 116 chunks. **Three figures in an
+earlier draft of this table were wrong and are corrected here; FINDING 75 records
+what they were and how they got in.***
 
 **Both red instruments the block inherited are green.** They were the tenth and
 eleventh instruments in this repository and neither appeared in any state block
@@ -108,9 +114,18 @@ abnun-fire-altar-name            answerable   persia-05-abnun
 brihatsamhita-yavana-sanskrit    answerable   southasia-05-brihatsamhita
 ```
 
-45 cases → 48. The corpus-wide `expect_quoted_from_original` count goes 4 → 7
-and **the quota of seven across seven regions is met.** F6 and F7 place none, so
-this quota is closed and did not close short.
+45 cases → 48. **F5's allocation places three and F5 wrote three.** All three
+target `verbatim_with_provenance` records, so all three land on the line
+`ingest.verify` calls *"ask WHICH chunk was quoted"*, which goes **6 → 9 against
+a target of 6 at 60**.
+
+**The target was ALREADY MET before this session and this document must not claim
+otherwise.** The allocation places seven cases against a target of six
+deliberately — `gloss_and_quotation_are_CASE_quotas` says so in the file: *"so
+that one may fail without the target failing with it."* F6 and F7 place none, so
+the quota is closed, and it closed over rather than short. **An earlier draft of
+this section said the quota was "met at 7" by these three cases. It was not; it
+was met before them, and the figure was wrong as well.** FINDING 75.
 
 **The Greek alternatives in the Ruwāfa case carry the editorial brackets
 verbatim** — `Θ](αμ)ουδην(ω)ν`, `Θ(α)μου(δ)ηνων`, `(Θ)[αμ](ου)δ(η)νω` — because

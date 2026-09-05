@@ -43,8 +43,13 @@ most expensive capture in the tranche. It is not that. Ten lines from a clean
 CC0 letterpress scan, on one page, checkable against a second edition.
 
 **Consequence: South Asia's `verbatim_machine_english` slot is FILLABLE and is
-taken.** F5 delivers **6 of 7**, the vme tier **6 of 10**, the corpus **55**.
+taken.** F5 delivers **6 of 7**, the vme tier **5 of 10**, the corpus **55**.
 Only Persia's vme slot is recorded as a searched failure.
+
+*CORRECTED 2026-09-05, after the close. This paragraph read "the vme tier **6 of
+10**". The tier stood at 4 and one more record would have made it 5. The slot was
+not taken -- ruling 75 -- so the tier is 4 of 10 and this whole paragraph is a
+counterfactual that did not happen. FINDING 75.*
 
 **AND `eastasia-07-tang-huiyao.json` NOW CONTAINS A FALSE SENTENCE.** Its notes
 call record 36 "the LAST such record this project can curate", on the strength of

@@ -434,12 +434,18 @@ described as absent.**
 
 ```
 F5 delivers          5 of 7          (was 6 of 7 on the strength of pass 1)
-vme tier             5 of 10
+vme tier             4 of 10          UNCHANGED -- see below
 corpus               54, RECORDED AS MISSED, not lowered
 ```
 
 Ruling 69 recorded 56 as missed and did not lower `total_at_60` or
 `by_tier_at_60`; 54 is recorded the same way and neither is lowered here either.
+
+**CORRECTED 2026-09-05, after the close.** The `vme tier` line above read **5 of
+10**. It is 4, it was 4 before this session, F5's four delivered records are all
+`verbatim_with_provenance`, and F6 and F7 place no `verbatim_machine_english`
+slot — **so the tier ends at 4 of 10 and this failure is what fixes it there.**
+FINDING 75.
 
 ## Ruling 72's prediction is CONFIRMED and its mechanism is REFUTED
 
@@ -782,6 +788,88 @@ reviewer the comparison the exemption promises without touching the bundle.
 stale and the instrument was red; deciding how the bundle should be reviewable is
 a separate question with its own trade-off, and F5 has no slack left to spend on
 it. **Named, with the cheap option written down.**
+
+---
+
+# FINDING 75 — three tier counts in this session's own documents were wrong, and the instrument that prints the right one had already printed it into this session
+
+## What was wrong
+
+```
+document                        wrote            is
+------------------------------  ---------------  --------------------------
+F5_PART3_RESULT.md headline     vme 4 -> 5/10    4 of 10, UNCHANGED
+F5_PART3_RULINGS.md ruling 75   vme 5 of 10      4 of 10
+F5_PART3_BROWSER_PASSES.md      vme 6 of 10      would have been 5; is 4
+F5_PART3_RESULT.md headline     eqfo 4 -> 7      the choice line went 6 -> 9,
+                                "quota now MET"  against a target of 6 that
+                                                 WAS ALREADY MET AT OPEN
+F5_PART3_RESULT.md headline     "507 chunks"     116 corpus chunks; 507 is the
+                                                 ranking INDEX with distractors
+```
+
+**Every one of F5's four delivered records is `verbatim_with_provenance`.** The
+tier that moved is that one, 19 -> 23. The `verbatim_machine_english` tier could
+not move, because both slots that pointed at it were recorded as failures — which
+is the central result of the session that then wrote three documents saying the
+tier had grown.
+
+## How they got in, and it is not a typo
+
+**The figures were carried forward from a projection and never re-read against a
+count.** `F5_PART3_START.md` states the tier at 4 of 10 at 36 records.
+`F5_PART3_BROWSER_PASSES.md` was written when pass 1 looked like it would fill
+South Asia's slot, and wrote the projected tier — with an arithmetic slip on top,
+6 where the projection was 5. Ruling 75 then took 5 from that document rather
+than from the file, at the moment it was recording that the slot had FAILED. The
+result document took 5 from ruling 75. **A number that was conditional on an
+event became a number about the world in three steps, and each step read the
+previous document instead of the corpus.**
+
+## AND THE INSTRUMENT HAD ALREADY SAID SO, IN THIS SESSION
+
+`python -m ingest.verify` prints the tier table on every run. The run taken
+immediately before the close — pasted into this session, read, and quoted back in
+the result document for its per-region floor line — contains:
+
+```
+note: record tiers: verbatim_with_provenance 23/27, verbatim_machine_english
+4/10, published_translation_only 1/5, catalogue_record 11/17, pointer_only 1/1
+```
+
+**The correct figure was in front of the session, in the same output whose next
+note was quoted at length, and the session read past it.** The error was found
+afterwards, by counting `data/corpus_tiers.json` to seed F6's opening state block
+— that is, by going to the file rather than to a document.
+
+## Why it belongs here rather than in an erratum
+
+This is the session's own shape landed on the session. **FINDING 69** — a word
+carrying two facts. **FINDING 73** — an aggregate that reads reassuringly while
+the thing underneath moves. **FINDING 74** — an instrument that reports a change
+it cannot show. **This one is the complement of all three: an instrument that
+reported the right number, into a session that preferred its own prose.**
+
+It is also the direct argument for a discipline this project already applies to
+sources and has never applied to itself: **the corpus is the page, and a project
+document is a fetch of it.** Ruling 39 keeps rulings out of hunt documents.
+Nothing yet keeps counts out of them.
+
+## What follows
+
+**All five figures are corrected in place, with what they read before kept
+beside them**, which is the treatment FINDING 47 requires and the same one
+`F5_CANDIDATES.md`'s Arabia block got. Nothing else in the three documents is
+touched, and no argument in any of them turns on the corrected figures: ruling
+75's conclusion is that the slot failed, and it failed either way.
+
+**Owed to F6, and cheap: a state block that is GENERATED.** Every opening
+document in this block has hand-copied its predecessor's numbers.
+`ingest.verify` already prints all of them, so a `--state` flag emitting the
+block, or a rule that an opening document pastes verify's output verbatim rather
+than restating it, removes the whole class. **Named, not built** — F5 has no
+slack left, and this is the fourth thing today whose fix is written down and not
+done.
 
 ---
 
