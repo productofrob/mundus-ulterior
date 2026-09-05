@@ -511,6 +511,211 @@ rather than at the source.
 
 ---
 
+# Rulings 70, 71 and 72, READ against the run of 2026-09-05
+
+*Run `20260905T183224+0000-retrievable_chunks_with_distractors.json`. Index 507
+chunks, depth 507, `voyage/voyage-3.5`, 44 pairs over 41 units, BASELINE arm, no
+`--fuse` (ruling 65). Unit recall@6 0.805 (33/41), MRR@10 0.621.*
+
+*Comparator: `20260904T081155+0000`, the immediately preceding archive on the
+same view. **IT PREDATES RECORD 36.** `eastasia-07-tang-huiyao` appears nowhere in
+it, so this diff measures FIVE records entering the index — 36 through 40 — and
+not four. Every attribution below is made from `beaten_by` chunk ids, which name
+records directly, and not from the diff.*
+
+---
+
+## Ruling 70 — CONFIRMED, and by a wider margin than it asked for
+
+**The prediction:** *"after F5's two Arabia `verbatim_with_provenance` records
+enter the index, at least one of them appears in `vimose-runes`'s `beaten_by`."*
+
+**The result: FOUR of the six.**
+
+```
+vimose-runes    rank 7 -> 16      recall@6 False -> False
+
+beaten_by
+  1. arabia-05-ruwafa::translation::000        <- F5, and now the CEILING
+  2. arabia-05-ruwafa::translation::002        <- F5
+  3. arabia-05-ruwafa::original::002           <- F5
+  4. arabia-04-jabal-dabub::original::000
+  5. scandinavia-05-thorsberg-chape::translation::000
+  6. arabia-06-syllaeus::translation::000      <- F5
+```
+
+Ruwāfa took the top three places outright and **displaced `arabia-04-jabal-dabub`
+as `best_other_doc_chunk_id`**, which is the ceiling `floor.json`'s
+`superseded_diagnosis` recorded and which the F4 archive still had. The ruling's
+falsification condition — *"Neither new Arabian record reaches the six"* — is not
+close: both reached, and one of them owns most of the interval.
+
+**THE COST THE RULING REGISTERED IN ADVANCE IS NOW MEASURED AT NINE RANKS.** It
+wrote: *"curating Arabia measurably damages a Scandinavian gold case that is
+already a known failure, and nothing in the allocation accounts for a region's
+records degrading another region's retrieval."* `vimose-runes` is a known failure
+in `floor.json` and it has gone from 7 to 16 in one tranche.
+
+**Three of the four crowding chunks are ENGLISH** — two Ruwāfa translation chunks
+and one Syllaeus translation chunk. The class doing the damage is not "Arabian
+inscription in its own script"; it is the record, through whichever chunk ranks.
+
+## Ruling 71 — NOT CONFIRMED, and the blind spot it declared is what lets us say so cleanly
+
+**The prediction:** *"F5's East Asia `verbatim_machine_english` record appears in
+`beaten_by` for at least one of `china-describes-rome-houhanshu` and
+`china-describes-rome-weilue`."*
+
+**`eastasia-07-tang-huiyao` appears in NEITHER.** Both intervals are identical
+and are made of other East Asian records plus one Southeast Asian site:
+
+```
+china-describes-rome-houhanshu   rank 8 -> 8     ceiling eastasia-01-weilue::translation::000
+china-describes-rome-weilue      rank 9 -> 10    ceiling seasia-02-oc-eo-site::original::000
+
+both beaten_by
+  1. eastasia-01-weilue::translation::000
+  2. seasia-02-oc-eo-site::original::000
+  3. eastasia-02-hou-hanshu::translation::000
+  4. eastasia-04-jingjiao-stele::translation::001
+  5. eastasia-04-jingjiao-stele::original::000
+  6. eastasia-05-liangshu-qin-lun::original::000
+```
+
+**The blind spot was declared before the run and it separates the two pairs.** The
+ruling said: *"if the ranks fall while the record is absent from both intervals,
+that is the recall window and not evidence against FINDING 43."*
+
+- **houhanshu held at 8.** The record is absent from the interval AND THE RANK DID
+  NOT MOVE. The blind-spot clause covers ranks that FALL; this one did not. **This
+  is a clean negative** — on this pair the mechanism did not operate at all.
+- **weilue fell 9 → 10.** Record absent, rank fell by one. **This is exactly the
+  declared blind spot and is unreadable in either direction**, as pre-registered.
+
+**AND THE RECORD IS NOT RETRIEVAL-INVISIBLE, WHICH IS WHAT MAKES THE NEGATIVE
+INTERESTING RATHER THAN EMPTY.** It crowds two other targets:
+
+```
+probe-tamil-akananuru-en    rank 6     beaten_by eastasia-07-tang-huiyao::original::000
+adulis-throne-leuke-kome    rank 31    beaten_by eastasia-07-tang-huiyao::original::000
+```
+
+A Literary Chinese dossier on Byzantium is crowding a Tamil-to-English probe and
+an Aksumite throne inscription, and is not crowding either Chinese-describes-Rome
+pair. **The mechanism operated; the prediction pointed it at the wrong targets.**
+
+**One thing this run cannot tell us, and it is owed.** NO GOLD RANKING PAIR NAMES
+RECORD 36 AS A TARGET. Its own retrievability is untested by this instrument. A
+pair written now would fall under ruling 54 — written after the record was in the
+index, scored but not citable as evidence that the tranche improved retrieval.
+
+## Ruling 72 — a correction to how ruling 75 reported it
+
+Ruling 75 wrote that ruling 72's *"prediction is CONFIRMED and its mechanism is
+REFUTED."* **That is more generous to ruling 75 than ruling 72's own text
+allows**, and the correction belongs here rather than in a result document.
+
+Ruling 72 enumerated its falsification conditions in advance, and one of them
+reads: *"Persia or South Asia fails on SUPPLY rather than on found English: that
+is FINDING 38's problem again and evidence for neither, which is ruling 53's
+third outcome and is reported as such rather than folded into a binary."*
+
+South Asia's slot failed on **neither** found English **nor** supply. The material
+exists, is reachable, is legible, and is not keyed anywhere — and the curator
+cannot key it (FINDING 72). **That outcome falls outside all three branches ruling
+72 named.** The honest report is not "prediction confirmed, mechanism refuted" but
+**ruling 72's enumeration was incomplete, and the case that arrived is one it did
+not anticipate.** Persia confirms it exactly as written; South Asia is off its
+map.
+
+---
+
+# FINDING 73 — nine pairs fell, none improved, and the headline number did not move
+
+## What the run measured
+
+```
+                       improved   unchanged   FELL
+pairs (44)                    0          35      9
+
+pair-level recall@6      old 32/44        new 32/44
+pairs crossing the window                 NONE
+```
+
+**Five records entered the index and made nine gold pairs worse and none better.**
+Not one pair crossed the recall@6 boundary, so **the number a reader meets is
+unchanged**, and `ALL recall@6 0.727` in the cohort table is the same as it was.
+
+## What actually moved is the margins, and two cases are now ON the edge
+
+```
+tc-jabal-dabub              3 -> 6     slack to rank 6: 0
+probe-tamil-akananuru-en    5 -> 6     slack to rank 6: 0
+```
+
+**One more record of the wrong kind and either leaves the window.** Three chunks of
+`arabia-06-syllaeus` are already inside `tc-jabal-dabub`'s interval, and
+`eastasia-07-tang-huiyao` is inside `probe-tamil-akananuru-en`'s. These are not
+hypothetical crowders; they are this block's own records, and F6 places seven more.
+
+## The full fall list, with the crowder named where `beaten_by` names it
+
+```
+vimose-runes                              7 ->  16    4 of 6 are F5 Arabia
+bronze-heracles-verethragna-from-mesene  58 ->  86    2 chunks of persia-05-abnun
+thorsberg-chape-niwajemariz              16 ->  24    persia-05-abnun
+muziris-cargo-akananuru                 319 -> 333
+tc-jabal-dabub                            3 ->   6    3 chunks of arabia-06-syllaeus
+adulis-throne-leuke-kome                 28 ->  31    eastasia-07-tang-huiyao
+china-describes-rome-weilue               9 ->  10
+aksum-trade-adulis                       38 ->  39
+probe-tamil-akananuru-en                  5 ->   6    eastasia-07-tang-huiyao
+```
+
+## This GENERALISES ruling 70 past what it claimed, in the direction nobody wrote down
+
+Ruling 70 framed the damage as **cross-regional** — *"a region's records degrading
+another region's retrieval"* — and registered that as the surprising cost. The run
+says same-region crowding is at least as strong:
+
+```
+arabia-06-syllaeus  crowds  tc-jabal-dabub                   Arabia -> Arabia
+persia-05-abnun     crowds  bronze-heracles-verethragna      Persia -> Persia
+persia-05-abnun     crowds  thorsberg-chape-niwajemariz      Persia -> Scandinavia
+arabia-05/06        crowd   vimose-runes                     Arabia -> Scandinavia
+eastasia-07         crowds  probe-tamil-akananuru-en         East Asia -> South Asia
+```
+
+**Curating a region damages that region's own gold cases**, and `tc-jabal-dabub`
+— an Arabia translation case crowded to the window's edge by an Arabia record
+curated the same week — is the sharpest instance in the table.
+
+## And one record crowds nothing at all
+
+`southasia-05-brihatsamhita` appears **nowhere in this run**: not as a target, not
+in any `beaten_by`, not as any pair's `top_doc` or ceiling. It is in the index —
+`run_embed` embedded its Sanskrit chunk — and it surfaces in no interval this
+gold set can see. Whether that is a property of the record, of Sanskrit against
+this embedding model, or of a gold set that asks it nothing, **this run cannot
+say, because no pair targets it.**
+
+## Why this is the same shape as everything else this session found
+
+`recall@6` is unchanged at 32/44 and every margin behind it eroded. A reader
+checking whether F5 hurt retrieval would read the aggregate, find it flat, and be
+wrong. **An aggregate that reads reassuringly while the thing underneath degrades**
+is FINDING 51's shape, FINDING 64's shape, FINDING 65's shape, and FINDING 69's
+shape — and it is now measured on the retrieval side, where the project's central
+claim actually lives.
+
+**Not gated, and deliberately not.** Nothing here fails a check, and nothing should
+be made to: the margins are real information and a gate on them would be a
+threshold nobody has evidence for. What is owed is that **F6 reads this table
+before it curates**, because seven more records enter on top of two gold cases
+sitting at rank 6.
+
+---
+
 # What Part 3 has NOT ruled on
 
 - **The candidate finding from `F5_CANDIDATES.md`** — that the vme tier's yield
