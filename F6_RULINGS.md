@@ -409,3 +409,139 @@ reading is not automatically "the new record crowded it"** — it may be that a
 weak chunk was holding a rank it could not defend against any new Africa material
 whatsoever. That alternative is written down here, before the run, because after
 the run it would be available as an excuse for either outcome.
+---
+
+# FINDING 81 — a gold refusal case named a fabrication marker the corpus acquired four records later, and the guard that had never fired, fired
+
+## What happened
+
+`eval.test_answer_eval` stood at 425 green all morning. The moment
+`africa-06-ezana-rie189` landed it read **424 passed, 1 failed**:
+
+```
+ezana-stone-geez: excludes 'Lord of Heaven', which the corpus now contains as a whole word
+FAIL GUARD no correctly_refusable case names a fabrication marker the corpus has
+     since acquired — a record that answers a question the gold set says is
+     unanswerable falsifies the case rather than the corpus
+```
+
+`ezana-stone-geez` asks *"What does the Ge'ez text of the Ezana Stone say?"* and
+is `correctly_refusable`. Its exclusion list held five strings, and the case's
+own note explains three of them: **"Mahrem is the Aksumite war god the Greek
+renders as Ares, Ella Amida is Ezana's father, and 'Lord of Heaven' is the
+formula of Ezana's later monotheist recension. All three are real, all three are
+absent from every one of the 24 seed records — checked."**
+
+**All three were absent at 24 records. At 47, one of them is not.** RIÉ 189's
+published English carries `Lord of Heaven`, in the same king's mouth, in a
+different inscription.
+
+## Why the case survives and only the marker dies
+
+The guard's sentence is that such a record "falsifies the case rather than the
+corpus", and the instinct it protects against is amending a gold case to make a
+red go away. **This is the narrower half of that, and the difference is worth
+stating rather than assuming.** RIÉ 189 is not the Ezana Stone; the corpus still
+holds no Ge'ez of the trilingual stone; the question is still correctly
+refusable. What ended is one string's status as EVIDENCE OF FABRICATION — a
+model that now writes `Lord of Heaven` may be reading `africa-06` rather than
+inventing, and the case can no longer tell those apart from that string alone.
+
+The two structural exclusions — `the Ge'ez text reads`, `the Ge'ez version says`
+— still catch the failure the case exists for, whatever content follows. `Mahrem`
+and `Ella Amida` were re-checked against the corpus at 47 records and remain
+absent from every retrieval-eligible chunk. The amendment is dated in the case's
+own note, in FINDING 75's form.
+
+## What this says about the instrument, which is the part worth keeping
+
+**Nobody wrote this guard for a case they expected to trip.** It has been green
+through F3, F4, F5 and the first three records of F6, and its first firing was
+correct, specific, named the case, named the string, and named which of the two
+things had been falsified. **A gold set grows stale in exactly this direction —
+by the corpus catching up with it — and it is invisible to a reader.** The
+project's other stale-figure findings (75, 76, 80) were all caught by a person
+noticing; this one could not have been.
+
+**And it fired on the record whose own notes had already thought about the
+adjacency and got it half right.** `africa-06`'s notes say the record does not
+close `ezana-stone-geez` and say why. They do not say that it breaks one of its
+assertions. The curator saw the case and the record; the guard saw the string.
+
+---
+
+# FINDING 82 — `classify_translation` hard-codes `lang = "en"`, and it cost F6 the record the tranche was pointed at
+
+## The observation
+
+`ingest/fidelity.py`:
+
+```python
+def classify_translation(text: str, source_type: str) -> tuple[str, str, bool]:
+    if looks_like_pointer(text) or looks_like_placeholder(text):
+        return "pointer", "en", False
+    if source_type in FIND_TYPES:
+        return "object_description", "en", True
+    return "translation", "en", True
+```
+
+**Every translation chunk in this corpus is declared English by construction, and
+nothing anywhere checks whether it is.** `classify_original` measures — it calls
+`non_latin_ratio`, it calls `english_marker_ratio`, it returns a language it has
+looked for. Its sibling returns a constant.
+
+## Why it stopped being harmless today
+
+`F6_CURATION_START.md` §3 pointed the East Asia slot at a Turfan Manichaean text
+in Middle Persian or Parthian, which would have settled the `M2 I` / `M 5794 I`
+mis-regioning in one record. The vein is REACHABLE — `parsigdatabase.com` opens
+completely and TITUS carries M 2 — and it fails on the translation side:
+
+- parsigdatabase's Manichaean section carries **59 Middle Persian texts under
+  Boyce 1975's sigla** with transcription and translation, and its own interface
+  heading says what the translation is: *"Transcription and **Persian**
+  translation of Middle Persian texts"*. The five texts its home page lists as
+  carrying English are all Zoroastrian.
+- **A Persian translation entered as `reference_translation` would be labelled
+  `en` and would be retrieval-eligible as English.** The corpus would hold a
+  false claim about its own contents, in a field no instrument reads.
+- Boyce 1975, Asmussen 1975 and Andreas–Henning 1933 are all in copyright and
+  none is reachable without a login this session cannot use.
+
+`derive_tier` is explicit that source-language text with no published translation
+is `verbatim_machine_english`, and F6 places no such slot. **So the slot went to
+`eastasia-08-songshi-fulin` instead, and the reason is a classifier's constant.**
+
+## What follows
+
+- **Not fixed here.** A fix is a language detector over translation chunks, it
+  changes what every existing record's translation chunk declares, and it is not
+  a thing to write in the last hour of a tranche. F7 or Block G.
+- **The cost is recorded where it was paid**: in `eastasia-08-songshi-fulin`'s
+  notes, in its cost ledger entry, and here.
+- **The mis-regioning is settled anyway and never needed the record.** `M2 I` and
+  the banked `M 5794 I` are Turfan finds and are EAST ASIA candidates under the
+  findspot rule that makes `eastasia-04-jingjiao-stele` East Asia and not Persia.
+
+---
+
+# TWO SMALLER CORRECTIONS TO `F6_CURATION_START.md`, RECORDED SO THE NEXT SESSION DOES NOT INHERIT THEM
+
+**1. `--refresh` did NOT re-stamp every cached entry.** The start document says
+to expect `data/gazetteer.json` to show "thousands of changed lines for three
+added ids", from FINDING 74's sibling observation. Today's refresh, which added
+`pleiades:39379`, produced **26 added lines and no changed ones**. The warning is
+not wrong, it is DATE-DEPENDENT: the 58 cached entries already carried
+`retrieved: 2026-09-06` from this morning's refresh, so re-stamping them changed
+nothing. A warning about a diff is a warning about two states of a file and the
+document did not say which two.
+
+**2. The `grep -rn "== 43"` guard has a collision at 45 and will have more.**
+FINDING 66's rule is that the document-count line must be the only match for its
+own literal. At 45 the prescribed grep also matched
+`eval/test_ranking_check.py:1049`, which contains `pace(1000.0, 45.0, ...) ==
+45.0` — a pacing assertion with nothing to do with documents. The guard was
+written when the count was in the forties and the literal was rare; it is a
+substring search over a repository full of numbers. **Reported, not fixed:** the
+count is at 47 today and the collision was read and dismissed by a human eye,
+which is exactly the failure mode FINDING 66 exists to remove.
