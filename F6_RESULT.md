@@ -208,6 +208,15 @@ ledger entry.
 
 ## Owed by F6 and NOT DONE — the ranking run, and it is host-only
 
+*DONE 2026-09-06, LATER THE SAME DAY, ON THE HOST, AND AFTER THIS DOCUMENT WAS
+WRITTEN. The run is `20260906T103920+0000-retrievable_chunks_with_distractors.json`
+and it is read in `F6_RANKING_2.md`. **P1 CONFIRMED, P2 CONFIRMED, P4 REFUTED**, and
+`ALL recall@6` moved off 0.727 for the first time since F4 — downward, 32/44 to
+30/44. The section below is KEPT AS WRITTEN rather than deleted, because it is the
+instruction that produced the run and a debt list whose closed items vanish is a
+debt list nobody can audit. `run_ingest`, `run_embed` and both mutation harnesses
+were run in the same sequence and are green.*
+
 **`eval.run_ranking_check` cannot run from the bridge.** It needs Postgres:
 `cannot reach Postgres at postgresql://mundus:mundus@localhost:5432/mundus`. So
 do `run_ingest` and `run_embed`, so **the four records of this session are not in
