@@ -557,7 +557,7 @@ down.
 ingest.verify                    green, 40 documents
 ingest.test_fidelity             77
 ingest.test_cost                 64
-eval.test_answer_eval            422    (416 at open; +6 for three gold cases)
+eval.test_answer_eval            425    (416 at open; +9 for three gold cases)
 eval.test_ranking_check          258
 answer.test_answer               150
 ui/test_build_ui_data.py         19
@@ -567,6 +567,15 @@ python -m ingest.gazetteer --check   GREEN   -- every placement resolves to a
                                              cached, dated gazetteer entry
 node ui/check_ui.mjs                 GREEN   -- all checks passed
 ```
+
+*CORRECTED 2026-09-06, F6, FINDING 76. This table read `422    (416 at open;
++6 for three gold cases)`. The 416 was measured; the 422 was not. `0f5bfe0`
+changes `eval/gold/answer_cases.json` from 45 to 48 cases and does not touch
+`eval/test_answer_eval.py` at all, and the three cases carry THREE assertions
+each, not two. Run on the bridge 2026-09-06: 416 at `0f5bfe0^`, **425** at
+`a20214e`. The per-case assertion rate behind the +6 was assumed and never
+counted -- which is FINDING 75 arrived at by arithmetic instead of by copying,
+in the document that discovered FINDING 75.*
 
 **The nine were run on the HOST at `7e6c021` before anything was curated**, which
 was Part 3's first job and had never been done. **`answer.test_answer` is 150 on

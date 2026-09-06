@@ -67,17 +67,17 @@
     "total_at_60": 60,
     "new_records": 36,
     "by_tier_new": {
-      "verbatim_with_provenance": 16,
+      "verbatim_with_provenance": 18,
       "verbatim_machine_english": 10,
-      "published_translation_only": 4,
-      "catalogue_record": 6,
+      "published_translation_only": 3,
+      "catalogue_record": 5,
       "pointer_only": 0
     },
     "by_tier_at_60": {
-      "verbatim_with_provenance": 27,
+      "verbatim_with_provenance": 29,
       "verbatim_machine_english": 10,
-      "published_translation_only": 5,
-      "catalogue_record": 17,
+      "published_translation_only": 4,
+      "catalogue_record": 16,
       "pointer_only": 1
     },
     "why_these_numbers": "PHASE2_PLAN names the failure directly -- 'so the tranche is not accidentally all catalogue records' -- and the reason it would happen is cost: a museum object record is the cheapest record in this corpus to curate and a cited bilingual inscription is the dearest. At 24 the split is 11 source-language-bearing against 11 catalogue. The target takes source-language-bearing records from 11 to 35 (46% to 58%) and catalogue from 11 to 19 (46% to 32%), because the product's central claim is about non-English source text and 22/30 is whether that text was reachable.",
@@ -257,13 +257,15 @@
             },
             {
               "region": "Persia",
-              "tier": "published_translation_only",
-              "n": 1
+              "tier": "verbatim_with_provenance",
+              "n": 1,
+              "repointed_by": "RULING 76, F6, 2026-09-06"
             },
             {
-              "region": "Persia",
-              "tier": "catalogue_record",
-              "n": 1
+              "region": "Arabia",
+              "tier": "verbatim_with_provenance",
+              "n": 1,
+              "repointed_by": "RULING 77, F6, 2026-09-06"
             },
             {
               "region": "Sub-Saharan Africa",
@@ -285,7 +287,7 @@
           "gloss_capable": 1,
           "expect_quoted_from_original_cases": 0,
           "vme_quotation_cases": 0,
-          "why_these": "REVISED by ruling 73, F5, 2026-09-04. It read: 'The last two source-language records sit here rather than in F7, so that the boundary between the expensive tiers and the cheap one falls inside a sub-tranche that still has a session after it.' THAT ARGUMENT IS WHY THE TWO RE-POINTED SLOTS CAME HERE TOO. F6 now holds four source-language records rather than two: the two it always had, plus one Scandinavia and one Sub-Saharan Africa slot re-pointed from catalogue_record slots in F7. Those two are the only records in the whole remaining allocation that change a per-region floor from missed to met, and they sit in the last sub-tranche with a session behind it precisely because one of them is a hunt rather than a known record. Its two Southeast Asian catalogue records went to F7 in exchange, so the tranches are 7/7/7 rather than 7/9/5 and no sub-tranche is larger than any this block has ever delivered.",
+          "why_these": "REVISED AGAIN by RULINGS 76 and 77, F6, 2026-09-06, before the first candidate was examined. The ruling-73 text is kept below because a plan quietly updated is the defect FINDING 47 is about. RULING 76 re-points F6's Persia published_translation_only slot to verbatim_with_provenance: FINDING 71 showed Persia ending Block F at 3 against a floor of 4 BY CONSTRUCTION -- both its F6 slots were tiers that do not count toward the floor and F7 places no Persia slot -- while check_allocation reported all integrity checks passed, because it reads this plan and the plan assumes its slots fill. F6 is the last sub-tranche that can change it. The supply objection F5's hunt raised was overturned by browser pass 2 on 2026-09-06 (F6_BROWSER_PASS2.md): parsigdatabase.com opens completely, carries 120 texts with transcription and translation in adjacent tabs and stable numeric per-record URLs, and holds at least one text in the window whose edited text is Jamasp-Asana 1897-1913 and therefore public domain. RULING 77 then exchanges F6's Persia catalogue_record slot with an F7 Arabia catalogue_record slot and re-points it to Arabia verbatim_with_provenance, for CIH 541 at dasi.cnr.it -- a CC BY 4.0 Sabaic source text and a CC BY 4.0 English translation on one record, with a DOI, a stable per-record URL, a linked site record and three named-editor variants in a printed apparatus -- which carries F6's one gloss_capable declaration. The EXCHANGE is what keeps records_by_region_target_at_60 still: Persia gives up a record here and takes one back in F7, Arabia the reverse, so Persia ends at 9 and Arabia at 8 exactly as ruling 44 declared, which is the shape rulings 67 and 73 both used. What moves is the TIER mix -- verbatim_with_provenance 16 to 18, published_translation_only 4 to 3, catalogue_record 6 to 5 -- and it moves toward the tiers PHASE2_PLAN named the failure mode about. F6 now places SIX source-language records and NO catalogue record at all. --- THE RULING-73 TEXT, KEPT: REVISED by ruling 73, F5, 2026-09-04. It read: 'The last two source-language records sit here rather than in F7, so that the boundary between the expensive tiers and the cheap one falls inside a sub-tranche that still has a session after it.' THAT ARGUMENT IS WHY THE TWO RE-POINTED SLOTS CAME HERE TOO. F6 now holds four source-language records rather than two: the two it always had, plus one Scandinavia and one Sub-Saharan Africa slot re-pointed from catalogue_record slots in F7. Those two are the only records in the whole remaining allocation that change a per-region floor from missed to met, and they sit in the last sub-tranche with a session behind it precisely because one of them is a hunt rather than a known record. Its two Southeast Asian catalogue records went to F7 in exchange, so the tranches are 7/7/7 rather than 7/9/5 and no sub-tranche is larger than any this block has ever delivered.",
           "closed": false
         },
         {
@@ -297,9 +299,10 @@
               "n": 1
             },
             {
-              "region": "Arabia",
+              "region": "Persia",
               "tier": "catalogue_record",
-              "n": 1
+              "n": 1,
+              "repointed_by": "RULING 77, F6, 2026-09-06 -- the exchange half"
             },
             {
               "region": "South Asia",
@@ -325,7 +328,7 @@
           "gloss_capable": 1,
           "expect_quoted_from_original_cases": 0,
           "vme_quotation_cases": 0,
-          "why_these": "Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last. AMENDED by ruling 67, F5: East Asia's catalogue_record slot is exchanged for Arabia's, against the verbatim_machine_english slot moved the other way in F5. Neither region's target at 60 moves and no tier total moves; what moves is WHERE the machine-English tier is tested. AMENDED AGAIN by ruling 73: F7 gives up its Scandinavia and Sub-Saharan Africa catalogue_record slots, which become source-language slots in F6, and takes F6's two Southeast Asian catalogue records in exchange. F7 stays at seven and stays what it was: the cheapest tier, deliberately last.",
+          "why_these": "AMENDED AGAIN by RULING 77, F6, 2026-09-06: one of F7's two Arabia catalogue_record slots becomes a Persia catalogue_record, the exchange half of the re-point that gave F6 an Arabia verbatim_with_provenance slot for CIH 541. Neither region's target at 60 moves. F7 stays at seven and stays what it was. --- EARLIER TEXT, KEPT: Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last. AMENDED by ruling 67, F5: East Asia's catalogue_record slot is exchanged for Arabia's, against the verbatim_machine_english slot moved the other way in F5. Neither region's target at 60 moves and no tier total moves; what moves is WHERE the machine-English tier is tested. AMENDED AGAIN by ruling 73: F7 gives up its Scandinavia and Sub-Saharan Africa catalogue_record slots, which become source-language slots in F6, and takes F6's two Southeast Asian catalogue records in exchange. F7 stays at seven and stays what it was: the cheapest tier, deliberately last.",
           "closed": false
         }
       ],

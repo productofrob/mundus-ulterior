@@ -61,12 +61,21 @@ when F5 Part 3 opened and were in no state block anybody read:
 
 ```
 ingest.verify        green, 40 documents      ingest.test_fidelity           77
-ingest.test_cost                        64    eval.test_answer_eval         422
+ingest.test_cost                        64    eval.test_answer_eval         425
 eval.test_ranking_check                258    answer.test_answer            150
 ui/test_build_ui_data.py                19    scripts/test_recover_baseline  56
 scripts/test_harnesses.py               43
 python -m ingest.gazetteer --check   GREEN    node ui/check_ui.mjs        GREEN
 ```
+
+*CORRECTED 2026-09-06, F6, FINDING 76. The table above read
+`eval.test_answer_eval         422`. It is **425**, run on the bridge at
+`a20214e`, the tree this block describes. The 422 was inherited from
+`F5_PART3_RESULT.md`, where it was computed from a measured 416 plus an assumed
+per-case assertion rate. **The state block above IS verify's output and is
+correct character for character; this table never was verify's output**, and the
+rule this document opens with was scoped to one command while eleven were
+printed.*
 
 **The host/bridge question is settled — do not re-open it.** All nine suites give
 identical counts on both once `psycopg[binary]` and `sqlglot` are installed;
