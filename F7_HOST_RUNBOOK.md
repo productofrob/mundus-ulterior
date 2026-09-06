@@ -1,10 +1,19 @@
 # F7 HOST RUNBOOK — the ranking run F7 owes, and it cannot be made from the bridge
 
-**Tree: `50c19fe`, working tree clean, 54 documents, all eleven instruments
-green.** `eval.run_ranking_check` needs Postgres at
+**54 documents, working tree clean, all eleven instruments green.**
+`eval.run_ranking_check` needs Postgres at
 `postgresql://mundus:mundus@localhost:5432/mundus`, which the bridge cannot
-reach, so the four F7 records that changed the corpus are **not in the index at
-all** and no ranking number in this repository yet knows they exist.
+reach, so the seven F7 records are **not in the index at all** and no ranking
+number in this repository yet knows they exist.
+
+> **CORRECTED 2026-09-06, FINDING 90.** This document first read *"Tree:
+> `50c19fe`"* and its abort table said *"`HEAD` is not `50c19fe` → the tree
+> moved under the measurement"*. **Committing the runbook moved `HEAD` to
+> `327bd2c` and tripped the runbook's own abort condition**, which is what the
+> first reader hit. The abort table below is now written against WHAT THE INDEX
+> IS A FUNCTION OF rather than against a commit hash, because a document that
+> pins its own commit is stale the moment it exists. The original sentence is
+> quoted here rather than deleted.
 
 ---
 
@@ -26,13 +35,29 @@ Expected: `pgvector installed: True`.
 ## Step 2 — verify the tree before anything writes to the index
 
 ```powershell
-git rev-parse --short HEAD
 git status --porcelain
+git diff --name-only 865a3d3..HEAD
 ```
 
-**Expected exactly: `50c19fe`, and nothing else.** If `git status` shows a
-tracked file changed, stop — a ranking run over a moved tree produces a number
-that looks like a pass.
+**`git status` must print nothing.** A ranking run over a dirty tree produces a
+number that looks like a pass.
+
+**`git diff --name-only` may list only documentation.** `865a3d3` is record 54 —
+the last commit that changed the corpus. Everything after it is prose. What the
+run is a function of is:
+
+```
+data/seed_corpus/          the records
+data/corpus_tiers.json     the declared tiers
+data/gazetteer.json        the cached places
+ingest/                    the loader and the classifier
+eval/gold/ranking_pairs.json   the pairs being scored
+```
+
+**If the diff names anything under those, stop.** If it names only `*.md` at the
+repository root — and, from `50c19fe`, `eval/gold/answer_cases.json`, which is
+the gold ANSWER set and is not read by `run_ranking_check` — the tree has not
+moved in any sense the measurement can see. Proceed.
 
 ## Step 3 — the run, in this order and no other
 
