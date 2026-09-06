@@ -1130,6 +1130,55 @@
         }
       },
       "note": "F7's second record. First open_licence_stated cell in the corpus naming the GNU Free Documentation License, and the first rights cell written against a policy page that contradicts the object page's own badge."
+    },
+    {
+      "record_id": "southasia-07-bm-claudius-aureus",
+      "tier": "catalogue_record",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE POOL WAS FOUND BEFORE THE OBJECT. The British Museum's collection search does not work through a fetcher -- it returns a stale default set for every keyword -- so the seventy-five Roman coins with Indian findspots were reached through the bibliography term page for Turner 1989 instead. Choosing among them took longer than finding them: most are bullion with nothing to say, and the selection rule became `which one has a curator's comment`. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Reading the terms page, then searching the rendered object page for a Creative Commons marking that the terms page says would be there if the licence applied. The minutes are the search, and the search is the whole cell: without it this would have been recorded as CC BY-NC-SA 4.0 on a site-level intent. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "FOUR FIELDS ASSEMBLED IN A DECLARED ORDER AND THE DIGEST TAKEN OVER THE RESULT, which is eastasia-08's practice applied to an assembly instead of an edit. 183 characters, agreeing at 0740202d on both machines. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 1.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Nothing to do. The minute went on deciding that the two Latin legends belong in the excerpt rather than in a note, since the museum transcribes them and persia-03-coin's language_note exists to complain that its museum did not. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 7.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "TWO BLOCKS AND THE DEAREST PLACEMENT OF THE TRANCHE, because one of them required overturning a standing refusal in writing. Pleiades 423025 Roma has been refused five times in this corpus for texts naming the Roman state; here the source names the CITY as a mint and distinguishes it from the province, so the id is taken and the reason is written into the entry. The findspot went the other way: India, regional, no id, and the obvious Pudukkottai refused because a donor's title is not a findspot. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 10.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Short. The record's argument is carried by five words of the museum's own curator's comment and by the two place blocks, so the prose mostly has to stay out of the way and say what was refused. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "F7's third record. Shortest excerpt in the corpus at 183 characters, and the only record that may take Pleiades 423025."
     }
   ],
   "retired": [

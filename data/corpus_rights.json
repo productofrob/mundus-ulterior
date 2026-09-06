@@ -278,6 +278,16 @@
       "read_on": "2026-09-06",
       "read_by": "model",
       "note": "THE LICENCE THE OBJECT PAGE ADVERTISES IS NOT THE LICENCE THAT COVERS THIS RECORD'S TEXT -- FINDING 87. art.thewalters.org/object/21.74/ carries eleven `Creative Commons License` badges, every one beside a `Download Image` control and every one linking to creativecommons.org/publicdomain/zero/1.0/. A reader of the object page alone would record this cell as CC0. The policy page's second sentence assigns the LONGER TEXT DESCRIPTIONS -- which is exactly the 700 characters this record quotes -- to the GNU Free Documentation License instead. The CC0 grant covers images and metadata.\n\nNO VERSION IS NAMED and the cell records what is printed rather than levelling it, as F6 did for an open_licence_stated licence that named no version either.\n\nNOT two_positions_stated: the page states two licences over two different bodies of material and says which is which, so it is one position per thing and the record knows which thing it took. two_positions_stated is for material with two positions asserted over IT, which eastasia-08-songshi-fulin has and this does not."
+    },
+    "southasia-07-bm-claudius-aureus": {
+      "position": "all_rights_reserved",
+      "region": "South Asia",
+      "licence": null,
+      "stated_verbatim": "© 2026 The Trustees of the British Museum",
+      "read_off": "https://www.britishmuseum.org/collection/object/C_1898-0803-11",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "THE FLATTERING READING WAS AVAILABLE AND IS REFUSED. britishmuseum.org/terms-use/copyright-and-permissions says the Museum \"increasingly intend[s] to release content on our website under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) licence\" and, immediately after, that \"The Creative Commons licence does not apply to everything on our website. Content that is published under the Creative Commons licence will be marked with the following logo\". THE MARKING WAS LOOKED FOR ON THIS PAGE AND IS NOT THERE: the rendered document was searched on 2026-09-06 for `Creative Commons`, for `CC BY`, and for any anchor href containing `creativecommons` -- zero of each, in the full HTML and not only the visible text. One copyright line and no badge, so the site-level intent is not asserted over this record.\n\nSECOND CELL IN THIS TRANCHE WHERE THE ADVERTISED READING WAS WRONG, AND IN THE OPPOSITE DIRECTION TO THE FIRST. arabia-08-walters-marib-pediment's object page advertises CC0 over material that is not the text this corpus takes (FINDING 87); this page advertises nothing and a site-level licence exists that does not reach it. FINDING 69 came from two licence claims wrong in opposite directions in one session, which is why the column records the direction of each rather than an average.\n\nCOUNTED, NOT GATED. all_rights_reserved is a statement about what the source said and not a verdict on whether 183 characters of catalogue description may be quoted in a research corpus."
     }
   }
 }
