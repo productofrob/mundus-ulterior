@@ -839,6 +839,32 @@
       "time_periods": "R",
       "title": "Libanophoros Chora"
     },
+    "pleiades:39379": {
+      "authors": "Potts, D., B. Kiesling, R. Talbert, J. Becker, T. Elliott, DARMC, J. Schiettecatte, S. Gillies, jfu, E. Yılandiloğlu",
+      "bbox": [
+        45.336,
+        15.427,
+        45.336,
+        15.427
+      ],
+      "creators": "D.T. Potts",
+      "description": "Capital of the Sabaean kingdom.",
+      "dump_date": "2026-08-10",
+      "feature_types": "ruin, settlement, tell",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "39379",
+      "location_precision": "precise",
+      "max_date": "2099",
+      "min_date": "-550",
+      "repr_point": [
+        45.336,
+        15.427
+      ],
+      "retrieved": "2026-09-06",
+      "time_period_keys": "classical,hellenistic-republican,roman,sixteenth-ce,twenty-first-ce",
+      "time_periods": "CHRST",
+      "title": "Mari(a)ba"
+    },
     "pleiades:39390": {
       "authors": "Potts, D., DARMC, R. Talbert, S. Gillies, T. Elliott, J. Becker",
       "bbox": [

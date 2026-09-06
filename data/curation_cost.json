@@ -885,6 +885,55 @@
         }
       },
       "note": "THE LAST PER-REGION FLOOR IN BLOCK F, and the first record in this corpus in a language of Sub-Saharan Africa. THE CAPTURE IS NOT BLIND -- located and captured in one session, declared in original_text_note -- but it is the first capture in this repository VERIFIED BY DIGEST rather than by eye, and that cost about a minute inside text_capture."
+    },
+    {
+      "record_id": "arabia-07-cih541",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "agent": "curator_and_model",
+          "because": "THE CHEAPEST HUNT IN BLOCK F AND THE NUMBER IS A LIE UNLESS IT SAYS WHY: the candidate, its URL, its DOI, its licence, its apparatus and the line the Roman content sits on were all established by a PERSON in F5 Part 3's browser pass 3 and written into F5_PART3_BROWSER_PASSES.md, and ruling 77 then spent a slot on it. This session spent four minutes re-finding the page and confirming it still opens. The real hunt cost is in F5's ledger and in a document, not here, which is the shared-cost problem record 43 also hit. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "agent": "curator_and_model",
+          "because": "A licence mark and one carve-out sentence on the record itself, read again rather than inherited -- FINDING 69 was produced by two licence claims that were wrong in opposite directions, and a cell copied from another document is not a reading. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 11.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Two spans of 13 lines each out of 136, and the minutes went where they should: the TRANSLATIONS panel is an accordion that loads on click, the line-number gutter turned out to be NON-BREAKING SPACES four per line, and the digest check caught that before the record was written rather than after. SHA-256 agreed at 485 and 682 characters across two machines. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 8.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Reading the CSAI English against the Sabaic line by line, and reading DASI's editorial criteria page for what ( ), (( )), < > and the trailing em dash actually mean, so that the gloss paragraph quotes the source's definitions instead of paraphrasing them. Nebes 2005, the second translation on the record, was deliberately not opened. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 7.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE ONLY PLACEMENT IN THIS TRANCHE THAT PRODUCED AN ID, and it took a names dump to do it: 'Marib' matches no place title in the pinned Pleiades snapshot, and 39379 surfaced only as the attested Greek name Mariaba. Checked on description and coordinate before use. Then three refusals -- Rome, Persia and the Negus -- on the rule that a state, an office and a title are not settlements. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 19.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Longer than a plain verbatim record because the gloss declaration has a mechanical requirement that has failed twice in this repository, and because the excerpt's boundary is an argument: lines 80-81 are in it so that the arrivals have a stated destination and the directional roles are supportable. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "F6's ONE gloss_capable declaration, ruling 77's. THE CAPTURE IS NOT BLIND AND IS DOUBLY NOT: located and captured in one session, and already read into F5 Part 3's transcript by a person, which ruling 77 declared in advance. The digest check that record 44 introduced caught 44 non-breaking spaces here that no reader would have seen."
     }
   ],
   "retired": [

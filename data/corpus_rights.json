@@ -228,6 +228,16 @@
       "read_on": "2026-09-06",
       "read_by": "model",
       "note": "The front matter of the open-access edition in the NYU Library's Ancient World Digital Library, in partnership with ISAW. A NAMED LICENCE WITH NO VERSION NUMBER: the page says \"the Creative Commons Attribution Non-Commercial License\" and prints no 2.0/3.0/4.0 and no link to a deed, and this cell records the string as printed rather than supplying one. The non-commercial condition is met by the use and the attribution condition by the record's citation and translation_source. FIRST open_licence_stated cell in this corpus whose licence imposes a condition on the USE rather than only on the citation."
+    },
+    "arabia-07-cih541": {
+      "position": "open_licence_stated",
+      "region": "Arabia",
+      "licence": "CC BY 4.0",
+      "stated_verbatim": "The above license applies to the data in this record, but not to any images displayed. The images are the property of third parties and are either used with permission or reproduced from publications (see the credits below each image).",
+      "read_off": "https://dasi.cnr.it/project/1/epigraphs/2382",
+      "read_on": "2026-09-06",
+      "read_by": "curator_and_model",
+      "note": "The licence mark printed on the epigraph record itself is CC BY 4.0, with the quoted sentence beside it carving images out of it. READ TWICE BY TWO DIFFERENT AGENTS: a person read this record's licence in F5 Part 3's browser pass 3 on 2026-09-05 and recorded it in F5_PART3_BROWSER_PASSES.md, and this session read it again on the page on 2026-09-06 before writing the cell. That is why read_by is curator_and_model and not model. A VERSIONED LICENCE, unlike africa-06-ezana-rie189's, which names the licence and prints no version -- the column records what each source printed."
     }
   }
 }
