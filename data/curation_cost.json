@@ -983,6 +983,55 @@
         }
       },
       "note": "NOT THE RECORD THE HANDOFF DOCUMENT ASKED FOR, and the notes field says why in full. The capture is not blind. The digest check verified a TRANSFORMATION here rather than a paste, which is the first time in this repository that an editorial act has been machine-checked."
+    },
+    {
+      "record_id": "africa-07-cosmas-sasu",
+      "tier": "published_translation_only",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 7.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE CHEAPEST HUNT IN THE TRANCHE, AND IT DID NOT GO WHERE IT WAS SENT. F6_CURATION_START pointed this slot at noorlib.ir; noorlib serves Arabic and Persian works and this tier needs a published ENGLISH translation, so the expectation failed on the tier's own requirement rather than on access. Cosmas was reached instead in two steps, through a record the corpus already holds -- africa-05-adulis-throne exists because Cosmas copied the inscription -- and the passage was found on the third page opened. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 2.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One sentence at the foot of the page, and two minutes of deciding which of three positions it is. public_domain, and the reasoning is in the cell. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One span of 2,777 characters in three slices, reassembled and hashed; SHA-256 agreed with the browser's slice of the live page. The four-hyphen dashes, the |53 and |54 page bars, the [140] marker and the footnote numerals against `Agau,82` are all kept. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Reading for where to cut, which is the whole fidelity question on a tier with no source text: the passage runs one sentence further than it needed to, because that sentence is Cosmas stating the boundary of his own knowledge. Also establishing what was NOT opened -- Wolska-Conus's critical edition and the manuscripts -- so the boundary statement is a boundary and not a shrug. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Four subject entries and NOT ONE ID, on a record whose region already resolves an Aksum id twice over. The refusal on `the King of the Axômites` is the interesting one and it is written out in the entry: a people and their king are not a city, which is the same rule that refused Rome on arabia-07 an hour earlier. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 13.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Shorter than the tranche's other records because the record carries less: no source text, no gloss, no prediction. Most of the time went on the notes field explaining what a published_translation_only record is FOR, since the tier's only other member is a placeholder with a newspaper citation. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "F6's seventh and last record. THE FIELD original_text_excerpt IS OMITTED RATHER THAN FILLED WITH A PLACEHOLDER, which raises a sixth loader warning and is the honest artefact; FINDING 80 is what the alternative costs. First public_domain rights cell in the corpus."
     }
   ],
   "retired": [

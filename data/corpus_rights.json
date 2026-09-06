@@ -248,6 +248,16 @@
       "read_on": "2026-09-06",
       "read_by": "model",
       "note": "THIS CELL IS FOR THE TRANSLATION AND NOT FOR THE SOURCE TEXT, and the record uses two sources. The English is the Internet East Asian History Sourcebook's electronic form of Hirth 1885 as modified by Jerome S. Arkenberg: reuse permitted in prose for educational and personal use, attribution asked for, commercial use refused, AND NO LICENCE NAMED ANYWHERE REACHED -- which is the seventh position exactly. The Chinese is Kanripo's, recorded by eastasia-05-liangshu-qin-lun as CC BY-SA 4.0; that reading was INHERITED and not re-read this session, which is why this cell does not claim it. A record whose two halves have two rights positions is a case this column cannot yet express, and it is named here rather than resolved by picking the more flattering one."
+    },
+    "africa-07-cosmas-sasu": {
+      "position": "public_domain",
+      "region": "Sub-Saharan Africa",
+      "licence": null,
+      "stated_verbatim": "This text was transcribed by Roger Pearse, 2003.  All material on this page is in the public domain - copy freely.",
+      "read_off": "https://www.tertullian.org/fathers/cosmas_02_book2.htm",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "THE FIRST public_domain CELL IN THIS CORPUS. Six of the seven positions had been exercised and this one had not. It is not open_licence_stated because no licence is named -- a public-domain dedication is not a licence and CC0 is not mentioned anywhere reached -- and it is not states_no_terms because the source DOES state terms: it states that the material is public domain and invites copying. The underlying translation, McCrindle 1897, is out of copyright on its own, so ruling 74 is not invoked at all; this is the case ruling 74 needs to be able to tell itself apart from."
     }
   }
 }
