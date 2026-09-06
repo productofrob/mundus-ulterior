@@ -107,7 +107,14 @@ sentence is here so a later session does not read silence as a failed search. Tw
 leads, neither opened: **Beta maṣāḥǝft** (`betamasaheft.eu`, Hamburg, Ge'ez with
 translations) and the **RIÉ** corpus of Aksumite inscriptions (Bernand, Drewes,
 Schneider — print, in copyright, so ruling 74's four conditions would govern).
-`africa-01-ezana-stone` is already the GREEK of a stone that also carries Ge'ez.
+**CORRECTED 2026-09-06, FINDING 80.** This sentence read: "`africa-01-ezana-stone`
+is already the GREEK of a stone that also carries Ge'ez." IT IS NOT. That record is
+`published_translation_only`; its `original_text_excerpt` is a bracketed instruction to
+a later session and classifies as `pointer`, not retrieval eligible; its translation is
+the Greek titulature quoted from a news website. **The corpus holds no register of the
+Ezana Stone's own words in any language**, and Africa's two empire-language records are
+`africa-04-silko-talmis` and `africa-05-adulis-throne`. The slot is therefore not a
+second register of a text already held — any Aksumite royal text in Ge'ez serves it.
 
 **THE OWED PRE-REGISTRATION.** FINDING 79 and FINDING 73 disagree about what this
 record will do to the index, and the disagreement is testable:

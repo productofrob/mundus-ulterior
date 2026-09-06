@@ -274,3 +274,138 @@ remaining allocation could do.
 **No `verbatim_machine_english` slot is placed in F6 or F7.** The tier ends at
 **4 of 10** and F5's two recorded failures are what fix it there. Nothing in
 these rulings moves it and nothing should try.
+---
+
+# FINDING 80 — the handoff document mis-describes the record it points the Africa hunt at, in the sentence that justifies the slot
+
+## The observation
+
+`F6_CURATION_START.md` and `F6_PROGRESS.md` both close their Africa section with
+the same sentence:
+
+> `africa-01-ezana-stone` is already the GREEK of a stone that also carries Ge'ez.
+
+**It is not.** Read on the bridge at `b8a4cd3`, before anything was curated:
+
+```
+data/corpus_tiers.json      africa-01-ezana-stone -> published_translation_only
+original_text_excerpt       "[Ge'ez, Sabaean, and Greek texts of the Ezana Stone are
+                             not transcribed in this pass; pull from Encyclopaedia
+                             Aethiopica or the DAE ... corpus during ingestion.]"
+citation                    https://en.protothema.gr/the-ezana-stone-of-aksum-...
+classify_original(...)      ('pointer', 'en', False)
+```
+
+**The record holds no Greek text and no Ge'ez text and no Sabaean text.** Its
+`original_text_excerpt` is a bracketed instruction to a later session; its
+`reference_translation` is an English rendering of the Greek titulature quoted
+from a **news website**; and the classifier returns `pointer`, not retrieval
+eligible, which is why it is `published_translation_only` and why it is NOT one
+of Africa's three source-language records. Those three are
+`africa-03-periplus-adulis`, `africa-04-silko-talmis` and
+`africa-05-adulis-throne`, all `verbatim_original` `grc` — and the two the
+provenance line calls "empire-language from the region" are 04 and 05.
+
+## Why this is not pedantry
+
+**It changes what the slot is.** The sentence reads as though the Africa Ge'ez
+capture would be adding a second register to a text the corpus already holds in
+the first. It would not. The corpus holds **no register of the Ezana Stone's own
+words in any language**, and the only thing it holds about that stone is a
+translated titulature from a newspaper. A curator who believed the sentence
+would go looking for the Ge'ez of one specific stone, find it hard, and not know
+that any Aksumite royal text in Ge'ez would do.
+
+**And it leaves a gold case looking closer than it is.** `ezana-stone-geez` —
+"What does the Ge'ez text of the Ezana Stone say?" — is a known-failing answer
+case written against exactly this gap. **The record placed today does not close
+it**, because RIE 189 is a different inscription from the trilingual stone, and
+the record says so in its own notes rather than leaving the next session to
+discover it.
+
+**It is FINDING 75's species again**: a sentence written once, inherited by a
+second document, and never checked against the file it describes. The check cost
+one `python3 -c` and was not run in either document.
+
+## What follows
+
+- The sentence is corrected in place in `F6_CURATION_START.md` and
+  `F6_PROGRESS.md`, each with a dated line saying what it said and why it was
+  wrong, in FINDING 75's form.
+- `africa-01-ezana-stone` is **not re-curated**. Nobody re-curates a record. What
+  it is, is now written down where the next session reads.
+
+---
+
+# RULING 78, P4 — the Africa prediction, written before the record was curated
+
+**Written 2026-09-06 at `b8a4cd3`, after the candidate was located and before any
+file was written.** Ruling 78's own sequencing: the candidate for P1 was named in
+the ruling before CIH 541 was curated, and P3 was confirmed because it was
+written first.
+
+## The candidate this prediction is about
+
+**RIE 189, lines 39-52** — ‘Ēzānā's vocalized Ge‘ez throne inscription from
+Aksum, in Latin-script transliteration, with a published English translation by a
+named scholar on the same page: George Hatke, *Aksum and Nubia*, ISAW/NYU 2013,
+open access, CC BY-NC, quoting Bernand, Drewes & Schneider, *RIÉ* I (1991)
+264-5. `classify_original` returns `('transliteration', 'gez', True)`;
+`english_marker_ratio` is **0.0792**, measured, against a threshold of 0.18.
+
+## Africa's six ranking pairs, which are what the prediction is denominated in
+
+```
+pair                       expect_doc                  expect_lang   last rank
+aksum-trade-adulis         africa-03-periplus-adulis   grc           33
+adulis-exports             africa-03-periplus-adulis   grc           unchanged
+probe-adulis-ivory         africa-03-periplus-adulis   grc           unchanged
+adulis-throne-leuke-kome   africa-05-adulis-throne     grc           unchanged
+silko-basiliskos           africa-04-silko-talmis      grc           unchanged
+au-ezana-titles            africa-01-ezana-stone       en            unchanged
+```
+
+## The two readings disagree, and they disagree in a shape that can be read off one run
+
+```
+FINDING 73 says   curating a region damages that region's own gold cases
+                  -> Africa's six pairs degrade as a group, the three Adulis
+                     ones included
+
+FINDING 79 says   the crowder is the record that RESEMBLES the target
+                  -> five of the six are GREEK chunks of Greek texts and the new
+                     record contains no Greek at all, so they should not move.
+                     The sixth, au-ezana-titles, resembles it in every dimension
+                     that matters: same king, same genre, first person, royal
+                     titulature and kingship -- AND its expected chunk is
+                     ENGLISH, which is what the new record's reference_translation
+                     also is.
+```
+
+**PREDICTED (P4): `au-ezana-titles` falls, and the five Greek-target pairs do
+not move.** That is FINDING 79's reading and it is the one this project's own
+last experiment supports.
+
+**What would refute it, in three distinguishable ways:**
+
+1. **The Adulis or Silko pairs fall while `au-ezana-titles` holds** — FINDING 73
+   is right, the region is the crowder, and resemblance was a coincidence of the
+   Elder Futhark pair.
+2. **`au-ezana-titles` holds and nothing else moves either** — neither mechanism
+   fires, and the honest reading is that a record whose two chunks are a
+   transliteration and an English translation is too unlike anything in the index
+   to crowd it. That is a *weaker* claim than FINDING 79 and would need saying.
+3. **Everything falls.** Then what is being measured is the index growing, not
+   either mechanism, and both findings are under-determined by 44 pairs.
+
+**This is not a gate.** Ruling 78's closing paragraph governs: a prediction that
+fails is read, recorded, and does not stop the tranche.
+
+## The one asymmetry that has to be declared now rather than after the run
+
+`au-ezana-titles` expects `africa-01-ezana-stone`, the record FINDING 80 has just
+shown to be a placeholder with a newspaper citation. **If it falls, the honest
+reading is not automatically "the new record crowded it"** — it may be that a
+weak chunk was holding a rank it could not defend against any new Africa material
+whatsoever. That alternative is written down here, before the run, because after
+the run it would be available as an excuse for either outcome.

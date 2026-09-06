@@ -139,7 +139,14 @@ against it.** What is known from F4's own notes is only that Ge'ez has no
 published translation for most of what is open. Two leads, neither opened:
 **Beta maṣāḥǝft** (`betamasaheft.eu`, Hamburg, Ge'ez with translations) and the
 **RIÉ** corpus of Aksumite inscriptions, which is print and in copyright.
-`africa-01-ezana-stone` is already the GREEK of a stone that also carries Ge'ez.
+**CORRECTED 2026-09-06, FINDING 80.** This sentence read: "`africa-01-ezana-stone`
+is already the GREEK of a stone that also carries Ge'ez." IT IS NOT. That record is
+`published_translation_only`; its `original_text_excerpt` is a bracketed instruction to
+a later session and classifies as `pointer`, not retrieval eligible; its translation is
+the Greek titulature quoted from a news website. **The corpus holds no register of the
+Ezana Stone's own words in any language**, and Africa's two empire-language records are
+`africa-04-silko-talmis` and `africa-05-adulis-throne`. The slot is therefore not a
+second register of a text already held — any Aksumite royal text in Ge'ez serves it.
 
 ## 2. F6's ONE GLOSS DECLARATION IS UNMADE, AND TWO RECORDS ALREADY CARRY THE
 ##    MATERIAL
