@@ -258,6 +258,16 @@
       "read_on": "2026-09-06",
       "read_by": "model",
       "note": "THE FIRST public_domain CELL IN THIS CORPUS. Six of the seven positions had been exercised and this one had not. It is not open_licence_stated because no licence is named -- a public-domain dedication is not a licence and CC0 is not mentioned anywhere reached -- and it is not states_no_terms because the source DOES state terms: it states that the material is public domain and invites copying. The underlying translation, McCrindle 1897, is out of copyright on its own, so ruling 74 is not invoked at all; this is the case ruling 74 needs to be able to tell itself apart from."
+    },
+    "persia-07-met-ewer-anahita": {
+      "position": "open_licence_stated",
+      "region": "Persia",
+      "licence": "Creative Commons Zero (CC0 1.0 Universal)",
+      "stated_verbatim": "In February 2017, The Met introduced its Open Access Initiative, which makes images of public-domain artworks and basic data on all accessioned works in its collection available for unrestricted use under Creative Commons Zero (CC0).",
+      "read_off": "https://www.metmuseum.org/about-the-met/policies-and-documents/open-access",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "THE GRANT IS CONDITIONAL AND THE CONDITION WAS CHECKED FOR THIS OBJECT. data/met-licence-declaration.txt, written for Block B4's distractor fetch on 2026-08-14, states it: the CC0 designation applies to public-domain artworks only and is a property of the individual object record, not of the collection or the API. The Met's own object-level flag was read for 67.10a, b on 2026-09-06 -- collectionapi.metmuseum.org/public/collection/v1/objects/325865 returns \"isPublicDomain\": true -- and the object page prints the line `Public Domain` directly beneath the description. Both are the STATUS the CC0 grant rests on, not a second position.\n\nTHE EXISTING DECLARATION WAS NOT INHERITED, BECAUSE ITS OWN SCOPE EXCLUDES THIS USE. It says Met object descriptions in this project \"are used as DISTRACTORS ... never cited, never translated, never placed on the map, and never presented as evidence.\" This is the first Met object in the SEED corpus and it is cited, placed and presented as evidence, so the page was re-read for this scope. FINDING 69 is what an inherited licence reading costs.\n\nNOT public_domain: a licence is named, and africa-07-cosmas-sasu is that position precisely because none is."
     }
   }
 }

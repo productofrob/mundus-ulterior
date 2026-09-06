@@ -1032,6 +1032,55 @@
         }
       },
       "note": "F6's seventh and last record. THE FIELD original_text_excerpt IS OMITTED RATHER THAN FILLED WITH A PLACEHOLDER, which raises a sixth loader warning and is the honest artefact; FINDING 80 is what the alternative costs. First public_domain rights cell in the corpus."
+    },
+    {
+      "record_id": "persia-07-met-ewer-anahita",
+      "tier": "catalogue_record",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE HUNT DID NOT FIND THIS OBJECT FIRST AND DID NOT WANT IT FIRST. Three parallel searches ran over the Persia slot; the object they converged on was the BnF cameo of Shapur I and Valerian, which was then refused on FINDING 86 and not on its merits. The Met was reached by asking which Sasanian object carries a Roman connection stated by the institution in English, and 67.10 was the answer on the second page opened. A Met search for `Sasanian Roman` returns one object and it is a 9th-century Islamic bowl. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE DEAREST RIGHTS PHASE OF THE TRANCHE AND THE ONLY ONE THAT REOPENED A DOCUMENT THE CORPUS ALREADY HELD. data/met-licence-declaration.txt existed, named CC0, and was written for a use whose scope section explicitly excludes this one. Re-reading the Open Access page, reading the object-level isPublicDomain flag through the API, and deciding open_licence_stated against public_domain took three times what a museum cell usually costs. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 2.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One span of 1,023 characters, one slice, one hash on each machine, agreeing at e424b363. Also checked for newline, non-breaking space and double space, which is a minute well spent since arabia-07-cih541. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 1.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Nothing to do. A find record's translation field is a curatorial description and this one is null, as persia-03-coin's and africa-02-aksumite-coin's are. The minute went on confirming that classify_original forces object_description before it reads the text, so no fidelity question arises. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "ONE ENTRY AND NO ID. The Met states a geography, `Iran`, and no site; a country is refused a gazetteer id by the same rule that refused one for `mlk Frs¹` and `the King of the Axômites`. Most of the phase went on deciding that origin_places with ground `regional` is more honest than no_places_reason, because the museum DOES state a region. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 21.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE LONGEST AUTHORING IN THE TRANCHE AND THE REASON IS THE GLOSS. Block F's last declaration is spent here, so the record has to show the hedge is the Museum's and not ours, show it sits in a chunked field rather than in original_text_note where F3's two failed declarations sat, and say why an argument about what an image MEANS is a different kind of gloss from every contested_reading in the corpus. The distractor-collision check and its write-up are also in this phase. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "F7's first record and the corpus's 48th. First record with source_type `object_record`, first Met object in the seed corpus, and the last gloss_capable declaration in Block F."
     }
   ],
   "retired": [

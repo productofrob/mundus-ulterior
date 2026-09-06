@@ -67,7 +67,8 @@
     "africa-06-ezana-rie189": "verbatim_with_provenance",
     "arabia-07-cih541": "verbatim_with_provenance",
     "eastasia-08-songshi-fulin": "verbatim_with_provenance",
-    "africa-07-cosmas-sasu": "published_translation_only"
+    "africa-07-cosmas-sasu": "published_translation_only",
+    "persia-07-met-ewer-anahita": "catalogue_record"
   },
   "target_mix": {
     "declared_on": "2026-08-29, F1, before curation.",
@@ -371,6 +372,11 @@
         "record": "arabia-07-cih541",
         "sub_tranche": "F6",
         "kind": "contested_reading"
+      },
+      {
+        "record": "persia-07-met-ewer-anahita",
+        "sub_tranche": "F7",
+        "kind": "hedged_identification"
       }
     ],
     "why_gloss_capability_is_DECLARED": "Because it cannot be derived. what_gloss_capable_MEANS_mechanically defines it as a hedged reading AND a statement that the reading is uncertain, both inside a RETRIEVAL-ELIGIBLE chunk -- and only original_text_excerpt and reference_translation are chunked, which is the trap this list exists to make visible. Whether a passage hedges is a judgement about prose and no classifier here can read it, so the declaration is the claim and ingest.fidelity.check_delivery guards everything mechanical about it: that the record is one this tranche curated, that its tier can carry a gloss case at all, that the count does not exceed the quota, and that the quota is still REACHABLE from the slots the allocation has left. EMPTY AT F3 RECORD 26, and that is the finding this list was added for: two records were curated and neither carries its hedge in a chunked field, because the hedge was written into original_text_note, which the loader does not chunk.",
