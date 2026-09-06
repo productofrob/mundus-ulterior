@@ -720,6 +720,142 @@ def source_language_provenance(language_codes, findspot) -> str:
     return "empire_language_about_the_region"
 
 
+# THE RIGHTS COLUMN. Ruling 74, F5 Part 3; built in F6, 2026-09-06.
+#
+# Ruling 74 admits an in-copyright source under four conditions declared in the
+# record, and the third is the one nothing could read: "the rights position is
+# stated verbatim, and where a source states no terms the record says THAT, in
+# those words." The position lived in `citation_original`, which is prose, and
+# ingest.verify never opened it. F6_START's debt list: "the corpus sits in at
+# least four rights states and the position is recoverable only by reading 40
+# records by hand."
+#
+# WHAT IS CHECKED HERE IS SHAPE AND COVERAGE, NEVER CONTENT. A matcher over
+# citation_original would find the word `open` in a sentence about
+# REACHABILITY, which is FINDING 69 with a regular expression in front of it.
+# A rights position is read by a person off the object; this layer checks that
+# the reading was recorded with who did it and where, and that a record cannot
+# be silently missing from the column.
+RIGHTS_POSITIONS = (
+    "open_licence_stated",
+    "public_domain",
+    "all_rights_reserved",
+    "states_no_terms",
+    "two_positions_stated",
+    "unread",
+)
+
+# The positions that assert something the source SAID, and therefore have to
+# quote it. `states_no_terms` is deliberately not among them and is not
+# `unread` either: it is a reading whose answer was nothing, which is ruling
+# 74's third condition and the answer it prescribes.
+RIGHTS_POSITIONS_REQUIRING_A_QUOTATION = (
+    "open_licence_stated",
+    "public_domain",
+    "all_rights_reserved",
+    "two_positions_stated",
+)
+
+_RIGHTS_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def check_rights(rights: "dict", corpus_ids: "set[str]") -> "list[str]":
+    """The rights column against the corpus on disk. Returns problems.
+
+    BIDIRECTIONAL, for check_declared_tiers' and check_ledger's stated reason:
+    a list checked in one direction becomes a place to put things. Every record
+    in the corpus has a cell and every cell names a record in the corpus, so a
+    record curated without one turns ingest.verify red in the same run that
+    loads it -- which is the only moment its licence page is still open.
+    """
+    problems: list[str] = []
+    cells = (rights or {}).get("records")
+    if not isinstance(cells, dict):
+        return ["data/corpus_rights.json declares no `records` object, so no "
+                "record has a rights position and ruling 74's third condition "
+                "is unreadable"]
+
+    missing = sorted(corpus_ids - set(cells))
+    if missing:
+        problems.append(
+            f"no rights cell for {missing}. Ruling 74's third condition is a "
+            f"property of every record and an absent cell is not `unread`: it "
+            f"is a record nobody asked the question about"
+        )
+    extra = sorted(set(cells) - corpus_ids)
+    if extra:
+        problems.append(
+            f"rights cell(s) {extra} name no record in this corpus"
+        )
+
+    for record_id in sorted(set(cells) & corpus_ids):
+        cell = cells.get(record_id)
+        where = f"rights[{record_id}]"
+        if not isinstance(cell, dict):
+            problems.append(f"{where}: not an object")
+            continue
+        position = str(cell.get("position", "") or "")
+        if position not in RIGHTS_POSITIONS:
+            problems.append(
+                f"{where}: position {position!r} is not one of "
+                f"{list(RIGHTS_POSITIONS)}"
+            )
+            continue
+        if position == "unread":
+            continue
+
+        # Every position other than `unread` is a READING, and a reading with
+        # nobody's name and no date on it is the claim FINDING 69 found wrong
+        # twice in one session.
+        for field in ("read_off", "read_by"):
+            if not str(cell.get(field, "") or "").strip():
+                problems.append(
+                    f"{where}: position {position!r} with no {field}. A rights "
+                    f"position is a reading; a reading nobody signed is a "
+                    f"claim about a source nobody opened"
+                )
+        if not _RIGHTS_ISO_DATE.match(str(cell.get("read_on", "") or "")):
+            problems.append(f"{where}: read_on is not a YYYY-MM-DD date")
+
+        stated = cell.get("stated_verbatim")
+        if position in RIGHTS_POSITIONS_REQUIRING_A_QUOTATION:
+            if position == "two_positions_stated":
+                quotes = [s for s in (stated or [])
+                          if isinstance(s, str) and s.strip()] \
+                    if isinstance(stated, list) else []
+                if len(quotes) < 2:
+                    problems.append(
+                        f"{where}: two_positions_stated carries "
+                        f"{len(quotes)} quotation(s). The position IS that the "
+                        f"source says two things that do not agree, so both "
+                        f"are quoted, in the order they appear, and neither is "
+                        f"adjudicated here"
+                    )
+            elif not (isinstance(stated, str) and stated.strip()):
+                problems.append(
+                    f"{where}: position {position!r} with no stated_verbatim. "
+                    f"Ruling 74: the rights position is stated VERBATIM, not "
+                    f"summarised -- a summary is the curator's sentence and the "
+                    f"condition is about the source's"
+                )
+        elif position == "states_no_terms" and stated:
+            problems.append(
+                f"{where}: states_no_terms carries a stated_verbatim. If there "
+                f"is a sentence to quote, the source states terms"
+            )
+    return problems
+
+
+def summarise_rights(rights: "dict") -> "dict[str, int]":
+    """How many records sit in each rights position. Printed, never gated."""
+    counts: dict[str, int] = {p: 0 for p in RIGHTS_POSITIONS}
+    for cell in ((rights or {}).get("records") or {}).values():
+        position = str((cell or {}).get("position", "") or "")
+        if position in counts:
+            counts[position] += 1
+    return {p: n for p, n in counts.items() if n}
+
+
 def check_allocation(
     mix: "dict", records_by_region_at_24: "dict[str, int]",
     source_language_by_region_at_24: "dict[str, int]",

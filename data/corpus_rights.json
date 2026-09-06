@@ -1,0 +1,189 @@
+{
+  "note": "THE RIGHTS COLUMN. Ruling 74, F5 Part 3, built in F6 on 2026-09-06. Ruling 74 lets an in-copyright source be cited and quoted under four conditions declared in the record, and the third is that the rights position is stated verbatim -- and where a source states no terms, that the record says THAT, in those words. Nothing could read the column: `citation_original` is free prose, ingest.verify does not open it, and F6_START's debt list records the consequence -- 'the corpus sits in at least four rights states and the position is recoverable only by reading 40 records by hand.'",
+  "declared_on": "2026-09-06, F6.",
+  "why_this_file_is_not_inside_the_records": "For data/corpus_tiers.json's reason, one file over and unchanged: a `rights` key on a seed record would move that record's content_hash and therefore corpus_digest, and doing it to all 40 at once would re-hash the whole corpus to add a field that describes the SOURCE rather than the text. The sidecar lives in data/ where no corpus walk reaches it -- iter_seed_records refuses any .json under the corpus directory that is not at region/record.json depth.",
+  "why_it_is_not_DERIVED_from_citation_original": "Because it cannot be, and the attempt is FINDING 69's defect with a regular expression in front of it. citation_original is prose written by a curator; a matcher over it would find the word `open` in a sentence about REACHABILITY -- which is exactly the two-facts-one-word failure FINDING 69 records, four times, in this repository's own hunt documents. A rights position is READ BY A PERSON, off the object, and this file records who read it and when. What the instrument checks is the SHAPE and the COVERAGE, never the content.",
+  "vocabulary": {
+    "open_licence_stated": "A named open licence, stated on the object read and quoted verbatim below.",
+    "public_domain": "Out of copyright by age, or carrying a public-domain mark, stated on the object read.",
+    "all_rights_reserved": "A reserved-rights statement. Ruling 74's four conditions apply in full or the source is not taken.",
+    "states_no_terms": "The object was reached and states no terms of any kind. Ruling 74: the record says THAT, in those words. NOT the same as `unread` -- this is a reading whose answer was nothing, and that is the answer.",
+    "two_positions_stated": "The source states MORE THAN ONE rights position and they do not agree. parsigdatabase.com is the first: an attribution-only permission and an all-rights-reserved notice, five lines apart in the same footer. The record quotes both, verbatim, in the order they appear, and adjudicates neither.",
+    "unread": "NOBODY HAS READ THIS SOURCE'S RIGHTS POSITION SINCE FINDING 69. Not a state of the source: a state of this project's knowledge of it. FINDING 69, F5 Part 3: 'Every other licence claim in this repository is now suspect until re-read.' This is that sentence made countable."
+  },
+  "why_unread_is_the_default_and_not_a_guess": "Thirty-eight of forty records enter this file as `unread`, and the temptation to fill them from the prose already in citation_original is the whole reason the file exists. FINDING 69 was produced by two licence claims that were WRONG in opposite directions in a single session -- one recorded reachability as a licence, one verified a licence against the wrong object. A column populated from those same sentences would inherit both errors and print them as a table. An unread cell is a debt with a name; a guessed cell is a finding waiting.",
+  "records": {
+    "africa-01-ezana-stone": {
+      "position": "unread",
+      "region": "Sub-Saharan Africa"
+    },
+    "africa-02-aksumite-coin": {
+      "position": "unread",
+      "region": "Sub-Saharan Africa"
+    },
+    "africa-03-periplus-adulis": {
+      "position": "unread",
+      "region": "Sub-Saharan Africa"
+    },
+    "africa-04-silko-talmis": {
+      "position": "unread",
+      "region": "Sub-Saharan Africa"
+    },
+    "africa-05-adulis-throne": {
+      "position": "unread",
+      "region": "Sub-Saharan Africa"
+    },
+    "arabia-01-periplus": {
+      "position": "unread",
+      "region": "Arabia"
+    },
+    "arabia-02-palmyrene-tariff": {
+      "position": "unread",
+      "region": "Arabia"
+    },
+    "arabia-03-jsnab17": {
+      "position": "unread",
+      "region": "Arabia"
+    },
+    "arabia-04-jabal-dabub": {
+      "position": "unread",
+      "region": "Arabia"
+    },
+    "arabia-05-ruwafa": {
+      "position": "open_licence_stated",
+      "region": "Arabia",
+      "licence": "CC BY 4.0",
+      "stated_verbatim": "Copyright © 2021 Giuseppe Petrantoni. This is an open-access work distributed under the terms of the Creative Commons Attribution License (CC BY). The use, distribution or reproduction is permitted, provided that the original author(s) and the copyright owner(s) are credited and that the original publication is cited, in accordance with accepted academic practice. The license allows for commercial use. No use, distribution or reproduction is permitted which does not comply with these terms.",
+      "read_off": "https://edizionicafoscari.unive.it/en/edizioni4/libri/978-88-6969-508-7/",
+      "read_on": "2026-09-05",
+      "read_by": "curator",
+      "note": "READ OFF THE BOOK'S FRONT MATTER AND NOT THE CHAPTER'S -- the chapter that is actually cited carries no front matter at all. That is half of FINDING 69: a licence verified against the wrong object. The issue date 2021-04-26 that F5_CANDIDATES.md carries was on neither page and is not asserted anywhere."
+    },
+    "arabia-06-syllaeus": {
+      "position": "all_rights_reserved",
+      "region": "Arabia",
+      "licence": null,
+      "stated_verbatim": "© Akadémiai Kiadó, all rights reserved.",
+      "read_off": "https://akjournals.com/view/journals/062/70/1/article-p21.xml",
+      "read_on": "2026-09-05",
+      "read_by": "curator",
+      "note": "The other half of FINDING 69, from the opposite direction. F5_CANDIDATES.md recorded this source as 'the one verified open'. It is REACHABLE -- a deposit in the Hungarian Academy of Sciences' repository at real.mtak.hu, free to read under a repository policy -- and it is under NO Creative Commons licence at all. Reachable and licensed are two facts and one word was carrying both."
+    },
+    "eastasia-01-weilue": {
+      "position": "unread",
+      "region": "East Asia"
+    },
+    "eastasia-02-hou-hanshu": {
+      "position": "unread",
+      "region": "East Asia"
+    },
+    "eastasia-03-hwangnam-glass": {
+      "position": "unread",
+      "region": "East Asia"
+    },
+    "eastasia-04-jingjiao-stele": {
+      "position": "unread",
+      "region": "East Asia"
+    },
+    "eastasia-05-liangshu-qin-lun": {
+      "position": "unread",
+      "region": "East Asia"
+    },
+    "eastasia-06-cefu-yuangui": {
+      "position": "unread",
+      "region": "East Asia"
+    },
+    "eastasia-07-tang-huiyao": {
+      "position": "unread",
+      "region": "East Asia"
+    },
+    "persia-01-skz": {
+      "position": "unread",
+      "region": "Persia"
+    },
+    "persia-02-silver-plate": {
+      "position": "unread",
+      "region": "Persia"
+    },
+    "persia-03-coin": {
+      "position": "unread",
+      "region": "Persia"
+    },
+    "persia-04-bronze-heracles": {
+      "position": "unread",
+      "region": "Persia"
+    },
+    "persia-05-abnun": {
+      "position": "unread",
+      "region": "Persia"
+    },
+    "scandinavia-01-hoby-treasure": {
+      "position": "unread",
+      "region": "Scandinavia"
+    },
+    "scandinavia-02-gudme-hoard": {
+      "position": "unread",
+      "region": "Scandinavia"
+    },
+    "scandinavia-03-vimose": {
+      "position": "unread",
+      "region": "Scandinavia"
+    },
+    "scandinavia-04-illerup-adal": {
+      "position": "unread",
+      "region": "Scandinavia"
+    },
+    "scandinavia-05-thorsberg-chape": {
+      "position": "unread",
+      "region": "Scandinavia"
+    },
+    "seasia-01-oc-eo-medallion": {
+      "position": "unread",
+      "region": "Southeast Asia"
+    },
+    "seasia-02-oc-eo-site": {
+      "position": "unread",
+      "region": "Southeast Asia"
+    },
+    "seasia-03-khao-sam-kaeo": {
+      "position": "unread",
+      "region": "Southeast Asia"
+    },
+    "seasia-04-dong-yen-chau": {
+      "position": "unread",
+      "region": "Southeast Asia"
+    },
+    "seasia-05-my-son-b6": {
+      "position": "unread",
+      "region": "Southeast Asia"
+    },
+    "seasia-06-kedukan-bukit": {
+      "position": "unread",
+      "region": "Southeast Asia"
+    },
+    "seasia-07-talang-tuo": {
+      "position": "unread",
+      "region": "Southeast Asia"
+    },
+    "southasia-01-akananuru-149": {
+      "position": "unread",
+      "region": "South Asia"
+    },
+    "southasia-02-periplus-muziris": {
+      "position": "unread",
+      "region": "South Asia"
+    },
+    "southasia-03-muziris-papyrus": {
+      "position": "unread",
+      "region": "South Asia"
+    },
+    "southasia-04-pattanam": {
+      "position": "unread",
+      "region": "South Asia"
+    },
+    "southasia-05-brihatsamhita": {
+      "position": "unread",
+      "region": "South Asia"
+    }
+  }
+}

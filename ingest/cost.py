@@ -102,6 +102,43 @@ PHASE_DEFINITIONS = {
 # recollection cannot be read as a measurement of anything.
 PROVENANCES = ("measured", "estimated")
 
+# FINDING 70, F5 Part 3 -- closed in F6, 2026-09-06, in the shape that finding
+# asked for: "An `agent` field per phase, or per record, is the obvious shape
+# and this session did not add one ... F6's, with the evidence already in the
+# file." PER PHASE, because per record cannot say what records 37 to 40 are:
+# one phase of seven is a human's self-reported minutes and five are a model's
+# wall clock apportioned by judgement. A per-record field would have to pick
+# one of those and would pick the flattering one.
+#
+# `unrecorded` IS A VALUE AND NOT AN ABSENCE, for LEDGER_REQUIRED's reason one
+# level down: a missing field and a field that says nothing are the same shape
+# on disk, and the first is how sixteen entries silently become whatever the
+# reader assumes. Every entry written before 2026-09-06 reads as `unrecorded`
+# unless F5 Part 3 wrote down who held the clock, and five of them did.
+AGENTS = ("curator", "model", "curator_and_model", "unrecorded")
+
+AGENT_DEFINITIONS = {
+    "curator": "A person timed themselves. Records 25 to 35's assumption, and "
+               "it is NOT backfilled onto them: nothing in the ledger states "
+               "it, and writing it in now would be this module inventing the "
+               "evidence it exists to check.",
+    "model": "Model wall clock, apportioned across phases by judgement. It is "
+             "smaller and smoother than a human timing themselves and it is "
+             "not the same measurement.",
+    "curator_and_model": "Both, inseparably, within one phase. Named rather "
+                         "than split, because a split nobody measured is an "
+                         "estimate wearing a measurement's shape.",
+    "unrecorded": "The ledger did not carry this field when the entry was "
+                  "written and no document says who held the clock. NEVER "
+                  "read as `curator`.",
+}
+
+# Entries curated on or after this date must say. Before it, the field did not
+# exist and `unrecorded` is the truth rather than an omission. A date and not a
+# record count, because the ledger is in curation order and a count would move
+# every time a row is retired.
+AGENT_REQUIRED_FROM = "2026-09-06"
+
 _ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _ISO_STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$")
 
@@ -269,6 +306,28 @@ def _check_record_entry(entry: "dict", where: str, max_span: float) -> "list[str
             problems.append(
                 f"{where}.{name}: an estimated figure with no written reason. "
                 f"An unexplained estimate is a measurement by tomorrow."
+            )
+        agent = str(cell.get("agent", "") or "")
+        if not agent:
+            if str(entry.get("curated_on", "") or "") >= AGENT_REQUIRED_FROM:
+                problems.append(
+                    f"{where}.{name}: no agent. FINDING 70 -- from "
+                    f"{AGENT_REQUIRED_FROM} every phase says who was holding "
+                    f"the clock, because a model apportioning its own wall "
+                    f"clock and a person timing themselves are two "
+                    f"measurements and the column carried one name for both."
+                )
+        elif agent not in AGENTS:
+            problems.append(
+                f"{where}.{name}: agent {agent!r} is not one of {list(AGENTS)}"
+            )
+        elif agent == "unrecorded" and str(
+                entry.get("curated_on", "") or "") >= AGENT_REQUIRED_FROM:
+            problems.append(
+                f"{where}.{name}: agent is `unrecorded` on an entry curated on "
+                f"or after {AGENT_REQUIRED_FROM}. That value is for entries "
+                f"written before the field existed; on a new one it is a "
+                f"question that was answerable and was not answered."
             )
         if provenance == "measured" and minutes > max_span:
             problems.append(
@@ -537,7 +596,8 @@ def summarise(ledger: "dict") -> "dict[str, dict]":
         bucket = by_tier.setdefault(
             tier,
             {"rows": [], "by_phase": {p: 0.0 for p in PHASES},
-             "measured": 0.0, "estimated": 0.0},
+             "measured": 0.0, "estimated": 0.0,
+             "by_agent": {a: 0.0 for a in AGENTS}},
         )
         bucket["rows"].append(entry)
         phases = entry.get("phases") or {}
@@ -547,6 +607,10 @@ def summarise(ledger: "dict") -> "dict[str, dict]":
             if minutes is None:
                 continue
             bucket["by_phase"][name] += minutes
+            agent = str(cell.get("agent", "") or "unrecorded")
+            if agent not in bucket["by_agent"]:
+                agent = "unrecorded"
+            bucket["by_agent"][agent] += minutes
             if str(cell.get("provenance", "")) == "measured":
                 bucket["measured"] += minutes
             else:
@@ -578,6 +642,25 @@ def trend_line(bucket: "dict", min_n: int) -> str:
         return (
             f"NOT A TREND (n={n}, floor {min_n}). Reported as a mean and "
             f"nothing more."
+        )
+    # FINDING 70's teeth, and the reason the field was worth adding. The risk
+    # that finding names is not that the agent is unknown; it is that the tier
+    # is "about to be read as a trend by somebody who does not know that four
+    # of its timed entries measure a different agent." A trend across two
+    # agents is a trend across two measurements, and n is the wrong guard for
+    # it: this tier is comfortably above the floor and that is what makes it
+    # dangerous. Refused rather than annotated -- ruling 36's shape, where an
+    # arm that cannot be identified blocks rather than being read as a default.
+    mixed = sorted(a for a, m in (bucket.get("by_agent") or {}).items() if m)
+    if len(mixed) > 1:
+        split = ", ".join(
+            f"{a} {bucket['by_agent'][a]:.0f} min" for a in mixed)
+        return (
+            f"NOT A TREND (n={n}, above the floor {min_n}, but the minutes "
+            f"come from {len(mixed)} agents: {split}). FINDING 70: a model "
+            f"apportioning its own wall clock produces smaller, smoother "
+            f"numbers than a person timing themselves, across every phase at "
+            f"once. Reported as a mean and nothing more."
         )
     half = n // 2
     first = [record_total(e) for e in bucket["rows"][:half]]
@@ -682,6 +765,11 @@ def format_report(
             f"    provenance: {measured:.1f} min measured, {estimated:.1f} min "
             f"estimated ({share:.0f}% remembered)"
         )
+        agents = ", ".join(
+            f"{a} {bucket['by_agent'][a]:.0f}"
+            for a in AGENTS if bucket["by_agent"][a]
+        )
+        lines.append(f"    by agent: {agents or 'nothing recorded'}")
         phases = ", ".join(
             f"{name} {bucket['by_phase'][name]:.0f}"
             for name in PHASES

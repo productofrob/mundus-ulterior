@@ -10,6 +10,8 @@ test and the citation trail are unsound regardless of how good the retrieval is.
 
 from __future__ import annotations
 
+import datetime as _dt
+
 import json
 import sys
 from collections import Counter, defaultdict
@@ -64,7 +66,7 @@ MANIFEST_FLAGGED = {
 }
 
 
-def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
+def run(corpus_dir: Path = SEED_CORPUS_DIR, state: bool = False) -> int:
     result = load_corpus(corpus_dir)
     docs, chunks = result.documents, result.chunks
     failures: list[str] = []
@@ -399,11 +401,46 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
         check_allocation,
         check_delivery,
         check_declared_tiers,
+        check_rights,
         check_target_mix,
         derive_record_tier,
         source_language_provenance,
         split_quotation_cases,
+        summarise_rights,
     )
+
+    # THE RIGHTS COLUMN. Ruling 74, built in F6, 2026-09-06. Read here rather
+    # than inside the tier block because it is a fact about the SOURCE and not
+    # about the record's chunks, and because a record with no tier declaration
+    # and a record with no rights reading are two different failures.
+    rights_path = (Path(__file__).resolve().parent.parent
+                   / "data" / "corpus_rights.json")
+    if not rights_path.exists():
+        failures.append(
+            f"{rights_path.name} is missing: ruling 74's third condition -- the "
+            f"rights position stated verbatim -- is unreadable for every record"
+        )
+    else:
+        rights_doc = json.loads(rights_path.read_text(encoding="utf-8"))
+        for problem in check_rights(rights_doc, {d.doc_id for d in docs}):
+            failures.append(f"rights: {problem}")
+        counts = summarise_rights(rights_doc)
+        unread = counts.get("unread", 0)
+        notes.append(
+            f"rights positions (ruling 74, column built in F6): {counts}. "
+            + (f"{unread} of {len(docs)} record(s) are UNREAD -- nobody has "
+               f"read that source's rights position since FINDING 69, which "
+               f"was produced by two licence claims that were wrong in "
+               f"opposite directions in a single session. `unread` is a state "
+               f"of this project's knowledge and not of the source. "
+               if unread else
+               "No record is unread: every source's rights position has been "
+               "read off the object by a named person on a dated day. ")
+            + "COUNTED, NOT GATED, and never derived: citation_original is "
+              "prose, and a matcher over it would read the word `open` in a "
+              "sentence about reachability, which is FINDING 69 with a regular "
+              "expression in front of it."
+        )
 
     tiers_path = Path(__file__).resolve().parent.parent / "data" / "corpus_tiers.json"
     if not tiers_path.exists():
@@ -657,17 +694,43 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
                 by_text.setdefault(key, []).append((doc.region, doc.doc_id))
         shared = [sorted(v) for v in by_text.values()
                   if len({r for r, _ in v}) > 1]
+        # FINDING 68, closed in F6, 2026-09-06. The line printed three
+        # components and then a sentence naming the regions with no record in a
+        # language of the region -- and that sentence reads as a deficit and
+        # cannot be told, IN THAT SENTENCE, from a region that only ever gets
+        # spoken about. Sub-Saharan Africa is 0 local + 2 empire-language FROM
+        # THE REGION: africa-01-ezana-stone and africa-04-silko-talmis are
+        # African rulers writing in Greek. South Asia is 2 local + 2 ABOUT it.
+        # Those are opposite facts and the old line gave them one shape. The
+        # question the heading asks -- SPEAKING or SPOKEN ABOUT -- is a
+        # two-bucket question and the answer was printed in three buckets and
+        # never added up. So the subtotal is printed, and the two lists below it
+        # are kept apart: the first is a fact about LANGUAGE, the second about
+        # VOICE, and a region can be on one and not the other.
+        def _speaking(b: dict) -> int:
+            return (b.get("local_language", 0)
+                    + b.get("empire_language_from_the_region", 0))
+
         rows = "; ".join(
             f"{region} {sum(b.values())} = {b.get('local_language', 0)} local + "
             f"{b.get('empire_language_from_the_region', 0)} empire-language from the "
-            f"region + {b.get('empire_language_about_the_region', 0)} about it"
+            f"region + {b.get('empire_language_about_the_region', 0)} about it, "
+            f"so {_speaking(b)} SPEAKING and "
+            f"{b.get('empire_language_about_the_region', 0)} spoken about"
             for region, b in sorted(buckets.items()))
         zero = sorted(r for r, b in buckets.items() if not b.get("local_language", 0))
+        silent = sorted(r for r, b in buckets.items() if not _speaking(b))
         notes.append(
             "source-language records by PROVENANCE rather than by language "
             "(ruling 58, in the shape FINDING 62 gave it): is the region SPEAKING, "
             f"or being SPOKEN ABOUT? {rows}. Regions with no source-language record "
             f"in a language of the region: {zero}. "
+            f"Regions with NO RECORD SPEAKING AT ALL -- neither in a language of "
+            f"the region nor in an empire language from it: {silent}. "
+            "FINDING 68, closed in F6: those two lists are different questions "
+            "and only the first was ever printed, so a region whose own rulers "
+            "wrote in Greek was reported in the same words as a region that is "
+            "only ever written about. "
             + (f"One text counted as a source-language record in more than one "
                f"region: {shared}. " if shared else
                "No text is counted as a source-language record in more than one "
@@ -695,23 +758,46 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR) -> int:
             f"it is the only place a curation-cost number may be read from."
         )
 
-    print(f"documents: {len(docs)}   chunks: {len(chunks)}   parallel pairs: {paired}")
-    for n in notes:
-        print(f"note: {n}")
+    lines = [
+        f"documents: {len(docs)}   chunks: {len(chunks)}   parallel pairs: {paired}"
+    ]
+    lines += [f"note: {n}" for n in notes]
     if result.warnings:
-        print(f"loader warnings: {len(result.warnings)}")
-        for w in result.warnings:
-            print(f"  ! {w}")
+        lines.append(f"loader warnings: {len(result.warnings)}")
+        lines += [f"  ! {w}" for w in result.warnings]
 
     if failures:
-        print(f"\nFAILED ({len(failures)})")
-        for f in failures:
-            print(f"  ✗ {f}")
-        return 1
+        lines.append(f"\nFAILED ({len(failures)})")
+        lines += [f"  \u2717 {f}" for f in failures]
+    else:
+        lines.append("\nAll integrity checks passed.")
 
-    print("\nAll integrity checks passed.")
-    return 0
+    # FINDING 75, closed in F6, 2026-09-06. Every opening document in Block F
+    # hand-copied its predecessor's numbers, and F5 Part 3 got three tier
+    # counts wrong that way while this command had already printed the right
+    # ones into the same session. `--state` is the second of the two options
+    # that finding named -- "a rule that opening documents paste verify's
+    # output rather than restate it" -- made mechanical, and it is the WEAKER
+    # of the two on purpose: it does not choose which notes matter, because a
+    # chooser is a restatement with a flag on it.
+    #
+    # IT COVERS ONE COMMAND. FINDING 76: F6_START.md's rule was scoped to
+    # ingest.verify and ELEVEN instrument counts were printed below it, one of
+    # them wrong by arithmetic. scripts/state_block.py runs the other ten.
+    if state:
+        stamp = _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%d")
+        print(f"Run by `python -m ingest.verify --state` on {stamp}. "
+              f"PASTE THIS BLOCK. Do not restate it.")
+        print()
+        print("```")
+        for line in lines:
+            print(line)
+        print("```")
+    else:
+        for line in lines:
+            print(line)
+    return 1 if failures else 0
 
 
 if __name__ == "__main__":
-    raise SystemExit(run())
+    raise SystemExit(run(state="--state" in sys.argv[1:]))
