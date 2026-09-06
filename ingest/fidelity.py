@@ -738,6 +738,7 @@ def source_language_provenance(language_codes, findspot) -> str:
 # be silently missing from the column.
 RIGHTS_POSITIONS = (
     "open_licence_stated",
+    "permission_stated_no_licence",
     "public_domain",
     "all_rights_reserved",
     "states_no_terms",
@@ -745,12 +746,25 @@ RIGHTS_POSITIONS = (
     "unread",
 )
 
+# `permission_stated_no_licence` WAS ADDED BY A CASE, hours after the vocabulary
+# was written, and the case is worth naming because the gap it found is FINDING
+# 69's one step further out. Riksantikvarieambetet's Runor states, in prose and
+# in its own words, that the database's information may be reused with
+# attribution -- and names NO LICENCE at all. `open_licence_stated` requires a
+# named licence and would have been a lie; `states_no_terms` would have been the
+# opposite lie, since the terms are stated and are permissive; `unread` would
+# have thrown away a reading that was made. FINDING 69 separated REACHABLE from
+# LICENSED. This separates LICENSED UNDER A NAMED LICENCE from PERMITTED IN
+# PROSE, and the difference matters downstream: a named licence is a machine
+# fact that survives the page changing, and a paragraph of goodwill is not.
+
 # The positions that assert something the source SAID, and therefore have to
 # quote it. `states_no_terms` is deliberately not among them and is not
 # `unread` either: it is a reading whose answer was nothing, which is ruling
 # 74's third condition and the answer it prescribes.
 RIGHTS_POSITIONS_REQUIRING_A_QUOTATION = (
     "open_licence_stated",
+    "permission_stated_no_licence",
     "public_domain",
     "all_rights_reserved",
     "two_positions_stated",

@@ -5,6 +5,7 @@
   "why_it_is_not_DERIVED_from_citation_original": "Because it cannot be, and the attempt is FINDING 69's defect with a regular expression in front of it. citation_original is prose written by a curator; a matcher over it would find the word `open` in a sentence about REACHABILITY -- which is exactly the two-facts-one-word failure FINDING 69 records, four times, in this repository's own hunt documents. A rights position is READ BY A PERSON, off the object, and this file records who read it and when. What the instrument checks is the SHAPE and the COVERAGE, never the content.",
   "vocabulary": {
     "open_licence_stated": "A named open licence, stated on the object read and quoted verbatim below.",
+    "permission_stated_no_licence": "The source states, in its own words, what may be done with its content, and names NO LICENCE. ADDED IN F6 BY A CASE rather than declared in advance: Riksantikvarieambetet's Runor says the database's information may be reused with attribution and names no licence anywhere. `open_licence_stated` would have been a lie, `states_no_terms` the opposite lie, and `unread` would have thrown away a reading that was made. FINDING 69 separated REACHABLE from LICENSED; this separates LICENSED UNDER A NAMED LICENCE from PERMITTED IN PROSE. The permission is quoted verbatim like any other stated position.",
     "public_domain": "Out of copyright by age, or carrying a public-domain mark, stated on the object read.",
     "all_rights_reserved": "A reserved-rights statement. Ruling 74's four conditions apply in full or the source is not taken.",
     "states_no_terms": "The object was reached and states no terms of any kind. Ruling 74: the record says THAT, in those words. NOT the same as `unread` -- this is a reading whose answer was nothing, and that is the answer.",
@@ -197,6 +198,16 @@
       "read_on": "2026-09-06",
       "read_by": "curator",
       "note": "Both sentences sit in the footer of every page of the site, five lines apart, and they do not agree. The Persian interface prints the first as استفاده از داده‌های این سایت با ذکر منبع بلامانع است. NEITHER IS ADJUDICATED. The record quotes both, in the order they appear, and credits the source by name -- which is the one thing the first sentence actually asks for. The EDITED TEXT behind the transcription is Jamasp-Asana 1897-1913 and is public domain, cited section by section on the page, so the source-text side of the record does not rest on either sentence."
+    },
+    "scandinavia-06-tjurko-bracteate": {
+      "position": "permission_stated_no_licence",
+      "region": "Scandinavia",
+      "licence": null,
+      "stated_verbatim": "Information om databasen får gärna återanvändas på webbsidor, men vi är tacksamma om källan alltid anges med en hänvisning till Samnordisk runtextdatabas och en länk till objektets stabila URI på kulturarvsdata.se, alltså t.ex.: ”Runinskrift N 2 i Samnordisk runtextdatabas 2020, Institutionen för nordiska språk, Uppsala universitet. http://kulturarvsdata.se/uu/srdb/9dc30dec-30c2-4d6d-9851-6ebdabc490ba ”.",
+      "read_off": "https://www.raa.se/hitta-information/runor/vanliga-fragor-runor/att-citera-innehall-ur-runtextdatabasen/",
+      "read_on": "2026-09-06",
+      "read_by": "curator",
+      "note": "Riksantikvarieambetet's own citation guidance for the runtext database, published 2021-02-10, updated 2023-06-15. It permits reuse and asks for attribution plus a link to the stable kulturarvsdata.se URI. IT NAMES NO LICENCE ANYWHERE REACHED. This is the cell that made the seventh position necessary -- see the vocabulary. The attribution asked for is given in the record's citation and translation_source, in the shape the source asks for it."
     }
   }
 }
