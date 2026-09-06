@@ -444,12 +444,20 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         ],
     ),
     (
+        # CORRECTED 2026-09-06, after this mutation MISSED on its first run.
+        # It patched the `not in AGENTS` fallback, which a phase with NO agent
+        # never reaches: `str(cell.get("agent", "") or "unrecorded")` has
+        # already made it `unrecorded`, and `unrecorded` IS in by_agent. The
+        # mutation was pointing at the branch that catches an agent value the
+        # ledger check would have refused upstream, so nothing it broke was
+        # load-bearing. THE HARNESS WAS RIGHT AND THE MUTATION WAS WRONG, which
+        # is the failure mode a MISS exists to report -- and it reported it on
+        # a mutation written the same day as the guard.
         'minutes on a phase with no agent are dropped rather than counted unrecorded',
         [
-            ('            if agent not in bucket["by_agent"]:\n'
-             '                agent = "unrecorded"',
-             '            if agent not in bucket["by_agent"]:\n'
-             '                continue'),
+            ('            bucket["by_agent"][agent] += minutes',
+             '            if cell.get("agent"):\n'
+             '                bucket["by_agent"][agent] += minutes'),
         ],
     ),
     (

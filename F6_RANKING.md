@@ -171,3 +171,100 @@ nobody later reads it as a fifth data point.
    two archived chunk ids resolving to different ids while the originals still
    exist. That is debt item 9 and this run is not new evidence about it, only a
    second sighting.
+
+
+---
+
+# THE LIKE-FOR-LIKE RUN, 20260906T091154, `--with-distractors`, index 524
+
+**This is the run ruling 78 was written against.** Same view as F5's closing run,
+same gold set, 507 chunks then and 524 now — the difference is F6's three
+records and nothing else.
+
+## SIX PAIRS MOVED. ALL SIX WORSE. NONE BETTER. AND BOTH HEADLINE NUMBERS ARE IDENTICAL TO SIXTEEN DECIMAL PLACES
+
+```
+pair                                    05Sep    06Sep   delta
+bronze-heracles-verethragna-from-mes       86      98     +12   worse
+muziris-cargo-akananuru                   333     341      +8   worse
+thorsberg-chape-niwajemariz                24      29      +5   worse
+muziris-cargo-papyrus                     113     115      +2   worse
+vimose-runes                               16      18      +2   worse
+tc-frankincense-harvest                    12      13      +1   worse
+   ...38 pairs unchanged
+
+recall@6  (pairs)   0.7272727272727273  ->  0.7272727272727273   32/44
+recall@6  (units)   0.8048780487804879  ->  0.8048780487804879   33/41
+MRR@10    (pairs)   0.5577651515151515  ->  0.5577651515151515
+MRR@10    (units)   0.6205284552845528  ->  0.6205284552845528
+```
+
+**Both numbers are blind, and they are blind for two different reasons.**
+`recall@6` cannot see the moves because **not one pair crossed rank 6**.
+`MRR@10` cannot see them because **every one of the six was already outside the
+top ten** — 12, 16, 24, 86, 113, 333 — so all six moves happened where MRR@10
+does not look.
+
+**This is FINDING 73 happening again, in the same words.** That finding read:
+*nine gold pairs fell, none improved, and the number a reader meets did not
+move.* This one reads: **six gold pairs fell, none improved, and both numbers a
+reader meets are identical to sixteen decimal places.** Twice in two tranches,
+and the second time it was predicted.
+
+---
+
+# FINDING 79 — THE CROWDER IS THE RECORD THAT RESEMBLES THE TARGET, NOT THE RECORD FROM THE SAME REGION
+
+Ruling 78's P3 predicted `vimose-runes` would fall. **It fell, and so did the
+OTHER Scandinavian gold case, which nothing predicted.**
+
+```
+vimose-runes                 16 -> 18   beaten_by includes
+    scandinavia-06-tjurko-bracteate::original::000
+    scandinavia-06-tjurko-bracteate::translation::000
+
+thorsberg-chape-niwajemariz  24 -> 29   beaten_by includes
+    scandinavia-06-tjurko-bracteate::translation::000
+```
+
+**F6 curated TWO Scandinavian records and only ONE of them is in either list.**
+`scandinavia-07-rycksta-grikkium` crowds neither case, and it is in the same
+region, entered the index in the same hour, and is the longer of the two.
+
+What separates them is not region. It is what the text LOOKS LIKE:
+
+```
+scandinavia-06-tjurko-bracteate   Elder Futhark, Proto-Norse, 5th-7th c., 95 chars
+scandinavia-03-vimose             Elder Futhark, Proto-Norse   <- crowded
+scandinavia-05-thorsberg-chape    Elder Futhark, Proto-Norse   <- crowded
+scandinavia-07-rycksta-grikkium   younger futhark, Old Norse, 11th c.   <- crowds nothing
+```
+
+**Ruling 70 predicted cross-regional crowding; FINDING 73 amended it to
+same-region crowding; this run amends it again, and the amendment is narrower
+than either.** The region field is not what does the damage. A record crowds the
+gold cases whose SOURCE TEXT IT RESEMBLES — same script, same language stage,
+same genre — and a record from the same region five centuries later in a
+different alphabet does not crowd them at all.
+
+**COUNTED, NOT GATED, AND IT IS ONE OBSERVATION.** Two crowded cases and one
+non-crowding record is not a law, and this finding names what would refute it:
+an F7 record that crowds a gold case it does not resemble, or a resembling
+record that crowds nothing. It is recorded now because **the next curation
+decision it bears on is the Africa Ge'ez slot** — the corpus holds two Greek
+Africa records and no Ge'ez, so on this reading a Ge'ez record should crowd
+almost nothing, and on FINDING 73's reading it should crowd Africa's cases.
+**Those two predictions differ, and F6's own last slot is the experiment.**
+
+## What P1 and P2 did, and it is the same answer as before
+
+`tc-jabal-dabub` held at 6 and `probe-tamil-akananuru-en` held at 6, with **no
+F6 record in either `beaten_by` list**, because F6 has placed no Arabia and no
+East Asia record. Both predictions stand unmodified.
+
+## And the earlier run is now explained
+
+The 2026-09-06 run without distractors showed *eight pairs better, two worse*.
+Against this like-for-like run the truth is *none better, six worse*. **Every one
+of those eight improvements was the 393 distractors leaving the index**, and
+none of them was F6's doing.
