@@ -343,7 +343,7 @@
           "expect_quoted_from_original_cases": 0,
           "vme_quotation_cases": 0,
           "why_these": "AMENDED AGAIN by RULING 77, F6, 2026-09-06: one of F7's two Arabia catalogue_record slots becomes a Persia catalogue_record, the exchange half of the re-point that gave F6 an Arabia verbatim_with_provenance slot for CIH 541. Neither region's target at 60 moves. F7 stays at seven and stays what it was. --- EARLIER TEXT, KEPT: Catalogue records and published translations only - the tier that is cheapest to curate and the one whose absence would cost the corpus least, deliberately last. AMENDED by ruling 67, F5: East Asia's catalogue_record slot is exchanged for Arabia's, against the verbatim_machine_english slot moved the other way in F5. Neither region's target at 60 moves and no tier total moves; what moves is WHERE the machine-English tier is tested. AMENDED AGAIN by ruling 73: F7 gives up its Scandinavia and Sub-Saharan Africa catalogue_record slots, which become source-language slots in F6, and takes F6's two Southeast Asian catalogue records in exchange. F7 stays at seven and stays what it was: the cheapest tier, deliberately last.",
-          "closed": false
+          "closed": true
         }
       ],
       "why_a_sub_tranche_declares_whether_it_is_CLOSED": "FINDING 51's reachability arithmetic needs to know which declarations can still be made. A closed sub-tranche's unfilled declarations are gone -- nobody re-curates a record -- and an open one's are still available, and nothing in this file could tell the two apart. Declared rather than derived for the same reason the attribution is: F3 and F5 both place a Persia/verbatim_with_provenance slot, so 'has this tranche delivered anything' cannot be answered from the cells."
