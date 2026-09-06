@@ -1081,6 +1081,55 @@
         }
       },
       "note": "F7's first record and the corpus's 48th. First record with source_type `object_record`, first Met object in the seed corpus, and the last gloss_capable declaration in Block F."
+    },
+    {
+      "record_id": "arabia-08-walters-marib-pediment",
+      "tier": "catalogue_record",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "CHEAP, AND THE CHEAPNESS IS THE FINDING. The Walters' South Arabian holdings are one donor's gift, catalogued together, and three of them surfaced at once; the one taken is the one whose description ENDS IN AN ARGUMENT about Greco-Roman influence rather than merely describing an object. The British Museum's South Arabian records were opened and are catalogue stubs with no Roman connection stated. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 7.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE DEAREST PHASE ON THIS RECORD AND IT CAUGHT AN ERROR. The object page shows CC0 badges and a search pass had already reported the cell as CC0. Reading the policy page rather than the object page turned up a second sentence assigning the long text descriptions to the GNU Free Documentation License -- FINDING 87 -- which is the licence this record actually needs. The minutes are the difference between reading a badge and reading a policy. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One span of 700 characters, hashed on the bridge and in the desktop browser pane, agreeing at a40436d0. Two minutes of it went on establishing that the Chrome extension refuses this domain and that the browser pane does not, so the two machines are still two machines. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 1.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Nothing to do; the translation field is null as on every catalogue record. The minute went on deciding NOT to repair `one of the creature's wing`, which is the museum's own singular. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "ONE ENTRY, ONE ID, AND THE ID WAS RE-CHECKED RATHER THAN INHERITED FROM THE RECORD CURATED THE DAY BEFORE. `--find \"Mariaba\"` returns no title match and one attested name; pleiades:39379 was then read out of the gazetteer cache and confirmed on description (`Capital of the Sabaean kingdom.`), coordinate (45.336/15.427) and precision before being taken. Also deciding origin_places rather than findspot_places, because the Walters states a place of origin and no findspot. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 12.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Shorter than record 48 because there is no gloss to justify. Most of it went on the two things the record has to declare rather than describe: that the hedged identification in the description is real and is NOT being declared, and that the provenance is market-derived and is quoted in full. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "F7's second record. First open_licence_stated cell in the corpus naming the GNU Free Documentation License, and the first rights cell written against a policy page that contradicts the object page's own badge."
     }
   ],
   "retired": [

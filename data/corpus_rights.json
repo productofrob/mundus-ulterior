@@ -268,6 +268,16 @@
       "read_on": "2026-09-06",
       "read_by": "model",
       "note": "THE GRANT IS CONDITIONAL AND THE CONDITION WAS CHECKED FOR THIS OBJECT. data/met-licence-declaration.txt, written for Block B4's distractor fetch on 2026-08-14, states it: the CC0 designation applies to public-domain artworks only and is a property of the individual object record, not of the collection or the API. The Met's own object-level flag was read for 67.10a, b on 2026-09-06 -- collectionapi.metmuseum.org/public/collection/v1/objects/325865 returns \"isPublicDomain\": true -- and the object page prints the line `Public Domain` directly beneath the description. Both are the STATUS the CC0 grant rests on, not a second position.\n\nTHE EXISTING DECLARATION WAS NOT INHERITED, BECAUSE ITS OWN SCOPE EXCLUDES THIS USE. It says Met object descriptions in this project \"are used as DISTRACTORS ... never cited, never translated, never placed on the map, and never presented as evidence.\" This is the first Met object in the SEED corpus and it is cited, placed and presented as evidence, so the page was re-read for this scope. FINDING 69 is what an inherited licence reading costs.\n\nNOT public_domain: a licence is named, and africa-07-cosmas-sasu is that position precisely because none is."
+    },
+    "arabia-08-walters-marib-pediment": {
+      "position": "open_licence_stated",
+      "region": "Arabia",
+      "licence": "GNU Free Documentation License (no version named on the page)",
+      "stated_verbatim": "Because the Walters owns or has jurisdiction over the objects in its collection and owns or customarily obtains the rights to any imaging of its collection objects, it has adopted the Creative Commons Zero: No Rights Reserved or CC0 license to waive copyright and allow for unrestricted use of digital images and metadata by any person, for any purpose. The longer text descriptions about the artworks on this website are released under the GNU Free Documentation License.",
+      "read_off": "https://thewalters.org/about/policies/rights-reproductions/",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "THE LICENCE THE OBJECT PAGE ADVERTISES IS NOT THE LICENCE THAT COVERS THIS RECORD'S TEXT -- FINDING 87. art.thewalters.org/object/21.74/ carries eleven `Creative Commons License` badges, every one beside a `Download Image` control and every one linking to creativecommons.org/publicdomain/zero/1.0/. A reader of the object page alone would record this cell as CC0. The policy page's second sentence assigns the LONGER TEXT DESCRIPTIONS -- which is exactly the 700 characters this record quotes -- to the GNU Free Documentation License instead. The CC0 grant covers images and metadata.\n\nNO VERSION IS NAMED and the cell records what is printed rather than levelling it, as F6 did for an open_licence_stated licence that named no version either.\n\nNOT two_positions_stated: the page states two licences over two different bodies of material and says which is which, so it is one position per thing and the record knows which thing it took. two_positions_stated is for material with two positions asserted over IT, which eastasia-08-songshi-fulin has and this does not."
     }
   }
 }

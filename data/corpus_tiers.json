@@ -68,7 +68,8 @@
     "arabia-07-cih541": "verbatim_with_provenance",
     "eastasia-08-songshi-fulin": "verbatim_with_provenance",
     "africa-07-cosmas-sasu": "published_translation_only",
-    "persia-07-met-ewer-anahita": "catalogue_record"
+    "persia-07-met-ewer-anahita": "catalogue_record",
+    "arabia-08-walters-marib-pediment": "catalogue_record"
   },
   "target_mix": {
     "declared_on": "2026-08-29, F1, before curation.",
