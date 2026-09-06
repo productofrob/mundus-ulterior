@@ -1278,6 +1278,55 @@
         }
       },
       "note": "F7's fifth record and its last catalogue record. Second two_positions_stated cell in the corpus, and the first where one publisher asserts both positions over one text."
+    },
+    {
+      "record_id": "eastasia-09-jiutangshu-fulin",
+      "tier": "published_translation_only",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 8.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "The candidate was named in F7_CURATION_START before curation began, so the hunt here was choosing among Hirth's lettered extracts rather than finding a source. K over L over I: L is the Xin Tangshu rewriting the same chapter, I is the Wei shu deriving from the Hou Hanshu this corpus already holds, and K is the one that carries the embassies. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Two statements on one page, five screens apart, and the work was deciding that BOTH land on this record when eastasia-08's cell on the same URL quotes only one. The difference is that this record's whole content is the modernized text the second statement claims. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 12.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE DEAREST CAPTURE IN THE CORPUS AND THE LARGEST EXCERPT IN IT. 5,833 characters, transferred in seven pieces and rejoined on the bridge, with the digest taken over the result: b54df5cf on both machines, first attempt. Also checking for what a reader cannot see -- exactly one non-ASCII character in the span, a `ü` at index 4265 -- and confirming that the Sourcebook's header line is the page's furniture rather than Hirth's heading, which is why it is excluded. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 24.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "BY FAR THE LARGEST PHASE ON THIS RECORD AND IT IS THE ONE THE TIER OWES. The boundary statement here is a COMPARISON and not a list of places looked at: Hirth's 1885 scan was opened and his own opening sentences read against the electronic text's. The modernization deletes his numbered sentences, respells Po-ssu as Po-si, and adds bracketed identifications where he has none. Four of them -- Theodosian, Pogonatus, Khazarstan, clepsydra -- were then searched for across the whole scan and are absent from his translation. Establishing that took most of the phase and it is the record's real contribution. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "SIX SUBJECT ENTRIES AND NOT ONE ID, and two of the refusals are the point. `Their capital city [Constantinople]` gets no Pleiades id because the bracket is the modernizer's and the underlying text names no city; `T'u-huo-lo [Khazarstan]` gets none for the same reason and the gloss is not adopted. Taking a place id off a 2000 editorial bracket would be authoring a coordinate through a third party. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 20.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "A long record because it has to carry the comparison, the two rights statements and their difference from eastasia-08's cell, the refusal of two glosses, and the declaration that P1 was written before this file existed. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "F7's sixth record. Largest excerpt in the corpus at 5,833 characters. First published_translation_only record that is a text OF one of the seven regions rather than a Roman-world author writing about one."
     }
   ],
   "retired": [

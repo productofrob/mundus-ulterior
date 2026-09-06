@@ -311,6 +311,19 @@
       "read_on": "2026-09-06",
       "read_by": "model",
       "note": "SECOND two_positions_stated CELL IN THE CORPUS AND THE FIRST WHERE ONE PUBLISHER ASSERTS BOTH OVER ONE TEXT. persia-06-shahrestaniha's two sentences sit five lines apart in one footer; eastasia-08-songshi-fulin's came from two different sites covering two halves of one record. Here whc.unesco.org states a blanket restriction over everything it displays AND a CC BY-SA 3.0 IGO licence over `© UNESCO` content, and everything turns on which of those a State Party's tentative-list submission is.\n\nTHE THREE QUOTATIONS, IN THE ORDER THEY APPEAR. The first two are on https://whc.unesco.org/en/disclaimer/ -- the blanket restriction under `Images Policy`, then the licence, which is the `License / Read Usage Terms` cell of the row headed `© UNESCO` in a table whose other row is headed `non © UNESCO`. THE THIRD IS ON THE RECORD PAGE ITSELF and is what makes the first two ambiguous rather than complementary: it names somebody other than UNESCO as solely responsible for this text.\n\nWHAT PULLS EACH WAY. The record page's footer asserts `© UNESCO World Heritage Centre 1992-2026`. The disclaimer assigns sole responsibility for the content to the State Party. The terms table's `non © UNESCO` row lists nomination files and does not name tentative lists. Responsibility is not ownership, and the page nowhere says which side of its own table this text falls on. NEITHER IS ADJUDICATED, which is what this position is for.\n\nWHAT THIS RECORD DOES: takes the safer reading, treats the excerpt as covered by the blanket restriction rather than by the licence, and does not assert that CC BY-SA 3.0 IGO reaches it. COUNTED, NOT GATED."
+    },
+    "eastasia-09-jiutangshu-fulin": {
+      "position": "two_positions_stated",
+      "region": "East Asia",
+      "licence": null,
+      "stated_verbatim": [
+        "Unless otherwise indicated the specific electronic form of the document is copyright. Permission is granted for electronic copying, distribution in print form for educational purposes and personal use. If you do reduplicate the document, indicate the source. No permission is granted for commercial use of the Sourcebook.",
+        "[Any modernization © 2000 Jerome S. Arkenberg.]"
+      ],
+      "read_off": "https://depts.washington.edu/silkroad/texts/romchin1.html",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "THIRD two_positions_stated CELL IN THE CORPUS, and the two statements are about the same text rather than about two halves of a record. The first grants electronic copying and print distribution for educational and personal use, asks for the source to be indicated, and refuses commercial use. The second asserts copyright over `any modernization` with no grant attached -- and on THIS record the modernization IS the text.\n\nWHY THIS DIFFERS FROM eastasia-08-songshi-fulin's CELL ON THE SAME URL. That cell quotes the first statement and not the second, and was right to: the Sourcebook supplied one half of a bilingual record whose Chinese came from Kanripo. Here the record is nothing but the modernized English, so the second statement lands on it directly. NOBODY RE-CURATES A RECORD; eastasia-08's cell stands. This is a different question asked of the same page, not a correction of it.\n\nNEITHER IS ADJUDICATED. The source is credited by name, which is the one thing the first statement asks for.\n\nTHE UNDERLYING TRANSLATION IS PUBLIC DOMAIN ON ITS OWN -- Hirth 1885, archive.org `chinaandromanor00hirtgoog`, `possible-copyright-status: NOT_IN_COPYRIGHT` -- and that does not resolve the cell, because what this record holds is not Hirth 1885 as printed. See the record's translation_source for what the comparison found."
     }
   }
 }
