@@ -787,6 +787,55 @@
         }
       },
       "note": "THE CAPTURE IS NOT BLIND -- located and pasted in one session, declared in original_text_note. TWO CANDIDATES WERE REJECTED FOR REASONS THAT ARE THEMSELVES FINDINGS and are written into source_hunting rather than lost: Kylver G 88 has no published translation because a futhark row is not a sentence, and Rundata says so by printing the runes back; and the `wagnijo` group would have put a second record on a word scandinavia-03-vimose already carries, in the region whose own gold case ruling 78 predicts F6 will damage."
+    },
+    {
+      "record_id": "scandinavia-07-rycksta-grikkium",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "CHEAPER THAN scandinavia-06's 22 MINUTES BECAUSE THAT RECORD PAID FOR THE DATABASE. The source, its interface, its citation form and its rights position were all established by the previous record; what this phase bought was the search itself, and it took three tries -- `miklagarpi` (0 hits), `kriklanti` (0 hits, which is how the free-text field turned out to be WORD-EXACT rather than substring despite its `Innehaller` label), and `krikium` (2 hits, So 163 and U 431). U 431 -- 'he died abroad among the Greeks' -- is the one not taken and is a live F7 candidate. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 1.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One minute, and it is one minute because scandinavia-06 spent six on the same page an hour earlier. Recorded rather than booked at zero: the work was done once and this record is the second beneficiary, which is exactly the kind of shared cost a per-record column cannot express and should at least name. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Three source registers and two published translations, with the small-capital R at U+0280, the colon dividers and the trailing colon kept. english_marker_ratio MEASURED at 0.12 before the record was written rather than after it failed, which is what scandinavia-06 taught. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 7.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Reading the English against the Swedish and both against the two normalisations: the silent restoration of `g` and `k` in `gulli`/`skipti` where the carving has `uli`/`sifti`, the undecided `Oleifr/Gulleifr` the edition prints in every register, and the Swedish quietly choosing `Olev` where the English keeps both. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "A second refusal, with TWO coordinates offered this time -- the original site and the park the stone stands in now -- and a schema gap named: this corpus has a findspot block and no block for where an object stands today, which persia-05-abnun hit from the other end. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 12.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "THE CAPTURE IS NOT BLIND -- located and pasted in one session, declared in original_text_note. THE PAIR IS THE POINT: this record and scandinavia-06 are five hundred years apart and gold is in both sentences, once called the Romans' grain and once divided up in their capital. Neither was chosen to make the pair."
     }
   ],
   "retired": [

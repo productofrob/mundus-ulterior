@@ -208,6 +208,16 @@
       "read_on": "2026-09-06",
       "read_by": "curator",
       "note": "Riksantikvarieambetet's own citation guidance for the runtext database, published 2021-02-10, updated 2023-06-15. It permits reuse and asks for attribution plus a link to the stable kulturarvsdata.se URI. IT NAMES NO LICENCE ANYWHERE REACHED. This is the cell that made the seventh position necessary -- see the vocabulary. The attribution asked for is given in the record's citation and translation_source, in the shape the source asks for it."
+    },
+    "scandinavia-07-rycksta-grikkium": {
+      "position": "permission_stated_no_licence",
+      "region": "Scandinavia",
+      "licence": null,
+      "stated_verbatim": "Information om databasen får gärna återanvändas på webbsidor, men vi är tacksamma om källan alltid anges med en hänvisning till Samnordisk runtextdatabas och en länk till objektets stabila URI på kulturarvsdata.se, alltså t.ex.: ”Runinskrift N 2 i Samnordisk runtextdatabas 2020, Institutionen för nordiska språk, Uppsala universitet. http://kulturarvsdata.se/uu/srdb/9dc30dec-30c2-4d6d-9851-6ebdabc490ba ”.",
+      "read_off": "https://www.raa.se/hitta-information/runor/vanliga-fragor-runor/att-citera-innehall-ur-runtextdatabasen/",
+      "read_on": "2026-09-06",
+      "read_by": "curator",
+      "note": "The same Riksantikvarieambetet citation guidance as scandinavia-06-tjurko-bracteate, read off the same page on the same day. TWO RECORDS UNDER ONE READING, and that is stated rather than left to look like two independent verifications: one person read one page once, and both cells rest on it."
     }
   }
 }

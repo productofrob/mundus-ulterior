@@ -247,7 +247,7 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR, state: bool = False) -> int:
     # moved (40, green) and after (41, green), and FINDING 66's condition was
     # re-checked -- `grep -rn "== 40" ingest eval scripts ui` finds this line
     # and nothing else, so no mutation target moves with it.
-    check(len(docs) == 42, f"expected 42 documents, got {len(docs)}")
+    check(len(docs) == 43, f"expected 43 documents, got {len(docs)}")
     orphans = {c.doc_id for c in chunks} - {d.doc_id for d in docs}
     check(not orphans, f"chunks reference unknown docs: {orphans}")
 
