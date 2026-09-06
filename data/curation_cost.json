@@ -836,6 +836,55 @@
         }
       },
       "note": "THE CAPTURE IS NOT BLIND -- located and pasted in one session, declared in original_text_note. THE PAIR IS THE POINT: this record and scandinavia-06 are five hundred years apart and gold is in both sentences, once called the Romans' grain and once divided up in their capital. Neither was chosen to make the pair."
+    },
+    {
+      "record_id": "africa-06-ezana-rie189",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 26.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE MOST EXPENSIVE HUNT IN BLOCK F AND THE ONLY ONE THAT STARTED FROM NOTHING: no negative was on record against this slot and both named leads had to be opened. Beta masahaft, the first, returned 403 to a real browser at both its root and its inscriptions path -- a refusal to a browser and not to a fetcher -- and its GitHub organisation carries no Inscriptions repository under that name. The hunt then widened, past the printed RIE corpus, to open-access scholarship, and landed on an ISAW/NYU monograph that prints Ge'ez transliterations with the author's own English and cites the RIE for each. FOUR SEARCHES AND SIX PAGES. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One page of front matter with a named licence on it, which is the cheapest this phase has been since the museum records. The three minutes went on the thing the sentence does NOT say: no version number and no deed link, which is a finding about the source and had to be written down rather than filled in. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Two spans, and the minutes are mostly the VERIFICATION rather than the capture: SHA-256 over the typed file on the bridge and over the same slice taken from the live page in the browser, compared across two machines. Both matched at 852 and 1201 characters. english_marker_ratio measured at 0.0792 before the record was written, which is what record 42 taught. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Reading the English against the transliteration line by line, which is where the line-number artefact surfaced: 10,544.60 is 10,5 + the line-44 marker + 60, in BOTH registers, and neither is repaired. Also the plain-h `ba-hayla` beside the dotted `amahdankU`, and the three bracketed marks the translator supplies. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One reused Pleiades id for Aksum and TWO REFUSALS, both of which are facts about the text: the confluence of the Sida and the Takkazi, whose identification is a live question in the source itself, and Sado, which the source says only was 'evidently a spot of some importance'. Neither is in the pinned Pleiades snapshot and the repository's only GeoNames dump is China. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 21.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Longer than records 41 to 43 because the record had to carry FINDING 80 -- the handoff document's description of africa-01 is wrong and the note has to say what this record does NOT close -- and because the Roman connection here is an argument about two recensions rather than a word in the text. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "THE LAST PER-REGION FLOOR IN BLOCK F, and the first record in this corpus in a language of Sub-Saharan Africa. THE CAPTURE IS NOT BLIND -- located and captured in one session, declared in original_text_note -- but it is the first capture in this repository VERIFIED BY DIGEST rather than by eye, and that cost about a minute inside text_capture."
     }
   ],
   "retired": [

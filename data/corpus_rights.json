@@ -218,6 +218,16 @@
       "read_on": "2026-09-06",
       "read_by": "curator",
       "note": "The same Riksantikvarieambetet citation guidance as scandinavia-06-tjurko-bracteate, read off the same page on the same day. TWO RECORDS UNDER ONE READING, and that is stated rather than left to look like two independent verifications: one person read one page once, and both cells rest on it."
+    },
+    "africa-06-ezana-rie189": {
+      "position": "open_licence_stated",
+      "region": "Sub-Saharan Africa",
+      "licence": "Creative Commons Attribution Non-Commercial License",
+      "stated_verbatim": "©2013 George Hatke. Distributed under the terms of the Creative Commons Attribution Non-Commercial License.",
+      "read_off": "http://dlib.nyu.edu/awdl/isaw/hatke2013-aksum-and-nubia/",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "The front matter of the open-access edition in the NYU Library's Ancient World Digital Library, in partnership with ISAW. A NAMED LICENCE WITH NO VERSION NUMBER: the page says \"the Creative Commons Attribution Non-Commercial License\" and prints no 2.0/3.0/4.0 and no link to a deed, and this cell records the string as printed rather than supplying one. The non-commercial condition is met by the use and the attribution condition by the record's citation and translation_source. FIRST open_licence_stated cell in this corpus whose licence imposes a condition on the USE rather than only on the citation."
     }
   }
 }
