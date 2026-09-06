@@ -297,6 +297,20 @@
       "read_on": "2026-09-06",
       "read_by": "model",
       "note": "THE FIRST states_no_terms CELL IN THIS CORPUS, and F7_START.md said all seven positions had been exercised -- FINDING 88. Six had; this is the seventh.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. WHAT WAS LOOKED AT on 2026-09-06: the object page, the site's About us page, and the footer of both. The only copyright line anywhere is `© 2009-2014 by GPIUTMD`, which sits beneath a Joomla login block and names a TEMPLATE VENDOR -- a credit for the site's design, not the Fine Arts Department saying anything about reuse of its catalogue text. No terms page, no permissions page, no licence, no reuse statement; the navigation offers About us, Service, Organization and Contact us and nothing else.\n\nWHY NOT all_rights_reserved: that position asserts what a source SAID and must quote it verbatim, and the only quotable line is a third party's. Recording GPIUTMD's credit as the Bangkok National Museum's rights position would attribute a claim to a source that does not make it -- FINDING 69's error in the direction where a curator invents a restriction rather than a permission.\n\nSEARCH BOUNDARY: only the English-language side of the site was read. The Thai pages were not opened and no negative is recorded against them."
+    },
+    "seasia-09-oc-eo-unesco": {
+      "position": "two_positions_stated",
+      "region": "Southeast Asia",
+      "licence": "Creative Commons Attribution-ShareAlike 3.0 IGO -- stated for `© UNESCO` content, and whether it reaches this text is the unsettled question",
+      "stated_verbatim": [
+        "All photographs and other elements of the UNESCO World Heritage Centre website are protected by international treaties on intellectual property and other applicable laws. The elements it displays may not be copied or retransmitted by any means without explicit authorisation from the World Heritage Centre or the copyright holders.",
+        "Creative Commons Attribution-ShareAlike 3.0 IGO",
+        "The sole responsibility for the content of each Tentative List lies with the State Party concerned."
+      ],
+      "read_off": "https://whc.unesco.org/en/disclaimer/ and https://whc.unesco.org/en/tentativelists/6572",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "SECOND two_positions_stated CELL IN THE CORPUS AND THE FIRST WHERE ONE PUBLISHER ASSERTS BOTH OVER ONE TEXT. persia-06-shahrestaniha's two sentences sit five lines apart in one footer; eastasia-08-songshi-fulin's came from two different sites covering two halves of one record. Here whc.unesco.org states a blanket restriction over everything it displays AND a CC BY-SA 3.0 IGO licence over `© UNESCO` content, and everything turns on which of those a State Party's tentative-list submission is.\n\nTHE THREE QUOTATIONS, IN THE ORDER THEY APPEAR. The first two are on https://whc.unesco.org/en/disclaimer/ -- the blanket restriction under `Images Policy`, then the licence, which is the `License / Read Usage Terms` cell of the row headed `© UNESCO` in a table whose other row is headed `non © UNESCO`. THE THIRD IS ON THE RECORD PAGE ITSELF and is what makes the first two ambiguous rather than complementary: it names somebody other than UNESCO as solely responsible for this text.\n\nWHAT PULLS EACH WAY. The record page's footer asserts `© UNESCO World Heritage Centre 1992-2026`. The disclaimer assigns sole responsibility for the content to the State Party. The terms table's `non © UNESCO` row lists nomination files and does not name tentative lists. Responsibility is not ownership, and the page nowhere says which side of its own table this text falls on. NEITHER IS ADJUDICATED, which is what this position is for.\n\nWHAT THIS RECORD DOES: takes the safer reading, treats the excerpt as covered by the blanket restriction rather than by the licence, and does not assert that CC BY-SA 3.0 IGO reaches it. COUNTED, NOT GATED."
     }
   }
 }

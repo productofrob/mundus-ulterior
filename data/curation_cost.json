@@ -1228,6 +1228,56 @@
         }
       },
       "note": "F7's fourth record. First states_no_terms cell in the corpus. First time the digest practice caught a transcription error rather than a property of the page."
+    },
+    {
+      "record_id": "seasia-09-oc-eo-unesco",
+      "tier": "catalogue_record",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 7.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "REACHED BY ELIMINATION AND THE ELIMINATION IS THE COST. Two Thai institutional records were refused on FINDING 86, the British Museum surfaces nothing, U Thong publishes no Victorinus coin, and UNESCO's Pyu Ancient Cities entry -- opened and read -- names trade with Southeast Asia, China and India and no Mediterranean link at all. The Oc Eo tentative list was the second UNESCO entry opened and it names Roman gold coins in the State Party's own words. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE DEAREST RIGHTS PHASE IN THE TRANCHE. Three statements on two pages that do not resolve each other: a blanket restriction over everything displayed, a CC BY-SA 3.0 IGO licence over `© UNESCO` content, and a disclaimer assigning sole responsibility for the content to the State Party. Deciding it is two_positions_stated rather than picking one, and writing down what pulls each way, is the whole phase. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One paragraph taken between paragraph boundaries, 1,103 characters, hashed on both machines at 8d483080. Clean -- no non-ASCII character anywhere, which was worth checking because a paragraph two above it on the same page carries a pair of zero-width characters. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 3.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Nothing to translate. The minutes went on the decision NOT to trim the paragraph to its trade sentence: everything before it is stilt houses, canals and cooking pots, and cutting to the imports would have made the source look like a list of Roman finds, which is what this corpus would like it to be and not what it is. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 8.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "FOUR ENTRIES ACROSS TWO BLOCKS, AND THE SUBJECT BLOCK IS THE RECORD'S ARGUMENT. A focus on Oc Eo and two `source` edges -- Mediterranean countries and India -- drawn from the submission's own clause `imported from India and Mediterranean countries`, so the map carries Roman goods arriving in the Mekong Delta on the receiving end's own words. The geonames id was re-read from the cache rather than inherited from the two records that already carry it, and Ba The was recorded with no id rather than dropped. Coordinates printed on the page were refused. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 13.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Most of it on two declarations: that the duplication with seasia-02-oc-eo-site is deliberate and was declared before the record existed, and that this record is RULING 79's P2 -- the rank-1 crowding experiment F6's P4 could not run. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 2.0,
+          "provenance": "measured",
+          "agent": "model",
+          "because": "THE FIRST REWORK RECORDED IN BLOCK F AND IT WAS A GUARD DOING ITS JOB. The cell was written with its two quotations concatenated into one string separated by `||`, and ingest.verify refused it: `two_positions_stated carries 0 quotation(s)`. stated_verbatim must be a LIST for this position, as persia-06-shahrestaniha's is. Two minutes to reshape it into three quotations in the order they appear. The guard exists because a position whose whole content is `the source says two things that do not agree` is worthless if the two things arrive as one string."
+        }
+      },
+      "note": "F7's fifth record and its last catalogue record. Second two_positions_stated cell in the corpus, and the first where one publisher asserts both positions over one text."
     }
   ],
   "retired": [
