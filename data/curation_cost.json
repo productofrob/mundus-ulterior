@@ -1179,6 +1179,55 @@
         }
       },
       "note": "F7's third record. Shortest excerpt in the corpus at 183 characters, and the only record that may take Pleiades 423025."
+    },
+    {
+      "record_id": "seasia-08-pong-tuk-lamp",
+      "tier": "catalogue_record",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 11.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE MOST EXPENSIVE HUNT OF THE TRANCHE AND MOST OF IT WAS SPENT ON CANDIDATES THAT FAILED. The British Museum surfaces no Roman-connected Southeast Asian object -- `Ban Don Ta Phet` returns nothing and `Funan` returns a Shang finial from China. The two richest institutional records found are Thai-language and were refused on FINDING 86. The U Thong National Museum's thirteen highlight objects contain no Victorinus coin. This page had been recorded as unreachable by a fetcher and opened in a browser on the first attempt. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE FIRST states_no_terms CELL IN THE CORPUS, and the minutes went on establishing the negative rather than reading a statement: object page, About us page, both footers, and the navigation. Then on refusing all_rights_reserved, because the only quotable copyright line names a Joomla template vendor and not the museum. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 8.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE DEAREST CAPTURE OF THE TRANCHE AND THE ONLY ONE WHERE THE DIGEST CAUGHT A CURATOR RATHER THAN A PAGE. The span holds one non-breaking space, at index 99, and the first transcription put it after the ordinary space instead of before it -- invisible in every rendering, and a completely different digest. Also implementing SHA-256 in the page and checking it against the digest of `abc`, because the site is served over HTTP and crypto.subtle is unavailable outside a secure context. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 2.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Nothing to translate. The minutes went on deciding NOT to repair the museum's English -- `the god of Roman`, `were collision facing` -- and NOT to convert its Buddhist-era centuries into CE. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 7.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "TWO ENTRIES AND NO ID ON EITHER, AND BOTH REFUSALS ARE ARGUED IN THE ENTRIES. The findspot is stated to three administrative levels and is recorded `regional` because no gazetteer this corpus holds reaches central Thailand -- the third coordinate a source has handed over and this corpus has refused, after the two Scandinavian ones. The origin is `Alexandria` with the museum's own `may be` in front of it, and importing the Pleiades id would turn a conjecture into a point. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 14.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "The record has more to declare than to describe: no accession number, no date, a museum English that is not repaired, an era system that is not converted, a hedge that is real and is not declared, and a fetcher's negative that was wrong. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "F7's fourth record. First states_no_terms cell in the corpus. First time the digest practice caught a transcription error rather than a property of the page."
     }
   ],
   "retired": [
