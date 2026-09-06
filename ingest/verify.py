@@ -241,7 +241,13 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR, state: bool = False) -> int:
     # discipline; what is missing is the confirmation, not the timing. THIS
     # LINE IS UNVERIFIED UNTIL THE NINE SUITES RUN ON THIS HOST, and a session
     # that finds it red should suspect the count before it suspects the corpus.
-    check(len(docs) == 40, f"expected 40 documents, got {len(docs)}")
+    # F6, 2026-09-06. 40 -> 41, with persia-06-shahrestaniha. RAISED BY A
+    # SESSION THAT HAS A SHELL, so the confirmation the note above says is
+    # missing is present for this raise: ingest.verify was run before the line
+    # moved (40, green) and after (41, green), and FINDING 66's condition was
+    # re-checked -- `grep -rn "== 40" ingest eval scripts ui` finds this line
+    # and nothing else, so no mutation target moves with it.
+    check(len(docs) == 41, f"expected 41 documents, got {len(docs)}")
     orphans = {c.doc_id for c in chunks} - {d.doc_id for d in docs}
     check(not orphans, f"chunks reference unknown docs: {orphans}")
 

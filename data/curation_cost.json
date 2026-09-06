@@ -689,6 +689,55 @@
         }
       },
       "note": "THREE SOURCES AND TWO BREACHES OF THE CAPTURE RULE, BOTH DECLARED IN THE RECORD. Carried forward: F5 Part 2 quoted BOTH English translations to the curator in a progress message, so their paste is a confirmation and not an independent second reading; the Devanagari was never shown and is the only genuinely blind capture here. NEW: Subrahmanya Sastri & Bhat arrived as a PAGE IMAGE and was transcribed by the MODEL rather than typed by the curator, which inverts the rule the capture path exists to enforce. A typed paste is owed. The capture also corrected the hunt: Iyer was truncated, dropping the sentence in which the two translations AGREE, which made the divergence look total when it is localised to six words."
+    },
+    {
+      "record_id": "persia-06-shahrestaniha",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 18.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "BROWSER PASS 2, BOOKED HERE AND NOT LOST. F6_START's debt item 1 asked for a human pass on parsigdatabase.com and noorlib.ir and this record is what the parsig half of it produced. FINDING 70 records the opposite case -- browser pass 1's twenty minutes owed to a record that may never be written -- and this is the same accounting made to work: the hunt that found this source is booked against the record it found. The noorlib half of the pass is NOT booked here; it produced no record and belongs nowhere yet. F6, and the agent field exists as of this entry (FINDING 70). This is model wall clock apportioned across phases by judgement, not a clock per phase: the session held the shell, the browser and the paste. NOT COMPARABLE to records 25 to 35, whose figures are a person timing themselves -- ruling 46's comparator is within_tranche and ingest.cost.trend_line now refuses a trend across two agents rather than printing one."
+        },
+        "rights_and_licence": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Reading the footer in both interface languages, establishing that the site states TWO positions rather than one, and confirming that the edited text each section cites is Jamasp-Asana 1897-1913 and therefore public domain -- which is what takes the source-text side of the record off the site's licence entirely. F6, and the agent field exists as of this entry (FINDING 70). This is model wall clock apportioned across phases by judgement, not a clock per phase: the session held the shell, the browser and the paste. NOT COMPARABLE to records 25 to 35, whose figures are a person timing themselves -- ruling 46's comparator is within_tranche and ingest.cost.trend_line now refuses a trend across two agents rather than printing one."
+        },
+        "text_capture": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Thirteen contiguous sections plus one, in two registers, with the section numbers, the asterisks, the square and angle brackets and the per-section page citations kept. Includes establishing that the PAHLAVI SCRIPT REGISTER IS A MAPPED DISPLAY FONT and must not be captured as text, which is the finding that decided what the source-language chunk is. F6, and the agent field exists as of this entry (FINDING 70). This is model wall clock apportioned across phases by judgement, not a clock per phase: the session held the shell, the browser and the paste. NOT COMPARABLE to records 25 to 35, whose figures are a person timing themselves -- ruling 46's comparator is within_tranche and ingest.cost.trend_line now refuses a trend across two agents rather than printing one."
+        },
+        "translation_and_fidelity": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Reading Asha's English against the transcription section by section across all sixty-two, which is how the mis-alignment at 5/6 and at 55 was found, and how the three divergences inside the excerpt were. F6, and the agent field exists as of this entry (FINDING 70). This is model wall clock apportioned across phases by judgement, not a clock per phase: the session held the shell, the browser and the paste. NOT COMPARABLE to records 25 to 35, whose figures are a person timing themselves -- ruling 46's comparator is within_tranche and ingest.cost.trend_line now refuses a trend across two agents rather than printing one."
+        },
+        "placement": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Three Pleiades ids found by --find against the pinned CSV dump and read before being taken, two near-miss ids named and refused (unlocated Nisibis 60591/897813, Edessa in Macedonia 491585), and four subject places deliberately left without ids. F6, and the agent field exists as of this entry (FINDING 70). This is model wall clock apportioned across phases by judgement, not a clock per phase: the session held the shell, the browser and the paste. NOT COMPARABLE to records 25 to 35, whose figures are a person timing themselves -- ruling 46's comparator is within_tranche and ingest.cost.trend_line now refuses a trend across two agents rather than printing one."
+        },
+        "authoring": {
+          "minutes": 11.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "F6, and the agent field exists as of this entry (FINDING 70). This is model wall clock apportioned across phases by judgement, not a clock per phase: the session held the shell, the browser and the paste. NOT COMPARABLE to records 25 to 35, whose figures are a person timing themselves -- ruling 46's comparator is within_tranche and ingest.cost.trend_line now refuses a trend across two agents rather than printing one."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "THE CAPTURE IS NOT BLIND AND THE RECORD SAYS SO. The locating pass and the capture ran in one session; F6_BROWSER_PASS2.md stopped at the interface on purpose so that a blind paste would still be possible, and the curation then happened in the same session anyway. Declared in original_text_note, not mitigated. FIRST ENTRY IN THIS LEDGER TO CARRY AN AGENT."
     }
   ],
   "retired": [

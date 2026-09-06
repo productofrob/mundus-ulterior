@@ -626,7 +626,7 @@
         11.0949512,
         43.6941505
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Italia"
@@ -652,7 +652,7 @@
         9.938972,
         56.053145
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,twentieth-ce,twenty-first-ce",
       "time_periods": "RTT",
       "title": "Illerup Ådal"
@@ -678,7 +678,7 @@
         45.038928,
         12.771651
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "1200-bc-middle-east,achaemenid-roman-republic-middle-east,roman,transition-roman-early-empire-late-antique,caliphate-umayyad-middle-east,samanid-ghaznavid-iran,early-ottoman-empire,1500-ad-middle-east,sixteenth-ce,ottoman-empire,late-ottoman-empire,khedivate-egypt,colonial-modern-middle-east,ottoman-decline-mandate-middle-east,modern-middle-east",
       "time_periods": "1ARTCSE1SOLKCOM",
       "title": "Adane/Athenae/Eudaimon Arabia"
@@ -704,7 +704,7 @@
         39.6591296,
         15.2616612
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Adouli"
@@ -730,7 +730,7 @@
         40.0031505062,
         15.7289257455
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,modern",
       "time_periods": "RM",
       "title": "Alalaiou (islands)"
@@ -756,7 +756,7 @@
         38.7212920204,
         14.1338504591
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,late-antique,modern",
       "time_periods": "RLM",
       "title": "A(u)xoume"
@@ -782,7 +782,7 @@
         48.2359537616,
         13.992228265
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,twentieth-ce",
       "time_periods": "RT",
       "title": "Kane"
@@ -808,7 +808,7 @@
         39.552787,
         14.709112
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,roman",
       "time_periods": "HR",
       "title": "Koloe"
@@ -834,7 +834,7 @@
         53.4073660498,
         17.4108859516
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Libanophoros Chora"
@@ -860,7 +860,7 @@
         43.421475,
         13.261275
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,roman",
       "time_periods": "HR",
       "title": "Mouza Emporion"
@@ -886,7 +886,7 @@
         39.7513921793,
         15.4636904394
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,modern",
       "time_periods": "RM",
       "title": "Oreine (island)"
@@ -912,7 +912,7 @@
         48.3870518,
         13.9317288
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,modern",
       "time_periods": "RM",
       "title": "Orneon Ins."
@@ -938,7 +938,7 @@
         37.8854432,
         18.5826004
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,twentieth-ce,twenty-first-ce",
       "time_periods": "RTT",
       "title": "Ptolemais Theron"
@@ -964,7 +964,7 @@
         52.2093989,
         15.9270015
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,modern,twenty-first-ce",
       "time_periods": "RMT",
       "title": "Sachalites Sinus"
@@ -982,7 +982,7 @@
       "max_date": "300",
       "min_date": "-30",
       "repr_point": null,
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Kyeneion"
@@ -1008,7 +1008,7 @@
         12.4912581746,
         41.8899769865
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "archaic,classical,hellenistic-republican,roman,late-antique,modern",
       "time_periods": "ACHRLM",
       "title": "Roma"
@@ -1034,7 +1034,7 @@
         73.2758445635,
         15.4316563299
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Aigidion Nesos"
@@ -1060,7 +1060,7 @@
         76.36792,
         9.35099
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,twentieth-ce,twenty-first-ce",
       "time_periods": "RTT",
       "title": "Bakare"
@@ -1086,7 +1086,7 @@
         73.339812,
         16.503036
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Byzantion?"
@@ -1112,7 +1112,7 @@
         76.8889421868,
         9.00419135029
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Cottonara"
@@ -1138,7 +1138,7 @@
         72.5,
         12.5
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Kaineiton Nesos"
@@ -1164,7 +1164,7 @@
         73.139156,
         19.272784
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,late-antique",
       "time_periods": "RL",
       "title": "Kalliena"
@@ -1190,7 +1190,7 @@
         74.3250429,
         14.0188543
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,modern",
       "time_periods": "RM",
       "title": "Leuke (island)"
@@ -1216,7 +1216,7 @@
         75.9216471845,
         11.0716318038
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Limyrike"
@@ -1242,7 +1242,7 @@
         73.03939,
         17.951342
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Mandagara?"
@@ -1268,7 +1268,7 @@
         76.213146,
         10.153976
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,late-antique",
       "time_periods": "RL",
       "title": "Muziris"
@@ -1294,7 +1294,7 @@
         74.449703,
         14.281472
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Naoura/Nitriae"
@@ -1320,7 +1320,7 @@
         76.558846,
         9.272624
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Nelkynda"
@@ -1346,7 +1346,7 @@
         73.302413,
         17.526305
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Palaipatmai?"
@@ -1372,7 +1372,7 @@
         78.1935899466,
         9.65385878536
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,roman,late-antique",
       "time_periods": "HRL",
       "title": "Pandion"
@@ -1398,7 +1398,7 @@
         72.947229,
         18.521268
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Semylla"
@@ -1424,7 +1424,7 @@
         72.5,
         17.5
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Sesekreienai? Inss."
@@ -1450,7 +1450,7 @@
         73.58469,
         16.220106
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Toparon?"
@@ -1476,7 +1476,7 @@
         75.926477,
         10.763548
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Tyndis"
@@ -1502,7 +1502,7 @@
         73.472008,
         16.078557
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Tyrannosboas?"
@@ -1528,7 +1528,7 @@
         72.983068,
         21.70078
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,roman,twentieth-ce,twenty-first-ce",
       "time_periods": "HRTT",
       "title": "Barygaza"
@@ -1554,7 +1554,7 @@
         83.7799018947,
         25.9323267649
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,roman,late-antique,sixteenth-ce,modern,twenty-first-ce",
       "time_periods": "HRLSMT",
       "title": "Ganges (river)"
@@ -1580,7 +1580,7 @@
         67.8109456254,
         26.3655425346
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Indoskythia"
@@ -1606,10 +1606,36 @@
         52.874030317,
         29.9884865102
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "achaemenid-central-asia,modern",
       "time_periods": "AM",
       "title": "Ka'ba-ye Zartosht"
+    },
+    "pleiades:658457": {
+      "authors": "Sinclair, T., P. Gatier, M. Ballance, B. Kiesling, S. Gillies, J. Becker, H. Kopp, B. Siewert-Mayer, J. Åhlfeldt, R. Talbert, C. de Lisle, W. Röllig, T. Elliott, DARMC, R. Warner, E. Yılandiloğlu, F. Deblauwe, E. Kansa",
+      "bbox": [
+        38.786696,
+        37.148633,
+        38.786696,
+        37.148633
+      ],
+      "creators": "T. Sinclair, P.-L. Gatier",
+      "description": "Edessa/Antiochia ad Callirhoem was an ancient settlement of upper Mesopotamia, refounded by Seleucus I Nikator.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "658457",
+      "location_precision": "precise",
+      "max_date": "2099",
+      "min_date": "-2600000",
+      "repr_point": [
+        38.786696,
+        37.148633
+      ],
+      "retrieved": "2026-09-06",
+      "time_period_keys": "paleolithic-middle-east,middle-bronze-age-anatolia,1200-bc-middle-east,hellenistic-republican,hellenistic-middle-east,hellenistic-roman-early-empire,roman-middle-east,roman,roman-early-empire-parthian-middle-east,transition-roman-early-empire-late-antique,late-antique,late-antique-sasanian-middle-east,proto-byzantine,persian-medieval-caucasus,caliphate-umayyad-middle-east,early-byzantine,abassid-middle-east,middle-byzantine,early-medieval-caucasus,rum-crusader-anatolia,crusader-byzantine-seljuq-middle-east,crusader-seljuq-ayyubid-levant,ilkhanate-middle-east,mongol-middle-east,ottoman-rise,early-ottoman-empire,perso-ottoman-russian-caucasus,sixteenth-ce,ottoman-empire,late-ottoman-empire,ottoman-decline-mandate-middle-east,twentieth-ce,modern-middle-east,twenty-first-ce",
+      "time_periods": "PM1HHHRRRTLLPPCEAMERCCIMOEPSOLOTMT",
+      "title": "Edessa/Antiochia ad Callirhoem"
     },
     "pleiades:668290": {
       "authors": "Brown, J., P. Gatier, B. Kiesling, S. Gillies, J. Becker, T. Elliott, DARMC, R. Talbert, M. Filosa, R. Warner, R. Scott Smith, G. Hawes, R. Horne, E. Yılandiloğlu",
@@ -1632,7 +1658,7 @@
         35.7766297,
         35.51892275
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "classical,hellenistic-republican,roman,late-antique,sixteenth-ce,modern",
       "time_periods": "CHRLSM",
       "title": "Laodicea"
@@ -1658,7 +1684,7 @@
         38.2648672156,
         34.5528093938
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "later-2nd-millennium-bc-mesopotamia,middle-hittite-anatolia,egyptian-hittite-levant,1200-bc-middle-east,neo-assyrian-babylonian-middle-east,classical,achaemenid-middle-east,hellenistic-republican,hellenistic-middle-east,roman-middle-east,roman,roman-early-empire-parthian-middle-east,transition-roman-early-empire-late-antique,late-antique,late-antique-sasanian-middle-east,caliphate-umayyad-middle-east,early-byzantine,abassid-middle-east,middle-byzantine,crusader-byzantine-seljuq-middle-east,ilkhanate-middle-east,1500-ad-middle-east,sixteenth-ce,ottoman-empire,late-ottoman-empire,modern,modern-middle-east",
       "time_periods": "LME1NCAHHRRRTLLCEAMCI1SOLMM",
       "title": "Palmyra"
@@ -1684,7 +1710,7 @@
         29.909773,
         31.201435
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "middle-kingdom-egypt,new-kingdom-egypt,1200-bc-middle-east,achaemenid-roman-republic-middle-east,hellenistic-republican,hellenistic-middle-east,ptolemaic-roman-egypt,roman-middle-east,roman,roman-early-empire-parthian-middle-east,transition-roman-early-empire-late-antique,late-antique,late-antique-sasanian-middle-east,proto-byzantine,caliphate-umayyad-middle-east,early-byzantine,abassid-middle-east,samanid-ghaznavid-iran,ilkhanate-middle-east,timurid-middle-east,early-ottoman-empire,1500-ad-middle-east,sixteenth-ce,ottoman-empire,late-ottoman-empire,eighteenth-ce,khedivate-egypt,ottoman-decline-mandate-middle-east,modern-middle-east",
       "time_periods": "MN1AHHPRRRTLLPCEASITE1SOLEKOM",
       "title": "Alexandria"
@@ -1710,7 +1736,7 @@
         30.6566218531,
         9.90411310187
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "neolithic-egypt,pottery-neolithic-middle-east,2nd-millennium-bc-egypt,new-kingdom-egypt,1200-bc-middle-east,archaic,classical,achaemenid-middle-east,achaemenid-roman-republic-middle-east,hellenistic-republican,hellenistic-middle-east,ptolemaic-roman-egypt,roman-middle-east,roman,roman-early-empire-parthian-middle-east,transition-roman-early-empire-late-antique,late-antique,late-antique-sasanian-middle-east,caliphate-umayyad-middle-east,abassid-middle-east,samanid-ghaznavid-iran,early-ottoman-empire,1500-ad-middle-east,sixteenth-ce,ottoman-empire,late-ottoman-empire,modern,khedivate-egypt,modern-middle-east,twenty-first-ce",
       "time_periods": "NP2N1ACAAHHPRRRTLLCASE1SOLMKMT",
       "title": "Nilus (river)"
@@ -1736,7 +1762,7 @@
         30.7347325572,
         29.2863267013
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,roman,late-antique",
       "time_periods": "HRL",
       "title": "Arsinoites/Krokodeilopolites Nomos"
@@ -1762,7 +1788,7 @@
         29.909773,
         31.201435
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,modern",
       "time_periods": "RM",
       "title": "Aegyptus (Roman imperial province)"
@@ -1788,7 +1814,7 @@
         32.8159103667,
         25.9963989667
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "archaic,classical,hellenistic-republican,roman,late-antique",
       "time_periods": "ACHRL",
       "title": "Coptos"
@@ -1814,7 +1840,7 @@
         32.631884,
         25.664781
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "paleolithic-middle-east,old-kingdom-egypt,first-intermediate-period-egypt,middle-kingdom-egypt,2nd-millennium-bc-egypt,second-intermediate-period-egypt,new-kingdom-egypt,archaic,neo-assyrian-babylonian-middle-east,classical,achaemenid-roman-republic-middle-east,hellenistic-republican,hellenistic-middle-east,ptolemaic-roman-egypt,roman,roman-early-empire-parthian-middle-east,late-antique,late-antique-sasanian-middle-east,abassid-middle-east,fatimid-middle-east,ilkhanate-middle-east,1500-ad-middle-east,sixteenth-ce,modern,modern-middle-east",
       "time_periods": "POFM2SNANCAHHPRRLLAFI1SMM",
       "title": "Diospolis Magna/Thebai"
@@ -1840,7 +1866,7 @@
         34.3163103,
         24.7631798
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,hellenistic-roman-early-empire,roman,late-antique",
       "time_periods": "HHRL",
       "title": "Seyhrig"
@@ -1866,7 +1892,7 @@
         37.9523454717,
         26.7982135285
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,roman,modern",
       "time_periods": "HRM",
       "title": "Egra/Meda'in Salih"
@@ -1892,10 +1918,62 @@
         36.5,
         27.5
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "hellenistic-republican,roman",
       "time_periods": "HR",
       "title": "Thamydenoi/Tamudaei"
+    },
+    "pleiades:874623": {
+      "authors": "Roaf, M., T. Sinclair, S. Kroll, St J. Simpson, B. Kiesling, S. Gillies, J. Åhlfeldt, J. Becker, T. Elliott, DARMC, R. Talbert, E. Yılandiloğlu, C. de Lisle",
+      "bbox": [
+        41.214619,
+        37.066666,
+        41.216666,
+        37.068635
+      ],
+      "creators": "M. Roaf, T. Sinclair, S.E. Kroll, St J. Simpson",
+      "description": "Nisibis/Antiochia was an ancient city of Mesopotamia that began as part of an Aramaean kingdom that the Assyrian king Adad-Nirari II captured in 896 BC. Following its capture by Alexander the Great, the city became Antiochia Mygdonia under the Seleucids.",
+      "dump_date": "2026-08-10",
+      "feature_types": "settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "874623",
+      "location_precision": "precise",
+      "max_date": "1599",
+      "min_date": "-330",
+      "repr_point": [
+        41.2154466667,
+        37.0675116667
+      ],
+      "retrieved": "2026-09-06",
+      "time_period_keys": "hellenistic-republican,roman,late-antique,sixteenth-ce",
+      "time_periods": "HRLS",
+      "title": "Nisibis/Antiochia"
+    },
+    "pleiades:893976": {
+      "authors": "Roaf, M., St J. Simpson, E. Yılandiloğlu, B. Kiesling, S. Gillies, J. Åhlfeldt, J. Becker, W. Röllig, T. Elliott, H. Kopp, DARMC, C. de Lisle, R. Talbert, B. Siewert-Mayer, I. Luo, F. Deblauwe, E. Kansa",
+      "bbox": [
+        44.580717,
+        33.093563,
+        44.581919,
+        33.096964
+      ],
+      "creators": "M. Roaf, St J. Simpson",
+      "description": "An imperial capital of the Arsacid and Sasanian empires, this large ancient city originated as early as the third century BCE and declined in the eighth century CE. It was located on the left bank of the Tigris River 35 km south of what would later become modern Baghdad in Iraq. It was part of a complex network of settlements in the area, among which Seleucia (modern Vēh Ardašīr) also featured prominently. It was attacked, and sometimes occupied, by Roman forces multiple times.",
+      "dump_date": "2026-08-10",
+      "feature_types": "urban, settlement",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "893976",
+      "location_precision": "precise",
+      "max_date": "2000",
+      "min_date": "-540",
+      "repr_point": [
+        44.5812226667,
+        33.094703
+      ],
+      "retrieved": "2026-09-06",
+      "time_period_keys": "achaemenid-roman-republic-middle-east,hellenistic-republican,hellenistic-middle-east,roman-middle-east,roman,roman-early-empire-parthian-middle-east,transition-roman-early-empire-late-antique,late-antique,late-antique-sasanian-middle-east,proto-byzantine,caliphate-umayyad-middle-east,abassid-middle-east,samanid-ghaznavid-iran,middle-byzantine,seljuq-khwarezmian-middle-east,crusader-byzantine-seljuq-middle-east,ilkhanate-middle-east,sixteenth-ce,safavid-middle-east,modern-middle-east",
+      "time_periods": "AHHRRRTLLPCASMSCISSM",
+      "title": "Ctesiphon"
     },
     "pleiades:906027": {
       "authors": "Hausleiter, A., M. Roaf, E. Keall, J. Becker, T. Elliott, S. Gillies, R. Talbert",
@@ -1910,7 +1988,7 @@
       "max_date": null,
       "min_date": null,
       "repr_point": null,
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": null,
       "time_periods": null,
       "title": "Sabbatha/Sabatha/Sabdata"
@@ -1936,7 +2014,7 @@
         47.3444711807,
         31.4678578238
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,late-antique",
       "time_periods": "RL",
       "title": "Mesene/Characene/Shad Bahman/Maisan"
@@ -1962,7 +2040,7 @@
         52.653905,
         29.56797
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Barm-i Dilak"
@@ -1988,7 +2066,7 @@
         52.8746054601,
         29.9886564584
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "archaic,classical,hellenistic-republican,roman,late-antique,modern",
       "time_periods": "ACHRLM",
       "title": "Naqsh-i Rustam"
@@ -2014,7 +2092,7 @@
         52.491334576,
         30.1033729435
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "classical,hellenistic-republican,roman,late-antique",
       "time_periods": "CHRL",
       "title": "Persis/Pars"
@@ -2040,7 +2118,7 @@
         10.7100173,
         55.14885395
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman,late-antique",
       "time_periods": "RL",
       "title": "Gudme"
@@ -2066,7 +2144,7 @@
         11.230919,
         54.740603
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Hoby"
@@ -2092,7 +2170,7 @@
         10.179996,
         55.459989
       ],
-      "retrieved": "2026-09-05",
+      "retrieved": "2026-09-06",
       "time_period_keys": "roman",
       "time_periods": "R",
       "title": "Vimose"
@@ -2203,7 +2281,7 @@
       "dump_date": "2026-08-10",
       "dump_url": "https://atlantides.org/downloads/pleiades/dumps/pleiades-places-20260810.csv.gz",
       "name": "Pleiades",
-      "retrieved": "2026-09-05"
+      "retrieved": "2026-09-06"
     }
   }
 }
