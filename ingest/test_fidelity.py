@@ -30,10 +30,14 @@ from pathlib import Path
 
 from .fidelity import (
     GLOSS_CAPABLE_TIERS,
+    RIGHTS_POSITIONS,
+    RIGHTS_POSITIONS_REQUIRING_A_QUOTATION,
     SOURCE_LANGUAGE_TIERS,
     source_language_provenance,
     check_allocation,
     check_delivery,
+    check_rights,
+    summarise_rights,
     PARAPHRASE_FLAG_LIFTED,
     PARAPHRASE_ID_HINTS,
     RECORD_TIERS,
@@ -909,6 +913,160 @@ def test_source_language_provenance():
           f"floor that would claim six other regions nobody has evidence for.")
 
 
+
+
+# --------------------------------------------------------------------------
+# The rights column (ruling 74, built in F6)
+# --------------------------------------------------------------------------
+
+def _rights(**cells) -> dict:
+    """A rights document holding exactly the cells given."""
+    return {"records": dict(cells)}
+
+
+def fired(problems: "list[str]", *needles: str) -> bool:
+    """Did THIS rule report, rather than merely something reporting?
+
+    The same helper `ingest/test_cost.py` carries, and for the reason that file
+    gives: a harness that reads "something failed" as "the guard fired" is a
+    harness that would pass while the guard did nothing.
+    """
+    return any(all(n in p for n in needles) for p in problems)
+
+
+READ = {"read_off": "https://example.invalid/record", "read_on": "2026-09-06",
+        "read_by": "curator"}
+
+
+def test_rights_column():
+    """Ruling 74's third condition, made readable. F6, 2026-09-06.
+
+    THESE ASSERTIONS EXIST BECAUSE THEY DID NOT. `check_rights` and
+    `summarise_rights` were written, wired into ingest.verify, and shipped in a
+    commit whose message claimed four instrument debts closed -- and no suite in
+    this repository named either function and no mutation harness touched them.
+    `ingest.verify` was green with the column in place, and it would have been
+    green with `check_rights` returning an empty list unconditionally. A guard
+    nothing has been seen to fail is not known to work, which is the standard
+    every other guard in this file is held to.
+    """
+    print("check_rights (ruling 74, F6)")
+
+    corpus = {"a-01", "a-02"}
+
+    expect(
+        fired(check_rights(_rights(**{"a-01": {"position": "unread"}}), corpus),
+              "no rights cell", "a-02"),
+        "GUARD a record in the corpus with no rights cell is refused, because "
+        "an absent cell is not unread -- it is a record nobody asked the "
+        "question about",
+    )
+    expect(
+        fired(check_rights(_rights(**{"a-01": {"position": "unread"},
+                                      "a-02": {"position": "unread"},
+                                      "z-99": {"position": "unread"}}), corpus),
+              "name no record"),
+        "GUARD a rights cell naming no record in the corpus is refused",
+    )
+    expect(
+        fired(check_rights({"note": "no records object"}, corpus),
+              "no `records` object"),
+        "GUARD a rights document with no records object is refused, rather "
+        "than read as a corpus with no rights positions",
+    )
+
+    def one(cell):
+        return check_rights(_rights(**{"a-01": cell, "a-02": {"position": "unread"}}),
+                            corpus)
+
+    expect(fired(one({"position": "probably_fine"}), "is not one of"),
+           "GUARD a rights position outside the vocabulary is refused")
+    expect(not one({"position": "unread"}),
+           "GUARD `unread` needs nothing else, because it is a statement about "
+           "this project's knowledge and not about the source")
+
+    # Every position that asserts what a source SAID has to quote it.
+    for position in RIGHTS_POSITIONS_REQUIRING_A_QUOTATION:
+        stated = ["one", "two"] if position == "two_positions_stated" else "a sentence"
+        good = dict(READ, position=position, stated_verbatim=stated)
+        expect(not one(good),
+               f"GUARD a complete {position} cell passes")
+        needle = ("quotation(s)" if position == "two_positions_stated"
+                  else "no stated_verbatim")
+        expect(fired(one({k: v for k, v in good.items() if k != "stated_verbatim"}),
+                     needle),
+               f"GUARD {position} with no stated_verbatim is refused, because "
+               f"ruling 74 asks for the position stated VERBATIM and a summary "
+               f"is the curator's sentence rather than the source's")
+        for field in ("read_off", "read_by"):
+            expect(fired(one({k: v for k, v in good.items() if k != field}),
+                         f"no {field}"),
+                   f"GUARD {position} with no {field} is refused -- a rights "
+                   f"position is a reading, and a reading nobody signed is a "
+                   f"claim about a source nobody opened")
+        expect(fired(one(dict(good, read_on="last Tuesday")), "read_on"),
+               f"GUARD {position} with a read_on that is not a date is refused")
+
+    expect(
+        fired(one(dict(READ, position="two_positions_stated",
+                       stated_verbatim=["only one"])), "quotation"),
+        "GUARD two_positions_stated carrying one quotation is refused, because "
+        "the position IS that the source says two things that do not agree",
+    )
+    expect(
+        fired(one(dict(READ, position="states_no_terms",
+                       stated_verbatim="but here is a sentence")), "states_no_terms"),
+        "GUARD states_no_terms carrying a quotation is refused -- if there is a "
+        "sentence to quote, the source states terms",
+    )
+    expect(
+        not one(dict(READ, position="states_no_terms")),
+        "GUARD states_no_terms is a READING whose answer was nothing, and is "
+        "complete without a quotation",
+    )
+
+    # FINDING 69's distinction, one step further out, and the reason the
+    # seventh position exists at all.
+    expect(
+        "permission_stated_no_licence" in RIGHTS_POSITIONS
+        and "permission_stated_no_licence" in RIGHTS_POSITIONS_REQUIRING_A_QUOTATION,
+        "GUARD `permission_stated_no_licence` is in the vocabulary AND has to "
+        "quote its permission -- a source that permits reuse in prose and names "
+        "no licence is neither open_licence_stated nor states_no_terms",
+    )
+
+    counts = summarise_rights(_rights(**{
+        "a-01": dict(READ, position="open_licence_stated", stated_verbatim="CC BY 4.0"),
+        "a-02": {"position": "unread"},
+        "a-03": {"position": "unread"},
+    }))
+    expect(counts == {"open_licence_stated": 1, "unread": 2},
+           "GUARD summarise_rights counts each position and omits the ones with "
+           "no records, so an `unread` total cannot hide in a table of zeroes")
+
+    # And against the file on disk, bidirectionally, the way the tier
+    # declaration is checked one function over.
+    rights_path = Path(__file__).resolve().parent.parent / "data" / "corpus_rights.json"
+    expect(rights_path.exists(),
+           "GUARD data/corpus_rights.json is on disk, because ruling 74's third "
+           "condition is unreadable without it")
+    if rights_path.exists():
+        doc = json.loads(rights_path.read_text(encoding="utf-8"))
+        result = load_corpus(SEED_CORPUS_DIR)
+        live = {d.doc_id for d in result.documents}
+        expect(not check_rights(doc, live),
+               "GUARD the rights column on disk covers the corpus on disk, in "
+               "both directions, and every non-unread cell carries its reading")
+        vocabulary = set((doc.get("vocabulary") or {}))
+        if vocabulary != set(RIGHTS_POSITIONS):
+            print(f"  note: code-only {sorted(set(RIGHTS_POSITIONS) - vocabulary)}, "
+                  f"file-only {sorted(vocabulary - set(RIGHTS_POSITIONS))}")
+        expect(vocabulary == set(RIGHTS_POSITIONS),
+               "GUARD every rights position this module accepts is DEFINED in "
+               "data/corpus_rights.json, and the file defines no position the "
+               "code would refuse")
+
+
 def main() -> int:
     test_derivation()
     test_declaration_checking()
@@ -917,6 +1075,7 @@ def main() -> int:
     test_allocation()
     test_delivery()
     test_source_language_provenance()
+    test_rights_column()
     test_against_the_live_corpus()
 
     print()

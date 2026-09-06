@@ -419,6 +419,83 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("    if gloss < int(mix.get(\"gloss_capable_records\") or 0):",
           "    if gloss != int(mix.get(\"gloss_capable_records\") or 0):")],
     ),
+    # --------------------------------------------------------------------
+    # The rights column (ruling 74, built in F6). Added 2026-09-06, in the
+    # session AFTER the one that shipped the column -- which shipped it with no
+    # assertion in any suite and no mutation in any harness, and with a green
+    # ingest.verify that would have stayed green had check_rights returned an
+    # empty list unconditionally.
+    # --------------------------------------------------------------------
+    (
+        'a rights position outside the vocabulary is admitted',
+        [
+            ('        if position not in RIGHTS_POSITIONS:',
+             '        if False:'),
+        ],
+    ),
+    (
+        'a record in the corpus may have no rights cell',
+        [
+            ('    missing = sorted(corpus_ids - set(cells))',
+             '    missing = []'),
+        ],
+    ),
+    (
+        'a rights cell may name a record that is not in the corpus',
+        [
+            ('    extra = sorted(set(cells) - corpus_ids)',
+             '    extra = []'),
+        ],
+    ),
+    (
+        'a rights document with no records object is read as an empty column',
+        [
+            ('    cells = (rights or {}).get("records")',
+             '    cells = (rights or {}).get("records") or {}'),
+        ],
+    ),
+    (
+        'a stated position no longer has to quote what the source said',
+        [
+            ('            elif not (isinstance(stated, str) and stated.strip()):',
+             '            elif False:'),
+        ],
+    ),
+    (
+        'a reading no longer has to say who made it or where',
+        [
+            ('            if not str(cell.get(field, "") or "").strip():',
+             '            if False:'),
+        ],
+    ),
+    (
+        'read_on stops having to be a date',
+        [
+            ('        if not _RIGHTS_ISO_DATE.match(str(cell.get("read_on", "") or "")):',
+             '        if False:'),
+        ],
+    ),
+    (
+        'states_no_terms may carry a quotation of the terms it says do not exist',
+        [
+            ('        elif position == "states_no_terms" and stated:',
+             '        elif False:'),
+        ],
+    ),
+    (
+        'two_positions_stated may carry one position',
+        [
+            ('                if len(quotes) < 2:',
+             '                if len(quotes) < 1:'),
+        ],
+    ),
+    (
+        'summarise_rights counts nothing, so an unread total cannot be seen',
+        [
+            ('            counts[position] += 1',
+             '            counts[position] += 0'),
+        ],
+    ),
 ]
 
 EXPECTED = [
@@ -502,6 +579,26 @@ EXPECTED = [
     "field must never take the flattering branch",
     "GUARD an allocation placing MORE gloss-capable records than the target "
     "is accepted, because a plan with no slack fails on the first miss",
+    # The rights column, F6. In the order of the mutations above.
+    'GUARD a rights position outside the vocabulary is refused',
+    'GUARD a record in the corpus with no rights cell is refused, because an '
+    'absent cell is not unread -- it is a record nobody asked the question about',
+    'GUARD a rights cell naming no record in the corpus is refused',
+    'GUARD a rights document with no records object is refused, rather than '
+    'read as a corpus with no rights positions',
+    'GUARD open_licence_stated with no stated_verbatim is refused, because '
+    'ruling 74 asks for the position stated VERBATIM and a summary is the '
+    "curator's sentence rather than the source's",
+    'GUARD open_licence_stated with no read_off is refused -- a rights position '
+    'is a reading, and a reading nobody signed is a claim about a source nobody '
+    'opened',
+    'GUARD open_licence_stated with a read_on that is not a date is refused',
+    'GUARD states_no_terms carrying a quotation is refused -- if there is a '
+    'sentence to quote, the source states terms',
+    'GUARD two_positions_stated carrying one quotation is refused, because the '
+    'position IS that the source says two things that do not agree',
+    'GUARD summarise_rights counts each position and omits the ones with no '
+    "records, so an `unread` total cannot hide in a table of zeroes",
 ]
 
 # NOT mutation-verified from this source, and said so rather than left to be
@@ -514,17 +611,114 @@ EXPECTED = [
 # corpus that is not the one on disk. That is FINDING 14's shape, and it has no
 # mutation here because this harness mutates code.
 UNMUTATED_BY_DESIGN = (
-    "GUARD the measured histogram the target mix is arithmetic over still holds",
-    "GUARD the declared allocation delivers the declared mix",
-    "GUARD a tranche that has curated nothing yet reports no problem",
-    "GUARD records curated into cells the allocation places report nothing",
-    "GUARD a gloss-capable declaration on a tier that CAN carry one reports nothing",
-    "GUARD an empty tranche is not called unreachable — every slot is still there",
-    "GUARD a declaration that matches the derivation reports no problem",
-    "GUARD every tier the derivation returns is in the declared vocabulary",
-    "GUARD the declared target mix is internally coherent",
-    "GUARD the gloss-capable tier set excludes the tier whose only English is machine",
-    "GUARD every record the manifest flags is either honoured in code or carries a written lift",
+    'GUARD a declaration that matches the derivation reports no problem',
+    'GUARD a gloss-capable declaration on a tier that CAN carry one '
+    'reports nothing',
+    'GUARD a tranche that has curated nothing yet reports no problem',
+    'GUARD an empty tranche is not called unreachable — every slot is '
+    'still there',
+    'GUARD every record the manifest flags is either honoured in code '
+    'or carries a written lift',
+    'GUARD every tier the derivation returns is in the declared '
+    'vocabulary',
+    'GUARD records curated into cells the allocation places report '
+    'nothing',
+    'GUARD the declared allocation delivers the declared mix',
+    'GUARD the declared target mix is internally coherent',
+    'GUARD the gloss-capable tier set excludes the tier whose only '
+    'English is machine',
+    'GUARD the measured histogram the target mix is arithmetic over '
+    'still holds',
+    'GUARD `permission_stated_no_licence` is in the vocabulary AND '
+    'has to quote its permission -- a source that permits reuse in '
+    'prose and names no licence is neither open_licence_stated nor '
+    'states_no_terms',
+    'GUARD `unread` needs nothing else, because it is a statement '
+    "about this project's knowledge and not about the source",
+    'GUARD a complete all_rights_reserved cell passes',
+    'GUARD a complete open_licence_stated cell passes',
+    'GUARD a complete permission_stated_no_licence cell passes',
+    'GUARD a complete public_domain cell passes',
+    'GUARD a complete two_positions_stated cell passes',
+    'GUARD a full cell holding a record of the required provenance '
+    'reports nothing',
+    'GUARD all_rights_reserved with a read_on that is not a date is '
+    'refused',
+    'GUARD all_rights_reserved with no read_by is refused -- a rights '
+    'position is a reading, and a reading nobody signed is a claim '
+    'about a source nobody opened',
+    'GUARD all_rights_reserved with no read_off is refused -- a '
+    'rights position is a reading, and a reading nobody signed is a '
+    'claim about a source nobody opened',
+    'GUARD all_rights_reserved with no stated_verbatim is refused, '
+    'because ruling 74 asks for the position stated VERBATIM and a '
+    "summary is the curator's sentence rather than the source's",
+    "GUARD data/corpus_rights.json is on disk, because ruling 74's "
+    'third condition is unreadable without it',
+    'GUARD every rights position this module accepts is DEFINED in '
+    'data/corpus_rights.json, and the file defines no position the '
+    'code would refuse',
+    'GUARD every source-language record in the corpus carries a '
+    "language code, so none of them reaches the classifier's empty "
+    'branch',
+    'GUARD open_licence_stated with no read_by is refused -- a rights '
+    'position is a reading, and a reading nobody signed is a claim '
+    'about a source nobody opened',
+    'GUARD permission_stated_no_licence with a read_on that is not a '
+    'date is refused',
+    'GUARD permission_stated_no_licence with no read_by is refused -- '
+    'a rights position is a reading, and a reading nobody signed is a '
+    'claim about a source nobody opened',
+    'GUARD permission_stated_no_licence with no read_off is refused '
+    '-- a rights position is a reading, and a reading nobody signed '
+    'is a claim about a source nobody opened',
+    'GUARD permission_stated_no_licence with no stated_verbatim is '
+    'refused, because ruling 74 asks for the position stated VERBATIM '
+    "and a summary is the curator's sentence rather than the source's",
+    'GUARD public_domain with a read_on that is not a date is refused',
+    'GUARD public_domain with no read_by is refused -- a rights '
+    'position is a reading, and a reading nobody signed is a claim '
+    'about a source nobody opened',
+    'GUARD public_domain with no read_off is refused -- a rights '
+    'position is a reading, and a reading nobody signed is a claim '
+    'about a source nobody opened',
+    'GUARD public_domain with no stated_verbatim is refused, because '
+    'ruling 74 asks for the position stated VERBATIM and a summary is '
+    "the curator's sentence rather than the source's",
+    'GUARD states_no_terms is a READING whose answer was nothing, and '
+    'is complete without a quotation',
+    'GUARD the rights column on disk covers the corpus on disk, in '
+    'both directions, and every non-unread cell carries its reading',
+    'GUARD the seed set the histogram is counted over is the 24 the '
+    'declaration names, and has not grown',
+    'GUARD two_positions_stated with a read_on that is not a date is '
+    'refused',
+    'GUARD two_positions_stated with no read_by is refused -- a '
+    'rights position is a reading, and a reading nobody signed is a '
+    'claim about a source nobody opened',
+    'GUARD two_positions_stated with no read_off is refused -- a '
+    'rights position is a reading, and a reading nobody signed is a '
+    'claim about a source nobody opened',
+    'GUARD two_positions_stated with no stated_verbatim is refused, '
+    'because ruling 74 asks for the position stated VERBATIM and a '
+    "summary is the curator's sentence rather than the source's",
+    'the source-language records are found and counted -- a collapsed '
+    'list would make the guard below vacuous',
+)
+
+# UNMUTATED AND OWED, which is a different thing and is kept in a different
+# list. These are REFUSAL guards -- checks that reject a malformed input --
+# and a refusal guard with no mutation beside it has never been seen to fail.
+# They are printed as a debt on every run rather than absorbed into the list
+# above, because `by design` is a claim and these are simply not done yet.
+UNMUTATED_AND_OWED = (
+    'GUARD a declaration attributed to a sub-tranche the allocation '
+    'does not place is refused',
+    'GUARD no source-language original and a cited translation tiers '
+    'as published_translation_only',
+    'GUARD any language outside Greek and Latin makes a record LOCAL, '
+    'so a trilingual is not read as an empire text for its Greek '
+    'column',
 )
 
 
@@ -540,6 +734,54 @@ def failures_from(output: str) -> set[str]:
         if line.strip().startswith("FAIL ")
     }
 
+
+
+def ok_labels_from(output: str) -> set:
+    """Every guard the suite REPORTED PASSING, harvested the same way
+    `failures_from` harvests the failing ones and with the same space."""
+    return {
+        line.split("ok   ", 1)[1].strip()
+        for line in output.splitlines()
+        if line.strip().startswith("ok   ")
+    }
+
+
+def coverage_problems(guard_labels: set) -> "list[str]":
+    """Is every guard in this suite accounted for? Added F6, 2026-09-06.
+
+    THIS EXISTS BECAUSE THE LISTS WENT WRONG THE FIRST TIME ANYBODY CHECKED
+    THEM. UNMUTATED_BY_DESIGN's own comment says the names are listed "because a
+    guard with no mutation beside it is otherwise indistinguishable from one
+    whose mutation was forgotten" -- and nothing compared the list to the suite,
+    so a guard added later was exactly indistinguishable. On 2026-09-06 the two
+    harnesses between them held 12 guards in NEITHER list and one name that the
+    suite no longer printed at all.
+
+    FINDING 10's lesson, one harness over: a hand-written enumeration of things
+    to check was wrong four times in one afternoon, and the fix was to assert
+    the RULE instead of maintaining the list. The rule here is that every guard
+    is either mutated, listed as an acceptance that a laxer check cannot fail,
+    or listed as owed -- and that no list names a guard the suite does not
+    print.
+    """
+    problems: list[str] = []
+    covered = set(EXPECTED) | set(UNMUTATED_BY_DESIGN) | set(UNMUTATED_AND_OWED)
+    unwatched = sorted(guard_labels - covered)
+    if unwatched:
+        problems.append(
+            f"{len(unwatched)} guard(s) are in NO list -- neither mutated, nor "
+            f"declared an acceptance, nor declared owed. A guard nothing has "
+            f"been seen to fail is not known to work: "
+            + "; ".join(g[:70] for g in unwatched)
+        )
+    stale = sorted(covered - guard_labels)
+    if stale:
+        problems.append(
+            f"{len(stale)} listed name(s) are not printed by the suite at all, "
+            f"so the list is describing a guard that no longer exists: "
+            + "; ".join(g[:70] for g in stale)
+        )
+    return problems
 
 def _newline_of(raw: bytes) -> str:
     """The file's own line ending, so a mutation run does not change it."""
@@ -593,6 +835,17 @@ def main() -> int:
                 print(f"            - {name}")
             print()
 
+
+        # Coverage, before any mutation is applied. F6.
+        for problem in coverage_problems(ok_labels_from(_baseline.stdout)):
+            problems.append(problem)
+            print(f"  COVERAGE {problem[:100]}")
+        if UNMUTATED_AND_OWED:
+            print(f"  {len(UNMUTATED_AND_OWED)} refusal guard(s) are UNMUTATED "
+                  f"AND OWED, listed in UNMUTATED_AND_OWED:")
+            for name in UNMUTATED_AND_OWED:
+                print(f"            - {name[:100]}")
+            print()
         for (label, patches), guard in zip(MUTATIONS, EXPECTED):
             if guard in already_failing:
                 problems.append(

@@ -400,6 +400,65 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
         [("""        if not str(entry.get("reinstated_because") or "").strip():""",
           """        if False:""")],
     ),
+    # --------------------------------------------------------------------
+    # The agent field (FINDING 70, closed in F6). Added 2026-09-06, in the
+    # session AFTER the one that closed the finding -- which shipped the field,
+    # its date rule and trend_line's refusal with no assertion in this suite and
+    # no mutation here, and all 51 existing mutations passed straight through
+    # the new branch because their fixtures carry no agents at all.
+    # --------------------------------------------------------------------
+    (
+        'an agent outside the vocabulary is admitted',
+        [
+            ('        elif agent not in AGENTS:',
+             '        elif False:'),
+        ],
+    ),
+    (
+        'a new entry may omit the agent entirely',
+        [
+            ('            if str(entry.get("curated_on", "") or "") >= AGENT_REQUIRED_FROM:',
+             '            if False:'),
+        ],
+    ),
+    (
+        'a new entry may answer `unrecorded` to a question it could answer',
+        [
+            ('        elif agent == "unrecorded" and str(\n'
+             '                entry.get("curated_on", "") or "") >= AGENT_REQUIRED_FROM:',
+             '        elif False:'),
+        ],
+    ),
+    (
+        'a trend is drawn straight through two agents',
+        [
+            ('    if len(mixed) > 1:',
+             '    if len(mixed) > 99:'),
+        ],
+    ),
+    (
+        "a phase's minutes stop being attributed to the agent that phase names",
+        [
+            ('            bucket["by_agent"][agent] += minutes',
+             '            bucket["by_agent"][agent] += 0'),
+        ],
+    ),
+    (
+        'minutes on a phase with no agent are dropped rather than counted unrecorded',
+        [
+            ('            if agent not in bucket["by_agent"]:\n'
+             '                agent = "unrecorded"',
+             '            if agent not in bucket["by_agent"]:\n'
+             '                continue'),
+        ],
+    ),
+    (
+        'the report stops printing the by-agent split',
+        [
+            ("""        lines.append(f"    by agent: {agents or 'nothing recorded'}")""",
+             '        lines.append("")'),
+        ],
+    ),
 ]
 EXPECTED = [
     'GUARD a declared phase list in the wrong order is refused',
@@ -456,6 +515,23 @@ EXPECTED = [
     "GUARD a reinstated row with nothing filed against it is refused -- "
     "otherwise reinstatement is retirement wearing a different word",
     "GUARD a reinstatement with no written reason is refused",
+    # The agent field, F6. In the order of the mutations above.
+    'GUARD an agent outside the vocabulary is refused',
+    'GUARD a phase with no agent on an entry curated on or after 2026-09-06 is '
+    'refused, because a model apportioning its own wall clock and a person '
+    'timing themselves are two measurements',
+    'GUARD `unrecorded` on a NEW entry is refused: that value is for entries '
+    'written before the field existed, and on a new one it is a question that '
+    'was answerable and was not answered',
+    'GUARD a tier ABOVE the floor whose minutes come from more than one agent '
+    'is refused a trend, not annotated with one -- FINDING 70',
+    "GUARD summarise attributes each phase's minutes to the agent that phase "
+    'names',
+    'GUARD minutes on a phase with no agent are counted as `unrecorded` rather '
+    'than dropped, because a total that quietly shrinks is worse than one that '
+    'says it does not know',
+    'GUARD the report prints the by-agent split beside the measured/estimated '
+    'one, so the two kinds of doubt are two lines',
 ]
 
 # NOT mutation-verified from this source, and said so rather than left to be
@@ -467,15 +543,47 @@ EXPECTED = [
 # no mutation beside it is otherwise indistinguishable from one whose mutation
 # was forgotten.
 UNMUTATED_BY_DESIGN = (
-    'GUARD the declared phase vocabulary on disk is accepted',
-    'GUARD a within-tranche comparator with its n and its reason is accepted',
-    'GUARD a well-formed ledger over a covered corpus reports no problem',
-    'GUARD an estimated figure WITH a written reason is accepted',
     'GUARD a corpus covered by timing and excusing together is accepted',
+    'GUARD a well-formed ledger over a covered corpus reports no problem',
+    'GUARD a within-tranche comparator with its n and its reason is '
+    'accepted',
+    'GUARD an estimated figure WITH a written reason is accepted',
+    'GUARD the comparator on disk is the within-tranche one ruling 46 '
+    'declared',
+    'GUARD the declared phase vocabulary on disk is accepted',
     'GUARD the ledger on disk covers every record in the corpus on disk',
     "GUARD the phases declared on disk are this module's PHASES, in order",
-    'GUARD the comparator on disk is the within-tranche one ruling 46 declared',
-    'GUARD every seed record is excused from the column and none is timed',
+    'GUARD `unrecorded` on an OLD entry is the truth rather than an '
+    'omission, and is accepted',
+    'GUARD a complete entry with an agent on every phase passes',
+    'GUARD a ledger with nothing retired prints no retirement block',
+    'GUARD a retired row naming a record that is not in the corpus is '
+    'accepted, and is NOT counted as a stale row',
+    'GUARD an entry curated BEFORE the field existed is not refused '
+    'for lacking it -- the debt is dated, not retrospective',
+    'GUARD every agent this module accepts is DEFINED, and no agent '
+    'is defined that the code would refuse',
+    'GUARD no seed record ever acquires a minutes figure, because a '
+    'reconstructed baseline is what ruling 46 refuses',
+    'GUARD one agent above the floor still gets its trend, and the '
+    'planted downward trend is still read as down -- the refusal is '
+    'about MIXING agents and not about having one',
+    'GUARD the excused list is FROZEN at the seed records the tier '
+    'declaration counts -- a record excused after the column opened '
+    'is the column being routed around',
+    'GUARD the refusal names the agents and their minutes, because a '
+    'refusal that does not say what it saw is a number withheld',
+    'GUARD the refusal says the tier is above the floor, so a reader '
+    'cannot mistake it for the small-n refusal',
+)
+
+# UNMUTATED AND OWED, which is a different thing and is kept in a different
+# list. These are REFUSAL guards -- checks that reject a malformed input --
+# and a refusal guard with no mutation beside it has never been seen to fail.
+# They are printed as a debt on every run rather than absorbed into the list
+# above, because `by design` is a claim and these are simply not done yet.
+UNMUTATED_AND_OWED = (
+    'GUARD a reinstated_on that is not a date is refused',
 )
 
 def failures_from(output: str) -> set[str]:
@@ -492,6 +600,54 @@ def failures_from(output: str) -> set[str]:
         if line.strip().startswith("FAIL ")
     }
 
+
+
+def ok_labels_from(output: str) -> set:
+    """Every guard the suite REPORTED PASSING, harvested the same way
+    `failures_from` harvests the failing ones and with the same space."""
+    return {
+        line.split("ok   ", 1)[1].strip()
+        for line in output.splitlines()
+        if line.strip().startswith("ok   ")
+    }
+
+
+def coverage_problems(guard_labels: set) -> "list[str]":
+    """Is every guard in this suite accounted for? Added F6, 2026-09-06.
+
+    THIS EXISTS BECAUSE THE LISTS WENT WRONG THE FIRST TIME ANYBODY CHECKED
+    THEM. UNMUTATED_BY_DESIGN's own comment says the names are listed "because a
+    guard with no mutation beside it is otherwise indistinguishable from one
+    whose mutation was forgotten" -- and nothing compared the list to the suite,
+    so a guard added later was exactly indistinguishable. On 2026-09-06 the two
+    harnesses between them held 12 guards in NEITHER list and one name that the
+    suite no longer printed at all.
+
+    FINDING 10's lesson, one harness over: a hand-written enumeration of things
+    to check was wrong four times in one afternoon, and the fix was to assert
+    the RULE instead of maintaining the list. The rule here is that every guard
+    is either mutated, listed as an acceptance that a laxer check cannot fail,
+    or listed as owed -- and that no list names a guard the suite does not
+    print.
+    """
+    problems: list[str] = []
+    covered = set(EXPECTED) | set(UNMUTATED_BY_DESIGN) | set(UNMUTATED_AND_OWED)
+    unwatched = sorted(guard_labels - covered)
+    if unwatched:
+        problems.append(
+            f"{len(unwatched)} guard(s) are in NO list -- neither mutated, nor "
+            f"declared an acceptance, nor declared owed. A guard nothing has "
+            f"been seen to fail is not known to work: "
+            + "; ".join(g[:70] for g in unwatched)
+        )
+    stale = sorted(covered - guard_labels)
+    if stale:
+        problems.append(
+            f"{len(stale)} listed name(s) are not printed by the suite at all, "
+            f"so the list is describing a guard that no longer exists: "
+            + "; ".join(g[:70] for g in stale)
+        )
+    return problems
 
 def _newline_of(raw: bytes) -> str:
     """The file's own line ending, so a mutation run does not change it."""
@@ -545,6 +701,17 @@ def main() -> int:
                 print(f"            - {name}")
             print()
 
+
+        # Coverage, before any mutation is applied. F6.
+        for problem in coverage_problems(ok_labels_from(_baseline.stdout)):
+            problems.append(problem)
+            print(f"  COVERAGE {problem[:100]}")
+        if UNMUTATED_AND_OWED:
+            print(f"  {len(UNMUTATED_AND_OWED)} refusal guard(s) are UNMUTATED "
+                  f"AND OWED, listed in UNMUTATED_AND_OWED:")
+            for name in UNMUTATED_AND_OWED:
+                print(f"            - {name[:100]}")
+            print()
         for (label, patches), guard in zip(MUTATIONS, EXPECTED):
             if guard in already_failing:
                 problems.append(

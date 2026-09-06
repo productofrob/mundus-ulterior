@@ -24,6 +24,9 @@ from collections import defaultdict
 from pathlib import Path
 
 from .cost import (
+    AGENTS,
+    AGENT_DEFINITIONS,
+    AGENT_REQUIRED_FROM,
     LEDGER_REQUIRED,
     PHASE_DEFINITIONS,
     PHASES,
@@ -33,6 +36,7 @@ from .cost import (
     format_report,
     record_total,
     summarise,
+    trend_line,
 )
 from .fidelity import derive_record_tier
 from .loader import SEED_CORPUS_DIR, load_corpus
@@ -711,6 +715,119 @@ def test_retirement():
     )
 
 
+
+
+# --------------------------------------------------------------------------
+# The agent field (FINDING 70, closed in F6)
+# --------------------------------------------------------------------------
+
+def _agent_tranche(n: int, agents, start=40, step=-2, curated_from=1):
+    """`_tranche`, with an agent on every phase. `agents` is a list as long as
+    `n`: which agent held the clock for that record."""
+    rows = _tranche(n, start=start, step=step)
+    for row, agent in zip(rows, agents):
+        for cell in row["phases"].values():
+            cell["agent"] = agent
+    return rows
+
+
+def test_the_agent_field():
+    """FINDING 70, closed in F6, 2026-09-06.
+
+    THESE ASSERTIONS EXIST BECAUSE THEY DID NOT. The field, its vocabulary, its
+    date rule and trend_line's refusal were written, wired in, and shipped in a
+    commit claiming FINDING 70 closed -- and `ingest/test_cost.py` named none of
+    them, `scripts/mutate_cost.py` mutated none of them, and all 51 existing
+    mutations passed straight through the new branch because their fixtures
+    carry no agents at all. 64 assertions were green and none was about this.
+
+    The guard that matters is the LAST one. FINDING 70's risk is not that the
+    agent is unknown; it is that a tier comfortably above
+    min_n_to_read_as_a_trend gets read as a trend by somebody who does not know
+    that some of its entries measure a different agent. n is the wrong guard for
+    that, because being above the floor is what makes it dangerous.
+    """
+    print("the agent field (FINDING 70)")
+
+    def one(cell_overrides, curated_on="2026-09-06"):
+        row = entry(curated_on=curated_on)
+        for cell in row["phases"].values():
+            cell.update(cell_overrides)
+        return check_ledger(ledger(records=[row], not_timed={}),
+                            {"a-01": ("verbatim_with_provenance", "")})
+
+    expect(fired(one({"agent": "the vibes"}), "is not one of"),
+           "GUARD an agent outside the vocabulary is refused")
+    expect(fired(one({}), "no agent", AGENT_REQUIRED_FROM),
+           f"GUARD a phase with no agent on an entry curated on or after "
+           f"{AGENT_REQUIRED_FROM} is refused, because a model apportioning its "
+           f"own wall clock and a person timing themselves are two measurements")
+    expect(not fired(one({}, curated_on="2026-09-01"), "no agent"),
+           "GUARD an entry curated BEFORE the field existed is not refused for "
+           "lacking it -- the debt is dated, not retrospective")
+    expect(fired(one({"agent": "unrecorded"}), "unrecorded"),
+           "GUARD `unrecorded` on a NEW entry is refused: that value is for "
+           "entries written before the field existed, and on a new one it is a "
+           "question that was answerable and was not answered")
+    expect(not fired(one({"agent": "unrecorded"}, curated_on="2026-09-01"),
+                     "unrecorded"),
+           "GUARD `unrecorded` on an OLD entry is the truth rather than an "
+           "omission, and is accepted")
+    expect(not one({"agent": "model"}),
+           "GUARD a complete entry with an agent on every phase passes")
+
+    if set(AGENT_DEFINITIONS) != set(AGENTS):
+        print(f"  note: undefined {sorted(set(AGENTS) - set(AGENT_DEFINITIONS))}, "
+              f"defined-but-unaccepted "
+              f"{sorted(set(AGENT_DEFINITIONS) - set(AGENTS))}")
+    expect(set(AGENT_DEFINITIONS) == set(AGENTS),
+           "GUARD every agent this module accepts is DEFINED, and no agent is "
+           "defined that the code would refuse")
+
+    # summarise splits the minutes, and the split is what the report prints.
+    rows = _agent_tranche(4, ["curator", "curator", "model", "model"])
+    bucket = summarise({"records": rows})["verbatim_with_provenance"]
+    expect(bucket["by_agent"]["curator"] == 40 + 38
+           and bucket["by_agent"]["model"] == 36 + 34,
+           "GUARD summarise attributes each phase's minutes to the agent that "
+           "phase names")
+    expect(summarise({"records": _tranche(2)})["verbatim_with_provenance"]
+           ["by_agent"]["unrecorded"] == 40 + 38,
+           "GUARD minutes on a phase with no agent are counted as `unrecorded` "
+           "rather than dropped, because a total that quietly shrinks is worse "
+           "than one that says it does not know")
+
+    # THE ONE THAT MATTERS.
+    mixed = summarise({"records": _agent_tranche(
+        12, ["curator"] * 6 + ["model"] * 6)})["verbatim_with_provenance"]
+    line = trend_line(mixed, 10)
+    expect("NOT A TREND" in line and "agents" in line,
+           "GUARD a tier ABOVE the floor whose minutes come from more than one "
+           "agent is refused a trend, not annotated with one -- FINDING 70")
+    expect("above the floor" in line and "12" in line,
+           "GUARD the refusal says the tier is above the floor, so a reader "
+           "cannot mistake it for the small-n refusal")
+    expect("curator" in line and "model" in line,
+           "GUARD the refusal names the agents and their minutes, because a "
+           "refusal that does not say what it saw is a number withheld")
+
+    single = summarise({"records": _agent_tranche(
+        12, ["model"] * 12)})["verbatim_with_provenance"]
+    expect("NOT A TREND" not in trend_line(single, 10)
+           and "down" in trend_line(single, 10),
+           "GUARD one agent above the floor still gets its trend, and the "
+           "planted downward trend is still read as down -- the refusal is "
+           "about MIXING agents and not about having one")
+
+    text = "\n".join(format_report(
+        {"records": _agent_tranche(2, ["curator", "model"]),
+         "min_n_to_read_as_a_trend": 10, "not_timed": {}},
+        {"by_tier_at_60": {"verbatim_with_provenance": 25}}))
+    expect("by agent:" in text and "curator" in text and "model" in text,
+           "GUARD the report prints the by-agent split beside the "
+           "measured/estimated one, so the two kinds of doubt are two lines")
+
+
 def main() -> int:
     test_phase_vocabulary()
     test_comparator()
@@ -721,6 +838,7 @@ def main() -> int:
     test_the_open_clock()
     test_the_report()
     test_the_arithmetic()
+    test_the_agent_field()
     test_against_the_live_ledger()
 
     print()
