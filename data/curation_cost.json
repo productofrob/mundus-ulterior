@@ -934,6 +934,55 @@
         }
       },
       "note": "F6's ONE gloss_capable declaration, ruling 77's. THE CAPTURE IS NOT BLIND AND IS DOUBLY NOT: located and captured in one session, and already read into F5 Part 3's transcript by a person, which ruling 77 declared in advance. The digest check that record 44 introduced caught 44 non-breaking spaces here that no reader would have seen."
+    },
+    {
+      "record_id": "eastasia-08-songshi-fulin",
+      "tier": "verbatim_with_provenance",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 31.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE MOST EXPENSIVE PHASE OF THE TRANCHE AND MOST OF IT BOUGHT A NEGATIVE. The slot was pointed at a Turfan Manichaean text; parsigdatabase and TITUS were both opened and both work, and the vein failed on the TRANSLATION side -- the Manichaean translations are Persian, and classify_translation would have entered them as English. Four searches, six pages, and a decision put to the project owner. The record that was finally taken was found in the last ten minutes of the phase, in a sourcebook this corpus already cites twice. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 5.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Two sources and two positions: the Sourcebook's permission statement read at source and quoted verbatim, and Kanripo's CC BY-SA 4.0 INHERITED from eastasia-05 rather than re-read. Five minutes, and the cell says which half rests on which. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Two spans, one of them cleaned: Kanripo's page and line markers stripped by the same two rules in the browser and on the bridge, and SHA-256 compared over the RESULT of the cleaning rather than over the raw text -- so what was verified was the edit and not only the paste. The English came over in three slices and was reassembled and hashed. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 12.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Reading the English against the Chinese and finding the one divergence worth recording -- 彌勒佛 rendered as `Mi-le-fou, which is a king's name` -- and deciding NOT to adjudicate it. Also cataloguing the malformed brackets and the stray apostrophe that are kept unrepaired, and establishing that the English is Hirth AS MODIFIED and may not be cited as Hirth's wording. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Three subject entries and no id at all: a polity, an unnamed court, and three route stages deliberately kept in one entry because the text lists them as a road. The first directional block in this tranche with a focus that carries no id. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 23.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "The longest authoring in the tranche, and the reason is the notes field: this record has to carry a SEARCHED FAILURE in full, the mis-regioning it settles without curating, and the cost it imposes -- East Asia is now seven source-language records in one language. F6. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "NOT THE RECORD THE HANDOFF DOCUMENT ASKED FOR, and the notes field says why in full. The capture is not blind. The digest check verified a TRANSFORMATION here rather than a paste, which is the first time in this repository that an editorial act has been machine-checked."
     }
   ],
   "retired": [

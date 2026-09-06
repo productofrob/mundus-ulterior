@@ -238,6 +238,16 @@
       "read_on": "2026-09-06",
       "read_by": "curator_and_model",
       "note": "The licence mark printed on the epigraph record itself is CC BY 4.0, with the quoted sentence beside it carving images out of it. READ TWICE BY TWO DIFFERENT AGENTS: a person read this record's licence in F5 Part 3's browser pass 3 on 2026-09-05 and recorded it in F5_PART3_BROWSER_PASSES.md, and this session read it again on the page on 2026-09-06 before writing the cell. That is why read_by is curator_and_model and not model. A VERSIONED LICENCE, unlike africa-06-ezana-rie189's, which names the licence and prints no version -- the column records what each source printed."
+    },
+    "eastasia-08-songshi-fulin": {
+      "position": "permission_stated_no_licence",
+      "region": "East Asia",
+      "licence": null,
+      "stated_verbatim": "Unless otherwise indicated the specific electronic form of the document is copyright. Permission is granted for electronic copying, distribution in print form for educational purposes and personal use. If you do reduplicate the document, indicate the source. No permission is granted for commercial use of the Sourcebook.",
+      "read_off": "https://depts.washington.edu/silkroad/texts/romchin1.html",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "THIS CELL IS FOR THE TRANSLATION AND NOT FOR THE SOURCE TEXT, and the record uses two sources. The English is the Internet East Asian History Sourcebook's electronic form of Hirth 1885 as modified by Jerome S. Arkenberg: reuse permitted in prose for educational and personal use, attribution asked for, commercial use refused, AND NO LICENCE NAMED ANYWHERE REACHED -- which is the seventh position exactly. The Chinese is Kanripo's, recorded by eastasia-05-liangshu-qin-lun as CC BY-SA 4.0; that reading was INHERITED and not re-read this session, which is why this cell does not claim it. A record whose two halves have two rights positions is a case this column cannot yet express, and it is named here rather than resolved by picking the more flattering one."
     }
   }
 }
