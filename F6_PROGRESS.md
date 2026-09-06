@@ -107,6 +107,8 @@ recommendation attached to each.
 ## The debts closed
 
 ```
+FINDING 78   both guards F6 added are now asserted AND mutated, and the two
+             harnesses gained the coverage check that would have said so
 FINDING 68   the SPEAKING subtotal is printed, and a second list beside it
 FINDING 70   an `agent` field per phase, and trend_line REFUSES a trend across
              two agents -- which turned "first 6 mean 5.9 -> last 6 mean 24.7
@@ -158,23 +160,41 @@ But if it does not land, **no new curation is needed to make a declaration**:
 **Neither was declared, because a second declaration is over-delivery and
 `check_delivery` fails on it the day it happens.**
 
-## 3. THE RANKING RUN IS OWED AND CANNOT BE RUN FROM THE BRIDGE
+## 3. THE RANKING RUN IS DONE, AND IT IS `F6_RANKING.md`
 
-Ruling 78 pre-registered three predictions before the first record was curated
-and **all three are now testable and none is tested**. `eval.run_ranking_check`
-needs the Postgres index and the embedding gateway, which are host work.
+*CORRECTED 2026-09-06, later the same day. This section read "THE RANKING RUN IS
+OWED AND CANNOT BE RUN FROM THE BRIDGE" and listed all three predictions as
+untested. It was written before the host ran it. Kept as a heading rather than
+deleted, because a progress document whose corrections are removed looks like one
+that was never wrong -- and because this is the fourth stale figure this session
+has had to correct in a document it wrote itself.*
+
+**Two runs happened, and the first was made with the wrong view — the
+instruction omitted `--with-distractors`.** Both are archived and both are read
+in `F6_RANKING.md`.
 
 ```
-P1  tc-jabal-dabub leaves recall@6         -- and F6 has placed NO Arabia record
-                                              yet, so P1's cause has not arrived
-P2  probe-tamil-akananuru-en falls too, cross-regionally
-P3  vimose-runes falls further -- BOTH Scandinavian records are now in the index
+P3   CONFIRMED, like-for-like, with the crowder named:
+     vimose-runes 16 -> 18, beaten by BOTH chunks of tjurko-bracteate.
+     AND thorsberg-chape-niwajemariz 24 -> 29, which nothing predicted.
+P1   NOT TESTED. F6 has placed no Arabia record; tc-jabal-dabub held at 6 with
+     no F6 record in its beaten_by list. Stands unmodified.
+P2   NOT TESTED. F6 has placed no East Asia record; probe-tamil-akananuru-en
+     held at 6, same. Stands unmodified.
 ```
 
-**P1 is not yet testable in the form ruling 78 wrote it.** It predicted the fall
-from a fourth Arabia record; there is none. A ranking run today measures P2 and
-P3 against three records rather than seven, which is **a different experiment**
-and should be recorded as one if it is run before the tranche finishes.
+**FINDING 79 came out of it and it bears on the slot F6 has left.** The crowder
+is the record that RESEMBLES the target — script, language stage, genre — and not
+the record from the same region: F6 curated two Scandinavian records and only the
+Elder Futhark one crowds the two Elder Futhark gold cases. **On that reading a
+Ge'ez Africa record should crowd almost nothing; on FINDING 73's reading it should
+crowd Africa's cases. The Africa slot is the experiment, and the prediction should
+be written before it is curated.**
+
+And FINDING 77, restated because it happened twice: **six pairs fell, none
+improved, and recall@6 AND MRR@10 are both identical to sixteen decimal places** —
+recall@6 blind because no pair crossed rank 6, MRR@10 blind because all six were
+already outside the top ten.
 
 ## 4. THE REST OF F6's SLOTS
 
