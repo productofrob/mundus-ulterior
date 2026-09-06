@@ -69,27 +69,66 @@ Paste the startup block again (new window, new environment), then:
 
 ```powershell
 # offline — no network, no database, costs nothing
-python -m answer.test_answer                 # 133 assertions
-python -m answer.test_translate              # 104 assertions
-python scripts\test_recover_baseline.py      # 44 assertions
+python scripts\state_block.py                # RUNS the eleven and prints the table
+python -m ingest.verify --state              # prints the corpus state block
+python -m answer.test_translate              # prints per-check lines, NO total
 python scripts\mutate_part7b.py              # 13 mutations, restores sources
 python scripts\mutate_recover.py             # 11 mutations, restores sources
 
 # state of the corpus — database only, no API calls
-python -m ingest.run_ingest --stats          # expect 24 docs, 56 chunks
-python -m ingest.run_embed --stats           # expect eligible 54, embedded 54, pending 0
+python -m ingest.run_ingest --stats
+python -m ingest.run_embed --stats
 python -m answer.run_answer --stats
 ```
 
-Expected state, **confirmed on the host 2026-08-12 (Phase 2 Block 0)**:
-**24 documents → 56 chunks → 54 eligible → 54 embedded** with
-`voyage/voyage-3.5`. If those numbers differ, stop and find out why before
-running anything that writes.
+**THE EXPECTED NUMBERS ARE NOT WRITTEN HERE ANY MORE, AND THAT IS THE POINT.**
+`scripts\state_block.py` runs the eleven instruments and prints their counts;
+`ingest.verify --state` prints the corpus state block. Read the numbers off
+those, and compare them with the last result document's pasted block. **Do not
+add a figure to this file.**
 
-> This file previously said 57 chunks / 55 embedded. It was wrong — written at a
-> corpus state that no longer existed and never revised, while `README.md` and
-> `PHASE2.md` both carried the correct figure. Corrected in Block 0. The
-> distractor curve in W2b is denominated in chunk counts, so this mattered.
+`answer.test_translate` is the one suite that prints no total of its own, so
+`state_block.py` does not carry it. It passes or it says so.
+
+**Then compare `run_ingest --stats` and `run_embed --stats` against
+`ingest.verify`, which counts the corpus ON DISK.** The database is a copy of
+the corpus and the two drift whenever records are curated on a machine that is
+not running the database. **A difference here is the ingest you have not run
+yet, not a defect** — which is the opposite of what this section used to say.
+
+*CORRECTED 2026-09-06, F6, and this is the fourth instance of FINDING 75 in one
+day. This section read:*
+
+> *`python -m answer.test_answer  # 133 assertions`,
+> `python -m answer.test_translate  # 104 assertions`,
+> `python scripts\test_recover_baseline.py  # 44 assertions`,
+> `python -m ingest.run_ingest --stats  # expect 24 docs, 56 chunks`,
+> `python -m ingest.run_embed --stats  # expect eligible 54, embedded 54,
+> pending 0`* — *and then:* **Expected state, confirmed on the host 2026-08-12
+> (Phase 2 Block 0): 24 documents → 56 chunks → 54 eligible → 54 embedded with
+> `voyage/voyage-3.5`. If those numbers differ, stop and find out why before
+> running anything that writes.**
+
+*Every one of those five figures was stale. Measured on the bridge on
+2026-09-06: `answer.test_answer` **150**, `scripts\test_recover_baseline.py`
+**56**, and the corpus **43 documents → 133 chunks**. `answer.test_translate`
+prints no total at all, so its 104 could never have been checked by reading its
+output.*
+
+***AND THE STALE FIGURES CARRIED AN INSTRUCTION TO STOP.*** *A session
+following this file after Block D would run `run_ingest --stats`, see a number
+other than 24, and be told by this document to halt before running anything
+that writes — for the ordinary and expected reason that F3 to F6 added
+nineteen records. The daily ritual is the one document a new session actually
+follows, and it had been telling them to stop since Block D.*
+
+> *An older correction, kept: this file previously said 57 chunks / 55 embedded.
+> It was wrong — written at a corpus state that no longer existed and never
+> revised, while `README.md` and `PHASE2.md` both carried the correct figure.
+> Corrected in Block 0. The distractor curve in W2b is denominated in chunk
+> counts, so this mattered.* **Corrected in Block 0 by writing a different
+> frozen number, which went stale in eighteen days. F6 removes the number
+> instead.**
 
 ---
 
