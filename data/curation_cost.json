@@ -1327,6 +1327,55 @@
         }
       },
       "note": "F7's sixth record. Largest excerpt in the corpus at 5,833 characters. First published_translation_only record that is a text OF one of the seven regions rather than a Roman-world author writing about one."
+    },
+    {
+      "record_id": "southasia-06-cosmas-taprobane",
+      "tier": "published_translation_only",
+      "curated_on": "2026-09-06",
+      "phases": {
+        "source_hunting": {
+          "minutes": 4.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "THE CHEAPEST HUNT OF THE TRANCHE, because the candidate was named in F7_CURATION_START before curation began and the site was already known from F6. The work was locating the episode's two ends inside a 32,000-character page and confirming that the sentence after it turns to the White Huns, so nothing is elided inside the cut. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rights_and_licence": {
+          "minutes": 2.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "One sentence at the foot of a page whose sibling page F6 read yesterday. The two minutes are the decision to read it AGAIN rather than inherit it -- the two pages could have differed. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "text_capture": {
+          "minutes": 6.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "2,720 characters in three pieces, rejoined and hashed at d2ad0f03 on both machines, first attempt. Exactly one non-ASCII character, an `é` at index 378. The edition spells the same port `Adulé` and `Adule` twenty lines apart and both are kept. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "translation_and_fidelity": {
+          "minutes": 9.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Restating the translation-search boundary in full rather than cross-referencing africa-07-cosmas-sasu's, because a boundary a record points at is one a later reader has to go and find. Also reading McCrindle's footnotes 46 and 47 -- Montfaucon on presbutes, Tennent on Rwmeu~ -- and deciding they are apparatus rather than translation and stay out of the excerpt, while being named in translation_source so a later block knows they exist. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "placement": {
+          "minutes": 11.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "FOUR SUBJECT ENTRIES, TWO IDS, AND THE DEAREST PLACEMENT OF THE TRANCHE. pleiades:50298 for Taprobane was reachable only through the names dump -- the places dump has no title match -- and was then read out of the dump directly and confirmed on description, coordinate, feature type and period range. The corpus's first placement in Sri Lanka. pleiades:39271 for Adule is the id two Africa records already carry, re-read rather than inherited, and this is the first time the corpus draws an edge OUT of Adulis rather than into it. Rome is refused an id in the same block where southasia-07-bm-claudius-aureus took one an hour earlier. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "authoring": {
+          "minutes": 16.0,
+          "provenance": "estimated",
+          "agent": "model",
+          "because": "Most of it on what the record is FOR: the only passage in this corpus where Rome and Persia are judged against each other by somebody who is neither, and the only one where the criterion is metallurgy. Also declaring the two costs the curation start declared in advance -- the tier closes three-quarters `spoken about`, and two of its four members come from one 1897 book. F7. Model wall clock apportioned across phases by judgement (FINDING 70). Not comparable to records 25 to 35."
+        },
+        "rework": {
+          "minutes": 0,
+          "provenance": "measured",
+          "agent": "model"
+        }
+      },
+      "note": "F7's seventh and last record. Closes published_translation_only at 4 of 4 and closes Block F's curation. First placement in Sri Lanka; pleiades:50298 reached only through the names dump, as pleiades:39379 was."
     }
   ],
   "retired": [

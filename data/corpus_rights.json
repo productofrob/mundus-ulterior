@@ -324,6 +324,16 @@
       "read_on": "2026-09-06",
       "read_by": "model",
       "note": "THIRD two_positions_stated CELL IN THE CORPUS, and the two statements are about the same text rather than about two halves of a record. The first grants electronic copying and print distribution for educational and personal use, asks for the source to be indicated, and refuses commercial use. The second asserts copyright over `any modernization` with no grant attached -- and on THIS record the modernization IS the text.\n\nWHY THIS DIFFERS FROM eastasia-08-songshi-fulin's CELL ON THE SAME URL. That cell quotes the first statement and not the second, and was right to: the Sourcebook supplied one half of a bilingual record whose Chinese came from Kanripo. Here the record is nothing but the modernized English, so the second statement lands on it directly. NOBODY RE-CURATES A RECORD; eastasia-08's cell stands. This is a different question asked of the same page, not a correction of it.\n\nNEITHER IS ADJUDICATED. The source is credited by name, which is the one thing the first statement asks for.\n\nTHE UNDERLYING TRANSLATION IS PUBLIC DOMAIN ON ITS OWN -- Hirth 1885, archive.org `chinaandromanor00hirtgoog`, `possible-copyright-status: NOT_IN_COPYRIGHT` -- and that does not resolve the cell, because what this record holds is not Hirth 1885 as printed. See the record's translation_source for what the comparison found."
+    },
+    "southasia-06-cosmas-taprobane": {
+      "position": "public_domain",
+      "region": "South Asia",
+      "licence": null,
+      "stated_verbatim": "This text was transcribed by Roger Pearse, 2003.  All material on this page is in the public domain - copy freely.",
+      "read_off": "https://www.tertullian.org/fathers/cosmas_11_book11.htm",
+      "read_on": "2026-09-06",
+      "read_by": "model",
+      "note": "SECOND public_domain CELL IN THE CORPUS, after africa-07-cosmas-sasu, and it is the same sentence on a DIFFERENT PAGE of the same site -- F6 read it off cosmas_02_book2.htm and this was read off cosmas_11_book11.htm on 2026-09-06. READ AGAIN RATHER THAN INHERITED: the two pages could have differed and did not.\n\nNot open_licence_stated because no licence is named and a public-domain dedication is not a licence. Not states_no_terms because the source DOES state terms -- that the material is public domain and may be copied freely -- which is a position and not a silence; seasia-08-pong-tuk-lamp, curated in this same tranche, is what a real silence looks like.\n\nThe underlying translation, McCrindle 1897, is out of copyright on its own (published 1897, translator died 1913), so ruling 74's conditions are not invoked."
     }
   }
 }

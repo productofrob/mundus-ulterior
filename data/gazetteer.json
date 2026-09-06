@@ -1455,6 +1455,32 @@
       "time_periods": "R",
       "title": "Sesekreienai? Inss."
     },
+    "pleiades:50298": {
+      "authors": "Erdosy, M., R. Talbert, B. Kiesling, S. Gillies, J. Becker, T. Elliott, E. Yılandiloğlu",
+      "bbox": [
+        79.6560285,
+        5.9281039,
+        81.8269327,
+        9.835
+      ],
+      "creators": "M.U. Erdosy",
+      "description": "The island of Sri Lanka lies at the center of the Indian Ocean world, connecting and connected by trade and communication with and between Africa, Arabia, southwest Asia, peninsular south Asia, Southeast Asia, Oceania, and beyond.",
+      "dump_date": "2026-08-10",
+      "feature_types": "island",
+      "gazetteer": "pleiades",
+      "gazetteer_id": "50298",
+      "location_precision": "related",
+      "max_date": "2100",
+      "min_date": "-330",
+      "repr_point": [
+        80.574678177,
+        7.98139972411
+      ],
+      "retrieved": "2026-09-06",
+      "time_period_keys": "hellenistic-republican,roman,late-antique,sixteenth-ce,modern,twenty-first-ce",
+      "time_periods": "HRLSMT",
+      "title": "Sri Lanka"
+    },
     "pleiades:50308": {
       "authors": "Erdosy, M., R. Talbert, T. Elliott, S. Gillies",
       "bbox": [
