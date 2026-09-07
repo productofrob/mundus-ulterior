@@ -277,6 +277,11 @@ if W3 has capacity.
 
 ### Gate G3
 
+**CLOSED AND FAILED, 2026-09-07, Block G.** The amended checklist in
+`PHASE2_PLAN.md` is the authority and carries the same banner;
+`BLOCK_G_RESULT.md` §2 carries the box table. The five points below are the
+gate as originally written and are kept verbatim.
+
 1. **60 records** ingested, all seven regions, curation cost per record recorded
    and **trending down**.
 2. Full sweep re-run at 60: content pass rate **not lower** than at 24, and the

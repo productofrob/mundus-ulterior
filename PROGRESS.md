@@ -13424,3 +13424,162 @@ of days costs the corpus least.**
 **Eleven documents said 2026-08-29 and the machine that stamps every sweep said
 2026-08-31. The date was read off another document, in the repository where a
 UTC date is the thing a ninth session was just booked to buy.**
+
+---
+
+# PHASE 2 CLOSES — 2026-09-07, Block G. **PIVOT.**
+
+*`BLOCK_G_RESULT.md` is the document. This is the closing summary the plan asked
+for, in the Phase 1 style. The corpus state block and the instrument table are
+pasted there and are not restated here.*
+
+```
+Q1  Does ranking survive scale?                              NO
+Q2  Can improvement be distinguished from noise?             YES as asked, and
+                                                             the pass does not
+                                                             transfer to this
+                                                             corpus
+Q3  Does curation get cheaper?                               NO
+
+G3  CLOSED AND FAILED, nine boxes, no box reworded, total_at_60 still 60
+G4  CLOSED, five boxes, unchanged
+```
+
+## What was built
+
+A corpus that went from 24 records to 54 across seven regions without any region
+falling below its source-language floor, and a set of instruments that decline to
+produce numbers they cannot support. The cost ledger says `NOT YET A COST CLAIM`
+about itself. The floor refuses to calibrate from a single date, and refused
+again when the corpus moved underneath it. The allocation guard distinguishes a
+shortfall from an unreachable quota and reports the second as a failure. Every
+capture in the last two sub-tranches was verified by SHA-256 across two machines,
+and on record 51 that practice caught a non-breaking space the curator had typed
+in the wrong order — invisible in every rendering, and a completely different
+digest.
+
+## What was proven
+
+1. **The corpus can be scaled and kept honest at the same time.** Thirty records
+   added across five sub-tranches, four of five tiers landing exactly on target,
+   every per-region floor met, every integrity check green, eleven suites green.
+2. **Improvement can be distinguished from noise** — at 24 records, over four
+   sessions, with the variance decomposition archived rather than asserted. G4's
+   deliverable was always the decomposition and not the pass rate.
+3. **Predictions written before a run are worth more than readings taken after
+   one.** Block F wrote five per sub-tranche, each naming its own refutation, and
+   its own conclusion was that the refuted ones paid better than the confirmed
+   ones. F7's P3 was refuted and produced the block's best single piece of
+   evidence.
+4. **An instrument that refuses is better than an instrument that obliges.** The
+   ledger, the floor and the allocation guard each declined to answer something
+   this project wanted answered, and each was right to.
+
+## What was not proven
+
+- **That ranking survives scale.** It does not, and the shape of the failure is
+  narrower and worse than the headline. **Every pair the gold set lost is a
+  non-English target. The English-target pairs have been 8 of 9 in all
+  twenty-seven archived distractor runs — every index size from 151 chunks to
+  561, every configuration — and no English-target pair has changed state in any
+  archived run, ever.** The thing that
+  degrades is the cross-lingual link, which is the product.
+- **That curation gets cheaper.** The ledger was kept for thirty records and it
+  refuses the trend, tier by tier, for reasons it prints itself.
+- **Anything at 60 records**, because there is no 60-record corpus. Four of G3's
+  nine boxes read *"at 60"* and were unreachable rather than undone. The corpus
+  ended six short and all six are one tier — `verbatim_machine_english`, the tier
+  the whole machine-translation path exists to exercise.
+- **That the answer path still holds at 54 records.** The last full sweep is at
+  24. The only later observation is a three-case probe on one date, and it was
+  green.
+
+## The one number that should worry you
+
+**`archived_answer` recall@6 is 0.125 — one pair of eight — and it was four of
+eight at 450 chunks.**
+
+All eight are non-English targets. Their targets were taken from what retrieval
+itself returned in archived answer runs, so the system is being asked to find
+again what it already found once, and the construction is biased toward passing.
+It finds one in eight. `vimose-runes` went from rank 3 to rank 20 while the
+corpus doubled.
+
+**It halved and halved again inside Block F and appears in no Block F result
+document, because every result document read the aggregate.** It is not
+`muziris-cargo-akananuru` at rank 373; that pair is one pair, it has been the
+obvious answer since Block C, and it is already named and diagnosed.
+
+## Two findings Block G added, and neither softens a gate
+
+- **FINDING 92** — the degradation is entirely on non-English targets, and no
+  instrument in this repository reports `recall@6` split by target language, so
+  the only thing that moved was invisible in every figure the project printed.
+- **FINDING 93** — Block C adopted and froze `--with-distractors --collapse
+  --rerank`, and every ranking run archived since 2026-08-31 was taken without
+  the last two flags, with no ruling or document recording the change. G3 box 7's
+  ≥95% was measured under the adopted configuration; the 0.6591 it is read
+  against was not. **Box 7 fails in both readings and is recorded as NOT MET on
+  the number that was taken.** A defect found after a gate failed does not soften
+  the gate.
+
+## The debt, pointed at the workstream that owns it
+
+The full table is `BLOCK_G_RESULT.md` §7, three columns, `when` taking only
+`next`, `after the UI` or `open`. The shape of it:
+
+```
+next            FINDINGS 82 and 86, as ONE item, pointed at W3. The corpus
+                cannot currently accept a modern non-English institutional
+                source at all, which is the brief's own stated interest.
+                Instrument only; no record is curated
+then            the UI: chatbot, map, click-through citation
+after the UI    fourteen rows across W1, W2, W3, W4 and the UI
+open            Q1's replacement measure — declared BEFORE the next
+                record-adding run, never after — and pillars 2-4
+```
+
+**The sequencing after Phase 2 was decided independently of this verdict.** The
+plan reads *"passing all three unblocks the knowledge graph"*; the graph was
+deprioritised on separate grounds before Block G ran, and the UI is next whatever
+the verdict said. A persevere verdict would not have bought the graph and a pivot
+verdict did not choose the UI.
+
+## What Phase 2 got wrong, in order
+
+- **A gate box was denominated in a quantity that cannot hold still.** `recall@6`
+  over a fixed gold set on a growing index is partly a measure of index size with
+  the sign flipped — FINDING 91 proved it and FINDING 77's shrinking-index run is
+  the natural experiment. Block G refused to use that as an escape, because a
+  replacement measure chosen by a session that has seen the run is FINDING 83 at
+  gate scale. The measure is owed **before** the next record-adding run.
+- **An adopted configuration was dropped without a decision.** FINDING 93. The
+  repository has a ruling for the fused arm and none for the two flags that
+  actually moved the number the gate reads.
+- **Aggregates hid the only thing that was moving.** The cohort and the target
+  language were both in every archive from the start. Nobody split by either
+  until the exit gate.
+- **The allocation spent its `verbatim_machine_english` slots before the defect
+  that blocks the tier was found.** Two hunts found nothing, one vein was blocked
+  by an instrument defect, and by the time the defect was named there were no
+  slots left on the tier. Nobody re-curates a record.
+
+## The sentences that travel, from Block G
+
+**A gate amended at the end is a gate fitted to its result — and a defect found
+after the gate failed, offered as a reason to soften it, is the same move wearing
+a lab coat.**
+
+**Every pair the gold set lost is a non-English target, and not one
+English-target pair has moved. A system that degrades only where its purpose is
+has not degraded generally; it has degraded exactly.**
+
+**A standing number recorded without its history reads as a property of the
+corpus. 0.125 is a trend, and it points down.**
+
+**The highest recall@6 in any of the thirty-four archived ranking runs, in any
+configuration, at any index size, is 0.8182 — against a gate box asking whether
+it is *still* ≥95%.**
+
+**An instrument that refuses to answer the question it was built for is a good
+instrument and a failed box, and both sentences are true at once.**

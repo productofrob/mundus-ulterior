@@ -591,6 +591,14 @@ want of sources but for want of an open **transcription**. **Flagged as a spike,
 not committed** — attempt it only if F1–F7 came in under budget. The classifier
 will promote them automatically if the text ever lands, with no code changes.
 
+**GATE G3 — CLOSED AND FAILED. 2026-09-07, Block G. Nine boxes, none met; box
+10 moot.** `BLOCK_G_RESULT.md` §2 carries the box table with the command that
+produced each reading. **No box below is reworded, no box is ticked, and
+`total_at_60` stays 60 — ruling 69.** Boxes 2, 4, 5 and 6 read *"at 60"* and were
+unreachable rather than undone. Two arguments for softening a box were found in
+Block G and both are recorded there with their refusals. **This gate is closed.
+It is not open, and it is not to be re-opened by a run taken after it closed.**
+
 **Gate G3 checklist:**
 
 *AMENDED 2026-08-28, before F1, as Block F decision 1 — recorded in advance
@@ -637,6 +645,13 @@ failed the gate it was trying to pass.
 ---
 
 # Block G — Phase 2 exit gate (1 session)
+
+**RUN AND CLOSED, 2026-09-07. The verdict is PIVOT.** Q1 no, Q2 yes-as-asked and
+non-transferable, Q3 no. `BLOCK_G_RESULT.md` is the document;
+`BLOCK_G_VERDICT_SHAPE.md` records the shape, written and committed before it.
+**The sequencing after Phase 2 was decided independently of the verdict** —
+FINDINGS 82 and 86 as one instrument fix, then the UI — so the line below about
+the knowledge graph describes the plan as written and not what follows.
 
 Another honest kill / pivot / persevere, answering the three questions the phase
 was built to answer:
