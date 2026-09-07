@@ -574,6 +574,48 @@ if (D.coastline && D.coastline.polygons) {
   }
 }
 
+/* ---- 2i. FINDING 99: nothing emits a tag with a newline inside it ----
+ *
+ * `renderAnswerText` turned every newline in the ASSEMBLED MARKUP into a
+ * `<br>`, and the citation-marker button was written across two lines for
+ * readability. So the newline inside its opening tag became a `<br>` and broke
+ * the tag: browsers parsed `<button class="marker" data-marker="S1"<br` as the
+ * element and rendered the rest of the attributes as visible text. All 1945
+ * markers in the archive, on every run, for the whole life of the page.
+ *
+ * NOT ONE CHECK IN THIS FILE CAUGHT IT. The marker assertion below compares
+ * markers in the answer PROSE against the grounding report's `unknown_markers`
+ * — both of which were fine. Nothing rendered the markup and looked at it.
+ * That is the second time (after the inside-out coastline at 2c) that looking
+ * at the page was the only instrument that worked, so this asserts the
+ * property instead: no tag this page emits contains a newline, and every
+ * marker is a well-formed clickable element.
+ */
+{
+  const brokenTag = [], notClickable = [];
+  let markers = 0;
+  for (const run of D.runs) {
+    const html = renderAnswerText(run);
+    // A `<` inside what should be a tag, or a tag containing a newline.
+    if (/<[a-zA-Z][^>]*[\n<][^>]*>/.test(html)) brokenTag.push(run.run_key);
+    const inProse = [...(run.answer || "").matchAll(/\[S\d+\]/g)].length;
+    const rendered = (html.match(/<button class="marker" data-marker="[^"]+" title="[^"]*">/g) || []).length;
+    markers += rendered;
+    // Every marker the model wrote that is not inside a quotation should be a
+    // button. Quotations swallow some, so `rendered` may be lower — but it may
+    // never be zero while the prose has markers outside every quote range.
+    if (inProse > 0 && rendered === 0 &&
+        !(run.grounding?.quote_spans || []).some(s => (s.quote || "").includes("[S")))
+      notClickable.push(run.run_key);
+  }
+  note(brokenTag.length === 0,
+       `no rendered answer emits a tag with a newline or a stray '<' inside it (${markers} marker buttons)` +
+       (brokenTag.length ? ` — malformed in ${brokenTag.length} run(s), e.g. ${brokenTag[0]}` : ""));
+  note(notClickable.length === 0,
+       `every answer whose prose carries a citation marker renders it as a button` +
+       (notClickable.length ? ` — ${notClickable.length} do not, e.g. ${notClickable[0]}` : ""));
+}
+
 /* ---- 3. the UI's on-screen claims are true of the data ---- */
 
 // Every quotation present in the answer prose must end up highlighted. A quote

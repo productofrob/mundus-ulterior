@@ -702,8 +702,10 @@ function renderAnswerText(run) {
     html += esc(text.slice(cursor, r.start));
     const body = esc(text.slice(r.start, r.end));
     if (r.kind === "marker") {
-      html += `<button class="marker" data-marker="${esc(r.marker)}"
-                title="source ${esc(r.marker)} — click to inspect">${body}</button>`;
+      // FINDING 99. This tag is emitted on ONE LINE and must stay on one
+      // line: `brify` below is tag-aware now, but a tag broken across lines
+      // is also a tag no reader of this function can see is fragile.
+      html += `<button class="marker" data-marker="${esc(r.marker)}" title="source ${esc(r.marker)} — click to inspect">${body}</button>`;
     } else {
       const res = spans[r.si].resolution;
       const st = res?.state || "unclaimed";
@@ -721,7 +723,16 @@ function renderAnswerText(run) {
     cursor = r.end;
   }
   html += esc(text.slice(cursor));
-  return html.split(/\n{2,}/).map(p => `<p>${p.replace(/\n/g, "<br>")}</p>`).join("");
+
+  /* FINDING 99. `p.replace(/\n/g, "<br>")` rewrote newlines ANYWHERE in the
+     assembled markup, including inside an element's opening tag — which is
+     what broke every citation marker on this page for the whole of its life.
+     The button is on one line again, and this is tag-aware so that the next
+     tag someone wraps for readability degrades into ugly source rather than
+     into visible attribute text. A tag is passed through untouched; only a
+     newline in the PROSE becomes a break. */
+  const brify = h => h.replace(/<[^>]*>|\n/g, m => m === "\n" ? "<br>" : m);
+  return html.split(/\n{2,}/).map(p => `<p>${brify(p)}</p>`).join("");
 }
 
 /* ------------------------------------------------------------------ *
@@ -1579,6 +1590,59 @@ function viewPlaces() {
      are, because naming them would be making the identification the corpus
      deliberately refused. The notes were written by whoever curated the
      record; the arithmetic is this page's. */
+  /* The sharpest thing this corpus's geography says, and every figure in it
+     is counted rather than asserted: how often one gazetteer id is TAKEN, and
+     how often the same id is named in a note and REFUSED. The id is not
+     hardcoded — it is whichever id the notes argue about most, so this card
+     goes away by itself if the corpus stops arguing about it. */
+  const contestedId = (() => {
+    const all = Object.values(P.docs || {}).flat();
+    const refusals = {};
+    for (const e of all.filter(x => x.kind === "gap"))
+      for (const m of String(e.note || "").matchAll(/\b(pleiades)[:\s]*(\d{4,7})\b/gi))
+        (refusals[`pleiades:${m[2]}`] = refusals[`pleiades:${m[2]}`] || []).push(e);
+    let best = null;
+    for (const [key, es] of Object.entries(refusals)) {
+      const g = groupsByKey.get(key);
+      if (!g || es.length < 2) continue;
+      if (!best || es.length > best.refused.length) best = { key, group: g, refused: es };
+    }
+    return best;
+  })();
+
+  const contestedCard = contestedId ? `<div class="card">
+    <h3 style="margin-top:0;font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint)">
+      one coordinate, taken ${contestedId.group.members.length} time${contestedId.group.members.length === 1 ? "" : "s"}
+      and refused ${contestedId.refused.length}</h3>
+    <p style="font-size:15px;margin:2px 0 10px"><strong>${esc(contestedId.group.resolved.title)}
+      (<code>${esc(contestedId.key)}</code>)</strong> is the id this corpus disagrees with itself about
+      most. ${contestedId.group.members.length} placement${contestedId.group.members.length === 1 ? " takes" : "s take"} it
+      and ${contestedId.refused.length} name it in a note in order to refuse it. The marker you can see on
+      the map above is the first group; the second is not on the map at all, and this is the card that
+      says so.</p>
+    <div class="cols" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px">
+      <div><h3 style="font-family:system-ui,sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);margin:0 0 4px">taken — drawn on the map</h3>
+        ${contestedId.group.members.map(m => {
+          const rec = D.corpus[m.doc_id];
+          return `<div class="rec" data-place="${esc(m.key)}">
+            <div class="rec-title">${esc(m.name)}</div>
+            <div class="rec-meta">${esc(rec ? rec.title : m.doc_id)}</div></div>`;
+        }).join("")}</div>
+      <div><h3 style="font-family:system-ui,sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);margin:0 0 4px">named in a note, and refused</h3>
+        ${contestedId.refused.map(e => {
+          const rec = D.corpus[e.doc_id];
+          return `<div class="rec" data-place="${esc(e.key)}">
+            <div class="rec-title">${esc(e.name)}</div>
+            <div class="rec-meta">${esc(rec ? rec.title : e.doc_id)}</div></div>`;
+        }).join("")}</div>
+    </div>
+    <div class="dormant" style="margin-top:12px">Each refusal has its own reason and this page does not
+      summarise them into one — open a name to read the note that refused it. What can be said without
+      reading any of them is arithmetic: the same coordinate is right for two of these placements and
+      wrong for ${contestedId.refused.length}, and a map that drew all of them would be asserting an
+      identification this corpus declined ${contestedId.refused.length} times.</div>
+  </div>` : "";
+
   const focusCard = L.focusGaps.length ? `<div class="card">
     <h3 style="margin-top:0;font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint)">
       the place the passage is organised around, with nowhere to draw it</h3>
@@ -1663,6 +1727,7 @@ function viewPlaces() {
   return `<div>
     ${notice}
     ${mapCard}
+    ${contestedCard}
     ${focusCard}
     ${allGapCards}
     <div class="placards">
@@ -1684,10 +1749,18 @@ function viewPlaces() {
 function viewAbout() {
   const a = D.span_audit || {};
   const problems = (D.span_problems || []);
-  const rows = problems.slice(0, 12).map(p => `<div class="rec">
+  const grouped = new Map();
+  for (const p of problems) {
+    const k = `${p.doc_id}\u0000${p.field}\u0000${p.at}\u0000${p.state}`;
+    if (!grouped.has(k)) grouped.set(k, { ...p, runs: 0 });
+    grouped.get(k).runs++;
+  }
+  const rows = [...grouped.values()].sort((a, b) => b.runs - a.runs).map(p => `<div class="rec">
     <div class="rec-title mono">${esc(p.doc_id)}.${esc(p.field)}${esc(p.at)}</div>
     <div class="rec-meta">${esc(p.state || "")} — ${esc(p.why || "")}</div>
-    <div class="rec-meta">“${esc(p.quote)}…”</div></div>`).join("");
+    <div class="rec-meta">“${esc(p.quote)}…” · <b>claimed by ${p.runs} archived
+      run${p.runs === 1 ? "" : "s"}</b>${p.provenance ? ` · corpus provenance
+      <code>${esc(p.provenance)}</code>` : ""}</div></div>`).join("");
 
   return `<div class="cols" style="grid-template-columns:minmax(0,1fr)">
     <div>
@@ -1751,12 +1824,15 @@ function viewAbout() {
           }
         const rows = Object.entries(cross).sort((a, b) => b[1] - a[1]).map(([k, n]) => {
           const [st, pv] = k.split("\u0000");
-          const clean = st === "resolved";
+          // Every row is tagged, including the two `resolved` rows: they are
+          // the same first-axis state with different second-axis answers, and
+          // tagging only the failures would make the axis look like a
+          // severity scale, which is the one thing it is not.
           return `<div class="chain"><div>
             <span class="k" style="width:150px">${esc(st)}</span>
             <span class="v">${n} span${n === 1 ? "" : "s"} — ${esc((PROVENANCE[pv] || {}).label || pv)}
-            ${clean ? "" : `<span class="ground-tag${pv === "unrecorded" ? " contested" : ""}"
-              style="margin-left:6px">${esc(pv)}</span>`}</span></div></div>`;
+            <span class="ground-tag${pv === "unrecorded" ? " contested" : ""}"
+              style="margin-left:6px">${esc(pv)}</span></span></div></div>`;
         }).join("");
         // The two sentences this cross-tabulation makes available, derived so
         // they cannot survive the data changing underneath them.
@@ -1821,7 +1897,8 @@ function statStrip() {
      <span><b>${langs.size}</b> languages</span>
      <span><b>${D.runs.length}</b> archived answers</span>
      <span><b>${total}</b> citations, <b>${a.resolved || 0}</b> resolving to characters on disk</span>
-     <span><b>${(ps.pins||0)+(ps.extents||0)}</b> places plotted, <b>${ps.edges_drawable||0}</b> of ${ps.edges_total||0} trade edges drawn</span>`;
+     <span><b>${(P.groups||[]).length}</b> places drawn, <b>${ps.gaps||0}</b> named and not drawable,
+       <b>${ps.edges_drawable||0}</b> of ${ps.edges_total||0} trade edges</span>`;
 }
 
 function render() {
