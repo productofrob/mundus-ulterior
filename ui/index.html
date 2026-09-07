@@ -25,335 +25,753 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mundus Ulterior — answers and their sources</title>
 <style>
+  /* ================================================================== *
+   * THE DESIGN SYSTEM.
+   *
+   * Every value this page uses has a name and lives here. That is not
+   * tidiness: UI_DESIGN_START_AMENDMENT_1.md section 2 rules that this page
+   * is going to be ported to a component tree, and
+   *
+   *     PORTS VERBATIM   :root custom properties, class rules, media queries
+   *     PORTS BY HAND    inline style= attributes, template-string markup
+   *
+   * so a value written into a template string is a value someone retypes and
+   * re-decides. Before this block there were seven repeated inline
+   * `style="font-family:system-ui;font-size:11px;text-transform:uppercase..."`
+   * attributes on <h2> and <h3> elements. They are now one class, `.eyebrow`.
+   *
+   * THREE THINGS IN HERE ARE ARGUMENTS AND NOT STYLE, and each is marked
+   * where it sits (UI_DESIGN_START.md section 5):
+   *   - `ground` is told apart by SHAPE, never by colour
+   *   - D1's second axis is told apart by LABEL, never by colour
+   *   - the first axis IS an ordering and is the one place a ramp is honest
+   * A dark theme is where the instinct to unify every accent into one ramp is
+   * loudest. It is refused here in both themes, deliberately.
+   * ================================================================== */
   :root {
-    --ink:        #21201c;
-    --ink-soft:   #56534c;
+    /* --- type ------------------------------------------------------- */
+    --font-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --font-sans:  system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono:  "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+
+    --t-3xs: 10px;    /* map labels, the smallest thing on the page */
+    --t-2xs: 11px;    /* eyebrows, tags */
+    --t-xs:  11.5px;  /* apparatus meta */
+    --t-s:   13px;
+    --t-m:   14.5px;
+    --t-base:16px;
+    --t-l:   18.5px;  /* the answer itself */
+    --t-xl:  21px;
+    --t-2xl: 27px;
+    --t-3xl: clamp(27px, 3.2vw, 38px);   /* the front section, and only that */
+
+    --lh-tight: 1.25;
+    --lh-snug:  1.45;
+    --lh-body:  1.6;
+    --lh-prose: 1.72;
+    --track-eyebrow: .11em;
+
+    /* --- space ------------------------------------------------------ */
+    --s-1: 4px;  --s-2: 6px;  --s-3: 9px;  --s-4: 12px;
+    --s-5: 16px; --s-6: 22px; --s-7: 30px; --s-8: 44px; --s-9: 64px;
+
+    /* --- shape ------------------------------------------------------ */
+    --r-sm: 4px; --r-md: 8px; --r-lg: 14px; --r-pill: 999px;
+    --radius: var(--r-md);            /* the name the page used before */
+    --rule: 1px;
+
+    --shadow-1: 0 1px 2px rgba(33,32,28,.05);
+    --shadow-2: 0 2px 4px rgba(33,32,28,.05), 0 12px 28px rgba(33,32,28,.07);
+
+    --shell-max: 1560px;
+    --rail-left: 268px;
+    --rail-right: 400px;
+
+    /* --- surfaces and ink ------------------------------------------- */
+    --ink:        #1f1d18;
+    --ink-soft:   #55514a;
     --ink-faint:  #8a857c;
-    --paper:      #faf8f4;
+    --paper:      #f7f4ed;
+    --paper-deep: #efeadf;
     --card:       #ffffff;
-    --line:       #e3ded4;
-    --line-soft:  #efeae1;
-    --accent:     #7c4a2d;
-    --accent-soft:#f2e6dc;
-    --mark:       #fbeec4;
-    --mark-edge:  #d9b64a;
-    --good:       #3f6b47;
-    --warn:       #9a6a1e;
-    --bad:        #9b3d34;
-    --radius: 8px;
+    --card-2:     #fbf9f5;
+    --line:       #e2ddd2;
+    --line-soft:  #eeeae0;
+
+    --accent:      #7c4a2d;
+    --accent-soft: #f2e6dc;
+    --accent-line: #dcc4b2;
+    --on-accent:   #ffffff;
+
+    /* the citation highlight. The first axis is an ORDERING and is allowed
+       its ramp; these three are that ramp and nothing else on the page
+       borrows them. */
+    --mark:        #fbeec4;
+    --mark-hover:  #f7e19a;
+    --mark-edge:   #d9b64a;
+    --mark-warn:   #f4ecd6;
+    --mark-bad:    #f6e0dc;
+    --mark-unknown:#ece9f2;
+    --edge-unknown:#7a6f96;
+
+    /* status. Used for the first axis and for run outcomes. NEVER for
+       `ground` and NEVER for the provenance axis — see the two comments in
+       the script. */
+    --good: #3f6b47;  --good-bg: #f2f7f3;  --good-line: #cfe0d2;
+    --warn: #8f6218;  --warn-bg: #fbf5e6;  --warn-line: #e8d8b0;
+    --warn-ink: #6f4d13;
+    --bad:  #9b3d34;  --bad-bg:  #fbf1ef;  --bad-line:  #e8cdc9;
+    --bad-ink: #7c332b;
+
+    /* the map's reference frame. A frame, not evidence. */
+    --map-sea:  #f1f4f5;
+    --map-land: #f6f4ef;
+    --map-coast:#cfc9bd;
+    --map-grat: #e6e9ea;
+
+    --focus-ring: 2px solid var(--accent);
+    --focus-off: 2px;
   }
+
+  /* The dark theme redefines TOKENS ONLY. Not one rule below this block is
+     duplicated for it, which is the test of whether the token layer is real. */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink:        #ece6da;
+      --ink-soft:   #b3aa9b;
+      --ink-faint:  #837b6d;
+      --paper:      #15140f;
+      --paper-deep: #100f0b;
+      --card:       #1e1d17;
+      --card-2:     #26241d;
+      --line:       #35322a;
+      --line-soft:  #2b2922;
+
+      --accent:      #d59a6d;
+      --accent-soft: #3b2a1d;
+      --accent-line: #4d3928;
+      --on-accent:   #1a1611;
+
+      --mark:        #4c3f1a;
+      --mark-hover:  #63521f;
+      --mark-edge:   #b99a3f;
+      --mark-warn:   #40371f;
+      --mark-bad:    #45291f;
+      --mark-unknown:#2e2a37;
+      --edge-unknown:#9b8fbb;
+
+      --good: #86b391;  --good-bg: #1c2620;  --good-line: #2f4436;
+      --warn: #d5ab5f;  --warn-bg: #2a2416;  --warn-line: #4b3f22;
+      --warn-ink: #e0bd7d;
+      --bad:  #dd8b7f;  --bad-bg:  #2c1c19;  --bad-line:  #4d2f28;
+      --bad-ink: #e8a99e;
+
+      --map-sea:  #10151a;
+      --map-land: #23221b;
+      --map-coast:#413d33;
+      --map-grat: #1b222a;
+
+      --shadow-1: 0 1px 2px rgba(0,0,0,.4);
+      --shadow-2: 0 2px 4px rgba(0,0,0,.35), 0 12px 28px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink:        #ece6da;
+    --ink-soft:   #b3aa9b;
+    --ink-faint:  #837b6d;
+    --paper:      #15140f;
+    --paper-deep: #100f0b;
+    --card:       #1e1d17;
+    --card-2:     #26241d;
+    --line:       #35322a;
+    --line-soft:  #2b2922;
+
+    --accent:      #d59a6d;
+    --accent-soft: #3b2a1d;
+    --accent-line: #4d3928;
+    --on-accent:   #1a1611;
+
+    --mark:        #4c3f1a;
+    --mark-hover:  #63521f;
+    --mark-edge:   #b99a3f;
+    --mark-warn:   #40371f;
+    --mark-bad:    #45291f;
+    --mark-unknown:#2e2a37;
+    --edge-unknown:#9b8fbb;
+
+    --good: #86b391;  --good-bg: #1c2620;  --good-line: #2f4436;
+    --warn: #d5ab5f;  --warn-bg: #2a2416;  --warn-line: #4b3f22;
+    --warn-ink: #e0bd7d;
+    --bad:  #dd8b7f;  --bad-bg:  #2c1c19;  --bad-line:  #4d2f28;
+    --bad-ink: #e8a99e;
+
+    --map-sea:  #10151a;
+    --map-land: #23221b;
+    --map-coast:#413d33;
+    --map-grat: #1b222a;
+
+    --shadow-1: 0 1px 2px rgba(0,0,0,.4);
+    --shadow-2: 0 2px 4px rgba(0,0,0,.35), 0 12px 28px rgba(0,0,0,.45);
+  }
+
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
+  html { color-scheme: light dark; }
   body {
     background: var(--paper);
     color: var(--ink);
-    font: 16px/1.6 "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    font: var(--t-base)/var(--lh-body) var(--font-serif);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
-  code, .mono {
-    font-family: "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
-    font-size: .82em;
-  }
+  code, .mono { font-family: var(--font-mono); font-size: .82em; }
   a { color: var(--accent); }
+  :focus-visible { outline: var(--focus-ring); outline-offset: var(--focus-off); border-radius: var(--r-sm); }
+
+  /* One class for what used to be seven identical inline style= attributes. */
+  .eyebrow {
+    font-family: var(--font-sans); font-size: var(--t-2xs); font-weight: 700;
+    text-transform: uppercase; letter-spacing: var(--track-eyebrow);
+    color: var(--ink-faint); margin: 0 0 var(--s-3);
+  }
+  .eyebrow.sm { font-size: 10.5px; letter-spacing: .1em; margin-bottom: var(--s-1); }
+  .apparatus { font-family: var(--font-sans); }
 
   /* ---------- shell ---------- */
   header.top {
-    border-bottom: 1px solid var(--line);
+    border-bottom: var(--rule) solid var(--line);
     background: var(--card);
-    padding: 18px 28px 0;
+    padding: var(--s-5) var(--s-7) 0;
+    position: relative; z-index: 2;
   }
-  .brand { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-  .brand h1 { font-size: 21px; margin: 0; letter-spacing: .01em; }
-  .brand .sub { color: var(--ink-faint); font-size: 13.5px; }
-  .tabs { display: flex; gap: 4px; margin-top: 14px; }
+  .brandbar { display: flex; align-items: baseline; gap: var(--s-4); flex-wrap: nowrap; }
+  .brand { display: flex; align-items: baseline; gap: var(--s-4); flex-wrap: wrap; min-width: 0; flex: 1 1 auto; }
+  .brand h1 {
+    font-size: var(--t-xl); margin: 0; letter-spacing: .005em; line-height: var(--lh-tight);
+  }
+  .brand .sub { color: var(--ink-faint); font-size: var(--t-s); font-family: var(--font-sans); }
+  .themebtn {
+    margin-left: auto; font: inherit; font-family: var(--font-sans); font-size: var(--t-2xs);
+    letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint);
+    background: none; border: var(--rule) solid var(--line); border-radius: var(--r-pill);
+    padding: var(--s-1) var(--s-3); cursor: pointer; flex: none;
+  }
+  .themebtn:hover { color: var(--ink); border-color: var(--ink-faint); }
+
+  .tabs { display: flex; gap: var(--s-1); margin-top: var(--s-5); }
   .tab {
-    appearance: none; border: 1px solid transparent; border-bottom: none;
-    background: none; font: inherit; font-size: 14px; color: var(--ink-soft);
-    padding: 8px 16px; cursor: pointer; border-radius: 6px 6px 0 0;
-    position: relative; top: 1px;
+    appearance: none; border: var(--rule) solid transparent; border-bottom: none;
+    background: none; font: inherit; font-family: var(--font-sans); font-size: var(--t-m);
+    color: var(--ink-soft); padding: var(--s-3) var(--s-5); cursor: pointer;
+    border-radius: var(--r-md) var(--r-md) 0 0; position: relative; top: 1px;
+    white-space: nowrap;
   }
   .tab:hover { color: var(--ink); background: var(--paper); }
   .tab[aria-selected="true"] {
-    background: var(--paper); border-color: var(--line);
-    color: var(--ink); font-weight: 600;
+    background: var(--paper); border-color: var(--line); color: var(--ink); font-weight: 600;
   }
 
-  main { max-width: 1500px; margin: 0 auto; padding: 24px 28px 80px; }
+  main { max-width: var(--shell-max); margin: 0 auto; padding: var(--s-6) var(--s-7) var(--s-9); }
 
+  /* ---------- the front section ---------- *
+   * UI_DESIGN_START.md section 9: the page's best material was the third card
+   * on the second tab and a paragraph inside the third. NOT ONE FIGURE HERE IS
+   * TYPED — every number and every name is derived from the bundle by the same
+   * helpers the tabs use, so this section changes itself when the corpus does.
+   * ------------------------------------------------------------------ */
+  .intro { margin-bottom: var(--s-7); }
+  .intro h2 {
+    font-size: var(--t-3xl); line-height: 1.1; letter-spacing: -.012em;
+    margin: 0 0 var(--s-4); max-width: 28ch;
+  }
+  .intro .claim {
+    font-size: var(--t-l); line-height: var(--lh-snug); color: var(--ink-soft);
+    margin: 0 0 var(--s-6); max-width: 62ch;
+  }
+  .intro .claim strong { color: var(--ink); font-weight: 600; }
+  .figrow {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--s-5) var(--s-6); margin-bottom: var(--s-7);
+    border-top: var(--rule) solid var(--line); padding-top: var(--s-5);
+  }
+  .fig .num {
+    font-size: var(--t-2xl); line-height: 1.1; font-variant-numeric: tabular-nums;
+    color: var(--ink); display: block;
+  }
+  .fig .cap {
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
+    line-height: var(--lh-snug); display: block; margin-top: var(--s-1);
+  }
+  .findrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: var(--s-5); }
+  .findcard {
+    background: var(--card); border: var(--rule) solid var(--line);
+    border-radius: var(--r-lg); padding: var(--s-5) var(--s-6);
+    box-shadow: var(--shadow-1);
+  }
+  .findcard .lead { font-size: var(--t-m); line-height: var(--lh-snug); margin: 0; color: var(--ink-soft); }
+  .findcard .lead strong { color: var(--ink); }
+  .findcard .go {
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--accent);
+    background: none; border: none; padding: 0; margin-top: var(--s-3); cursor: pointer;
+  }
+  .findcard .go:hover { text-decoration: underline; }
   /* ---------- questions view ---------- */
-  .cols { display: grid; grid-template-columns: 264px minmax(0,1fr) 400px; gap: 26px; align-items: start; }
-  @media (max-width: 1240px) { .cols { grid-template-columns: 240px minmax(0,1fr); } .rail-right { grid-column: 1 / -1; } }
-  @media (max-width: 860px)  { .cols { grid-template-columns: 1fr; } }
+  .cols {
+    display: grid;
+    grid-template-columns: var(--rail-left) minmax(0,1fr) var(--rail-right);
+    gap: var(--s-6); align-items: start;
+  }
+  /* Two former INLINE grid-template-columns declarations are these two
+     classes. An inline style beat the 860px media query below, which is the
+     whole of why the Places tab scrolled sideways on a phone and the
+     Questions tab did not. UI_DESIGN_START.md section 6. */
+  .cols.cols-main-panel { grid-template-columns: minmax(0,1fr) var(--rail-right); }
+  .cols.cols-half       { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--s-6); }
+  .cols.cols-single     { grid-template-columns: minmax(0, 104ch); }
+  @media (max-width: 1240px) {
+    .cols { grid-template-columns: var(--rail-left) minmax(0,1fr); }
+    .rail-right { grid-column: 1 / -1; }
+  }
+  @media (max-width: 860px) {
+    .cols, .cols.cols-main-panel, .cols.cols-half { grid-template-columns: 1fr; }
+  }
 
   .rail h2, .panel h2 {
-    font-size: 11px; text-transform: uppercase; letter-spacing: .11em;
-    color: var(--ink-faint); font-weight: 700; margin: 0 0 10px;
-    font-family: system-ui, sans-serif;
+    font-family: var(--font-sans); font-size: var(--t-2xs); font-weight: 700;
+    text-transform: uppercase; letter-spacing: var(--track-eyebrow);
+    color: var(--ink-faint); margin: 0 0 var(--s-3);
   }
-  .qlist { display: flex; flex-direction: column; gap: 6px; }
+  .qlist { display: flex; flex-direction: column; gap: var(--s-2); }
   .qbtn {
-    text-align: left; font: inherit; font-size: 14.5px; line-height: 1.4;
-    background: none; border: 1px solid transparent; border-radius: var(--radius);
-    padding: 10px 12px; cursor: pointer; color: var(--ink-soft);
+    text-align: left; font: inherit; font-size: var(--t-m); line-height: var(--lh-snug);
+    background: none; border: var(--rule) solid transparent; border-radius: var(--radius);
+    padding: var(--s-3) var(--s-4); cursor: pointer; color: var(--ink-soft);
   }
-  .qbtn:hover { background: #fff; border-color: var(--line-soft); color: var(--ink); }
+  .qbtn:hover { background: var(--card); border-color: var(--line-soft); color: var(--ink); }
   .qbtn[aria-current="true"] {
-    background: #fff; border-color: var(--line); color: var(--ink);
-    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    background: var(--card); border-color: var(--line); color: var(--ink);
+    box-shadow: var(--shadow-1);
   }
   .qbtn .meta {
-    display: block; font-family: system-ui, sans-serif; font-size: 11px;
-    color: var(--ink-faint); margin-top: 5px;
+    display: block; font-family: var(--font-sans); font-size: var(--t-2xs);
+    color: var(--ink-faint); margin-top: var(--s-1);
   }
 
   .card {
-    background: var(--card); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 20px 22px; margin-bottom: 16px;
+    background: var(--card); border: var(--rule) solid var(--line);
+    border-radius: var(--r-lg); padding: var(--s-6); margin-bottom: var(--s-5);
   }
 
-  /* run picker */
-  .runbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
-  .runchip {
-    font-family: system-ui, sans-serif; font-size: 11.5px; cursor: pointer;
-    border: 1px solid var(--line); background: #fff; border-radius: 20px;
-    padding: 4px 11px; color: var(--ink-soft); display: flex; gap: 6px; align-items: center;
+  /* ---------- run picker ----------
+     41 undifferentiated chips in a six-row block used to sit between the
+     question and the answer. The chips are all still here, one click away,
+     and nothing is dropped; what changed is that the page now says WHICH run
+     you are reading, why that one, and what the other forty are. */
+  .runline {
+    display: flex; align-items: baseline; gap: var(--s-3); flex-wrap: wrap;
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
   }
-  .runchip:hover { border-color: var(--ink-faint); }
-  .runchip[aria-current="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .runline .now { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .runline .why { color: var(--ink-soft); }
+  .runspread { display: flex; gap: var(--s-4); flex-wrap: wrap; }
+  .runspread b { color: var(--ink); font-weight: 600; }
+  details.runs { margin-top: var(--s-3); }
+  details.runs > summary {
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--accent);
+    cursor: pointer; list-style: none; display: inline-flex; gap: var(--s-2); align-items: center;
+  }
+  details.runs > summary::-webkit-details-marker { display: none; }
+  details.runs > summary::before { content: "▸"; font-size: 9px; }
+  details.runs[open] > summary::before { content: "▾"; }
+  .rungroup { margin-top: var(--s-4); }
+  .rungroup .gname {
+    font-family: var(--font-sans); font-size: var(--t-2xs); color: var(--ink-faint);
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: var(--s-2);
+  }
+  .runbar { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+  .runchip {
+    font-family: var(--font-sans); font-size: var(--t-xs); cursor: pointer;
+    border: var(--rule) solid var(--line); background: var(--card); border-radius: var(--r-pill);
+    padding: var(--s-1) var(--s-4); color: var(--ink-soft);
+    display: inline-flex; gap: var(--s-2); align-items: center;
+  }
+  .runchip:hover { border-color: var(--ink-faint); color: var(--ink); }
+  .runchip[aria-current="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .runchip .pv { opacity: .6; }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--good); flex: none; }
   .dot.refused { background: var(--ink-faint); }
   .dot.ungrounded { background: var(--bad); }
 
   /* the answer itself */
-  .answer { font-size: 18.5px; line-height: 1.72; }
+  .answer { font-size: var(--t-l); line-height: var(--lh-prose); }
   .answer p { margin: 0 0 1em; }
-  .qtext { font-size: 15px; color: var(--ink-faint); margin: 0 0 4px; font-family: system-ui, sans-serif; }
+  .answer p:last-child { margin-bottom: 0; }
+  .qtext {
+    font-size: var(--t-base); color: var(--ink); margin: 0 0 var(--s-3);
+    font-family: var(--font-serif); line-height: var(--lh-snug);
+  }
 
+  /* THE FIRST AXIS, and it is an ordering — the one axis on this page where a
+     colour ramp is honest. It says whether the claim still holds. */
   mark.q {
     background: var(--mark); border-bottom: 1.5px solid var(--mark-edge);
-    padding: 1px 0; cursor: pointer; border-radius: 2px;
+    padding: 1px 0; cursor: pointer; border-radius: 2px; color: inherit;
   }
-  mark.q:hover { background: #f7e19a; }
-  mark.q.unresolved { background: #f6e0dc; border-bottom-color: var(--bad); }
-  mark.q.caseonly  { background: #f4ecd6; border-bottom-color: var(--warn); }
+  mark.q:hover { background: var(--mark-hover); }
+  mark.q.unresolved { background: var(--mark-bad); border-bottom-color: var(--bad); }
+  mark.q.caseonly  { background: var(--mark-warn); border-bottom-color: var(--warn); }
   /* FINDING 98. `whitespace_only` is neither a broken claim nor a labelling
      defect, so it is neither red nor amber — a dotted underline on the plain
      highlight, which reads as "there is something to say here" and not as
-     "this failed". It rendered as a clean citation with a broken tooltip
-     before this block. */
+     "this failed". */
   mark.q.whitespace { background: var(--mark); border-bottom-style: dotted; border-bottom-width: 2px; }
   /* A state added to classify_span and not to SPAN_STATES lands here and is
      visibly unstyled-on-purpose, rather than borrowing a neighbour's colour. */
-  mark.q.unknownstate { background: #ece9f2; border-bottom-color: #7a6f96; }
+  mark.q.unknownstate { background: var(--mark-unknown); border-bottom-color: var(--edge-unknown); }
 
-  /* D1's second axis. A CATEGORY, not a severity — see the PROVENANCE comment.
-     Deliberately not built from --good/--warn/--bad. */
+  /* D1's second axis. A CATEGORY, not a severity — see the PROVENANCE comment
+     in the script. Deliberately not built from --good/--warn/--bad, in either
+     theme. */
   .provbox {
-    font-family: system-ui, sans-serif; font-size: 12px; line-height: 1.55;
-    background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--ink-faint);
-    border-radius: 6px; padding: 10px 12px;
+    font-family: var(--font-sans); font-size: var(--t-xs); line-height: var(--lh-snug);
+    background: var(--card); border: var(--rule) solid var(--line);
+    border-left: 3px solid var(--ink-faint); border-radius: var(--r-md);
+    padding: var(--s-3) var(--s-4);
   }
   .provbox strong { color: var(--ink); }
-  .axis2 { display: flex; gap: 18px; flex-wrap: wrap; margin: 10px 0 2px;
-           font-family: system-ui, sans-serif; font-size: 12px; color: var(--ink-soft); }
+  .axis2 {
+    display: flex; gap: var(--s-6); flex-wrap: wrap; margin: var(--s-3) 0 2px;
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-soft);
+  }
   .axis2 b { color: var(--ink); }
-  .ledger { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap: 14px; margin: 4px 0 2px; }
-  .ledger .cell { border-left: 3px solid var(--line); padding-left: 11px; }
-  .ledger .num { font-size: 21px; color: var(--ink); font-variant-numeric: tabular-nums; }
-  .ledger .cap { font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint); line-height: 1.45; }
-  .gapdoc { border-top: 1px solid var(--line-soft); padding: 9px 0; }
-  .gapdoc .doct { font-size: 14.5px; cursor: pointer; }
+  .ledger {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr));
+    gap: var(--s-5); margin: var(--s-1) 0 2px;
+  }
+  .ledger .cell { border-left: 3px solid var(--line); padding-left: var(--s-4); }
+  .ledger .num { font-size: var(--t-xl); color: var(--ink); font-variant-numeric: tabular-nums; }
+  .ledger .cap {
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
+    line-height: var(--lh-snug);
+  }
+  .gapdoc { border-top: var(--rule) solid var(--line-soft); padding: var(--s-3) 0; }
+  .gapdoc .doct { font-size: var(--t-m); cursor: pointer; }
   .gapdoc .doct:hover { color: var(--accent); }
-  .gapdoc .names { font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint); margin-top: 3px; }
+  .gapdoc .names {
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
+    margin-top: 3px;
+  }
   .gapdoc .names span { cursor: pointer; }
   .gapdoc .names span:hover { color: var(--accent); }
-  .focusrow { border-top: 1px solid var(--line-soft); padding: 10px 0; cursor: pointer; }
+  .focusrow { border-top: var(--rule) solid var(--line-soft); padding: var(--s-3) 0; cursor: pointer; }
   .focusrow:hover .rec-title { color: var(--accent); }
-  .focusrow .why { font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint);
-                   margin-top: 4px; line-height: 1.5; }
+  .focusrow .why {
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
+    margin-top: var(--s-1); line-height: var(--lh-snug);
+  }
 
   .marker {
-    font-family: system-ui, sans-serif; font-size: 11px; font-weight: 700;
+    font-family: var(--font-sans); font-size: var(--t-2xs); font-weight: 700;
     vertical-align: .25em; background: var(--accent-soft); color: var(--accent);
-    border: none; border-radius: 4px; padding: 2px 5px; cursor: pointer;
-    margin: 0 1px;
+    border: none; border-radius: var(--r-sm); padding: 2px 5px; cursor: pointer; margin: 0 1px;
   }
-  .marker:hover { background: var(--accent); color: #fff; }
+  .marker:hover { background: var(--accent); color: var(--on-accent); }
 
-  .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .badges { display: flex; gap: var(--s-2); flex-wrap: wrap; margin-bottom: var(--s-5); }
   .badge {
-    font-family: system-ui, sans-serif; font-size: 11px; letter-spacing: .02em;
-    border-radius: 4px; padding: 3px 8px; border: 1px solid var(--line);
-    color: var(--ink-soft); background: #fff;
+    font-family: var(--font-sans); font-size: var(--t-2xs); letter-spacing: .02em;
+    border-radius: var(--r-sm); padding: 3px 8px; border: var(--rule) solid var(--line);
+    color: var(--ink-soft); background: var(--card);
   }
-  .badge.good    { color: var(--good); border-color: #cfe0d2; background: #f2f7f3; }
+  .badge.good    { color: var(--good); border-color: var(--good-line); background: var(--good-bg); }
   .badge.neutral { color: var(--ink-soft); background: var(--line-soft); }
-  .badge.warn    { color: var(--warn); border-color: #e8d8b0; background: #fbf5e6; }
-  .badge.bad     { color: var(--bad);  border-color: #e8cdc9; background: #fbf1ef; }
+  .badge.warn    { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+  .badge.bad     { color: var(--bad);  border-color: var(--bad-line);  background: var(--bad-bg); }
 
   .refusal-note {
-    font-family: system-ui, sans-serif; font-size: 13px; color: var(--ink-soft);
-    background: var(--line-soft); border-radius: 6px; padding: 11px 14px;
-    margin-bottom: 16px;
+    font-family: var(--font-sans); font-size: var(--t-s); color: var(--ink-soft);
+    background: var(--line-soft); border-radius: var(--r-md);
+    padding: var(--s-3) var(--s-5); margin-bottom: var(--s-5);
   }
 
   /* source cards */
   .src {
-    border: 1px solid var(--line); border-radius: var(--radius);
-    background: #fff; padding: 13px 15px; margin-bottom: 9px; cursor: pointer;
+    border: var(--rule) solid var(--line); border-radius: var(--radius);
+    background: var(--card); padding: var(--s-4) var(--s-5); margin-bottom: var(--s-3); cursor: pointer;
   }
   .src:hover { border-color: var(--ink-faint); }
-  .src-head { display: flex; gap: 9px; align-items: baseline; }
+  .src-head { display: flex; gap: var(--s-3); align-items: baseline; }
   .src-marker {
-    font-family: system-ui, sans-serif; font-weight: 700; font-size: 11.5px;
+    font-family: var(--font-sans); font-weight: 700; font-size: var(--t-xs);
     color: var(--accent); background: var(--accent-soft);
-    padding: 2px 6px; border-radius: 4px; flex: none;
+    padding: 2px 6px; border-radius: var(--r-sm); flex: none;
   }
-  .src-title { font-size: 14.5px; line-height: 1.35; }
+  .src-title { font-size: var(--t-m); line-height: var(--lh-tight); }
   .src-meta {
-    font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint);
-    margin-top: 6px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
+    margin-top: var(--s-2); display: flex; gap: var(--s-4); flex-wrap: wrap; align-items: center;
   }
+  .src-meta .quoted { color: var(--accent); }
   .sim { display: inline-flex; align-items: center; gap: 5px; }
   .simbar { width: 42px; height: 4px; background: var(--line-soft); border-radius: 2px; overflow: hidden; }
   .simbar i { display: block; height: 100%; background: var(--accent); }
 
   /* ---------- provenance panel ---------- */
-  .panel { position: sticky; top: 18px; }
+  .panel { position: sticky; top: var(--s-5); }
   .panel-inner {
-    background: var(--card); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 18px 19px;
+    background: var(--card); border: var(--rule) solid var(--line);
+    border-radius: var(--r-lg); padding: var(--s-5) var(--s-6);
     max-height: calc(100vh - 60px); overflow-y: auto;
   }
-  .empty { color: var(--ink-faint); font-size: 14px; font-family: system-ui, sans-serif; }
+  .empty { color: var(--ink-faint); font-size: var(--t-m); font-family: var(--font-sans); }
   .prov-q {
-    font-size: 16px; line-height: 1.55; border-left: 3px solid var(--mark-edge);
-    padding-left: 12px; margin: 0 0 16px; color: var(--ink);
+    font-size: var(--t-base); line-height: var(--lh-snug);
+    border-left: 3px solid var(--mark-edge); padding-left: var(--s-4);
+    margin: 0 0 var(--s-5); color: var(--ink);
   }
-  .chain { font-family: system-ui, sans-serif; font-size: 12px; margin-bottom: 16px; }
-  .chain div { display: flex; gap: 8px; padding: 4px 0; border-bottom: 1px dotted var(--line-soft); }
+  .chain { font-family: var(--font-sans); font-size: var(--t-xs); margin-bottom: var(--s-5); }
+  .chain div { display: flex; gap: var(--s-3); padding: var(--s-1) 0; border-bottom: 1px dotted var(--line-soft); }
   .chain dt, .chain .k { color: var(--ink-faint); flex: none; width: 84px; }
+  .chain .k.wide { width: 150px; }
   .chain .v { color: var(--ink); word-break: break-word; }
 
   .fieldtext {
-    background: var(--paper); border: 1px solid var(--line-soft); border-radius: 6px;
-    padding: 12px 13px; font-size: 13.5px; line-height: 1.62;
+    background: var(--paper); border: var(--rule) solid var(--line-soft); border-radius: var(--r-md);
+    padding: var(--s-4); font-size: var(--t-s); line-height: var(--lh-body);
     max-height: 260px; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
   }
-  .fieldtext mark { background: var(--mark); box-shadow: 0 0 0 2px var(--mark); border-radius: 2px; }
+  .fieldtext mark { background: var(--mark); color: inherit; box-shadow: 0 0 0 2px var(--mark); border-radius: 2px; }
   .fieldtext .snip { color: var(--ink-faint); font-style: italic; }
-  .sect { margin-top: 18px; }
+  .sect { margin-top: var(--s-5); }
   .sect > h3 {
-    font-family: system-ui, sans-serif; font-size: 10.5px; text-transform: uppercase;
-    letter-spacing: .1em; color: var(--ink-faint); margin: 0 0 7px; font-weight: 700;
+    font-family: var(--font-sans); font-size: 10.5px; text-transform: uppercase;
+    letter-spacing: .1em; color: var(--ink-faint); margin: 0 0 var(--s-2); font-weight: 700;
   }
   .dormant {
-    font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint);
-    background: var(--line-soft); border-radius: 5px; padding: 8px 10px; line-height: 1.5;
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
+    background: var(--line-soft); border-radius: var(--r-sm);
+    padding: var(--s-3); line-height: var(--lh-snug);
   }
+  .stack { margin-top: var(--s-3); }
+  .clickable { cursor: pointer; }
   .warnbox {
-    font-family: system-ui, sans-serif; font-size: 12px; line-height: 1.55;
-    border-radius: 6px; padding: 10px 12px; margin-bottom: 14px;
+    font-family: var(--font-sans); font-size: var(--t-xs); line-height: var(--lh-snug);
+    border-radius: var(--r-md); padding: var(--s-3) var(--s-4); margin-bottom: var(--s-5);
   }
-  .warnbox.bad  { background: #fbf1ef; border: 1px solid #e8cdc9; color: #7c332b; }
-  .warnbox.warn { background: #fbf5e6; border: 1px solid #e8d8b0; color: #6f4d13; }
+  .warnbox.bad  { background: var(--bad-bg);  border: var(--rule) solid var(--bad-line);  color: var(--bad-ink); }
+  .warnbox.warn { background: var(--warn-bg); border: var(--rule) solid var(--warn-line); color: var(--warn-ink); }
 
-  /* ---------- regions view (record list, still used inside Places) ---------- */
-  .regiongrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px,1fr)); gap: 16px; }
-  .region h3 { margin: 0 0 3px; font-size: 16px; }
-  .region .count { font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint); }
-  .rec { padding: 9px 0; border-top: 1px solid var(--line-soft); cursor: pointer; }
+  /* ---------- record lists ---------- */
+  .regiongrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px,1fr)); gap: var(--s-5); }
+  .region h3 { margin: 0 0 3px; font-size: var(--t-base); }
+  .region .count { font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint); }
+  .rec { padding: var(--s-3) 0; border-top: var(--rule) solid var(--line-soft); cursor: pointer; }
   .rec:hover .rec-title { color: var(--accent); }
-  .rec-title { font-size: 14px; line-height: 1.35; }
-  .rec-meta { font-family: system-ui, sans-serif; font-size: 11px; color: var(--ink-faint); margin-top: 3px; }
+  .rec-title { font-size: var(--t-m); line-height: var(--lh-tight); }
+  .rec-meta { font-family: var(--font-sans); font-size: var(--t-2xs); color: var(--ink-faint); margin-top: 3px; }
+  .rec-meta.inline { display: inline; }
 
-  /* ---------- places view (Phase 2, A5) ---------- */
+  /* ---------- places view ---------- */
   .maparea {
-    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 10px; margin-bottom: 16px;
+    background: var(--card); border: var(--rule) solid var(--line); border-radius: var(--r-lg);
+    padding: var(--s-3); margin-bottom: var(--s-5);
   }
-  .mapsvg { width: 100%; height: auto; display: block; cursor: grab; touch-action: none; }
+  .mapsvg { width: 100%; height: auto; display: block; cursor: grab; touch-action: none; border-radius: var(--r-md); }
   .mapsvg.dragging { cursor: grabbing; }
   .mapbar {
-    display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
-    font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint);
+    display: flex; align-items: center; gap: var(--s-2); margin-bottom: var(--s-3);
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
   }
   .mapbtn {
-    font: inherit; font-size: 13px; line-height: 1; min-width: 26px; height: 24px;
-    padding: 0 8px; cursor: pointer; color: var(--ink-soft);
-    border: 1px solid var(--line); background: #fff; border-radius: 5px;
+    font: inherit; font-size: var(--t-s); line-height: 1; min-width: 26px; height: 26px;
+    padding: 0 var(--s-3); cursor: pointer; color: var(--ink-soft);
+    border: var(--rule) solid var(--line); background: var(--card); border-radius: var(--r-sm);
   }
   .mapbtn:hover { border-color: var(--ink-faint); color: var(--ink); }
-  .maphint { margin-left: 4px; }
+  .maphint { margin-left: var(--s-1); }
   .mapzoom { margin-left: auto; font-variant-numeric: tabular-nums; }
-  .mapsvg .sea { fill: #f4f6f7; }
-  .mapsvg .grat { stroke: #e6e9ea; stroke-width: 1; }
-  .mapsvg .land { fill: #f6f4ef; stroke: #cfc9bd; stroke-width: .8; stroke-linejoin: round; }
-  .mapsvg .edge { fill: none; stroke: var(--accent); stroke-opacity: .38; stroke-width: 1.4; }
-  .mapsvg .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .3; }
+  .mapsvg .sea { fill: var(--map-sea); }
+  .mapsvg .grat { stroke: var(--map-grat); stroke-width: 1; }
+  .mapsvg .land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: .8; stroke-linejoin: round; }
+  .mapsvg .edge { fill: none; stroke: var(--accent); stroke-opacity: .42; stroke-width: 1.4; }
+  .mapsvg .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .34; }
   .mapsvg .edge:hover, .mapsvg .edge.hl { stroke-opacity: .9; stroke-width: 2.2; cursor: pointer; }
+  /* GROUND IS TOLD APART BY SHAPE. A `regional` claim is a shaded area and is
+     never a pin; a `contested` identification is drawn disputed. Neither
+     borrows --good/--warn/--bad as a gradient, because "stated on a Greek port
+     and regional on a Chinese polity are different kinds of claim, not
+     different strengths of one". */
   .mapsvg .extent {
     fill: var(--accent); fill-opacity: .1; stroke: var(--accent); stroke-opacity: .55;
     stroke-width: 1; stroke-dasharray: 3 2; cursor: pointer;
   }
   .mapsvg .extent:hover, .mapsvg .extent.hl { fill-opacity: .2; stroke-opacity: .9; }
-  .mapsvg .pin circle.dot { fill: var(--accent); stroke: var(--paper); stroke-width: 1.3; cursor: pointer; }
+  .mapsvg .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.3; cursor: pointer; }
   .mapsvg .pin:hover circle.dot, .mapsvg .pin.hl circle.dot { fill: var(--ink); r: 6; }
-  .mapsvg .pin.contested circle.dot { fill: var(--paper); stroke: var(--warn); stroke-width: 2; stroke-dasharray: 2 1.4; }
-  .mapsvg .pin.contested:hover circle.dot, .mapsvg .pin.contested.hl circle.dot { fill: #fbf5e6; }
-  .mapsvg .pin text.n { font: 700 9px system-ui, sans-serif; fill: #fff; pointer-events: none; text-anchor: middle; }
+  .mapsvg .pin.contested circle.dot { fill: var(--card); stroke: var(--warn); stroke-width: 2; stroke-dasharray: 2 1.4; }
+  .mapsvg .pin.contested:hover circle.dot, .mapsvg .pin.contested.hl circle.dot { fill: var(--warn-bg); }
+  .mapsvg .pin text.n { font: 700 9px var(--font-sans); fill: var(--on-accent); pointer-events: none; text-anchor: middle; }
   .mapsvg .pin.contested text.n { fill: var(--warn); }
   .mapsvg .lbl {
-    font: 10px system-ui, sans-serif; fill: var(--ink-soft); pointer-events: none;
+    font: var(--t-3xs) var(--font-sans); fill: var(--ink-soft); pointer-events: none;
     paint-order: stroke; stroke: var(--card); stroke-width: 2.6px; stroke-linejoin: round;
   }
   .mapsvg .lbl.extent { fill: var(--accent); font-style: italic; }
 
   .maplegend {
-    display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; padding-top: 10px;
-    border-top: 1px solid var(--line-soft); font-family: system-ui, sans-serif;
-    font-size: 11.5px; color: var(--ink-soft); align-items: center;
+    display: flex; flex-wrap: wrap; gap: var(--s-5); margin-top: var(--s-3); padding-top: var(--s-3);
+    border-top: var(--rule) solid var(--line-soft); font-family: var(--font-sans);
+    font-size: var(--t-xs); color: var(--ink-soft); align-items: center;
   }
-  .maplegend .item { display: inline-flex; align-items: center; gap: 6px; }
+  .maplegend .item { display: inline-flex; align-items: center; gap: var(--s-2); }
+  .maplegend .note { color: var(--ink-faint); }
   .maplegend svg { flex: none; overflow: visible; }
+  /* The legend's swatches were drawn with fill="var(--accent)" as SVG
+     PRESENTATION ATTRIBUTES. That was CHECKED BY LOOKING before it was
+     changed, and it works: a presentation attribute is parsed as a CSS value
+     and resolves custom properties. NOT a defect, and not a finding. It is a
+     class here for the reason the amendment gives — a value in the markup is
+     a value the port retypes, and a value in a class rule is one it copies. */
+  .swatch .pt   { fill: var(--accent); stroke: var(--card); stroke-width: 1.3; }
+  .swatch .ct   { fill: var(--card); stroke: var(--warn); stroke-width: 2; stroke-dasharray: 2 1.4; }
+  .swatch .ext  { fill: var(--accent); fill-opacity: .1; stroke: var(--accent); stroke-opacity: .55; stroke-dasharray: 3 2; }
+  .swatch .ln   { stroke: var(--accent); stroke-opacity: .5; stroke-width: 1.6; fill: none; }
+  .swatch .lnw  { stroke: var(--accent); stroke-opacity: .4; stroke-width: 1.4; stroke-dasharray: 1 3; fill: none; }
 
-  .placards { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px,1fr)); gap: 16px; margin-bottom: 16px; }
+  .placards { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px,1fr)); gap: var(--s-5); margin-bottom: var(--s-5); }
   .placard h3 {
-    margin: 0 0 2px; font-family: system-ui, sans-serif; font-size: 11px; text-transform: uppercase;
-    letter-spacing: .09em; color: var(--ink-faint); font-weight: 700;
+    margin: 0 0 2px; font-family: var(--font-sans); font-size: var(--t-2xs);
+    text-transform: uppercase; letter-spacing: .09em; color: var(--ink-faint); font-weight: 700;
   }
   .gaprow, .miss-row {
-    padding: 8px 0; border-top: 1px solid var(--line-soft); cursor: pointer;
-    font-size: 13.5px; line-height: 1.4;
+    padding: var(--s-3) 0; border-top: var(--rule) solid var(--line-soft); cursor: pointer;
+    font-size: var(--t-s); line-height: var(--lh-snug);
   }
   .gaprow:hover .rec-title, .miss-row:hover .rec-title { color: var(--accent); }
   .ground-tag {
-    font-family: system-ui, sans-serif; font-size: 10px; text-transform: uppercase;
+    font-family: var(--font-sans); font-size: var(--t-3xs); text-transform: uppercase;
     letter-spacing: .04em; border-radius: 3px; padding: 1px 5px; margin-right: 5px;
-    border: 1px solid var(--line); color: var(--ink-soft); display: inline-block;
+    border: var(--rule) solid var(--line); color: var(--ink-soft); display: inline-block;
   }
   .ground-tag.regional { background: var(--line-soft); }
-  .ground-tag.contested { color: var(--warn); border-color: #e8d8b0; background: #fbf5e6; }
+  .ground-tag.contested { color: var(--warn); border-color: var(--warn-line); background: var(--warn-bg); }
+  .ground-tag.spaced { margin-left: var(--s-2); }
   .notice {
-    background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--ink-faint);
-    border-radius: var(--radius); padding: 14px 17px; margin-bottom: 20px;
-    font-family: system-ui, sans-serif; font-size: 13px; line-height: 1.6; color: var(--ink-soft);
+    background: var(--card); border: var(--rule) solid var(--line);
+    border-left: 3px solid var(--ink-faint); border-radius: var(--r-lg);
+    padding: var(--s-5) var(--s-6); margin-bottom: var(--s-6);
+    font-family: var(--font-sans); font-size: var(--t-s); line-height: var(--lh-body); color: var(--ink-soft);
   }
   .notice strong { color: var(--ink); }
+  .notice .ledger { margin-top: var(--s-5); }
+
+  .cardlead { font-size: var(--t-base); margin: 2px 0 var(--s-3); }
+  .cardlead.tight { margin-bottom: var(--s-2); }
+  .prose-soft { font-size: var(--t-m); color: var(--ink-soft); }
+  .card > h3:first-child { margin-top: 0; }
+  .fullspan { grid-column: 1 / -1; }
 
   .statstrip {
-    display: flex; gap: 20px; flex-wrap: wrap; font-family: system-ui, sans-serif;
-    font-size: 11.5px; color: var(--ink-faint); margin-top: 12px; padding-bottom: 2px;
+    display: flex; gap: var(--s-6); flex-wrap: wrap; font-family: var(--font-sans);
+    font-size: var(--t-xs); color: var(--ink-faint); margin-top: var(--s-4); padding-bottom: 2px;
   }
   .statstrip b { color: var(--ink); font-weight: 600; }
+  /* `display:flex` beats the user agent's [hidden] rule, so a flex container
+     that is hidden by attribute needs to be told. */
+  .statstrip[hidden] { display: none; }
+
+  /* ---------- an unresolvable deep link says so. RULING 84. ---------- */
+  .hashnotice {
+    display: flex; gap: var(--s-4); align-items: baseline;
+    background: var(--warn-bg); border: var(--rule) solid var(--warn-line);
+    color: var(--warn-ink); border-radius: var(--r-md);
+    font-family: var(--font-sans); font-size: var(--t-xs); line-height: var(--lh-snug);
+    padding: var(--s-3) var(--s-4); margin-bottom: var(--s-5);
+  }
+  .hashnotice code { color: inherit; }
+  .hashnotice button {
+    margin-left: auto; font: inherit; background: none; border: none;
+    color: inherit; cursor: pointer; opacity: .7; flex: none;
+  }
+  .hashnotice button:hover { opacity: 1; }
+  .copylink {
+    font-family: var(--font-sans); font-size: var(--t-2xs); color: var(--ink-faint);
+    background: none; border: var(--rule) solid var(--line); border-radius: var(--r-pill);
+    padding: 2px var(--s-3); cursor: pointer; margin-left: var(--s-3);
+  }
+  .copylink:hover { color: var(--accent); border-color: var(--accent-line); }
+
+  /* ---------- the loading state ----------
+     ui/data.js is 9.5MB on one line behind a synchronous `script src=`. From
+     file:// that is instant; served over HTTP it is a long wait before first
+     paint, and the honest thing for a page whose claim is that every
+     quotation resolves to characters on disk is to say what is being fetched.
+     PURE HTML AND CSS: a second inline script tag would fail check_ui.mjs's
+     first structural check, and this block needs no script — render() writes
+     over main's contents the moment the bundle has parsed. */
+  .boot { padding: var(--s-8) 0; max-width: 54ch; }
+  .boot h2 { font-size: var(--t-2xl); margin: 0 0 var(--s-4); line-height: 1.15; }
+  .boot p { color: var(--ink-soft); font-size: var(--t-m); margin: 0 0 var(--s-5); line-height: var(--lh-snug); }
+  .bootbar { height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+  .bootbar i {
+    display: block; height: 100%; width: 34%; background: var(--accent);
+    border-radius: 2px; animation: bootslide 1.4s ease-in-out infinite;
+  }
+  @keyframes bootslide {
+    0%   { transform: translateX(-100%); }
+    100% { transform: translateX(340%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bootbar i { animation: none; width: 100%; opacity: .4; }
+  }
+
+  /* ---------- phone ----------
+     UI_DESIGN_START.md section 6: at 390px the stat strip took five stacked
+     lines and consumed the whole first screen, the tab labels wrapped inside
+     their own boxes, and a visitor scrolled past 33 question buttons before
+     reaching a single answer. The strip is now one scrollable line, the tabs
+     do not wrap, and the question list moves BELOW the answer — it is not
+     dropped, and the guards that count it still pass. */
+  @media (max-width: 860px) {
+    header.top { padding: var(--s-4) var(--s-5) 0; }
+    main { padding: var(--s-5) var(--s-5) var(--s-8); }
+    .brand h1 { font-size: var(--t-l); }
+    .brand .sub { font-size: var(--t-xs); }
+    .statstrip {
+      flex-wrap: nowrap; overflow-x: auto; gap: var(--s-5);
+      margin-top: var(--s-3); padding-bottom: var(--s-2);
+      scrollbar-width: none; -webkit-overflow-scrolling: touch;
+    }
+    .statstrip::-webkit-scrollbar { display: none; }
+    .statstrip > span { white-space: nowrap; flex: none; }
+    .tabs { overflow-x: auto; scrollbar-width: none; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { padding: var(--s-3) var(--s-4); font-size: var(--t-s); }
+    /* the question list after the answer, not before it */
+    .cols .rail { order: 3; }
+    .cols .answercol { order: 1; }
+    .cols .rail-right { order: 2; }
+    .panel { position: static; }
+    .panel-inner { max-height: none; }
+    .card { padding: var(--s-5); border-radius: var(--r-md); }
+    .intro h2 { max-width: none; }
+    .intro .claim { font-size: var(--t-base); }
+    .figrow { gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(128px,1fr)); }
+    .regiongrid, .placards { grid-template-columns: 1fr; }
+    .maparea { padding: var(--s-2); }
+    .maplegend { gap: var(--s-3); font-size: var(--t-2xs); }
+  }
 </style>
 </head>
 <body>
 
 <header class="top">
-  <div class="brand">
-    <h1>Mundus Ulterior</h1>
-    <span class="sub">Rome and the wider world, 27 BC – 1204 AD — answers traced to the characters they came from</span>
+  <div class="brandbar">
+    <div class="brand">
+      <h1>Mundus Ulterior</h1>
+      <span class="sub">Rome and the wider world, 27 BC – 1204 AD — answers traced to the characters they came from</span>
+    </div>
+    <button class="themebtn" id="themebtn" type="button" hidden>theme</button>
   </div>
   <div class="statstrip" id="statstrip"></div>
   <div class="tabs" role="tablist">
@@ -363,7 +781,30 @@
   </div>
 </header>
 
-<main id="main"></main>
+<!--
+  THE LOADING STATE, and it is deliberately not a spinner.
+
+  `data.js` is 9.5MB on one line behind the synchronous `script src=` tag below.
+  Opened from file:// this block is never seen. Served over HTTP it is what a
+  visitor looks at while the evidence downloads, and a page whose whole claim
+  is that every quotation resolves to characters on disk has a better answer
+  available to it than a spinner: say what is being fetched and why it is
+  large.
+
+  It is pure HTML and CSS on purpose. check_ui.mjs's first structural check is
+  that this file has exactly ONE inline script, and this block needs none:
+  `render()` writes over `main`'s contents the moment the bundle has parsed,
+  so the boot markup removes itself. If `data.js` never arrives, it stays —
+  which is the correct thing for it to do.
+-->
+<main id="main"><div class="boot">
+  <h2>Loading the evidence.</h2>
+  <p>Every archived answer, every source record and every citation span travel
+  to you in one file, because each quotation on this page has to resolve to a
+  named range of characters in a named field of a named file — and that means
+  shipping the characters, not a summary of them.</p>
+  <div class="bootbar"><i></i></div>
+</div></main>
 
 <script src="data.js"></script>
 <script>
@@ -501,8 +942,135 @@ let state = {
   view: "questions",
   question: QUESTIONS[0],
   runIndex: null,       // null => pick the most interesting run
-  selection: null       // { kind:"quote"|"passage"|"record", ... }
+  selection: null,      // { kind:"quote"|"passage"|"record", ... }
+  /* `intro` is the front section, and it is a piece of STATE rather than a
+     banner, because a visitor who has started clicking has stopped needing an
+     introduction. It is never destroyed — the strip that replaces it goes back
+     to it in one click. */
+  intro: true,
+  hashError: null       // RULING 84: a link that does not resolve SAYS SO
 };
+
+/* ------------------------------------------------------------------ *
+ * RULING 84 — the hash scheme.
+ *
+ * Before this block nothing on this page could be linked to: not a question,
+ * not a run, not a citation, not a place — on a page whose entire claim is
+ * "click any highlighted phrase and see the characters on disk". You could not
+ * send anyone the characters on disk.
+ *
+ * `state` is the source of truth and the hash is WRITTEN FROM IT and READ INTO
+ * IT, never both at once: two sources of truth for the selected run is how a
+ * back button starts fighting a click handler.
+ *
+ * A run is named by its TIMESTAMP and never by its index in the picker. An
+ * index is an offset into an array that is sorted at load time and grows every
+ * time the archive does; a URL shaped like one is a promise this project
+ * cannot make. A question is named by a slug of its own text, for the same
+ * reason and with the same consequence: edit a question and the old link stops
+ * resolving, which is correct, rather than quietly landing on a different one.
+ *
+ * A QUOTATION is named by its index within its run, and that is the one
+ * positional handle in the scheme. It is admitted rather than hidden: an
+ * archived run is immutable, so `quote_spans[3]` OF A NAMED RUN is a stable
+ * address in a way `runs[3]` of a growing archive is not, and a span carries
+ * no id of its own to use instead.
+ * ------------------------------------------------------------------ */
+const HAS_DOM = typeof location !== "undefined"
+             && typeof document !== "undefined"
+             && !!document.documentElement;
+
+const slugOf = q => String(q).toLowerCase()
+  .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 72);
+const runStamp = r => String(r.timestamp || "").replace(/[-:]/g, "").replace(/\.\d+/, "");
+
+const questionBySlug = new Map(QUESTIONS.map(q => [slugOf(q), q]));
+
+function hashOf(s) {
+  if (s.view === "places") {
+    const sel = s.selection;
+    if (sel && sel.kind === "place") return `#place/${encodeURIComponent(sel.key)}`;
+    if (sel && sel.kind === "group") return `#point/${encodeURIComponent(sel.cacheKey)}`;
+    if (sel && sel.kind === "edge")  return `#edge/${sel.idx}`;
+    if (sel && sel.kind === "record") return `#record/${encodeURIComponent(sel.docId)}`;
+    return "#places";
+  }
+  if (s.view === "about") return "#about";
+  if (s.intro && s.selection == null && s.runIndex == null) return "#";
+  const runs = byQuestion.get(s.question) || [];
+  const run = runs[s.runIndex == null ? defaultRunIndex(runs) : Math.min(s.runIndex, runs.length - 1)];
+  let h = `#q/${slugOf(s.question)}`;
+  if (s.runIndex != null && run) h += `/r/${runStamp(run)}`;
+  const sel = s.selection;
+  if (sel && run) {
+    if (s.runIndex == null) h += `/r/${runStamp(run)}`;
+    if (sel.kind === "quote")   h += `/quote/${sel.si}`;
+    if (sel.kind === "passage") h += `/source/${encodeURIComponent(sel.marker)}`;
+  }
+  if (sel && sel.kind === "record") h = `#record/${encodeURIComponent(sel.docId)}`;
+  return h;
+}
+
+/* Returns null on success, or a sentence saying what could not be found. The
+   sentence is the point: a shared link that quietly lands on a different
+   question is a viewer that "would look entirely convincing and be wrong",
+   which is this project's own objection to three other things. */
+function applyHash(raw) {
+  const h = String(raw || "").replace(/^#/, "");
+  const seg = h.split("/").filter(Boolean).map(decodeURIComponent);
+  state.selection = null;
+  state.hashError = null;
+  if (!seg.length) { state.view = "questions"; state.intro = true; state.runIndex = null; return null; }
+
+  state.intro = false;
+  if (seg[0] === "places")  { state.view = "places"; return null; }
+  if (seg[0] === "about")   { state.view = "about";  return null; }
+
+  if (seg[0] === "record") {
+    if (!D.corpus[seg[1]]) return `no record with the id ${seg[1]}`;
+    state.view = "places"; state.selection = { kind: "record", docId: seg[1] };
+    return null;
+  }
+  if (seg[0] === "place") {
+    if (!placeByKey.has(seg[1])) return `no placement with the key ${seg[1]}`;
+    state.view = "places"; state.selection = { kind: "place", key: seg[1] };
+    return null;
+  }
+  if (seg[0] === "point") {
+    if (!groupsByKey.has(seg[1])) return `no cached coordinate with the id ${seg[1]}`;
+    state.view = "places"; state.selection = { kind: "group", cacheKey: seg[1] };
+    return null;
+  }
+  if (seg[0] === "edge") {
+    const i = Number(seg[1]);
+    if (!Number.isInteger(i) || !(P.edges || [])[i]) return `no edge numbered ${seg[1]}`;
+    state.view = "places"; state.selection = { kind: "edge", idx: i };
+    return null;
+  }
+  if (seg[0] === "q") {
+    const q = questionBySlug.get(seg[1] || "");
+    if (!q) return `no question matching ${seg[1]} — a question this link was made from may since have been reworded`;
+    state.view = "questions"; state.question = q; state.runIndex = null;
+    if (seg[2] === "r") {
+      const runs = byQuestion.get(q) || [];
+      const i = runs.findIndex(r => runStamp(r) === seg[3]);
+      if (i < 0) return `question found, but no run of it archived at ${seg[3]}`;
+      state.runIndex = i;
+      if (seg[4] === "quote") {
+        const si = Number(seg[5]);
+        if (!Number.isInteger(si) || !(runs[i].grounding?.quote_spans || [])[si])
+          return `run found, but it has no quotation numbered ${seg[5]}`;
+        state.selection = { kind: "quote", si };
+      } else if (seg[4] === "source") {
+        if (!(runs[i].passages || []).some(p => p.marker === seg[5]))
+          return `run found, but no source ${seg[5]} was retrieved for it`;
+        state.selection = { kind: "passage", marker: seg[5] };
+      }
+    }
+    return null;
+  }
+  return `nothing on this page is addressed as ${h}`;
+}
 
 /* Default to a run that shows something: prefer grounded answers that actually
    quote, over refusals. Not because refusals are failures — one of them is the
@@ -654,8 +1222,8 @@ function provenanceSection(res) {
   return `<div class="sect"><h3>has the record moved underneath this citation?</h3>
     <div class="provbox" data-provenance="${esc(p.state)}">
       <strong>${esc(d.label)}</strong>
-      <div class="dormant" style="margin-top:6px">${d.gloss}</div>
-      ${p.why ? `<div class="dormant" style="margin-top:6px">${esc(p.why)}</div>` : ""}
+      <div class="dormant stack">${d.gloss}</div>
+      ${p.why ? `<div class="dormant stack">${esc(p.why)}</div>` : ""}
     </div></div>`;
 }
 
@@ -1019,7 +1587,7 @@ function dateVerdictBox(resolved) {
     : "This entry's dates could not be checked.";
   return `<div class="warnbox warn" data-date-verdict="${esc(v)}">
     <strong>${title}</strong> ${esc(resolved.date_detail || "")}
-    <div class="dormant" style="margin-top:6px">Not a failure, and not a reason
+    <div class="dormant stack">Not a failure, and not a reason
     to doubt the placement on its own — it is a prompt to look. The dates come
     from the gazetteer snapshot, not from the record.</div></div>`;
 }
@@ -1055,7 +1623,7 @@ function renderPlaceProvenance(key) {
   }
   if (pl.contested && (pl.contested_citations || []).length) {
     out += `<div class="sect"><h3>both sides of the argument</h3>` +
-      pl.contested_citations.map(c => `<div class="dormant" style="margin-bottom:6px">${esc(c)}</div>`).join("") +
+      pl.contested_citations.map(c => `<div class="dormant stack">${esc(c)}</div>`).join("") +
       `</div>`;
   }
   if (pl.note) out += `<div class="sect"><h3>how this id was confirmed</h3><div class="dormant">${esc(pl.note)}</div></div>`;
@@ -1064,14 +1632,14 @@ function renderPlaceProvenance(key) {
   if (loc && rec.fields[loc.field] != null) {
     out += `<div class="sect"><h3>the name, found in ${loc.field === "reference_translation" ? "the published translation" : "the source text"}</h3>
       <div class="fieldtext">${fieldWithSpan(rec.fields[loc.field], loc.start, loc.end)}</div>
-      <div class="dormant" style="margin-top:6px">Located by searching the field for
+      <div class="dormant stack">Located by searching the field for
       “${esc(cleanPlaceName(pl.name))}” — not a recorded citation span the way an answer's quotations
       are. <code>subject_places</code> and <code>findspot_places</code> carry no character offset;
       this is a text search, shown as one.</div></div>`;
   }
 
   out += `<div class="sect"><h3>the record</h3>
-    <div class="rec" data-record="${esc(pl.doc_id)}" style="cursor:pointer">
+    <div class="rec clickable" data-record="${esc(pl.doc_id)}">
       <div class="rec-title">${esc(rec ? rec.title : pl.doc_id)}</div>
       <div class="rec-meta">open the full record, source text and citation</div>
     </div></div>`;
@@ -1167,6 +1735,81 @@ function renderPanel() {
 }
 
 /* ------------------------------------------------------------------ *
+ * THE FRONT SECTION.
+ *
+ * UI_DESIGN_START.md section 9: "the page's best material is buried. *One
+ * coordinate, taken 2 times and refused 9* is the sharpest thing this corpus
+ * says about itself, and it is the third card down on the second tab. *Every
+ * one of the eleven failing citations is in the unknowable bucket* is a
+ * paragraph inside the third tab. A visitor who spends ninety seconds on this
+ * page currently leaves with 'nice map'."
+ *
+ * That is an information-architecture problem wearing a visual-design costume,
+ * and this is the answer to it: the two sentences move to the first screen.
+ *
+ * NOT ONE FIGURE HERE IS TYPED. Every number and every name comes from
+ * `contestedCoordinate()`, `spanCrossTab()`, `placeLedger()` and the bundle's
+ * own audit — including the number of regions, which looks like a constant and
+ * is not. A redesign that types a number into new prose re-creates the exact
+ * defect the UI block spent an hour removing, and the guard that hunts stale
+ * literals only knows about the two sentences that were actually wrong.
+ * ------------------------------------------------------------------ */
+function introSection() {
+  const a = D.span_audit || {};
+  const totalSpans = Object.values(a).reduce((n, v) => n + (v || 0), 0);
+  const langs = new Set();
+  for (const rec of Object.values(D.corpus)) (rec.language_code || []).forEach(l => langs.add(l));
+  const regions = new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean));
+  const L = placeLedger();
+  const C = contestedCoordinate();
+  const X = spanCrossTab();
+
+  const fig = (num, cap) => `<div class="fig"><span class="num">${num}</span><span class="cap">${cap}</span></div>`;
+
+  const contestedCard = C ? `<div class="findcard">
+      <h3 class="eyebrow sm">one coordinate, taken ${C.group.members.length} and refused ${C.refused.length}</h3>
+      <p class="lead"><strong>${esc(C.group.resolved.title)}</strong> (<code>${esc(C.key)}</code>)
+      is the id this corpus disagrees with itself about most.
+      ${C.group.members.length} placement${C.group.members.length === 1 ? " takes" : "s take"} it;
+      ${C.refused.length} name it in a note in order to refuse it. A map that drew all of them
+      would be asserting an identification this corpus declined ${C.refused.length} times.</p>
+      <button class="go" data-goto="point" data-group="${esc(C.key)}">both lists, on the map →</button>
+    </div>` : "";
+
+  const auditCard = `<div class="findcard">
+      <h3 class="eyebrow sm">what the failures say</h3>
+      <p class="lead">${X.allUnrec
+        ? `<strong>Every one of the ${X.brokenN} citations that fails the first audit has provenance
+           <code>unrecorded</code>.</strong> This project cannot say, of a single one of its failing
+           citations, whether the failure is a defect in the span or the record moving underneath it —
+           they were all archived before anything recorded a corpus version.`
+        : `<strong>${X.brokenN} citation${X.brokenN === 1 ? "" : "s"} fail the first audit, and not all
+           of them are in the unknowable bucket</strong> — the ones with a recorded provenance can be
+           told apart from the ones without.`}</p>
+      <button class="go" data-goto="about">both audits, in full →</button>
+    </div>`;
+
+  return `<div class="intro">
+    <h2>Ask the ancient world a question, then check every word of the answer.</h2>
+    <p class="claim">${D.runs.length} answers, archived while this system was being built and
+      replayed here against the corpus as it stands today. The claim worth checking is not that they
+      read well — it is that <strong>every quotation resolves to a named range of characters in a
+      named field of a named file</strong>. Click a highlighted phrase and you get the characters.</p>
+    <div class="figrow">
+      ${fig(Object.keys(D.corpus).length, `primary sources from ${regions.size} regions, in
+        ${langs.size} languages — inscriptions, literary texts, papyri and excavation records`)}
+      ${fig(totalSpans, `character spans claimed across every archived answer,
+        <b>${a.resolved || 0}</b> of them holding exactly the quoted characters today`)}
+      ${fig(L.groups, `places drawn from a cached gazetteer id, and <b>${L.gaps.length}</b> the corpus
+        names that this map refuses to draw`)}
+      ${fig(X.brokenN, `citations that no longer hold, kept and explained rather than
+        quietly repaired`)}
+    </div>
+    <div class="findrow">${contestedCard}${auditCard}</div>
+  </div>`;
+}
+
+/* ------------------------------------------------------------------ *
  * views
  * ------------------------------------------------------------------ */
 function viewQuestions() {
@@ -1185,14 +1828,70 @@ function viewQuestions() {
       ${grounded} grounded · ${refused} refused</span></button>`;
   }).join("");
 
-  const runbar = runs.map((r, i) => {
+  /* THE RUN PICKER.
+   *
+   * Every question in this archive has at least seventeen runs and the default
+   * one has forty-one, so this used to be a six-row block of undifferentiated
+   * chips sitting between the question and the answer. `defaultRunIndex` chose
+   * a good one and the reader had no way of knowing that a choice had been
+   * made, which one it was, or what the other forty were for.
+   *
+   * The variation between runs is real and this project measured it — that is
+   * worth showing, and forty-one identical pills is not showing it. So: one
+   * line saying which run this is and why it was chosen, the spread stated as
+   * a count, and every chip still one click away behind a disclosure, grouped
+   * by the prompt version that is the actual axis of variation. NOTHING IS
+   * DROPPED; the structural guards count the rendered string and still pass.
+   *
+   * Every figure below is counted from `runs`. None is written down. */
+  const spread = { grounded: 0, refused: 0, ungrounded: 0 };
+  const byPrompt = new Map();
+  for (const r of runs) {
+    spread[r.refused ? "refused" : r.grounded ? "grounded" : "ungrounded"]++;
+    const pv = r.prompt_version || "unversioned";
+    if (!byPrompt.has(pv)) byPrompt.set(pv, []);
+    byPrompt.get(pv).push(r);
+  }
+
+  const chip = (r, i) => {
     const cls = r.refused ? "refused" : r.grounded ? "" : "ungrounded";
     return `<button class="runchip" data-run="${i}" aria-current="${i === activeIndex}"
       title="${esc(r.timestamp)} · ${esc(r.prompt_version)}">
       <span class="dot ${cls}"></span>${shortTime(r.timestamp)}
-      <span style="opacity:.6">${esc((r.prompt_version || "").replace("p7-answer-", ""))}</span>
+      <span class="pv">${esc((r.prompt_version || "").replace("p7-answer-", ""))}</span>
     </button>`;
-  }).join("");
+  };
+  const runGroups = [...byPrompt.entries()].map(([pv, rs]) => `<div class="rungroup">
+      <div class="gname">${esc(pv)} — ${rs.length} run${rs.length === 1 ? "" : "s"}</div>
+      <div class="runbar">${rs.map(r => chip(r, runs.indexOf(r))).join("")}</div>
+    </div>`).join("");
+
+  /* Why THIS run. `defaultRunIndex` scores quotations first, then grounding,
+     then not-refused — so the reason is read back off the run it picked
+     rather than asserted, and a run the reader chose says so instead. */
+  const chosenWhy = state.runIndex != null
+    ? "you chose this one"
+    : quotes
+      ? `chosen because it quotes the most: ${quotes} quotation${quotes === 1 ? "" : "s"} traced to disk`
+      : run.grounded ? "chosen because it is the first grounded answer archived"
+                     : "chosen because no run of this question quotes anything";
+
+  const picker = `<div class="runline">
+      <span class="now">${shortTime(run.timestamp)}</span>
+      <span class="mono">${esc(run.prompt_version || "")}</span>
+      <span class="why">${chosenWhy}</span>
+    </div>
+    <div class="runline runspread">
+      <span>${runs.length} archived run${runs.length === 1 ? "" : "s"} of this question</span>
+      <span><b>${spread.grounded}</b> grounded</span>
+      <span><b>${spread.refused}</b> refused</span>
+      ${spread.ungrounded ? `<span><b>${spread.ungrounded}</b> failed a grounding check</span>` : ""}
+      <span>${byPrompt.size} prompt version${byPrompt.size === 1 ? "" : "s"}</span>
+    </div>
+    <details class="runs"${state.runIndex != null ? " open" : ""}>
+      <summary>every run, grouped by the prompt that produced it</summary>
+      ${runGroups}
+    </details>`;
 
   const badges = [
     run.refused ? `<span class="badge neutral">no answer in these sources</span>`
@@ -1220,35 +1919,47 @@ function viewQuestions() {
       <div class="src-meta">
         <span>${esc(rec ? rec.region : "—")}</span>
         <span>${esc(langName(lang))}</span>
-        ${quoted ? `<span style="color:var(--accent)">quoted</span>` : `<span>consulted</span>`}
+        ${quoted ? `<span class="quoted">quoted</span>` : `<span>consulted</span>`}
         ${p.similarity != null ? `<span class="sim"><span class="simbar"><i style="width:${(sim*100).toFixed(0)}%"></i></span>${p.similarity.toFixed(2)}</span>` : ""}
       </div></div>`;
   }).join("");
 
-  return `<div class="cols">
+  return `${hashNotice()}${state.intro ? introSection() : ""}<div class="cols">
     <div class="rail"><h2>Questions asked</h2><div class="qlist">${qlist}</div>
       <div class="sect"><h3>runs of this question</h3>
       <div class="dormant">The same question, prompt and evidence produced different
       answers on different days. Every run is kept; none is hidden.</div></div>
     </div>
 
-    <div>
+    <div class="answercol">
       <div class="card">
-        <p class="qtext">${esc(run.question)}</p>
-        <div class="runbar">${runbar}</div>
+        <p class="qtext">${esc(run.question)}<button class="copylink" data-copy="1"
+          title="copy a link to this run">copy link</button></p>
+        ${picker}
       </div>
       <div class="card">
         <div class="badges">${badges}</div>
         ${refusalNote}
         <div class="answer" id="answer">${renderAnswerText(run)}</div>
       </div>
-      <h2 style="font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint)">Sources this answer was given</h2>
+      <h2 class="eyebrow">Sources this answer was given</h2>
       <div id="sources">${sources}</div>
     </div>
 
     <div class="rail-right panel"><h2>Provenance</h2>
       <div class="panel-inner" id="panel">${renderPanel()}</div></div>
   </div>`;
+}
+
+/* RULING 84: a hash that does not resolve says so, naming what was asked for
+   and what could not be found, and never falls back to the default view as
+   though the visitor had typed nothing. */
+function hashNotice() {
+  if (!state.hashError) return "";
+  return `<div class="hashnotice"><span><strong>That link did not resolve.</strong>
+    ${esc(state.hashError)}. Nothing was changed, so what you are looking at is not what that
+    link asked for. The address bar still holds it.</span><button data-dismiss="hash"
+    title="dismiss">×</button></div>`;
 }
 
 function regionCards() {
@@ -1510,15 +2221,15 @@ function buildMap() {
 
 function mapLegend() {
   return `<div class="maplegend">
-    <span class="item"><svg width="14" height="14"><circle cx="7" cy="7" r="4" fill="var(--accent)" stroke="var(--paper)" stroke-width="1.3"/></svg>stated / identified — a specific place</span>
-    <span class="item"><svg width="14" height="14"><circle cx="7" cy="7" r="4" fill="var(--paper)" stroke="var(--warn)" stroke-width="2" stroke-dasharray="2 1.4"/></svg>a contested identification is among the placements here</span>
-    <span class="item"><svg width="18" height="14"><rect x="2" y="2" width="14" height="10" rx="2" fill="var(--accent)" fill-opacity=".1" stroke="var(--accent)" stroke-opacity=".55" stroke-dasharray="3 2"/></svg>regional — the area Pleiades gives it; never a pin</span>
-    <span class="item"><svg width="22" height="10"><line x1="1" y1="5" x2="21" y2="5" stroke="var(--accent)" stroke-opacity=".5" stroke-width="1.6"/></svg>source / destination — an edge <code>subject_places</code> draws</span>
-    <span class="item"><svg width="22" height="10"><line x1="1" y1="5" x2="21" y2="5" stroke="var(--accent)" stroke-opacity=".4" stroke-width="1.4" stroke-dasharray="1 3"/></svg>waypoint — on the way; no order recorded among waypoints</span>
-    ${D.coastline ? `<span class="item" style="color:var(--ink-faint)">Coastline: ${esc(D.coastline.source)}
+    <span class="item"><svg class="swatch" width="14" height="14"><circle class="pt" cx="7" cy="7" r="4"/></svg>stated / identified — a specific place</span>
+    <span class="item"><svg class="swatch" width="14" height="14"><circle class="ct" cx="7" cy="7" r="4"/></svg>a contested identification is among the placements here</span>
+    <span class="item"><svg class="swatch" width="18" height="14"><rect class="ext" x="2" y="2" width="14" height="10" rx="2"/></svg>regional — the area Pleiades gives it; never a pin</span>
+    <span class="item"><svg class="swatch" width="22" height="10"><line class="ln" x1="1" y1="5" x2="21" y2="5"/></svg>source / destination — an edge <code>subject_places</code> draws</span>
+    <span class="item"><svg class="swatch" width="22" height="10"><line class="lnw" x1="1" y1="5" x2="21" y2="5"/></svg>waypoint — on the way; no order recorded among waypoints</span>
+    ${D.coastline ? `<span class="item note">Coastline: ${esc(D.coastline.source)}
       ${esc(D.coastline.scale)}, ${esc(D.coastline.terms)}, retrieved ${esc(D.coastline.retrieved)} —
       a modern reference frame, not evidence, and no ancient shoreline</span>` : ""}
-    <span class="item" style="color:var(--ink-faint)">Labels are dropped where they would collide —
+    <span class="item note">Labels are dropped where they would collide —
       every point is clickable and every name is listed below</span>
   </div>`;
 }
@@ -1552,6 +2263,49 @@ function placeLedger() {
   };
 }
 
+/* The sharpest thing this corpus's geography says, lifted out of `viewPlaces`
+   so the front section can state it without deriving it a second time — two
+   derivations of one figure is how a page ends up disagreeing with itself.
+   The id is NOT hardcoded: it is whichever id the notes argue about most, so
+   this goes away by itself if the corpus stops arguing about it. */
+function contestedCoordinate() {
+  const all = Object.values(P.docs || {}).flat();
+  const refusals = {};
+  for (const e of all.filter(x => x.kind === "gap"))
+    for (const m of String(e.note || "").matchAll(/\b(pleiades)[:\s]*(\d{4,7})\b/gi))
+      (refusals[`pleiades:${m[2]}`] = refusals[`pleiades:${m[2]}`] || []).push(e);
+  let best = null;
+  for (const [key, es] of Object.entries(refusals)) {
+    const g = groupsByKey.get(key);
+    if (!g || es.length < 2) continue;
+    if (!best || es.length > best.refused.length) best = { key, group: g, refused: es };
+  }
+  return best;
+}
+
+/* The two verify axes, crossed. Lifted out of `viewAbout` for the same reason:
+   the front section states the sentence this cross-tabulation makes available
+   and must state it from the same arithmetic the About tab prints. */
+function spanCrossTab() {
+  const cross = {};
+  let total = 0;
+  for (const run of D.runs)
+    for (const s of run.grounding?.quote_spans || []) {
+      if (!s.resolution) continue;
+      const k = s.resolution.state + " " + (s.resolution.provenance?.state || "unrecorded");
+      cross[k] = (cross[k] || 0) + 1; total++;
+    }
+  const failing = Object.entries(cross).filter(([k]) => !k.startsWith("resolved "));
+  const failingBroken = failing.filter(([k]) => /^(moved|absent|case_only|article_added) /.test(k));
+  return {
+    cross, total, failingBroken,
+    allUnrec: failingBroken.every(([k]) => k.endsWith(" unrecorded")),
+    brokenN: failingBroken.reduce((n, [, v]) => n + v, 0),
+    changedN: Object.entries(cross).filter(([k]) => k.endsWith(" changed"))
+      .reduce((n, [, v]) => n + v, 0),
+  };
+}
+
 function viewPlaces() {
   const stats = P.stats || {};
   const L = placeLedger();
@@ -1568,7 +2322,7 @@ function viewPlaces() {
     a pin, and a <em>contested</em> identification draws disputed, not settled. Lines are the edges
     <code>subject_places</code> exists to draw — <code>source → focus → destination</code> — drawn only
     where both ends have a cached coordinate.
-    <div class="ledger" style="margin-top:14px">
+    <div class="ledger">
       <div class="cell"><div class="num">${L.gaps.length}</div><div class="cap">placements the corpus names
         and this map cannot draw${onlyRegional ? ` — <b>every one of them <code>regional</code></b>.
         Not one <code>stated</code> or <code>identified</code> placement is missing` : ""}</div></div>
@@ -1590,45 +2344,32 @@ function viewPlaces() {
      are, because naming them would be making the identification the corpus
      deliberately refused. The notes were written by whoever curated the
      record; the arithmetic is this page's. */
-  /* The sharpest thing this corpus's geography says, and every figure in it
-     is counted rather than asserted: how often one gazetteer id is TAKEN, and
-     how often the same id is named in a note and REFUSED. The id is not
-     hardcoded — it is whichever id the notes argue about most, so this card
-     goes away by itself if the corpus stops arguing about it. */
-  const contestedId = (() => {
-    const all = Object.values(P.docs || {}).flat();
-    const refusals = {};
-    for (const e of all.filter(x => x.kind === "gap"))
-      for (const m of String(e.note || "").matchAll(/\b(pleiades)[:\s]*(\d{4,7})\b/gi))
-        (refusals[`pleiades:${m[2]}`] = refusals[`pleiades:${m[2]}`] || []).push(e);
-    let best = null;
-    for (const [key, es] of Object.entries(refusals)) {
-      const g = groupsByKey.get(key);
-      if (!g || es.length < 2) continue;
-      if (!best || es.length > best.refused.length) best = { key, group: g, refused: es };
-    }
-    return best;
-  })();
+  /* The sharpest thing this corpus's geography says, and every figure in it is
+     counted rather than asserted: how often one gazetteer id is TAKEN, and how
+     often the same id is named in a note and REFUSED. Derived by
+     `contestedCoordinate()`, which the front section also calls — one
+     derivation, two places that print it. */
+  const contestedId = contestedCoordinate();
 
   const contestedCard = contestedId ? `<div class="card">
-    <h3 style="margin-top:0;font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint)">
+    <h3 class="eyebrow">
       one coordinate, taken ${contestedId.group.members.length} time${contestedId.group.members.length === 1 ? "" : "s"}
       and refused ${contestedId.refused.length}</h3>
-    <p style="font-size:15px;margin:2px 0 10px"><strong>${esc(contestedId.group.resolved.title)}
+    <p class="cardlead"><strong>${esc(contestedId.group.resolved.title)}
       (<code>${esc(contestedId.key)}</code>)</strong> is the id this corpus disagrees with itself about
       most. ${contestedId.group.members.length} placement${contestedId.group.members.length === 1 ? " takes" : "s take"} it
       and ${contestedId.refused.length} name it in a note in order to refuse it. The marker you can see on
       the map above is the first group; the second is not on the map at all, and this is the card that
       says so.</p>
-    <div class="cols" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px">
-      <div><h3 style="font-family:system-ui,sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);margin:0 0 4px">taken — drawn on the map</h3>
+    <div class="cols cols-half">
+      <div><h3 class="eyebrow sm">taken — drawn on the map</h3>
         ${contestedId.group.members.map(m => {
           const rec = D.corpus[m.doc_id];
           return `<div class="rec" data-place="${esc(m.key)}">
             <div class="rec-title">${esc(m.name)}</div>
             <div class="rec-meta">${esc(rec ? rec.title : m.doc_id)}</div></div>`;
         }).join("")}</div>
-      <div><h3 style="font-family:system-ui,sans-serif;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-faint);margin:0 0 4px">named in a note, and refused</h3>
+      <div><h3 class="eyebrow sm">named in a note, and refused</h3>
         ${contestedId.refused.map(e => {
           const rec = D.corpus[e.doc_id];
           return `<div class="rec" data-place="${esc(e.key)}">
@@ -1636,7 +2377,7 @@ function viewPlaces() {
             <div class="rec-meta">${esc(rec ? rec.title : e.doc_id)}</div></div>`;
         }).join("")}</div>
     </div>
-    <div class="dormant" style="margin-top:12px">Each refusal has its own reason and this page does not
+    <div class="dormant stack">Each refusal has its own reason and this page does not
       summarise them into one — open a name to read the note that refused it. What can be said without
       reading any of them is arithmetic: the same coordinate is right for two of these placements and
       wrong for ${contestedId.refused.length}, and a map that drew all of them would be asserting an
@@ -1644,9 +2385,9 @@ function viewPlaces() {
   </div>` : "";
 
   const focusCard = L.focusGaps.length ? `<div class="card">
-    <h3 style="margin-top:0;font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint)">
+    <h3 class="eyebrow">
       the place the passage is organised around, with nowhere to draw it</h3>
-    <p style="font-size:15px;margin:2px 0 6px"><strong>${L.focusGaps.length} of the ${L.focusTotal}
+    <p class="cardlead tight"><strong>${L.focusGaps.length} of the ${L.focusTotal}
       <code>focus</code> placements in this corpus are gaps.</strong> A reader looking at the map above
       is looking at the places these texts mention in passing, while the place each text is actually
       about is absent from it. Each row gives the record's own reason, unedited.</p>
@@ -1684,16 +2425,16 @@ function viewPlaces() {
      One card, one row per record, every placement still individually
      clickable — nothing is dropped, the same names reach the same panels, and
      the list can be read. */
-  const allGapCards = allGapDocs.length ? `<div class="card" style="grid-column:1/-1">
-    <h3 style="margin-top:0;font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint)">
+  const allGapCards = allGapDocs.length ? `<div class="card fullspan">
+    <h3 class="eyebrow">
       considered — nothing in these records resolves to a drawable point</h3>
-    <p class="rec-meta" style="margin:0 0 6px">Every name below is clickable and opens its own
+    <p class="rec-meta">Every name below is clickable and opens its own
       placement, with the id that was refused and the reason it was refused.</p>
     ${allGapDocs.map(([docId, entries]) => {
       const rec = D.corpus[docId];
       return `<div class="gapdoc">
         <div class="doct" data-record="${esc(docId)}">${esc(rec ? rec.title : docId)}
-          <span class="rec-meta" style="display:inline">· ${entries.length} placement${entries.length === 1 ? "" : "s"}</span></div>
+          <span class="rec-meta inline">· ${entries.length} placement${entries.length === 1 ? "" : "s"}</span></div>
         <div class="names">${entries.map(e =>
           `<span data-place="${esc(e.key)}">${esc(e.name.split(/[—–]/)[0].trim())}</span>`).join(" · ")}</div>
       </div>`;
@@ -1725,6 +2466,7 @@ function viewPlaces() {
   }).join("");
 
   return `<div>
+    ${hashNotice()}
     ${notice}
     ${mapCard}
     ${contestedCard}
@@ -1737,8 +2479,8 @@ function viewPlaces() {
       <div class="card placard"><h3>not yet placed</h3>${unconsideredRows || `<p class="empty">none</p>`}</div>
       <div class="card placard"><h3>declared unplaceable</h3>${unplaceableRows || `<p class="empty">none</p>`}</div>
     </div>
-    <h2 style="font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint)">All ${Object.keys(D.corpus).length} records, by region</h2>
-    <div class="cols" style="grid-template-columns:minmax(0,1fr) 400px">
+    <h2 class="eyebrow">All ${Object.keys(D.corpus).length} records, by region</h2>
+    <div class="cols cols-main-panel">
       <div class="regiongrid">${regionCards()}</div>
       <div class="rail-right panel"><h2>Place</h2>
         <div class="panel-inner" id="panel">${renderPanel()}</div></div>
@@ -1762,14 +2504,15 @@ function viewAbout() {
       run${p.runs === 1 ? "" : "s"}</b>${p.provenance ? ` · corpus provenance
       <code>${esc(p.provenance)}</code>` : ""}</div></div>`).join("");
 
-  return `<div class="cols" style="grid-template-columns:minmax(0,1fr)">
+  return `${hashNotice()}<div class="cols cols-single">
     <div>
     <div class="card">
-      <h3 style="margin-top:0">What this page is showing</h3>
+      <h3>What this page is showing</h3>
       <p>Every answer here was produced by asking a question of a corpus of
       ${Object.keys(D.corpus).length} primary sources — inscriptions, literary texts, papyri and
-      excavation records — drawn from seven regions Rome traded with or heard about, between
-      27 BC and 1204 AD. Sources are in ${esc(listOf(corpusLanguages()))}, and English. An English
+      excavation records — drawn from the
+      ${new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean)).size} regions Rome traded
+      with or heard about, between 27 BC and 1204 AD. Sources are in ${esc(listOf(corpusLanguages()))}, and English. An English
       question retrieves them in their own languages, and the answer quotes them.</p>
       <p>The claim worth checking is not that the answers read well. It is that
       <strong>every quotation resolves to a specific range of characters in a specific
@@ -1780,8 +2523,8 @@ function viewAbout() {
     </div>
 
     <div class="card">
-      <h3 style="margin-top:0">Citations checked against the corpus, just now</h3>
-      <p style="font-size:15px">Of <strong>${Object.values(a).reduce((n, v) => n + (v || 0), 0)}</strong>
+      <h3>Citations checked against the corpus, just now</h3>
+      <p class="cardlead">Of <strong>${Object.values(a).reduce((n, v) => n + (v || 0), 0)}</strong>
       character spans claimed across every archived answer:</p>
       <div class="badges">
         <span class="badge good">${a.resolved || 0} hold exactly the quoted characters</span>
@@ -1790,7 +2533,7 @@ function viewAbout() {
         <span class="badge warn">${a.moved || 0} moved within the file</span>
         <span class="badge bad">${a.absent || 0} no longer resolve</span>
       </div>
-      <p style="font-size:14.5px;color:var(--ink-soft)">The failures are worth more than
+      <p class="prose-soft">The failures are worth more than
       the passes. The one that no longer resolves is not a bug in the answer — it quoted
       the Adulis translation correctly, and then the record was replaced with a fuller
       one. <strong>An archived citation is only valid against the corpus version that
@@ -1804,8 +2547,8 @@ function viewAbout() {
     </div>
 
     <div class="card">
-      <h3 style="margin-top:0">And has the corpus moved underneath them?</h3>
-      <p style="font-size:14.5px;color:var(--ink-soft)">The audit above asks whether an archived
+      <h3>And has the corpus moved underneath them?</h3>
+      <p class="prose-soft">The audit above asks whether an archived
       quotation still sits at the offset it recorded. That is not the same question as whether the
       <em>record</em> moved since — and until this page was rebuilt it could only ask the first.
       <code>build_ui_data.py</code> has measured the second for every span since D1, by comparing the
@@ -1814,35 +2557,26 @@ function viewAbout() {
       “unchanged” would call a span a defect on no evidence, and folding it into “changed” would
       explain away every real defect the archive holds.</p>
       ${(() => {
-        const cross = {};
-        let total = 0;
-        for (const run of D.runs)
-          for (const s of run.grounding?.quote_spans || []) {
-            if (!s.resolution) continue;
-            const k = s.resolution.state + "\u0000" + (s.resolution.provenance?.state || "unrecorded");
-            cross[k] = (cross[k] || 0) + 1; total++;
-          }
+        // Derived by `spanCrossTab()`, which the front section also calls, so
+        // the sentence below and the sentence on the first screen cannot come
+        // apart. The separator is a space because no state contains one.
+        const X = spanCrossTab();
+        const cross = X.cross;
         const rows = Object.entries(cross).sort((a, b) => b[1] - a[1]).map(([k, n]) => {
-          const [st, pv] = k.split("\u0000");
+          const [st, pv] = k.split(" ");
           // Every row is tagged, including the two `resolved` rows: they are
           // the same first-axis state with different second-axis answers, and
           // tagging only the failures would make the axis look like a
           // severity scale, which is the one thing it is not.
           return `<div class="chain"><div>
-            <span class="k" style="width:150px">${esc(st)}</span>
+            <span class="k wide">${esc(st)}</span>
             <span class="v">${n} span${n === 1 ? "" : "s"} — ${esc((PROVENANCE[pv] || {}).label || pv)}
-            <span class="ground-tag${pv === "unrecorded" ? " contested" : ""}"
-              style="margin-left:6px">${esc(pv)}</span></span></div></div>`;
+            <span class="ground-tag spaced${pv === "unrecorded" ? " contested" : ""}">${esc(pv)}</span></span></div></div>`;
         }).join("");
         // The two sentences this cross-tabulation makes available, derived so
         // they cannot survive the data changing underneath them.
-        const failing = Object.entries(cross).filter(([k]) => !k.startsWith("resolved\u0000"));
-        const failingBroken = failing.filter(([k]) => /^(moved|absent|case_only|article_added)\u0000/.test(k));
-        const allUnrec = failingBroken.every(([k]) => k.endsWith("\u0000unrecorded"));
-        const brokenN = failingBroken.reduce((n, [, v]) => n + v, 0);
-        const changedN = Object.entries(cross).filter(([k]) => k.endsWith("\u0000changed"))
-          .reduce((n, [, v]) => n + v, 0);
-        return rows + `<div class="dormant" style="margin-top:12px;line-height:1.6">
+        const { allUnrec, brokenN, changedN } = X;
+        return rows + `<div class="dormant stack">
           ${allUnrec ? `<strong>Every one of the ${brokenN} citations that fails the first axis has
           provenance <code>unrecorded</code>.</strong> This project cannot say, of a single one of its
           failing citations, whether the failure is a defect in the span or the record moving underneath
@@ -1853,15 +2587,15 @@ function viewAbout() {
           be told apart from the ones without.`}
           <br><br><strong>And the mirror, which is the better half:</strong> the corpus moved under
           ${changedN} spans, and the archive still holds. <code>unchanged</code> is
-          ${cross["resolved\u0000unchanged"] || 0} not because nothing survived but because W3 added two
+          ${cross["resolved unchanged"] || 0} not because nothing survived but because W3 added two
           keys to all ${Object.keys(D.corpus).length} records in one commit, so every content hash moved
           at once. A span whose record is <code>changed</code> is explained, not defective.</div>`;
       })()}
     </div>
 
     <div class="card">
-      <h3 style="margin-top:0">What this page does not show</h3>
-      <p style="font-size:14.5px;color:var(--ink-soft)">The Places tab draws only what
+      <h3>What this page does not show</h3>
+      <p class="prose-soft">The Places tab draws only what
       <code>data/gazetteer.json</code> has cached against a gazetteer id — ${(P.stats||{}).gaps||0}
       placements named in the corpus have no drawable coordinate, and are listed rather than guessed
       at. ${(P.unconsidered||[]).length === 0
@@ -1901,17 +2635,44 @@ function statStrip() {
        <b>${ps.edges_drawable||0}</b> of ${ps.edges_total||0} trade edges</span>`;
 }
 
+/* The hash is written FROM state, never the other way round in the same
+   breath — see RULING 84. `syncing` stops the write we just made from being
+   read straight back in as a navigation. */
+let syncing = false;
+function writeHash() {
+  if (!HAS_DOM) return;
+  /* While a bad link is being reported, the address bar keeps the link that
+     was actually pasted. Overwriting it with the address of what the visitor
+     got instead would destroy the only copy of what they asked for, one line
+     under a notice saying they did not get it. */
+  if (state.hashError) return;
+  const h = hashOf(state);
+  if (h === (location.hash || "#")) return;
+  syncing = true;
+  history.replaceState(null, "", h);
+  syncing = false;
+}
+
 function render() {
   main.innerHTML = state.view === "questions" ? viewQuestions()
                  : state.view === "places"    ? viewPlaces()
                  : viewAbout();
   for (const t of document.querySelectorAll(".tab"))
     t.setAttribute("aria-selected", String(t.dataset.view === state.view));
+  /* The front section carries the same figures the header strip does, so the
+     header strip stands down while it is showing rather than saying everything
+     twice. Nothing is removed; one of the two is redundant at a time. */
+  const strip = document.getElementById("statstrip");
+  if (strip) strip.hidden = !!(state.intro && state.view === "questions");
+  const back = document.getElementById("overviewbtn");
+  if (back) back.hidden = !!state.intro;
+  writeHash();
 }
 
 function repaintPanel() {
   const el = document.getElementById("panel");
   if (el) { el.innerHTML = renderPanel(); el.scrollTop = 0; }
+  writeHash();
 }
 
 /* ------------------------------------------------------------------ *
@@ -2031,47 +2792,125 @@ document.addEventListener("click", ev => {
     return;
   }
 
+  // Selecting something from the front section has to REPLACE the front
+  // section, not sit underneath it — otherwise the page shows one thing and
+  // the URL it hands you says another.
+  const select = sel => {
+    state.selection = sel;
+    if (state.intro && state.view === "questions") { state.intro = false; return render(); }
+    return repaintPanel();
+  };
+
+  const theme = ev.target.closest("#themebtn");
+  if (theme) return setTheme(nextTheme());
+
+  const back = ev.target.closest("#overviewbtn");
+  if (back) { state.view = "questions"; state.intro = true; state.runIndex = null;
+              state.selection = null; state.hashError = null; return render(); }
+
+  const dismiss = ev.target.closest('[data-dismiss="hash"]');
+  if (dismiss) { state.hashError = null; return render(); }
+
+  const copy = ev.target.closest("[data-copy]");
+  if (copy) {
+    const url = location.href;
+    const done = () => { copy.textContent = "link copied"; };
+    if (navigator.clipboard && navigator.clipboard.writeText)
+      navigator.clipboard.writeText(url).then(done, () => { copy.textContent = url; });
+    else copy.textContent = url;
+    return;
+  }
+
+  // The front section's two cards, which travel to the material they describe.
+  const go = ev.target.closest(".go");
+  if (go) {
+    state.intro = false;
+    if (go.dataset.goto === "about") { state.view = "about"; state.selection = null; }
+    else { state.view = "places"; state.selection = { kind: "group", cacheKey: go.dataset.group }; }
+    return render();
+  }
+
   const tab = ev.target.closest(".tab");
-  if (tab) { state.view = tab.dataset.view; state.selection = null; return render(); }
+  if (tab) { state.view = tab.dataset.view; state.selection = null;
+             state.intro = false; return render(); }
 
   const q = ev.target.closest(".qbtn");
   if (q) { state.question = q.dataset.question; state.runIndex = null;
-           state.selection = null; return render(); }
+           state.selection = null; state.intro = false; return render(); }
 
   const rc = ev.target.closest(".runchip");
-  if (rc) { state.runIndex = +rc.dataset.run; state.selection = null; return render(); }
+  if (rc) { state.runIndex = +rc.dataset.run; state.selection = null;
+            state.intro = false; return render(); }
 
   const mk = ev.target.closest("mark.q");
-  if (mk) { state.selection = { kind: "quote", si: +mk.dataset.span }; return repaintPanel(); }
+  if (mk) return select({ kind: "quote", si: +mk.dataset.span });
 
   const mrk = ev.target.closest(".marker, .src");
-  if (mrk) { state.selection = { kind: "passage", marker: mrk.dataset.marker };
-             return repaintPanel(); }
+  if (mrk) return select({ kind: "passage", marker: mrk.dataset.marker });
 
   // Places tab: a map marker, a shaded extent, an edge, or one placement's
   // own row (from a group's member list, an edge's endpoints, or a "not
   // drawable" list) — checked before the generic record click below, since
   // several of those rows sit inside a record link's own DOM subtree.
   const grp = ev.target.closest("[data-group]");
-  if (grp) { state.selection = { kind: "group", cacheKey: grp.dataset.group };
-             return repaintPanel(); }
+  if (grp) return select({ kind: "group", cacheKey: grp.dataset.group });
 
   const edge = ev.target.closest("[data-edge]");
-  if (edge) { state.selection = { kind: "edge", idx: +edge.dataset.edge };
-              return repaintPanel(); }
+  if (edge) return select({ kind: "edge", idx: +edge.dataset.edge });
 
   const place = ev.target.closest("[data-place]");
-  if (place) { state.selection = { kind: "place", key: place.dataset.place };
-               return repaintPanel(); }
+  if (place) return select({ kind: "place", key: place.dataset.place });
 
   const rec = ev.target.closest("[data-record]");
-  if (rec) { state.selection = { kind: "record", docId: rec.dataset.record };
-             return repaintPanel(); }
+  if (rec) return select({ kind: "record", docId: rec.dataset.record });
 });
+
+/* ------------------------------------------------------------------ *
+ * theme. The dark palette is TOKENS ONLY — not one rule in the stylesheet is
+ * written twice for it — so this button moves one attribute and nothing else.
+ * `localStorage` throws in some contexts and is absent when this file is
+ * opened straight off a disk in a locked-down browser, so every touch of it is
+ * guarded and the page works with no memory at all.
+ * ------------------------------------------------------------------ */
+const THEMES = ["auto", "light", "dark"];
+function storedTheme() {
+  try { return localStorage.getItem("mu-theme") || "auto"; } catch { return "auto"; }
+}
+function nextTheme() {
+  return THEMES[(THEMES.indexOf(storedTheme()) + 1) % THEMES.length];
+}
+function setTheme(t) {
+  try { localStorage.setItem("mu-theme", t); } catch { /* no memory is fine */ }
+  const root = document.documentElement;
+  if (t === "auto") root.removeAttribute("data-theme");
+  else root.setAttribute("data-theme", t);
+  const b = document.getElementById("themebtn");
+  if (b) b.textContent = t === "auto" ? "theme: auto" : t === "dark" ? "theme: dark" : "theme: light";
+}
 
 statStrip();
 wireMap();
-render();
+
+/* Boot. Everything below needs a real browser; `check_ui.mjs` runs this script
+   in a VM with a DOM thin enough to prove the page's top-level code completes,
+   and `location`, `history` and `localStorage` are not in it. That is the
+   right shape for the harness — so the browser-only wiring is gated rather
+   than the harness widened. */
+if (HAS_DOM) {
+  setTheme(storedTheme());
+  const b = document.getElementById("themebtn");
+  if (b) b.hidden = false;
+
+  const boot = h => {
+    const err = applyHash(h);
+    state.hashError = err;
+    render();
+  };
+  boot(location.hash);
+  window.addEventListener("hashchange", () => { if (!syncing) boot(location.hash); });
+} else {
+  render();
+}
 </script>
 </body>
 </html>
