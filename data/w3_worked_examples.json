@@ -1,0 +1,59 @@
+{
+  "what_this_is": "W3's four worked examples. NOT SEED RECORDS and not curated: this file is under data/ and NOT under data/seed_corpus/, so iter_seed_records never sees it, and nothing here enters the corpus, the index, a tier count or a digest. It exists so that the section 5 proof -- the three sources F7 and F6 refused for an instrument reason classify CORRECTLY once the instrument is fixed -- is a rerunnable command rather than a sentence.",
+  "capture": "Read in a browser on 2026-09-07 and transcribed. NOT digest-verified across two machines: that practice is what a RECORD's text costs, and none of these is a record. The char count and sha256 below are of the text as stored here, so a later reader can tell a re-transcription from a drifting source.",
+  "the_gate": "tha and fra are in MODERN_INSTITUTIONAL_PROSE_PENDING_RULING, so a RECORD declaring them is refused at load. These examples call the classifier directly and are not records. Both sentences are true at once and that is the point: the instrument is fixed, and nothing is curated.",
+  "examples": [
+    {
+      "key": "bnf-camee-360",
+      "what": "BnF, camee.360, sardonyx cameo, Shapur I seizing Valerian. The museum's own French Description, first paragraph.",
+      "source": "https://medaillesetantiques.bnf.fr/ark:/12148/c33gbqh22",
+      "read_on": "2026-09-07",
+      "declared": "fra",
+      "source_type": "object_record",
+      "role": "original",
+      "refused_by": "F7, FINDING 86 (F7_CURATION_START.md, candidates found and not taken, item 1)",
+      "text": "Capture par le roi sassanide Shapur Ier (240-270/72) de l’empereur romain Valérien (253-260). Les deux antagonistes se font face, le premier saisit son ennemi par le poignet, qui tente de se défendre de son glaive. Le dynaste sassanide porte une barbe courte mais épaisse, nouée au bout du menton. Sa tête est surmontée d’un globe décoré de lignes convergentes. Les fanons de son diadème et les bouts de sa ceinture voltigent derrière lui. L’empereur romain, alors âgé de 67 ans, offre un visage juvénile et imberbe. Il est lauré et cuirassé, le paludamentum flottant dans son dos.",
+      "chars": 581,
+      "sha256": "13398f23f07e93c5e8ad0c0b8a3245938fc640950c057c4b3e4a06852eb41493"
+    },
+    {
+      "key": "phu-khao-thong",
+      "what": "SAC (Princess Maha Chakri Sirindhorn Anthropology Centre) archaeological-site record for Phu Khao Thong, Ranong. The site's own Thai location description.",
+      "source": "https://archaeology.sac.or.th/archaeology/120",
+      "read_on": "2026-09-07",
+      "declared": "tha",
+      "source_type": "object_record",
+      "role": "original",
+      "refused_by": "F7, FINDING 86 (F7_RESULT.md, what F7 searched and did not take, item 2)",
+      "text": "พื้นที่ด้านทิศตะวันตกติดกับบ่อกุ้ง ถัดจากบ่อกุ้งเป็นป่าชายเลน และทะเลอันดามัน ภูเขาทองอยู่ห่างจากทะเลอันดามันประมาณ 2 กิโลเมตร",
+      "chars": 126,
+      "sha256": "9aaca80189fc7317e4fba142c01219b9de55f5b1888d1b46ed35e5c93a59a29c"
+    },
+    {
+      "key": "khlong-thom",
+      "what": "PSU Suvarnabhumi database record for Khlong Thom, Krabi. Its own Thai keyword line, the one F7 recorded as naming Roman gold coins and Greco-Roman seals.",
+      "source": "https://suvarnabhumi.psu.ac.th/tudb/archaeologicalread/76",
+      "read_on": "2026-09-07",
+      "declared": "tha",
+      "source_type": "object_record",
+      "role": "original",
+      "refused_by": "F7, FINDING 86 (F7_RESULT.md, what F7 searched and did not take, item 2)",
+      "text": "คำสำคัญ/ป้ายกำกับ ก่อนประวัติศาสตร์ตอนต้น โรมัน ราชวงศ์ฮั่น กลองมโหระทึก อินเดีย ราชวงศ์ถัง จังหวัดกระบี่ ลูกปัดคาร์เนเลียน วัฒนธรรมซาหวิ่น ลูกปัดสุริยะเทพ ตราประทับกรีก-โรมัน",
+      "chars": 175,
+      "sha256": "8a28346e9c37ba317857a231c22657efae04bac27da6eeccec0b52a9c1712152"
+    },
+    {
+      "key": "parsigdatabase-persian",
+      "what": "parsigdatabase.com's own Persian statement that its 59 Manichaean Middle Persian texts, under Boyce 1975's sigla, carry a PERSIAN translation. NOT the M2 I or M 5794 I translation itself: those sit behind the site's search interface and were not captured in this session, and the negative is recorded rather than papered over. What this example proves is what FINDING 82 is about -- a non-English reference_translation -- and it proves it on real Persian prose from the source F6 was pointed at.",
+      "source": "https://parsigdatabase.com/",
+      "read_on": "2026-09-07",
+      "declared": "pes",
+      "source_type": "literary_text",
+      "role": "translation",
+      "refused_by": "F6, FINDING 82 (F6_RULINGS.md)",
+      "text": "متون فارسی میانه مانوی با ترجمه فارسی و داده‌های برچسب‌گذاری‌شده به پایگاه دادگان پارسیگ اضافه شد.",
+      "chars": 98,
+      "sha256": "69ee24c96f8e400735742a7194ed3e2f2c9fe32060133a1d3b0f61050d5c96e9"
+    }
+  ]
+}

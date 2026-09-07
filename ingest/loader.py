@@ -14,7 +14,15 @@ from pathlib import Path
 from typing import Any, Iterator
 
 from .chunker import chunk_field, estimate_tokens
-from .fidelity import FIND_TYPES, classify_original, classify_translation
+from .fidelity import (
+    DECLARATION_FIELDS,
+    FIND_TYPES,
+    MISSING,
+    check_curation_gate,
+    check_declaration,
+    classify_original,
+    classify_translation,
+)
 
 SEED_CORPUS_DIR = Path("data/seed_corpus")
 MANIFEST_NAME = "manifest.json"
@@ -263,7 +271,24 @@ def build_chunks(record: dict[str, Any], doc: Document) -> tuple[list[Chunk], li
     """
     chunks: list[Chunk] = []
     warnings: list[str] = []
-    declared = doc.language_codes[0] if doc.language_codes else None
+
+    # RULING 80. Every text-bearing field declares its own language and the
+    # loader REFUSES a record that omits one -- before a single chunk is cut,
+    # and for the EMPTY fields too, because `null` is a declaration that the
+    # field holds no text and a missing key is not. The eight records carrying
+    # loader warnings are exactly the ones this distinction is about: a
+    # declaration on a field that holds nothing had to be ruled on before this
+    # clause could be written, or the clause would refuse them on its first run.
+    #
+    # This raises where the rest of this function collects warnings. That is the
+    # difference between something a curator should look at and something the
+    # loader will not have an opinion about.
+    declarations: dict[str, object] = {}
+    for source_field, key in DECLARATION_FIELDS.items():
+        declared = record[key] if key in record else MISSING
+        check_declaration(doc.doc_id, source_field, declared, record.get(source_field))
+        check_curation_gate(doc.doc_id, source_field, declared)
+        declarations[source_field] = declared
 
     plan = [
         ("original", "original_text_excerpt"),
@@ -281,6 +306,7 @@ def build_chunks(record: dict[str, Any], doc: Document) -> tuple[list[Chunk], li
                 )
             continue
         source_text = str(source_text)
+        field_lang = str(declarations[source_field])
 
         spans = chunk_field(source_text)
         for seq, span in enumerate(spans):
@@ -288,10 +314,12 @@ def build_chunks(record: dict[str, Any], doc: Document) -> tuple[list[Chunk], li
 
             if role == "original":
                 fidelity, lang, eligible = classify_original(
-                    text, doc.doc_id, doc.language_codes, doc.source_type
+                    text, doc.doc_id, field_lang, doc.source_type
                 )
             else:
-                fidelity, lang, eligible = classify_translation(text, doc.source_type)
+                fidelity, lang, eligible = classify_translation(
+                    text, doc.source_type, field_lang
+                )
 
             # Parallel grouping is at DOCUMENT level, deliberately. An earlier
             # version grouped by span index so passage N of the original would
@@ -312,7 +340,7 @@ def build_chunks(record: dict[str, Any], doc: Document) -> tuple[list[Chunk], li
                     role=role,
                     seq=seq,
                     lang=lang,
-                    declared_lang=declared if role == "original" else "en",
+                    declared_lang=field_lang,
                     text=text,
                     char_start=span.start,
                     char_end=span.end,

@@ -55,31 +55,40 @@ PARAPHRASE_ID_HINTS = (
 # ---------------------------------------------------------------------------
 # Script detection
 # ---------------------------------------------------------------------------
-# Unicode block prefixes for the non-Latin scripts this corpus actually uses.
-NON_LATIN_SCRIPTS = (
-    "GREEK",
-    "CJK",
-    "HANGUL",
-    "ARABIC",
-    "TAMIL",
-    "ETHIOPIC",
-    "RUNIC",
-    "DEVANAGARI",
-    "SYRIAC",
-    "HEBREW",
-    "OLD SOUTH ARABIAN",
-    "OLD NORTH ARABIAN",
-    "IMPERIAL ARAMAIC",
-    "INSCRIPTIONAL PARTHIAN",
-    "INSCRIPTIONAL PAHLAVI",
-    "PSALTER PAHLAVI",
-    "CUNEIFORM",
-    "BRAHMI",
-    "KHAROSHTHI",
-    "COPTIC",
-    "HIRAGANA",
-    "KATAKANA",
-)
+# `NON_LATIN_SCRIPTS` WAS HERE AND IS DELETED. It was a 22-entry tuple of
+# Unicode block prefixes, and `non_latin_ratio` asked "does this character's
+# name start with one of these?" as a PROXY for the general question "is this
+# character non-Latin". Thai was not in it, nor Khmer, Burmese, Sinhala,
+# Tibetan, Javanese, Georgian or Cyrillic, so `non_latin_ratio` scored a page of
+# Thai at 0.00 and a Thai museum description entered the corpus declared
+# English. FINDING 86.
+#
+# `F7_RESULT.md` said adding "THAI" to the tuple was the wrong shape of fix and
+# it was right: the next language breaks it again, and French breaks it today
+# regardless of any script name. FINDING 10's lesson is the one that applies --
+# ASSERT THE RULE, and enumerate only at check time. The rule is one line and is
+# now in `non_latin_ratio`; the enumeration is `LANG_SCRIPTS` below, which is
+# not a rule stated as a list but a list that is honestly a list.
+
+# A character is non-Latin when its Unicode name does not begin with LATIN.
+# This is the general property the deleted tuple was a proxy for.
+_LATIN_NAME_PREFIX = "LATIN"
+
+# SCRIPT-NEUTRAL LETTERS, and they are the reason the general rule needed one
+# exception rather than none. `ʾ` and `ʿ` (U+02BE, U+02BF) are the aleph and
+# ayin of scholarly Semitic romanisation: they are alphabetic, they carry no
+# script of their own, and they sit INSIDE Latin-script transliterations -- 90
+# of them across this corpus, in the Nabataean, Sabaean, Pahlavi and Parthian
+# records. The deleted tuple ignored them by omission and got the right answer
+# for the wrong reason. The general rule would count them as non-Latin, which
+# would push a romanisation toward `verbatim_original` on the strength of its
+# punctuation, so they are named here and skipped.
+_SCRIPT_NEUTRAL_NAME_PREFIXES = ("MODIFIER LETTER",)
+
+# Above this share of non-Latin alphabetic characters, a field is read as
+# carrying the source's own script rather than a romanisation. Was written as
+# the literal 0.30 in three places; extracted so the three cannot drift.
+NON_LATIN_MIN = 0.30
 
 LATIN_SCRIPT_LANGS = {"en", "la", "da", "de", "fr", "it", "sv", "no"}
 
@@ -144,7 +153,7 @@ def looks_like_placeholder(text: str) -> bool:
     """True if the field is an editorial note about text, not the text itself."""
     stripped = text.strip()
     # A field carrying a real transliteration is content, whatever else it says.
-    if has_transliteration(stripped) or non_latin_ratio(stripped) >= 0.30:
+    if has_transliteration(stripped) or non_latin_ratio(stripped) >= NON_LATIN_MIN:
         return False
     bracketed = stripped.startswith("[")
     cues = sum(1 for p in _PLACEHOLDER_CUES if p.search(stripped))
@@ -153,7 +162,15 @@ def looks_like_placeholder(text: str) -> bool:
 
 
 def non_latin_ratio(text: str) -> float:
-    """Fraction of alphabetic characters that belong to a non-Latin script."""
+    """Fraction of alphabetic characters that belong to a non-Latin script.
+
+    CHANGED 2026-09-07, FINDING 86, ruling 80. This used to test membership of a
+    closed tuple of script-name prefixes and answered 0.00 for every script the
+    tuple omitted -- Thai among them. It now asserts the rule: a character is
+    non-Latin when its Unicode name does not begin with LATIN. A romanised
+    transliteration is Latin-script by this test and always was, which is what
+    keeps `transliteration` reachable.
+    """
     alpha = [c for c in text if c.isalpha()]
     if not alpha:
         return 0.0
@@ -163,7 +180,9 @@ def non_latin_ratio(text: str) -> float:
             name = unicodedata.name(ch)
         except ValueError:
             continue
-        if name.startswith(NON_LATIN_SCRIPTS):
+        if name.startswith(_SCRIPT_NEUTRAL_NAME_PREFIXES):
+            continue
+        if not name.startswith(_LATIN_NAME_PREFIX):
             hits += 1
     return hits / len(alpha)
 
@@ -188,32 +207,348 @@ def is_flagged_paraphrase(doc_id: str) -> bool:
     return any(hint in lowered for hint in PARAPHRASE_ID_HINTS)
 
 
+# ---------------------------------------------------------------------------
+# Declared field languages (W3, ruling 80, 2026-09-07)
+# ---------------------------------------------------------------------------
+# FINDINGS 82 and 86 are ONE defect and are fixed as one: a language was being
+# INFERRED where it should have been DECLARED. `classify_translation` returned
+# the constant "en" for every translation chunk in the corpus.
+# `classify_original` took its language from `language_code[0]` and decided
+# "is this the source's own script?" from a closed allowlist of script names.
+#
+# The shape is ruling 27's, reused rather than reinvented because the argument
+# is identical -- every case declares its expected behaviour and the loader
+# REFUSES to inherit it from a default. A value inferred by code is a value
+# nobody ruled on.
+#
+# WHAT THE DECLARATION IS ABOUT, and it is the whole of why `arabia-05-ruwafa`
+# moved: `language_code` is a fact about the RECORD, the languages the source is
+# in. `original_text_lang` is a fact about the FIELD, the language of the
+# characters actually stored in it. The classifier read the first as though it
+# were the second. Ruwafa carried `arc` over a field that is 55% Greek --
+# sections A, C and E of the monument are Greek and B and D are Nabataean
+# Aramaic in Latin transliteration, interleaved in one field -- and
+# `africa-01-ezana-stone` carries an English editorial placeholder on a record
+# whose `language_code` is `gez, xsa, grc`.
+#
+# THE CLASSIFIERS ARE NOT DELETED. They stop being the authority and become a
+# CROSS-CHECK that can disagree with the declaration and refuse. Two fields that
+# must agree are a guard; one field computed from the other is a guard deleted.
+
+DECLARATION_FIELDS: dict[str, str] = {
+    "original_text_excerpt": "original_text_lang",
+    "reference_translation": "reference_translation_lang",
+}
+
+# A record that does not carry the key AT ALL, as distinct from one that carries
+# it set to null. `null` declares that the field holds no text; a missing key
+# declares nothing. Making those one value is the ambiguity this item exists to
+# remove, so they are two.
+MISSING = object()
+
+# ISO 639-3 `mul`. One field in this corpus genuinely holds two languages and no
+# single-language code is true about it. `mul` is a declaration and not a shrug,
+# and it is guarded below so it cannot become the lenient default: a field
+# declaring `mul` must actually contain two scripts.
+MULTILINGUAL = "mul"
+MUL_MIN_SHARE = 0.10
+
+# THE LANGUAGE CODES THIS CORPUS CONTAINS, each with the Unicode script-name
+# prefixes its text may be written in BESIDES Latin. An empty tuple means the
+# language is written in Latin script and nothing else.
+#
+# THE OBJECTION, ANSWERED: "you have replaced an allowlist of scripts with an
+# allowlist of language codes -- same defect." No. The script allowlist was a
+# PROXY FOR A GENERAL PROPERTY, "is this text non-Latin", and a proxy that omits
+# Thai answers the general question wrongly. This is A FACT ABOUT THE CORPUS: it
+# is the same set the state block's per-language chunk line already prints, and
+# it grows deliberately, by a curator adding a code for a record they are
+# placing. The first is a rule stated as a list and gets it wrong; the second is
+# a list that is honestly a list.
+#
+# Latin script is permitted for EVERY code without being listed, because a
+# romanised transliteration is how most of this corpus's non-Latin material is
+# actually stored -- `transliteration` covers seven records -- and refusing it
+# would refuse them.
+LANG_SCRIPTS: dict[str, tuple[str, ...]] = {
+    # empire and modern Latin-script languages
+    "en": (),
+    "la": (),
+    "da": (),
+    "de": (),
+    "fr": (),
+    "it": (),
+    "sv": (),
+    "no": (),
+    "vi": (),
+    # ancient and regional languages the corpus holds
+    "grc": ("GREEK",),
+    "arc": ("IMPERIAL ARAMAIC", "ARAMAIC", "SYRIAC", "HEBREW"),
+    "arb": ("ARABIC",),
+    "xsa": ("OLD SOUTH ARABIAN",),
+    "xna": ("OLD NORTH ARABIAN", "ARABIC"),
+    "lzh": ("CJK",),
+    "ko": ("HANGUL", "CJK"),
+    "pal": ("INSCRIPTIONAL PAHLAVI", "PSALTER PAHLAVI"),
+    "xpr": ("INSCRIPTIONAL PARTHIAN",),
+    "non": ("RUNIC",),
+    "gmq-pro": ("RUNIC",),
+    "oty": ("TAMIL",),
+    "san": ("DEVANAGARI",),
+    "ocm": ("BRAHMI", "CHAM"),
+    "omy": ("BRAHMI", "JAVANESE"),
+    "gez": ("ETHIOPIC",),
+    # `pes`, modern Persian. Reached by W3's fourth worked example and NOT
+    # gated: parsigdatabase's Manichaean translations are a named scholar's
+    # modern translation of an ancient text, which is a TRANSLATION and a thing
+    # this corpus already knows how to hold, not the modern institutional
+    # catalogue prose section 8 is about. Noted for the session that curates
+    # one: a Persian published translation makes the record
+    # `verbatim_with_provenance` and not `verbatim_machine_english`, because
+    # ruling 57's tier means no English A CURATOR CAN REACH and a published
+    # translation exists -- in Persian.
+    "pes": ("ARABIC",),
+    # codes reached only by W3's worked examples. NO RECORD DECLARES THESE and
+    # none may, until the ruling named in MODERN_INSTITUTIONAL_PROSE_PENDING_RULING
+    # exists -- see the gate below.
+    "tha": ("THAI",),
+    "fra": (),
+    MULTILINGUAL: (),
+}
+
+KNOWN_SCRIPT_PREFIXES: tuple[str, ...] = tuple(sorted(
+    {prefix for prefixes in LANG_SCRIPTS.values() for prefix in prefixes}
+))
+
+# ---------------------------------------------------------------------------
+# The ruling W3 does not make, enforced so that the next session cannot avoid it
+# ---------------------------------------------------------------------------
+# A MODERN THAI MUSEUM DESCRIPTION OF A ROMAN LAMP IS NOT AN ANCIENT
+# SOURCE-LANGUAGE TEXT, AND NOTHING IN THIS CORPUS DISTINGUISHES THE TWO.
+#
+# Once the classifier accepts modern non-English institutional prose -- which,
+# below this line, it now does -- three things go ambiguous the moment such a
+# record is curated: `source-language records by region` and its floor of 4;
+# ruling 58's speaking-vs-spoken-about table, which cannot express whether
+# Thailand is SPEAKING because a Thai curator wrote in Thai in 2019; and the
+# hero claim itself, because an English query retrieving modern Thai prose is a
+# much easier problem than an English query retrieving Literary Chinese, and if
+# both land in one bucket then cross-lingual recall improves for a reason that
+# is not the hero capability. That is the W2b English-only-padding defect in new
+# clothes and ruling 56's own warning that a total climbing by construction is
+# not evidence.
+#
+# W3 IS NOT THE SESSION THAT RULES ON IT. W3 is an instrument fix that curates
+# nothing, and a tier or a `source_era` declaration invented here would be a
+# category chosen to fit three records nobody has curated. What W3 owes is that
+# the next session CANNOT AVOID the question, and a debt row is not that.
+#
+# So this is the refusal. A record declaring one of these codes on a text field
+# does not load. The codes are the ones the three blocked candidates use and
+# nothing more, and the set is EMPTIED by the session that makes the ruling --
+# it is not a claim that Thai is modern or that French is not a source language.
+MODERN_INSTITUTIONAL_PROSE_PENDING_RULING = frozenset({"tha", "fra"})
+
+OWED_RULING = (
+    "the ruling owed by W3_DECLARE_DONT_INFER.md section 8: modern non-English "
+    "institutional prose is not ancient source-language text, and no count in "
+    "this corpus can currently tell them apart"
+)
+
+
+class DeclarationError(Exception):
+    """A record whose language declarations cannot be accepted as written.
+
+    RAISED, not warned. `ingest/loader.py` collects warnings for things a
+    curator should look at; this is a thing the loader refuses to have an
+    opinion about, which is ruling 36's shape -- an arm that cannot be
+    identified blocks rather than being read as the default.
+    """
+
+
+def script_mix(text: str) -> "dict[str, float]":
+    """Share of alphabetic characters in each script this corpus knows about.
+
+    `LATIN` is a group like any other, and characters matching no known prefix
+    fall in `UNKNOWN` rather than being dropped -- a script nobody enumerated is
+    still a script, and silently discarding it is how FINDING 86 happened.
+    """
+    alpha = [c for c in text if c.isalpha()]
+    if not alpha:
+        return {}
+    counts: dict[str, int] = {}
+    for ch in alpha:
+        try:
+            name = unicodedata.name(ch)
+        except ValueError:
+            continue
+        if name.startswith(_SCRIPT_NEUTRAL_NAME_PREFIXES):
+            continue
+        if name.startswith(_LATIN_NAME_PREFIX):
+            group = "LATIN"
+        else:
+            group = next(
+                (p for p in KNOWN_SCRIPT_PREFIXES if name.startswith(p)), "UNKNOWN"
+            )
+        counts[group] = counts.get(group, 0) + 1
+    return {g: n / len(alpha) for g, n in counts.items()}
+
+
+def declared_script_disagreement(text: str, code: str) -> "str | None":
+    """The cross-check. Returns a reason when the text cannot be the code's.
+
+    Deliberately ONE-DIRECTIONAL on romanisation: a non-Latin-script language
+    stored in Latin characters is a transliteration and is legitimate. What is
+    refused is a field carrying a SCRIPT the declared language is not written
+    in -- including a Latin-script language declared over non-Latin text.
+    """
+    if code == MULTILINGUAL:
+        return None
+    nl = non_latin_ratio(text)
+    if nl < NON_LATIN_MIN:
+        return None
+    prefixes = LANG_SCRIPTS.get(code, ())
+    if not prefixes:
+        return (
+            f"declares {code!r}, a Latin-script language, over a field that is "
+            f"{nl:.0%} non-Latin characters"
+        )
+    mix = script_mix(text)
+    matched = sum(share for group, share in mix.items() if group.startswith(prefixes))
+    if matched < nl / 2:
+        present = sorted(
+            (g for g, s in mix.items() if s >= MUL_MIN_SHARE and g != "LATIN")
+        )
+        return (
+            f"declares {code!r}, written in {prefixes}, over a field whose "
+            f"non-Latin characters are {present}"
+        )
+    return None
+
+
+def check_declaration(
+    doc_id: str, source_field: str, declared: "object", text: "str | None"
+) -> None:
+    """Refuse a record whose declaration for one field cannot be accepted.
+
+    Six clauses, each of which is a separate way for a declaration to be absent
+    or false, and each of which is mutated separately -- a predicate with two
+    clauses needs two mutations, and this one has six.
+    """
+    key = DECLARATION_FIELDS[source_field]
+    body = (text or "").strip()
+
+    # 1. The key is not there at all.
+    if declared is MISSING:
+        raise DeclarationError(
+            f"{doc_id}: no {key!r}. Every text-bearing field declares its own "
+            f"language and the loader refuses to infer one. Write null if the "
+            f"field holds no text."
+        )
+
+    # 2. Declared empty, and there is text.
+    if declared is None and body:
+        raise DeclarationError(
+            f"{doc_id}: {key!r} is null but {source_field!r} holds "
+            f"{len(body)} characters. null declares that the field is empty."
+        )
+
+    # 3. Declared a language, and there is no text to be in it.
+    if declared is not None and not body:
+        raise DeclarationError(
+            f"{doc_id}: {key!r} declares {declared!r} but {source_field!r} is "
+            f"empty. A language over nothing is a claim about a field that does "
+            f"not exist."
+        )
+
+    if declared is None:
+        return
+
+    code = str(declared).strip()
+
+    # 4. A code this corpus does not contain.
+    if code not in LANG_SCRIPTS:
+        raise DeclarationError(
+            f"{doc_id}: {key!r} declares {code!r}, which is not a language code "
+            f"this corpus contains. LANG_SCRIPTS is a fact about the corpus and "
+            f"grows by a curator adding a code for a record they are placing -- "
+            f"add it there, with the scripts that language is written in, or fix "
+            f"the declaration."
+        )
+
+    # 5. `mul` over a field that is not actually multilingual.
+    if code == MULTILINGUAL:
+        mix = script_mix(body)
+        groups = sorted(g for g, share in mix.items() if share >= MUL_MIN_SHARE)
+        if len(groups) < 2:
+            raise DeclarationError(
+                f"{doc_id}: {key!r} declares {MULTILINGUAL!r} over a field "
+                f"written in {groups or ['nothing']}. `mul` states that a field "
+                f"holds more than one language and is refused where it does not."
+            )
+
+    # 6. The script present is not one the declared language is written in.
+    disagreement = declared_script_disagreement(body, code)
+    if disagreement:
+        raise DeclarationError(f"{doc_id}: {key!r} {disagreement}")
+
+
+def check_curation_gate(doc_id: str, source_field: str, declared: "object") -> None:
+    """Refuse a record of the category nobody has ruled on yet.
+
+    SEPARATE FROM `check_declaration` ON PURPOSE. The classifier must be able to
+    handle these codes correctly -- that is the whole of what FINDINGS 82 and 86
+    were about, and W3's worked examples prove it by calling the classifier
+    directly. What must not happen is a RECORD of this category entering the
+    corpus before the question is ruled on. So the classifier is fixed and the
+    loader still refuses, and both sentences are true at once.
+    """
+    if declared is MISSING or declared is None:
+        return
+    code = str(declared).strip()
+    if code in MODERN_INSTITUTIONAL_PROSE_PENDING_RULING:
+        raise DeclarationError(
+            f"{doc_id}: {DECLARATION_FIELDS[source_field]!r} declares {code!r}, "
+            f"which is blocked pending {OWED_RULING}. The classifier handles "
+            f"this code correctly -- see W3's worked examples -- and the record "
+            f"is refused anyway, because rule-then-curate is the order and not "
+            f"the reverse. Remove the code from "
+            f"MODERN_INSTITUTIONAL_PROSE_PENDING_RULING when the ruling exists."
+        )
+
+
 def classify_original(
     text: str,
     doc_id: str,
-    declared_langs: list[str],
+    declared_lang: str,
     source_type: str,
 ) -> tuple[str, str, bool]:
     """Classify an `original_text_excerpt`.
 
     Returns (text_fidelity, actual_lang, eligible_for_retrieval).
+
+    SIGNATURE CHANGED 2026-09-07, ruling 80. The third argument was
+    `declared_langs: list[str]` -- the RECORD's `language_code` -- and this
+    function took `[0]` of it as the field's language. It is now the FIELD's own
+    declaration, checked by `check_declaration` before this is called. The
+    language is no longer something this function decides; the fidelity still is.
     """
-    primary = (declared_langs[0] if declared_langs else "und").lower()
+    primary = str(declared_lang or "und").strip().lower()
     nl = non_latin_ratio(text)
 
     # 1. Editorial placeholders and cross-references are not source text.
     if looks_like_placeholder(text) or looks_like_pointer(text):
-        return "pointer", "en", False
+        return "pointer", primary, False
 
     # 2. Find and coin records describe an object. Their "original text" field is
     #    a catalogue description — legitimately useful for retrieval, but it must
     #    never be mistaken for the wording of a primary text.
     if source_type in FIND_TYPES:
-        lang = primary if (nl >= 0.30 and primary not in LATIN_SCRIPT_LANGS) else "en"
+        lang = primary
         return "object_description", lang, True
 
     # 3. Original-script text present: the source's own characters.
-    if nl >= 0.30:
+    if nl >= NON_LATIN_MIN:
         if is_flagged_paraphrase(doc_id) or _ELISION_RE.search(text):
             # The manifest flags these as "paraphrased or partial".
             #
@@ -239,24 +574,48 @@ def classify_original(
         return "verbatim_original", primary, True
 
     if is_flagged_paraphrase(doc_id):
-        return "paraphrase", "en", False
+        return "paraphrase", primary, False
 
     # Declared as a non-Latin-script language but stored in Latin characters:
     # either a romanised transliteration or an English stand-in.
     if english_marker_ratio(text) >= 0.18:
+        # THE ONE PLACE A DISAGREEMENT IS RECORDED RATHER THAN REFUSED, and it
+        # is deliberate. The declaration says a source language; the field holds
+        # English prose in Latin characters. `check_declaration` cannot refuse
+        # it -- there is no script to disagree with -- and the honest label is
+        # the disagreement itself: the fidelity value says the field is an
+        # English stand-in, and the chunk is INELIGIBLE, so nothing false
+        # reaches the index. No record in the corpus is in this state.
         return "english_rendering", "en", False
     return "transliteration", primary, True
 
 
-def classify_translation(text: str, source_type: str) -> tuple[str, str, bool]:
-    """Classify a `reference_translation`. Returns (fidelity, lang, eligible)."""
+def classify_translation(
+    text: str, source_type: str, declared_lang: str
+) -> tuple[str, str, bool]:
+    """Classify a `reference_translation`. Returns (fidelity, lang, eligible).
+
+    FINDING 82 LIVED IN THE THREE RETURN STATEMENTS BELOW. Each returned the
+    CONSTANT "en", so every translation chunk in this corpus was declared
+    English by construction and nothing anywhere checked whether it was. Its
+    sibling `classify_original` measured; this one returned a constant. It cost
+    F6 its East Asia slot, because parsigdatabase's Manichaean translations are
+    Persian and a Persian translation entered here would have been labelled `en`
+    and been retrieval-eligible as English -- a false claim about the corpus's
+    own contents, in a field no instrument reads.
+
+    It was RIGHT BY ACCIDENT for all 54 records: every reference_translation in
+    the corpus today is in fact English. That is why it survived to cost a
+    record rather than being caught by a test.
+    """
+    lang = str(declared_lang or "und").strip().lower()
     if looks_like_pointer(text) or looks_like_placeholder(text):
-        return "pointer", "en", False
+        return "pointer", lang, False
     if source_type in FIND_TYPES:
         # For find records this field is a curatorial description, not a
         # translation. Still useful for retrieval; labelled honestly.
-        return "object_description", "en", True
-    return "translation", "en", True
+        return "object_description", lang, True
+    return "translation", lang, True
 
 
 # ---------------------------------------------------------------------------

@@ -1,4 +1,5 @@
-# Rulings register — 1 to 52
+# Rulings register — 1 to 52, and 80 to 82. **53 to 79 ARE NOT INDEXED
+# HERE**, and the note under the table says why.
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
 same day with 27-31, declared during TASK 2 (D2's schema change and D3's case
@@ -35,7 +36,29 @@ section anywhere — they exist only as one-line entries in a numbered list in
 43-45       F1_RULINGS.md             full text, "## Ruling N" headings
 46-48       F2_RULINGS.md             full text, "## Ruling N" headings
 49-52       F3_RULINGS.md             full text, "## Ruling N" headings
+53-79       NOT INDEXED. See the note below.
+80-82       W3_RULINGS.md             full text, "## Ruling N" headings
 ```
+
+## Why 53 to 79 are not indexed, written by the session that tried
+
+**W3 needed the next free ruling number, found this file stops at 52, scanned the
+F-block ruling files for the rest — and got three of twenty-seven wrong.** A
+search for `## Ruling N` headings returned `F5_PART3_RESULT.md` for rulings 70,
+71 and 74, because that file is where those rulings were READ AGAINST A RUN, and
+the file where each was DECLARED is a different one. An index that names the
+wrong file is worse than an index that stops, and this file exists precisely
+because four rulings were once unfindable.
+
+**So the gap is recorded rather than filled by a guess.** 53 to 79 are declared
+across `F4_RULINGS.md`, `F5_RULINGS.md`, `F5_PART3_RULINGS.md`, `F6_RULINGS.md`
+and `F7_CURATION_START.md`, and a session needing one of them reads those five
+files rather than trusting a line here. **Filling this in correctly is one
+careful pass by somebody who checks each entry against the file that DECLARES it
+rather than the file that mentions it, and it is worth doing.** W3 is not that
+session: it had already caught itself getting it wrong.
+
+**The next free ruling number is 83. The next free finding is 97.**
 
 ## The register
 

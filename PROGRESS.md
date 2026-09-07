@@ -13583,3 +13583,58 @@ it is *still* ≥95%.**
 
 **An instrument that refuses to answer the question it was built for is a good
 instrument and a failed box, and both sentences are true at once.**
+
+---
+
+# W3 — DECLARE, DON'T INFER. 2026-09-07. `W3_RESULT.md`.
+
+**Debt row 1 of `BLOCK_G_RESULT.md` is CLOSED.** FINDINGS 82 and 86 were filed as
+one item on purpose and are fixed as one: a language was being INFERRED where it
+should have been DECLARED. Every text-bearing field now declares its own
+language, the loader REFUSES a record that omits one, and the classifiers are
+demoted from determination to cross-check (ruling 80).
+
+```
+corpus         54 records, unchanged. NO RECORD WAS CURATED
+digest         26e4a683... -> 0e784505..., and floor.json's pin is NOT
+               re-pointed (ruling 82)
+instruments    ingest.test_fidelity 115 -> 145; ten others unmoved, all green
+mutations      mutate_fidelity 70 -> 84 expected, OWED TO THE HOST (FINDING 59)
+relabels       ONE record, three chunks: arabia-05-ruwafa arc -> mul
+```
+
+## What the predictions did
+
+**P1 REFUTED, and it is the most valuable thing in the session.** The corpus
+reported three Aramaic chunks and its retrieval index held none: `ruwafa`'s
+bilingual field splits into three chunks, two of them Greek, and all three took
+their language from `language_code[0]`. FINDING 95.
+
+**P2 confirmed, eight tuples of eight, with the BEFORE column measured rather
+than transcribed.** `non_latin_ratio` scored a page of Thai at exactly 0.000, and
+scored parsigdatabase's Persian at 1.000 while `classify_translation` returned
+`"en"` anyway — FINDINGS 86 and 82, one row each.
+
+**P3 confirmed and its one number was wrong.** The digest and all 54
+content_hashes moved and nothing else did; the archived-span provenance axis went
+to `changed 1121`, not the `168` the prediction borrowed from another document.
+Recorded rather than quietly corrected.
+
+## The sentences that travel, from W3
+
+**`language_code` is a fact about the RECORD and `original_text_lang` is a fact
+about the FIELD, and reading the first as the second is what put Aramaic on two
+Greek chunks for the whole of Block F.**
+
+**A proxy for a general property gets the general question wrong for everything
+it omits; a list of what the corpus contains is honestly a list. The first is why
+Thai scored 0.00, and the second is why the fix is not the same defect wearing a
+different name.**
+
+**The classifier is fixed and the loader still refuses those three records, and
+both sentences are true at once — because rule-then-curate is the order, and a
+debt row is not a thing a curator walks into.**
+
+**A prediction refuted before the fix existed is worth more than one confirmed
+after it, and this one found a state-block line that had been wrong for a whole
+block.**

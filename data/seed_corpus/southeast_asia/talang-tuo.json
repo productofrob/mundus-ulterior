@@ -10,6 +10,7 @@
   "date": "606 Saka = 684 CE",
   "findspot": "Talang Tuo, at the foot of Bukit Seguntang, Palembang, South Sumatra, Indonesia. Discovered 1920.",
   "original_text_excerpt": "swasti śrī śakawarṣātīta 606 ding dwitīya śuklapakṣa wulan caitra sana tatkalaña parlak śrī ksetra ini niparwuat\nparwānda punta hiyang śrī jayanāga. ini pranidhānānda punta hiyang sawañakña yang nitanang di sini niyur pinang hanāu ru(-)\nmwiya dnan samiśrāña yang kāyu nimākan wūahna, tathāpi. hāur wuluh pattum ityevamadi, punarapi yang parlak wukan\ndṅan tawad talāga sawaña yang wuatña sucarita parāwis prayojanākan punyāña sarwwa satwa sacā(?) rācara, waropā yaña tmu\nsukha di āsannakāla di antara mārgga lai. tmu muaḥ ya āhāra dṅan āir niminumña sawañakña wuatña huma parlak mañcak mu(-)\nah ya manghidupi paśuprakāra. marhulun tuwi wṛddhi muaḥ ya jāṅan ya niknāi sawañakña yang upasargga. pīdanna swapnawighna. warang wua(-)\ntāña kathamapi. anukūla yang graha nakṣatra parāwis di ya. nirwyadhi ajara kawuatanāna. tathāpi sawañakña yang bhṛtyāna.",
+  "original_text_lang": "omy",
   "original_text_note": "The first seven of fourteen lines, which is where the dedication and its subject sit; the remaining seven continue the list of benefits sought. The edition's apparatus is kept rather than normalised: `(-)` marks a word broken across a line and `(?)` in line 4 marks a reading the editor was not certain of. PROVENANCE OF THE TRANSLITERATION, stated rather than assumed. The Old Malay is reproduced from the Wikipedia article named in `citation`, which cites Coedes (1930) -- the standard edition -- in its bibliography but does NOT state whose transliteration it prints. The reading of these inscriptions has been established for a century and the text is not in doubt; what is not established is whose transliteration this is, and that is recorded here rather than resolved by attributing it to Coedes. The inscription itself is 7th-century and out of copyright.",
   "translation_source": "",
   "citation": "https://en.wikipedia.org/wiki/Talang_Tuo_inscription",
@@ -20,5 +21,6 @@
       "ground": "regional",
       "note": "NO GAZETTEER ID RESOLVED, for the reason recorded on every F3 record: no GeoNames dump is cached here. Bukit Seguntang is a named hill within Palembang and both this record and seasia-06-kedukan-bukit were found on or beside it, about two kilometres apart — a relation NOT encoded here, because proximity is an argument and not a gazetteer fact."
     }
-  ]
+  ],
+  "reference_translation_lang": null
 }

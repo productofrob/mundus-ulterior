@@ -3,7 +3,10 @@
   "region": "Scandinavia",
   "title": "The Hoby treasure — Roman silver drinking cups from a chieftain's grave, Lolland, Denmark",
   "source_type": "find_record",
-  "language_code": ["en", "grc"],
+  "language_code": [
+    "en",
+    "grc"
+  ],
   "language_note": "National Museum of Denmark catalogue record in English/Danish; the cups themselves carry a Greek signature and Latin-alphabet owner's name (original_text_excerpt), not a regional-language literary text.",
   "date": "grave: 1st century CE (Early Roman Iron Age); table service made in Italy around the start of the Common Era",
   "findspot": "Hoby, island of Lolland, Denmark; discovered 1920, excavated by the National Museum of Denmark",
@@ -18,8 +21,10 @@
     }
   ],
   "original_text_excerpt": "Signature on the silver cups: [ΧEIPI]ΣΟΦΟΣ ЄΠΟΙΕΙ ('Cheirisophos made [this]'); engraved owner's name: SILIVS.",
+  "original_text_lang": "en",
   "original_text_note": "The maker's signature (Greek) and owner's name (Latin) are the only inscribed text associated with this find; the cups' relief scenes depict episodes from Homer's Iliad.",
   "reference_translation": "A Roman silver table service (washing dish, wine bucket and scoop, jug, tray, two drinking cups) of Italian manufacture, buried with a native chieftain c. 187cm tall, aged 25-35. The cups are signed by the silversmith Cheirisophos and engraved with the name Silius — possibly Gaius Silius, Roman commandant at Mainz 14-21 CE — suggesting the set may have been a diplomatic gift from a named Roman official to a Germanic elite figure.",
+  "reference_translation_lang": "en",
   "translation_source": "National Museum of Denmark object record, as synthesized on Wikipedia (Hoby treasure).",
   "citation": "https://en.wikipedia.org/wiki/Hoby_treasure",
   "citation_original": "https://en.natmus.dk/historical-knowledge/denmark/prehistoric-period-until-1050-ad/the-early-iron-age/the-chieftains-grave-from-hoby/",

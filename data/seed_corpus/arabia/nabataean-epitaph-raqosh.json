@@ -21,8 +21,10 @@
     }
   ],
   "original_text_excerpt": "[Nabataean script, transliterated: dnh qbrʾ dy ʿbd Kʿbw br Ḥrtt l-Rqwš brt ʿbdmnwtw ʾmh...] — see Wikipedia article for the two competing scholarly readings (original JS edition vs. O'Connor 1986 revision).",
+  "original_text_lang": "xna",
   "original_text_note": "Transliteration given is a paraphrase reconstruction; pull the exact letter-by-letter transliteration from Healey, The Nabataean Tomb Inscriptions of Mada'in Salih (1993), during ingestion.",
   "reference_translation": "As for this grave/This is a grave, which Ka'b bar Haritat made for Raqash daughter of 'Abd-Manat, his mother. And she died in al-Hijr, year one-hundred-sixty-two, in the month of Tammuz. And may Mare 'Alma [the Lord of the World] curse him who alters this tomb or opens it, save for him whom he has begotten. And may he curse anyone who buries or exhumes anyone else in it.",
+  "reference_translation_lang": "en",
   "translation_source": "M. O'Connor's 1986 reading, as reproduced on Wikipedia (JSNab 17), building on Healey's editio.",
   "citation": "https://en.wikipedia.org/wiki/JSNab_17",
   "notes": "Notable for the epithet 'Lord of the World' (possibly monotheistic) and for mixing Aramaic and Arabic in a dated (267 CE) legal-funerary text — useful both as a language-contact data point and as a stress-test for cross-lingual retrieval given the two competing scholarly transliterations."

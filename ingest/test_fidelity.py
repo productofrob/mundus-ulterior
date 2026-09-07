@@ -47,6 +47,17 @@ from .fidelity import (
     check_target_mix,
     split_quotation_cases,
     derive_record_tier,
+    DeclarationError,
+    LANG_SCRIPTS,
+    MISSING,
+    MODERN_INSTITUTIONAL_PROSE_PENDING_RULING,
+    MULTILINGUAL,
+    check_curation_gate,
+    check_declaration,
+    classify_original,
+    classify_translation,
+    non_latin_ratio,
+    script_mix,
 )
 from .loader import SEED_CORPUS_DIR, load_corpus
 from .verify import MANIFEST_FLAGGED
@@ -769,6 +780,143 @@ def test_delivery():
     )
 
 
+
+# --------------------------------------------------------------------------
+# Declared field languages (W3, ruling 80)
+# --------------------------------------------------------------------------
+# Six refusal clauses and a curation gate, each tested separately and each
+# mutated separately in scripts/mutate_fidelity.py. A predicate with two clauses
+# needs two mutations; this predicate has six, and none of them is allowed into
+# UNMUTATED_AND_OWED -- an owed list is where refusals go to be forgotten.
+
+THAI = "ภูเขาทองอยู่ห่างจากทะเลอันดามันประมาณ 2 กิโลเมตร พื้นที่ด้านทิศตะวันออก"
+GREEK_TEXT = "Υπερ αιωνιου διαμονης κρατησεως των θειοτατων κοσμοκρατορων Σεβαστων"
+FRENCH = ("Capture par le roi sassanide Shapur Ier de l'empereur romain "
+          "Valerien. Les deux antagonistes se font face.")
+TRANSLIT = "dnh qbrʾ dy ʿbd Kʿbw br Ḥrtt l-Rqwš brt ʿbdmnwtw ʾmh"
+BILINGUAL = GREEK_TEXT + "\n\n" + TRANSLIT
+
+
+def refused(fn, *args) -> bool:
+    """True when the call raises DeclarationError. Not `any exception`:
+    a NameError would otherwise read as a working guard."""
+    try:
+        fn(*args)
+    except DeclarationError:
+        return True
+    except Exception as exc:  # noqa: BLE001 - deliberately reported, not caught
+        print(f"       raised {type(exc).__name__} rather than DeclarationError: {exc}")
+        return False
+    return False
+
+
+def test_declaration():
+    print("check_declaration -- the six refusal clauses")
+
+    # FINDING 86's REGRESSION TEST, and it is the first assertion for a reason.
+    # `non_latin_ratio` scored a page of Thai at 0.00 because THAI was not in a
+    # closed tuple of script names. It is now the general rule.
+    expect(non_latin_ratio(THAI) > 0.9,
+           "GUARD non_latin_ratio reads Thai as non-Latin (FINDING 86)")
+    expect(non_latin_ratio(GREEK_TEXT) > 0.9,
+           "GUARD non_latin_ratio still reads Greek as non-Latin")
+    expect(non_latin_ratio(TRANSLIT) == 0.0,
+           "GUARD a romanised transliteration is Latin script, so "
+           "`transliteration` stays reachable")
+    expect(non_latin_ratio(FRENCH) == 0.0,
+           "GUARD French is Latin script whatever its accents")
+
+    # 1. the key is absent
+    expect(refused(check_declaration, "x", "original_text_excerpt", MISSING, "text"),
+           "GUARD a record with no original_text_lang is REFUSED")
+    expect(refused(check_declaration, "x", "reference_translation", MISSING, None),
+           "GUARD a record with no reference_translation_lang is refused even "
+           "when the field is empty -- a missing key declares nothing")
+
+    # 2. null over a field that holds text
+    expect(refused(check_declaration, "x", "original_text_excerpt", None, GREEK_TEXT),
+           "GUARD null declared over a field holding text is REFUSED")
+
+    # 3. a language over a field that holds nothing
+    expect(refused(check_declaration, "x", "original_text_excerpt", "grc", ""),
+           "GUARD a language declared over an empty field is REFUSED")
+    expect(refused(check_declaration, "x", "original_text_excerpt", "grc", "   "),
+           "GUARD whitespace is empty for the purposes of that clause")
+
+    # 4. a code the corpus does not contain
+    expect(refused(check_declaration, "x", "original_text_excerpt", "klingon", "abc"),
+           "GUARD a language code not in LANG_SCRIPTS is REFUSED")
+    expect("tha" in LANG_SCRIPTS and "fra" in LANG_SCRIPTS,
+           "GUARD the two codes W3's worked examples need are known to the "
+           "classifier, which is the half of the fix that had to work")
+
+    # 5. `mul` over a field that is not multilingual
+    expect(refused(check_declaration, "x", "original_text_excerpt",
+                   MULTILINGUAL, GREEK_TEXT),
+           "GUARD `mul` over a single-script field is REFUSED, so it cannot "
+           "become the lenient default")
+    expect(not refused(check_declaration, "x", "original_text_excerpt",
+                       MULTILINGUAL, BILINGUAL),
+           "GUARD `mul` is accepted over a field that really does hold two scripts")
+
+    # 6. the script present is not the declared language's
+    expect(refused(check_declaration, "x", "original_text_excerpt", "en", GREEK_TEXT),
+           "GUARD a Latin-script language declared over non-Latin text is REFUSED")
+    expect(refused(check_declaration, "x", "original_text_excerpt", "tha", GREEK_TEXT),
+           "GUARD a declared language whose script is absent is REFUSED")
+    expect(not refused(check_declaration, "x", "original_text_excerpt", "tha", THAI),
+           "GUARD Thai text declared `tha` is ACCEPTED -- the record F7 refused")
+    expect(not refused(check_declaration, "x", "original_text_excerpt", "grc",
+                       GREEK_TEXT),
+           "GUARD Greek text declared `grc` is accepted")
+    expect(not refused(check_declaration, "x", "original_text_excerpt", "xna",
+                       TRANSLIT),
+           "GUARD a romanisation of a non-Latin-script language is accepted, "
+           "because that is how seven of this corpus's records are stored")
+
+    print("check_curation_gate -- the ruling W3 does not make")
+    expect(refused(check_curation_gate, "x", "original_text_excerpt", "tha"),
+           "GUARD a record declaring `tha` is REFUSED pending the section 8 ruling")
+    expect(refused(check_curation_gate, "x", "original_text_excerpt", "fra"),
+           "GUARD a record declaring `fra` is REFUSED pending the section 8 ruling")
+    expect(not refused(check_curation_gate, "x", "original_text_excerpt", "grc"),
+           "GUARD the gate refuses only the codes pending a ruling")
+    expect(MODERN_INSTITUTIONAL_PROSE_PENDING_RULING == {"tha", "fra"},
+           "GUARD the pending set is the three blocked candidates' codes and "
+           "nothing more, so emptying it is one edit")
+
+    print("the classifiers are demoted to cross-check")
+    # FINDING 82: three return statements, one constant.
+    expect(classify_translation("ترجمه فارسی متون", "literary_text", "pes")
+           == ("translation", "pes", True),
+           "GUARD classify_translation returns the DECLARED language, not "
+           '"en" (FINDING 82)')
+    expect(classify_translation("An English translation.", "literary_text", "en")
+           == ("translation", "en", True),
+           "GUARD an English translation still classifies as English")
+    expect(classify_translation("A curator's description.", "find_record", "en")
+           == ("object_description", "en", True),
+           "GUARD a find record's translation field is still object_description")
+    # FINDING 86: the find-record branch forced "en" unless a closed allowlist
+    # of scripts said otherwise, which is what a Thai description hit.
+    expect(classify_original(THAI, "x", "tha", "find_record")
+           == ("object_description", "tha", True),
+           "GUARD a Thai object description classifies as Thai (FINDING 86)")
+    expect(classify_original(FRENCH, "x", "fra", "find_record")
+           == ("object_description", "fra", True),
+           "GUARD a French object description classifies as French (FINDING 86)")
+    expect(classify_original(GREEK_TEXT, "x", "grc", "literary_text")
+           == ("verbatim_original", "grc", True),
+           "GUARD Greek source text is unaffected by the change")
+
+    print("script_mix")
+    mix = script_mix(BILINGUAL)
+    expect(sorted(g for g, s in mix.items() if s >= 0.10) == ["GREEK", "LATIN"],
+           "GUARD script_mix names both scripts in a bilingual field")
+    expect(script_mix(THAI).get("THAI", 0) > 0.9,
+           "GUARD script_mix does not drop a script the old tuple omitted")
+
+
 def test_against_the_live_corpus():
     print("the 24 seed records")
     doc = json.loads(TIERS_FILE.read_text(encoding="utf-8"))
@@ -1069,6 +1217,7 @@ def test_rights_column():
 
 def main() -> int:
     test_derivation()
+    test_declaration()
     test_declaration_checking()
     test_paraphrase_flags()
     test_target_mix()

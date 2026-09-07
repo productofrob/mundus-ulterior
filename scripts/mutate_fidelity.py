@@ -496,6 +496,87 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
              '            counts[position] += 0'),
         ],
     ),
+    # ---------------------------------------------------------------
+    # W3, ruling 80. Six refusal clauses, a curation gate and the two
+    # classifier constants FINDINGS 82 and 86 lived in. Fourteen mutations,
+    # because a predicate with two clauses needs two mutations and this
+    # predicate has six -- and because NONE of them may go into
+    # UNMUTATED_AND_OWED, which already carries three refusal guards and is
+    # how an owed list becomes the place refusals go to be forgotten.
+    # ---------------------------------------------------------------
+    (
+        "a record with no declaration at all loads",
+        [('    if declared is MISSING:\n        raise DeclarationError(\n'
+          '            f"{doc_id}: no {key!r}.',
+          '    if False:\n        raise DeclarationError(\n'
+          '            f"{doc_id}: no {key!r}.')],
+    ),
+    (
+        "the missing-key clause stops applying to an EMPTY field, so a record "
+        "may omit the declaration for a field that holds nothing",
+        [('    if declared is MISSING:\n        raise DeclarationError(\n'
+          '            f"{doc_id}: no {key!r}.',
+          '    if declared is MISSING and body:\n        raise DeclarationError(\n'
+          '            f"{doc_id}: no {key!r}.')],
+    ),
+    (
+        "null may be declared over a field that holds text",
+        [("    if declared is None and body:", "    if False:")],
+    ),
+    (
+        "a language may be declared over a field that holds nothing",
+        [("    if declared is not None and not body:", "    if False:")],
+    ),
+    (
+        "whitespace stops counting as empty, so a field of spaces is text",
+        [('    body = (text or "").strip()', '    body = (text or "")')],
+    ),
+    (
+        "a language code the corpus does not contain is accepted",
+        [("    if code not in LANG_SCRIPTS:", "    if False:")],
+    ),
+    (
+        "`mul` may be declared over a field written in one script",
+        [("        if len(groups) < 2:", "        if False:")],
+    ),
+    (
+        "a Latin-script language may be declared over non-Latin text",
+        [("    if not prefixes:\n        return (", "    if False:\n        return (")],
+    ),
+    (
+        "a declared language whose script is nowhere in the field is accepted",
+        [("    if matched < nl / 2:", "    if False:")],
+    ),
+    (
+        "the section 8 curation gate stops covering French",
+        [('MODERN_INSTITUTIONAL_PROSE_PENDING_RULING = frozenset({"tha", "fra"})',
+          'MODERN_INSTITUTIONAL_PROSE_PENDING_RULING = frozenset({"tha"})')],
+    ),
+    (
+        "FINDING 82 reinstated: classify_translation returns the constant again",
+        [('    return "translation", lang, True', '    return "translation", "en", True')],
+    ),
+    (
+        "FINDING 86 reinstated: a find record's language is forced to English",
+        [('        lang = primary\n        return "object_description", lang, True',
+          '        lang = "en"\n        return "object_description", lang, True')],
+    ),
+    (
+        "FINDING 86 reinstated at the root: non_latin_ratio goes back to an "
+        "allowlist of script names",
+        [("        if not name.startswith(_LATIN_NAME_PREFIX):\n            hits += 1",
+          '        if name.startswith(("GREEK", "CJK")):\n            hits += 1')],
+    ),
+    (
+        "the script-neutral skip is removed, so the aleph and ayin of a "
+        "romanisation are counted as a script",
+        [("        if name.startswith(_SCRIPT_NEUTRAL_NAME_PREFIXES):\n"
+          "            continue\n"
+          "        if not name.startswith(_LATIN_NAME_PREFIX):\n"
+          "            hits += 1",
+          "        if not name.startswith(_LATIN_NAME_PREFIX):\n"
+          "            hits += 1")],
+    ),
 ]
 
 EXPECTED = [
@@ -599,7 +680,22 @@ EXPECTED = [
     'position IS that the source says two things that do not agree',
     'GUARD summarise_rights counts each position and omits the ones with no '
     "records, so an `unread` total cannot hide in a table of zeroes",
+    "GUARD a record with no original_text_lang is REFUSED",
+    "GUARD a record with no reference_translation_lang is refused even when the field is empty -- a missing key declares nothing",
+    "GUARD null declared over a field holding text is REFUSED",
+    "GUARD a language declared over an empty field is REFUSED",
+    "GUARD whitespace is empty for the purposes of that clause",
+    "GUARD a language code not in LANG_SCRIPTS is REFUSED",
+    "GUARD `mul` over a single-script field is REFUSED, so it cannot become the lenient default",
+    "GUARD a Latin-script language declared over non-Latin text is REFUSED",
+    "GUARD a declared language whose script is absent is REFUSED",
+    "GUARD a record declaring `fra` is REFUSED pending the section 8 ruling",
+    'GUARD classify_translation returns the DECLARED language, not "en" (FINDING 82)',
+    "GUARD a Thai object description classifies as Thai (FINDING 86)",
+    "GUARD non_latin_ratio reads Thai as non-Latin (FINDING 86)",
+    "GUARD a romanised transliteration is Latin script, so `transliteration` stays reachable",
 ]
+
 
 # NOT mutation-verified from this source, and said so rather than left to be
 # noticed. `GUARD the measured histogram the target mix is arithmetic over
@@ -704,7 +800,27 @@ UNMUTATED_BY_DESIGN = (
     "summary is the curator's sentence rather than the source's",
     'the source-language records are found and counted -- a collapsed '
     'list would make the guard below vacuous',
+    'GUARD non_latin_ratio still reads Greek as non-Latin',
+    'GUARD French is Latin script whatever its accents',
+    "GUARD the two codes W3's worked examples need are known to the "
+    'classifier, which is the half of the fix that had to work',
+    'GUARD `mul` is accepted over a field that really does hold two scripts',
+    'GUARD Thai text declared `tha` is ACCEPTED -- the record F7 refused',
+    'GUARD Greek text declared `grc` is accepted',
+    'GUARD a romanisation of a non-Latin-script language is accepted, '
+    "because that is how seven of this corpus's records are stored",
+    'GUARD a record declaring `tha` is REFUSED pending the section 8 ruling',
+    'GUARD the gate refuses only the codes pending a ruling',
+    "GUARD the pending set is the three blocked candidates' codes and "
+    'nothing more, so emptying it is one edit',
+    'GUARD an English translation still classifies as English',
+    "GUARD a find record's translation field is still object_description",
+    'GUARD a French object description classifies as French (FINDING 86)',
+    'GUARD Greek source text is unaffected by the change',
+    'GUARD script_mix names both scripts in a bilingual field',
+    'GUARD script_mix does not drop a script the old tuple omitted',
 )
+
 
 # UNMUTATED AND OWED, which is a different thing and is kept in a different
 # list. These are REFUSAL guards -- checks that reject a malformed input --
