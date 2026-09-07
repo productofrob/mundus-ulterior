@@ -59,7 +59,20 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 84. The next free finding is 100.**
+**The next free ruling number is 85. The next free finding is 101.**
+
+> **UPDATED BY THE UI DESIGN BLOCK, 2026-09-07.** This line read *"The next free
+> ruling number is 84. The next free finding is 100."* and was correct when it
+> was written. The design block used **ruling 84** (the hash scheme: a run is
+> named by its timestamp and never by its index, a question by a slug of its own
+> text, and a hash that does not resolve says so rather than landing on the
+> default view) and **FINDING 100** (`check_ui.mjs` counts inline scripts inside
+> HTML comments, so a comment containing the text of a script tag turns the
+> harness red — it fails safe, and it is recorded rather than fixed because a
+> design block editing the guard file it is judged by is worse than the defect).
+> Both are declared in `UI_DESIGN_RULINGS.md` and `UI_DESIGN_RESULT.md`, and
+> carried back here in the same sitting, which is the practice the correction
+> below exists to enforce.
 
 > **CORRECTED BY THE UI BLOCK, 2026-09-07.** This line read *"The next free
 > ruling number is 83. The next free finding is 97."* and the finding half was
