@@ -136,6 +136,41 @@
   mark.q:hover { background: #f7e19a; }
   mark.q.unresolved { background: #f6e0dc; border-bottom-color: var(--bad); }
   mark.q.caseonly  { background: #f4ecd6; border-bottom-color: var(--warn); }
+  /* FINDING 98. `whitespace_only` is neither a broken claim nor a labelling
+     defect, so it is neither red nor amber — a dotted underline on the plain
+     highlight, which reads as "there is something to say here" and not as
+     "this failed". It rendered as a clean citation with a broken tooltip
+     before this block. */
+  mark.q.whitespace { background: var(--mark); border-bottom-style: dotted; border-bottom-width: 2px; }
+  /* A state added to classify_span and not to SPAN_STATES lands here and is
+     visibly unstyled-on-purpose, rather than borrowing a neighbour's colour. */
+  mark.q.unknownstate { background: #ece9f2; border-bottom-color: #7a6f96; }
+
+  /* D1's second axis. A CATEGORY, not a severity — see the PROVENANCE comment.
+     Deliberately not built from --good/--warn/--bad. */
+  .provbox {
+    font-family: system-ui, sans-serif; font-size: 12px; line-height: 1.55;
+    background: #fff; border: 1px solid var(--line); border-left: 3px solid var(--ink-faint);
+    border-radius: 6px; padding: 10px 12px;
+  }
+  .provbox strong { color: var(--ink); }
+  .axis2 { display: flex; gap: 18px; flex-wrap: wrap; margin: 10px 0 2px;
+           font-family: system-ui, sans-serif; font-size: 12px; color: var(--ink-soft); }
+  .axis2 b { color: var(--ink); }
+  .ledger { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap: 14px; margin: 4px 0 2px; }
+  .ledger .cell { border-left: 3px solid var(--line); padding-left: 11px; }
+  .ledger .num { font-size: 21px; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .ledger .cap { font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint); line-height: 1.45; }
+  .gapdoc { border-top: 1px solid var(--line-soft); padding: 9px 0; }
+  .gapdoc .doct { font-size: 14.5px; cursor: pointer; }
+  .gapdoc .doct:hover { color: var(--accent); }
+  .gapdoc .names { font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint); margin-top: 3px; }
+  .gapdoc .names span { cursor: pointer; }
+  .gapdoc .names span:hover { color: var(--accent); }
+  .focusrow { border-top: 1px solid var(--line-soft); padding: 10px 0; cursor: pointer; }
+  .focusrow:hover .rec-title { color: var(--accent); }
+  .focusrow .why { font-family: system-ui, sans-serif; font-size: 11.5px; color: var(--ink-faint);
+                   margin-top: 4px; line-height: 1.5; }
 
   .marker {
     font-family: system-ui, sans-serif; font-size: 11px; font-weight: 700;
@@ -346,9 +381,31 @@ const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g,
 const LANGS = {
   en:"English", grc:"Ancient Greek", lzh:"Literary Chinese", oty:"Old Tamil",
   xpr:"Parthian", xna:"Nabataean Aramaic", xsa:"Sabaic", "gmq-pro":"Proto-Norse",
-  gez:"Ge'ez", arc:"Aramaic", la:"Latin", da:"Danish"
+  gez:"Ge'ez", arc:"Aramaic", la:"Latin", da:"Danish",
+  // Added in the UI block. The corpus carries twenty codes and this table
+  // carried twelve, so a Middle Persian passage was labelled `pal` on screen.
+  // Each name is the ISO 639-3 name for the code, confirmed against the record
+  // that carries it rather than read off the code alone.
+  pal:"Middle Persian", san:"Sanskrit", ocm:"Old Cham", omy:"Old Malay",
+  non:"Old Norse", arb:"Arabic", ko:"Korean", vi:"Vietnamese", fr:"French",
+  // FINDING 95: arabia-05-ruwafa's three chunks are not all in one language,
+  // so the corpus reports `mul` where it reported `arc` throughout Block F.
+  mul:"more than one language"
 };
 const langName = c => LANGS[c] || c || "unknown";
+
+/* Every language code the corpus actually carries, so prose that lists them
+   cannot go stale the way "Ancient Greek, Literary Chinese, Old Tamil,
+   Parthian, Nabataean Aramaic, Sabaic, Proto-Norse and English" did between
+   24 records and 54. */
+function corpusLanguages() {
+  const codes = new Set();
+  for (const rec of Object.values(D.corpus))
+    for (const c of rec.language_code || []) codes.add(c);
+  return [...codes].filter(c => c !== "en").map(langName).sort();
+}
+const listOf = xs => xs.length < 2 ? (xs[0] || "")
+  : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
 
 /* ------------------------------------------------------------------ *
  * Phase 2, A5: places, grounds and the network subject_places implies.
@@ -475,6 +532,134 @@ function shortTime(ts) {
 }
 
 /* ------------------------------------------------------------------ *
+ * FINDING 98. Every state `classify_span` can produce, rendered DELIBERATELY.
+ *
+ * `whitespace_only` (FINDING 42) reached neither renderer. In the answer it
+ * fell through the class chain to "" -- visually a clean citation -- and
+ * through the title chain to the pessimistic default, "this quotation no
+ * longer resolves against the corpus". In the panel it matched no warnbox
+ * branch and printed nothing. The picture said clean, the tooltip said broken,
+ * and the panel said nothing; all three cannot be right, and the state it was
+ * describing is the mildest of the six.
+ *
+ * It survived because every guard in `check_ui.mjs` asserts that a span is
+ * PRESENT and HIGHLIGHTED, and this one was. So the fix is a table both
+ * renderers read, plus `data-span-state` on the mark for `check_ui.mjs` to
+ * assert against -- the `data-date-verdict` pattern, which exists because a
+ * verdict that reaches the bundle and not the screen is the same defect one
+ * layer down.
+ *
+ * `cls` is an ORDERING and is allowed to be one: it says whether the claim
+ * still holds. That is the one axis on this page where a colour ramp is
+ * honest.
+ * ------------------------------------------------------------------ */
+const SPAN_STATES = {
+  resolved: {
+    cls: "",
+    title: "quoted from the source — click to see the characters on disk",
+    box: null,
+  },
+  case_folded: {
+    cls: " caseonly",
+    title: "quoted with different letter case, and recorded as such — click to see the characters on disk",
+    box: ["", "Not quite verbatim, and it says so.",
+      `The characters below are what the file holds; the answer altered the case to fit
+       its own sentence, and the citation checker recorded the match as
+       <code>case_folded</code> rather than claiming it was exact. The character range
+       is exact either way.`],
+  },
+  case_only: {
+    cls: " caseonly",
+    title: "quoted with different letter case — click for detail",
+    box: [" warn", "Not quite verbatim.",
+      `The characters below are what the file holds; the answer altered the case to
+       fit its own sentence. This run was archived before <code>cite.py</code> had a
+       third match state, so it recorded <code>exact</code>; that is a labelling
+       defect in the archive and it is shown as it was claimed.`],
+  },
+  article_added: {
+    cls: " caseonly",
+    title: "quoted with an article the source does not have — click for detail",
+    box: [" warn", "An article was added.",
+      `The quotation carries a leading article the characters on disk do not. The
+       character range is right; the quoted string is not what the file holds.`],
+  },
+  whitespace_only: {
+    cls: " whitespace",
+    title: "the archive and the record disagree about a line break — the characters are the quoted characters",
+    box: ["", "A line break, and nothing else.",
+      `The characters at this offset ARE the quoted characters once runs of whitespace
+       are collapsed, which is how <code>cite.py</code> matches by design. The archive
+       and the record disagree about one line break. FINDING 42: this is neither a
+       broken claim nor a labelling defect, and it is counted and shown rather than
+       tolerated silently, because a verifier made whitespace-insensitive would hide an
+       edit that changed only spacing — a real edit to a record whose offsets other
+       runs depend on.`],
+  },
+  moved: {
+    cls: " unresolved",
+    title: "the record was edited after this run — the quotation is still there, at a different offset",
+    box: [" warn", "The text moved.", null],
+  },
+  absent: {
+    cls: " unresolved",
+    title: "this quotation no longer resolves against the corpus — click for detail",
+    box: [" bad", "This citation no longer resolves.", null],
+  },
+  unclaimed: {
+    cls: "",
+    title: "verified in the English, but no character span claimed",
+    box: null,
+  },
+};
+
+/* ------------------------------------------------------------------ *
+ * D1's SECOND AXIS, which `build_ui_data.py` has written onto all 1289 spans
+ * since D1 and nothing on this page has ever read.
+ *
+ * The first axis asks whether the archived quote still sits at its recorded
+ * offset. This one asks whether the RECORD moved underneath it — and the two
+ * answer different questions, so they are never merged and `unrecorded` is
+ * never collapsed into either neighbour. `corpus_provenance`'s docstring gives
+ * the reason and it is the whole point: collapsing "unknown" into "unchanged"
+ * would report a span as a real defect on no evidence, and collapsing it into
+ * "changed" would explain away every real defect the archive holds.
+ *
+ * DELIBERATELY NOT COLOURED. `--good/--warn/--bad` asserts an ordering, and
+ * this axis has none: a record that moved is not worse than one that did not,
+ * and an archive that predates the corpus version is not a failure. The Places
+ * tab already refuses that palette for `ground` for the same reason. So this
+ * axis is told apart by LABEL, exactly as `ground` is told apart by SHAPE.
+ * ------------------------------------------------------------------ */
+const PROVENANCE = {
+  unchanged: { label: "the record has not moved",
+    gloss: `The seed record is byte-for-byte the one that produced this answer, so a
+            failing span here would be a defect in the span and nothing else.` },
+  changed: { label: "the record moved after this run",
+    gloss: `The seed record was edited after this answer was archived — measured by
+            comparing the run's recorded hash against the record's hash today, not
+            inferred. It does not follow that the quotation broke: most did not.` },
+  unrecorded: { label: "not knowable from the archive",
+    gloss: `This run was archived before the corpus version was recorded, so whether
+            the record has moved since cannot be told from the archive — and is not
+            assumed either way. This is a third answer, not a soft "no".` },
+  not_in_version: { label: "cited a record the run's corpus version does not cover",
+    gloss: `The run recorded a corpus version and this document is not in it.` },
+};
+
+function provenanceSection(res) {
+  const p = res && res.provenance;
+  if (!p) return "";
+  const d = PROVENANCE[p.state] || { label: p.state, gloss: "" };
+  return `<div class="sect"><h3>has the record moved underneath this citation?</h3>
+    <div class="provbox" data-provenance="${esc(p.state)}">
+      <strong>${esc(d.label)}</strong>
+      <div class="dormant" style="margin-top:6px">${d.gloss}</div>
+      ${p.why ? `<div class="dormant" style="margin-top:6px">${esc(p.why)}</div>` : ""}
+    </div></div>`;
+}
+
+/* ------------------------------------------------------------------ *
  * answer rendering: markers become buttons, quotations become clickable
  * highlights coloured by whether they still resolve to disk.
  * ------------------------------------------------------------------ */
@@ -520,17 +705,18 @@ function renderAnswerText(run) {
       html += `<button class="marker" data-marker="${esc(r.marker)}"
                 title="source ${esc(r.marker)} — click to inspect">${body}</button>`;
     } else {
-      const st = spans[r.si].resolution?.state || "unclaimed";
-      const cls = st === "resolved" ? ""
-                : (st === "case_only" || st === "case_folded") ? " caseonly"
-                : (st === "moved" || st === "absent") ? " unresolved" : "";
-      const title = st === "resolved"
-        ? "quoted from the source — click to see the characters on disk"
-        : st === "case_folded" ? "quoted with different letter case, and recorded as such — click to see the characters on disk"
-        : st === "case_only" ? "quoted with different letter case — click for detail"
-        : st === "unclaimed" ? "verified in the English, but no character span claimed"
-        : "this quotation no longer resolves against the corpus — click for detail";
-      html += `<mark class="q${cls}" data-span="${r.si}" title="${esc(title)}">${body}</mark>`;
+      const res = spans[r.si].resolution;
+      const st = res?.state || "unclaimed";
+      // No fall-through. An unknown state is rendered AS unknown and says so,
+      // rather than borrowing the nearest branch's colour — which is the
+      // shape of FINDING 98 and the reason this table exists.
+      const d = SPAN_STATES[st] || {
+        cls: " unknownstate",
+        title: `this citation is in a state this page does not yet render (${st}) — click for detail`,
+      };
+      const prov = res?.provenance?.state || "unrecorded";
+      html += `<mark class="q${d.cls}" data-span="${r.si}" data-span-state="${esc(st)}"`
+            + ` data-provenance="${esc(prov)}" title="${esc(d.title)}">${body}</mark>`;
     }
     cursor = r.end;
   }
@@ -571,24 +757,32 @@ function renderQuoteProvenance(run, si) {
 
   out += `<p class="prov-q">“${esc(span.quote)}”</p>`;
 
-  if (res && res.state === "absent") {
-    out += `<div class="warnbox bad"><strong>This citation no longer resolves.</strong>
-      ${esc(res.why)}. The answer below is preserved exactly as it was produced;
-      what has changed is the corpus underneath it. A viewer that printed whatever
-      now sits at these coordinates would look entirely convincing and be wrong.</div>`;
-  } else if (res && res.state === "moved") {
-    out += `<div class="warnbox warn"><strong>The text moved.</strong> ${esc(res.why)}
-      It is now at [${res.now_at[0]}:${res.now_at[1]}].</div>`;
-  } else if (res && res.state === "case_only") {
-    out += `<div class="warnbox warn"><strong>Not quite verbatim.</strong> ${esc(res.why)}.
-      The characters below are what the file holds; the answer altered the case to
-      fit its own sentence.</div>`;
-  } else if (res && res.state === "case_folded") {
-    out += `<div class="warnbox"><strong>Not quite verbatim, and it says so.</strong>
-      The characters below are what the file holds; the answer altered the case to fit
-      its own sentence, and the citation checker recorded the match as
-      <code>case_folded</code> rather than claiming it was exact. The character range
-      is exact either way.</div>`;
+  // FINDING 98: one table, both renderers, every state deliberate. The two
+  // states with a `null` body keep their own sentence below, because each has
+  // a figure to print that the table cannot hold.
+  if (res) {
+    const d = SPAN_STATES[res.state];
+    if (!d) {
+      out += `<div class="warnbox warn" data-span-state="${esc(res.state)}">
+        <strong>This page does not yet render this citation's state.</strong>
+        <code>${esc(res.state)}</code> was added to <code>classify_span</code> and not
+        to this table. ${esc(res.why || "")} Shown as unknown rather than as the
+        nearest state that happens to have a colour.</div>`;
+    } else if (d.box) {
+      const [sev, head, body] = d.box;
+      const tail = body != null ? body
+        : res.state === "absent"
+          ? `${esc(res.why)}. The answer below is preserved exactly as it was produced;
+             what has changed is the corpus underneath it. A viewer that printed whatever
+             now sits at these coordinates would look entirely convincing and be wrong.`
+          : `${esc(res.why)} It is now at [${res.now_at[0]}:${res.now_at[1]}].`;
+      out += `<div class="warnbox${sev}" data-span-state="${esc(res.state)}">
+        <strong>${head}</strong> ${tail}</div>`;
+    } else {
+      // `resolved` and `unclaimed` print no box — a box on every panel is a box
+      // nobody reads — but the state still reaches the DOM so it can be asserted.
+      out += `<span hidden data-span-state="${esc(res.state)}"></span>`;
+    }
   }
 
   out += `<div class="chain">
@@ -628,6 +822,7 @@ function renderQuoteProvenance(run, si) {
     }
   }
 
+  out += provenanceSection(res);
   if (passage) out += renderEnglishProvenance(passage);
   return out;
 }
@@ -1317,22 +1512,97 @@ function mapLegend() {
   </div>`;
 }
 
+/* What the map cannot draw, counted from the data rather than described.
+   At 24 records the gaps were a footnote and the page treated them as one. At
+   54 they are the majority of the geography, and a footnote that has become
+   the finding is no longer a footnote. Every figure here is derived; none is
+   written down. */
+function placeLedger() {
+  const all = Object.values(P.docs || {}).flat();
+  const gaps = all.filter(e => e.kind === "gap");
+  const focus = all.filter(e => e.role === "focus");
+  const docsAllGap = Object.entries(P.docs || {})
+    .filter(([, es]) => es.length && es.every(e => e.kind === "gap"));
+  return {
+    placements: all.length,
+    gaps,
+    gapsNoId: gaps.filter(e => e.gazetteer_id == null),
+    gapsIdNoGeometry: gaps.filter(e => e.gazetteer_id != null),
+    // Whether EVERY gap is `regional` is the question, so it is asked of the
+    // data and not asserted. If a `stated` placement ever becomes undrawable
+    // this sentence changes by itself instead of becoming false.
+    groundsMissing: [...new Set(gaps.map(e => e.ground))],
+    focusTotal: focus.length,
+    focusGaps: focus.filter(e => e.kind === "gap"),
+    docsAllGap,
+    edgesTotal: (P.edges || []).length,
+    edgesDrawable: (P.edges || []).filter(e => e.drawable).length,
+    groups: (P.groups || []).length,
+  };
+}
+
 function viewPlaces() {
   const stats = P.stats || {};
+  const L = placeLedger();
   const allEntries = Object.entries(P.docs || {});
-  const allGapDocs = allEntries.filter(([, entries]) => entries.length && entries.every(e => e.kind === "gap"));
+  const allGapDocs = L.docsAllGap;
   const partialGapEdges = (P.edges || []).filter(e => !e.drawable);
 
-  const notice = `<div class="notice"><strong>${stats.pins || 0} point${stats.pins === 1 ? "" : "s"} and
-    ${stats.extents || 0} regional extent${stats.extents === 1 ? "" : "s"}</strong>, drawn only from ids
-    cached in <code>data/gazetteer.json</code> — nothing here is a hand-placed coordinate.
+  const onlyRegional = L.groundsMissing.length === 1 && L.groundsMissing[0] === "regional";
+  const notice = `<div class="notice"><strong>${L.groups} distinct point${L.groups === 1 ? "" : "s"} and
+    extent${L.groups === 1 ? "" : "s"} are drawn, from ${L.placements} placement${L.placements === 1 ? "" : "s"};
+    ${L.gaps.length} are not.</strong> Everything drawn comes from an id cached in
+    <code>data/gazetteer.json</code> — nothing here is a hand-placed coordinate, and this block added none.
     <code>ground</code> is shown, not hidden: a <em>regional</em> claim draws as a shaded area and never as
     a pin, and a <em>contested</em> identification draws disputed, not settled. Lines are the edges
     <code>subject_places</code> exists to draw — <code>source → focus → destination</code> — drawn only
-    where both ends have a cached coordinate. ${stats.gaps || 0} placement${stats.gaps === 1 ? "" : "s"}
-    and ${partialGapEdges.length} edge${partialGapEdges.length === 1 ? "" : "s"} do not, and are listed
-    below rather than dropped — two of the seven literary records (the Weilüe, the Hou Hanshu) have no
-    cached geometry anywhere in them and exist on this page only in that list.</div>`;
+    where both ends have a cached coordinate.
+    <div class="ledger" style="margin-top:14px">
+      <div class="cell"><div class="num">${L.gaps.length}</div><div class="cap">placements the corpus names
+        and this map cannot draw${onlyRegional ? ` — <b>every one of them <code>regional</code></b>.
+        Not one <code>stated</code> or <code>identified</code> placement is missing` : ""}</div></div>
+      <div class="cell"><div class="num">${L.gapsNoId.length}</div><div class="cap">of those took
+        <b>no gazetteer id at all</b>. Read the notes: these are overwhelmingly refusals, not a backlog —
+        an office is not a city, a people is not a place, and an empire is not the town on the Tiber</div></div>
+      <div class="cell"><div class="num">${L.gapsIdNoGeometry.length}</div><div class="cap">took an id the
+        gazetteer holds and <b>does not say where it is</b>. A cached entry with no geometry, listed rather
+        than centred on a guess</div></div>
+      <div class="cell"><div class="num">${L.docsAllGap.length}</div><div class="cap">record${L.docsAllGap.length === 1 ? "" : "s"}
+        of the ${stats.documents_placed || 0} with any geography at all appear on this map
+        <b>only in the lists below</b></div></div>
+    </div></div>`;
+
+  /* The finding this tab exists to state plainly, and it is structural rather
+     than editorial: `focus` is the place a passage is ORGANISED AROUND, and
+     ${L.focusGaps.length} of ${L.focusTotal} of them have nowhere to draw. The
+     card quotes each record's own note rather than saying what these places
+     are, because naming them would be making the identification the corpus
+     deliberately refused. The notes were written by whoever curated the
+     record; the arithmetic is this page's. */
+  const focusCard = L.focusGaps.length ? `<div class="card">
+    <h3 style="margin-top:0;font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint)">
+      the place the passage is organised around, with nowhere to draw it</h3>
+    <p style="font-size:15px;margin:2px 0 6px"><strong>${L.focusGaps.length} of the ${L.focusTotal}
+      <code>focus</code> placements in this corpus are gaps.</strong> A reader looking at the map above
+      is looking at the places these texts mention in passing, while the place each text is actually
+      about is absent from it. Each row gives the record's own reason, unedited.</p>
+    ${L.focusGaps.map(e => {
+      const rec = D.corpus[e.doc_id];
+      // First sentence, unless it is a stub like "NO ID." -- several notes
+      // open with one, and a card that prints only that has told the reader
+      // nothing. Take sentences until there is something to read, and never
+      // paraphrase: this is the curator's text, not the page's.
+      const src = (e.note || e.gap_reason || "");
+      const parts = src.split(/(?<=\.)\s+/);
+      let why = "";
+      for (const p of parts) { why += (why ? " " : "") + p; if (why.length >= 60) break; }
+      if (why.length > 300) why = why.slice(0, 297).replace(/\s\S*$/, "") + "…";
+      return `<div class="focusrow" data-place="${esc(e.key)}">
+        <div class="rec-title">${esc(e.name)}</div>
+        <div class="rec-meta">${esc(rec ? rec.title : e.doc_id)}</div>
+        <div class="why">${esc(why)}</div></div>`;
+    }).join("")}
+  </div>` : "";
 
   const mapCard = `<div class="maparea">
     <div class="mapbar">
@@ -1345,16 +1615,25 @@ function viewPlaces() {
     <div id="mapholder">${buildMap()}</div>
     ${mapLegend()}</div>`;
 
-  const allGapCards = allGapDocs.map(([docId, entries]) => {
-    const rec = D.corpus[docId];
-    const rows = entries.map(e => `<div class="rec" data-place="${esc(e.key)}">
-      <div class="rec-title">${esc(e.name)} <span class="ground-tag${e.ground === "regional" ? " regional" : ""}">${esc(e.ground)}</span></div>
-      <div class="rec-meta">${e.role ? esc(e.role) : esc(e.block)}</div>
-    </div>`).join("");
-    return `<div class="card placard"><h3>considered — nothing resolves to a drawable point here</h3>
-      <div class="rec-title" data-record="${esc(docId)}" style="cursor:pointer;font-size:15px;margin-bottom:4px">${esc(rec ? rec.title : docId)}</div>
-      ${rows}</div>`;
-  }).join("");
+  /* This was one card per document, which was proportionate when three
+     records had no drawable geometry and is a wall of twenty-one cards now.
+     One card, one row per record, every placement still individually
+     clickable — nothing is dropped, the same names reach the same panels, and
+     the list can be read. */
+  const allGapCards = allGapDocs.length ? `<div class="card" style="grid-column:1/-1">
+    <h3 style="margin-top:0;font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-faint)">
+      considered — nothing in these records resolves to a drawable point</h3>
+    <p class="rec-meta" style="margin:0 0 6px">Every name below is clickable and opens its own
+      placement, with the id that was refused and the reason it was refused.</p>
+    ${allGapDocs.map(([docId, entries]) => {
+      const rec = D.corpus[docId];
+      return `<div class="gapdoc">
+        <div class="doct" data-record="${esc(docId)}">${esc(rec ? rec.title : docId)}
+          <span class="rec-meta" style="display:inline">· ${entries.length} placement${entries.length === 1 ? "" : "s"}</span></div>
+        <div class="names">${entries.map(e =>
+          `<span data-place="${esc(e.key)}">${esc(e.name.split(/[—–]/)[0].trim())}</span>`).join(" · ")}</div>
+      </div>`;
+    }).join("")}</div>` : "";
 
   const edgeGapRows = partialGapEdges.map(e => {
     const rec = D.corpus[e.doc_id];
@@ -1384,14 +1663,16 @@ function viewPlaces() {
   return `<div>
     ${notice}
     ${mapCard}
+    ${focusCard}
+    ${allGapCards}
     <div class="placards">
-      ${allGapCards}
-      <div class="card placard"><h3>edges named in the text, not drawn on the map</h3>
+      <div class="card placard"><h3>edges named in the text, not drawn on the map
+        (${partialGapEdges.length} of ${L.edgesTotal})</h3>
         ${edgeGapRows || `<p class="empty">none</p>`}</div>
       <div class="card placard"><h3>not yet placed</h3>${unconsideredRows || `<p class="empty">none</p>`}</div>
       <div class="card placard"><h3>declared unplaceable</h3>${unplaceableRows || `<p class="empty">none</p>`}</div>
     </div>
-    <h2 style="font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint)">All 24 records, by region</h2>
+    <h2 style="font-family:system-ui,sans-serif;font-size:11px;text-transform:uppercase;letter-spacing:.11em;color:var(--ink-faint)">All ${Object.keys(D.corpus).length} records, by region</h2>
     <div class="cols" style="grid-template-columns:minmax(0,1fr) 400px">
       <div class="regiongrid">${regionCards()}</div>
       <div class="rail-right panel"><h2>Place</h2>
@@ -1412,12 +1693,11 @@ function viewAbout() {
     <div>
     <div class="card">
       <h3 style="margin-top:0">What this page is showing</h3>
-      <p>Every answer here was produced by asking a question of a corpus of 24 primary
-      sources — inscriptions, literary texts, papyri and excavation records — drawn from
-      seven regions Rome traded with or heard about, between 27 BC and 1204 AD. Sources
-      are in Ancient Greek, Literary Chinese, Old Tamil, Parthian, Nabataean Aramaic,
-      Sabaic, Proto-Norse and English. An English question retrieves them in their own
-      languages, and the answer quotes them.</p>
+      <p>Every answer here was produced by asking a question of a corpus of
+      ${Object.keys(D.corpus).length} primary sources — inscriptions, literary texts, papyri and
+      excavation records — drawn from seven regions Rome traded with or heard about, between
+      27 BC and 1204 AD. Sources are in ${esc(listOf(corpusLanguages()))}, and English. An English
+      question retrieves them in their own languages, and the answer quotes them.</p>
       <p>The claim worth checking is not that the answers read well. It is that
       <strong>every quotation resolves to a specific range of characters in a specific
       field of a specific file</strong>. Click any highlighted phrase to see those
@@ -1451,12 +1731,73 @@ function viewAbout() {
     </div>
 
     <div class="card">
+      <h3 style="margin-top:0">And has the corpus moved underneath them?</h3>
+      <p style="font-size:14.5px;color:var(--ink-soft)">The audit above asks whether an archived
+      quotation still sits at the offset it recorded. That is not the same question as whether the
+      <em>record</em> moved since — and until this page was rebuilt it could only ask the first.
+      <code>build_ui_data.py</code> has measured the second for every span since D1, by comparing the
+      hash the run recorded against the record's hash today. Neither is a summary of the other, and
+      <strong>“not knowable” is a third answer and never a soft “no”</strong>: folding it into
+      “unchanged” would call a span a defect on no evidence, and folding it into “changed” would
+      explain away every real defect the archive holds.</p>
+      ${(() => {
+        const cross = {};
+        let total = 0;
+        for (const run of D.runs)
+          for (const s of run.grounding?.quote_spans || []) {
+            if (!s.resolution) continue;
+            const k = s.resolution.state + "\u0000" + (s.resolution.provenance?.state || "unrecorded");
+            cross[k] = (cross[k] || 0) + 1; total++;
+          }
+        const rows = Object.entries(cross).sort((a, b) => b[1] - a[1]).map(([k, n]) => {
+          const [st, pv] = k.split("\u0000");
+          const clean = st === "resolved";
+          return `<div class="chain"><div>
+            <span class="k" style="width:150px">${esc(st)}</span>
+            <span class="v">${n} span${n === 1 ? "" : "s"} — ${esc((PROVENANCE[pv] || {}).label || pv)}
+            ${clean ? "" : `<span class="ground-tag${pv === "unrecorded" ? " contested" : ""}"
+              style="margin-left:6px">${esc(pv)}</span>`}</span></div></div>`;
+        }).join("");
+        // The two sentences this cross-tabulation makes available, derived so
+        // they cannot survive the data changing underneath them.
+        const failing = Object.entries(cross).filter(([k]) => !k.startsWith("resolved\u0000"));
+        const failingBroken = failing.filter(([k]) => /^(moved|absent|case_only|article_added)\u0000/.test(k));
+        const allUnrec = failingBroken.every(([k]) => k.endsWith("\u0000unrecorded"));
+        const brokenN = failingBroken.reduce((n, [, v]) => n + v, 0);
+        const changedN = Object.entries(cross).filter(([k]) => k.endsWith("\u0000changed"))
+          .reduce((n, [, v]) => n + v, 0);
+        return rows + `<div class="dormant" style="margin-top:12px;line-height:1.6">
+          ${allUnrec ? `<strong>Every one of the ${brokenN} citations that fails the first axis has
+          provenance <code>unrecorded</code>.</strong> This project cannot say, of a single one of its
+          failing citations, whether the failure is a defect in the span or the record moving underneath
+          it — because every one of them was archived before the corpus version was recorded. That is a
+          fact about when they were made, not about how good they are, and it is here rather than
+          rounded off.` : `<strong>${brokenN} citation${brokenN === 1 ? "" : "s"} fail the first axis, and
+          not all of them are in the unknowable bucket</strong> — the ones with a recorded provenance can
+          be told apart from the ones without.`}
+          <br><br><strong>And the mirror, which is the better half:</strong> the corpus moved under
+          ${changedN} spans, and the archive still holds. <code>unchanged</code> is
+          ${cross["resolved\u0000unchanged"] || 0} not because nothing survived but because W3 added two
+          keys to all ${Object.keys(D.corpus).length} records in one commit, so every content hash moved
+          at once. A span whose record is <code>changed</code> is explained, not defective.</div>`;
+      })()}
+    </div>
+
+    <div class="card">
       <h3 style="margin-top:0">What this page does not show</h3>
       <p style="font-size:14.5px;color:var(--ink-soft)">The Places tab draws only what
-      <code>data/gazetteer.json</code> has cached against a Pleiades id — ${(P.stats||{}).gaps||0}
-      placements named in the corpus have no drawable coordinate yet, and are listed rather than
-      guessed at. Five records (the GeoNames backlog) have not been geographically placed at all.
-      There is no live question box yet — every run here cost an API call and is replayed from disk.
+      <code>data/gazetteer.json</code> has cached against a gazetteer id — ${(P.stats||{}).gaps||0}
+      placements named in the corpus have no drawable coordinate, and are listed rather than guessed
+      at. ${(P.unconsidered||[]).length === 0
+        ? `Every record has now been considered geographically, which was not true at 24 records:
+           what is left is not a backlog but a set of refusals, and the Places tab counts them.`
+        : `${(P.unconsidered||[]).length} record(s) have not been geographically placed at all.`}
+      <strong>No answer on this page is generated when you read it.</strong> All ${D.runs.length} runs
+      were archived while the system was built, each one cost an API call, and each is replayed from
+      disk and re-checked against the corpus as it stands today — which is why the two audits above
+      can exist at all. That is a ruling, not a limitation waiting to be lifted: an answer generated
+      at request time would be the one thing on this page nobody had scored, sitting in the same type
+      as ${Object.values(D.span_audit||{}).reduce((n,v)=>n+(v||0),0)} citations that have been.
       The translation-confidence machinery is visible but dormant, because every non-English passage
       in this corpus already has a published English translation. And one question, on Aksumite
       trade, has failed to produce a grounded answer in every attempt under four different prompts,

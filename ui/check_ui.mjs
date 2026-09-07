@@ -16,6 +16,7 @@
  */
 
 import { readFileSync, readdirSync, statSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import vm from "node:vm";
@@ -101,7 +102,8 @@ try {
     "\n;globalThis.__api = { D, P, byQuestion, QUESTIONS, state, renderAnswerText," +
     " renderQuoteProvenance, renderPassageProvenance, renderRecordProvenance," +
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
-    " buildMap, mapState, mapWindow, mapBase, viewQuestions, viewPlaces, viewAbout };",
+    " buildMap, mapState, mapWindow, mapBase, viewQuestions, viewPlaces, viewAbout," +
+    " SPAN_STATES, PROVENANCE, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
 } catch (e) {
@@ -114,7 +116,8 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderQuoteProvenance, renderPassageProvenance,
         renderRecordProvenance, renderPlaceProvenance, renderGroupProvenance,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase,
-        viewQuestions, viewPlaces, viewAbout } = sandbox.__api;
+        viewQuestions, viewPlaces, viewAbout,
+        SPAN_STATES, PROVENANCE, langName, placeLedger } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
 let rendered = 0, panels = 0;
@@ -363,6 +366,212 @@ if (D.coastline && D.coastline.polygons) {
   note(missing.length === 0,
        `all ${allIds.size} records are clickable from the Places tab` +
        (missing.length ? ` — missing: ${missing.slice(0,5).join(", ")}` : ""));
+}
+
+/* ---- 2e. FINDING 98: every span state renders DELIBERATELY ----
+ *
+ * `whitespace_only` reached neither renderer. It fell through the class chain
+ * to "" -- visually a clean citation -- and through the title chain to "this
+ * quotation no longer resolves against the corpus", while its provenance panel
+ * printed no box at all. Three answers on one citation and none of them
+ * agreeing, and every check in this file passed over it, because all of them
+ * assert a span is PRESENT and HIGHLIGHTED and it was.
+ *
+ * So this asserts what none of them did: that the state reaches the DOM AS
+ * ITSELF. `data-span-state` exists for this and for nothing else -- the same
+ * argument as `data-date-verdict` at A6, one layer over. The next state added
+ * to `classify_span` and not to `SPAN_STATES` fails here instead of quietly
+ * borrowing a neighbour's colour.
+ */
+{
+  const seen = {}, mismatched = [], unknown = [];
+  for (const run of D.runs) {
+    const html = renderAnswerText(run);
+    const spans = run.grounding?.quote_spans || [];
+    for (const m of html.matchAll(/data-span-state="([^"]*)"/g))
+      seen[m[1]] = (seen[m[1]] || 0) + 1;
+    if (/class="q unknownstate"/.test(html)) unknown.push(run.run_key);
+    // Every state in the data must be the state on the mark, span by span.
+    for (let si = 0; si < spans.length; si++) {
+      const want = spans[si].resolution?.state;
+      if (!want) continue;
+      const re = new RegExp(`<mark class="q[^"]*" data-span="${si}" data-span-state="([^"]*)"`);
+      const got = (html.match(re) || [])[1];
+      if (got !== undefined && got !== want)
+        mismatched.push(`${run.run_key}#${si}: data says ${want}, mark says ${got}`);
+    }
+  }
+  note(mismatched.length === 0,
+       `every mark carries its own span's state (${JSON.stringify(seen)})` +
+       (mismatched.length ? ` — ${mismatched.slice(0, 3).join("; ")}` : ""));
+  note(unknown.length === 0,
+       `no span falls through to the unknown-state rendering` +
+       (unknown.length ? ` — ${unknown.length} run(s) do, e.g. ${unknown[0]}` : ""));
+
+  // And the panel agrees with the mark. FINDING 98 was precisely the two
+  // disagreeing, so asserting them separately would not have caught it.
+  const panelMissing = [];
+  for (const run of D.runs) {
+    const spans = run.grounding?.quote_spans || [];
+    for (let si = 0; si < spans.length; si++) {
+      const want = spans[si].resolution?.state;
+      if (!want) continue;
+      const html = renderQuoteProvenance(run, si);
+      if (!html.includes(`data-span-state="${want}"`)) panelMissing.push(`${run.run_key}#${si} (${want})`);
+    }
+  }
+  note(panelMissing.length === 0,
+       `every quotation panel names its own span's state (${panelMissing.length} do not)` +
+       (panelMissing.length ? ` — e.g. ${panelMissing.slice(0, 3).join(", ")}` : ""));
+
+  // Every state the data can produce must have a deliberate entry. A state
+  // present in classify_span's output and absent from SPAN_STATES is FINDING
+  // 98 again, and this is the check that would have caught it the first time.
+  const dataStates = new Set();
+  for (const run of D.runs)
+    for (const s of run.grounding?.quote_spans || [])
+      if (s.resolution) dataStates.add(s.resolution.state);
+  const untabled = [...dataStates].filter(st => !(st in SPAN_STATES));
+  note(untabled.length === 0,
+       `SPAN_STATES covers every state in the archive (${[...dataStates].sort().join(", ")})` +
+       (untabled.length ? ` — MISSING: ${untabled.join(", ")}` : ""));
+}
+
+/* ---- 2f. D1's SECOND AXIS reaches the screen, and stays a separate axis ----
+ *
+ * `build_ui_data.py` has written `resolution.provenance` onto every span since
+ * D1 and, until this block, the page read none of it. A field that reaches the
+ * bundle and not the panel is the A6 defect; a field that reaches the bundle,
+ * is never read, and is nobody's job is the same defect with no owner.
+ *
+ * The second assertion is the one that matters. `unrecorded` means NOT
+ * KNOWABLE, and `corpus_provenance`'s docstring is explicit that collapsing it
+ * into `unchanged` reports a span as a real defect on no evidence. So this
+ * checks that no span whose data says `unrecorded` is ever rendered as
+ * anything else -- the failure would be invisible on screen and would quietly
+ * turn eleven unknowns into eleven verdicts.
+ */
+{
+  const missing = [], collapsed = [], tally = {};
+  for (const run of D.runs) {
+    const spans = run.grounding?.quote_spans || [];
+    for (let si = 0; si < spans.length; si++) {
+      const p = spans[si].resolution?.provenance?.state;
+      if (!p) continue;
+      tally[p] = (tally[p] || 0) + 1;
+      const html = renderQuoteProvenance(run, si);
+      if (!html.includes(`data-provenance="${p}"`)) missing.push(`${run.run_key}#${si} (${p})`);
+      else if (p === "unrecorded" &&
+               (html.includes('data-provenance="unchanged"') ||
+                html.includes('data-provenance="changed"')))
+        collapsed.push(`${run.run_key}#${si}`);
+    }
+  }
+  note(missing.length === 0,
+       `every citation panel carries its corpus provenance — ${JSON.stringify(tally)}` +
+       (missing.length ? ` — NOT shown: ${missing.slice(0, 3).join(", ")}` : ""));
+  note(collapsed.length === 0,
+       `no 'unrecorded' span is ever rendered as 'unchanged' or 'changed'` +
+       (collapsed.length ? ` — collapsed in ${collapsed.slice(0, 3).join(", ")}` : ""));
+
+  // Every provenance state must have a deliberate entry too, same argument.
+  const untabled = Object.keys(tally).filter(p => !(p in PROVENANCE));
+  note(untabled.length === 0,
+       `PROVENANCE covers every provenance state in the archive` +
+       (untabled.length ? ` — MISSING: ${untabled.join(", ")}` : ""));
+}
+
+/* ---- 2g. no count on this page is written down ----
+ *
+ * The page shipped `"All 24 records, by region"`, `"a corpus of 24 primary
+ * sources"`, `"Five records ... have not been geographically placed at all"`
+ * and `"two of the seven literary records"` while the corpus was 54, 54, zero
+ * and neither. Every one was a literal typed once and true once.
+ *
+ * A guard against "a number appears in prose" would be unenforceable, so this
+ * asserts the specific failure instead: no view may print a corpus-size or
+ * record-count figure that disagrees with the bundle. The numbers it hunts for
+ * are the ones that were actually wrong.
+ */
+{
+  const html = viewPlaces() + viewAbout() + viewQuestions();
+  const n = Object.keys(D.corpus).length;
+  const stale = [];
+  for (const [pattern, why] of [
+    [/All (\d+) records, by region/, "the record-list heading"],
+    [/corpus of (\d+) primary\s+sources/, "the About tab's opening sentence"],
+  ]) {
+    const m = html.match(pattern);
+    if (m && Number(m[1]) !== n) stale.push(`${why}: says ${m[1]}, corpus is ${n}`);
+  }
+  // The two sentences that were not about the corpus size and were wrong anyway.
+  if (/Five records \(the GeoNames backlog\)/.test(html) &&
+      (P.unconsidered || []).length !== 5)
+    stale.push(`the GeoNames-backlog sentence says five, unconsidered is ${(P.unconsidered||[]).length}`);
+  if (/two of the seven literary records/.test(html))
+    stale.push("the 'two of the seven literary records' sentence is a literal from 24 records");
+  note(stale.length === 0,
+       `no view prints a record count that disagrees with the bundle (${n} records)` +
+       (stale.length ? ` — ${stale.join("; ")}` : ""));
+
+  // Every language code in the corpus must have a name. `pal`, `san`, `ocm`,
+  // `omy`, `non`, `arb`, `ko`, `vi` and `fr` rendered as raw ISO codes.
+  const unnamed = [];
+  for (const rec of Object.values(D.corpus))
+    for (const c of rec.language_code || [])
+      if (langName(c) === c) unnamed.push(c);
+  note(unnamed.length === 0,
+       `every language code in the corpus has a name on screen` +
+       (unnamed.length ? ` — raw codes shown for: ${[...new Set(unnamed)].join(", ")}` : ""));
+}
+
+/* ---- 2h. DEBT ROW 7: the manifest describes the bundle beside it ----
+ *
+ * FINDING 74. `data.js` is one 9.5MB line, so `git diff --stat` calls every
+ * rebuild `2 +-`. `data.manifest.json` is the reviewable diff -- and a
+ * manifest nothing checks is a file that says whatever it last said, so every
+ * figure in it is re-derived HERE from `data.js` rather than trusted.
+ */
+{
+  let manifest = null;
+  try { manifest = JSON.parse(readFileSync(join(UI, "data.manifest.json"), "utf8")); }
+  catch (e) { note(false, `ui/data.manifest.json is missing or unparseable (${e.message}) — run: python ui/build_ui_data.py`); }
+
+  if (manifest) {
+    const actual = createHash("sha256").update(readFileSync(join(UI, "data.js"))).digest("hex");
+    note(manifest.data_js?.sha256 === actual,
+         `the manifest names the data.js sitting beside it` +
+         (manifest.data_js?.sha256 === actual ? ""
+           : ` — manifest says ${String(manifest.data_js?.sha256).slice(0,12)}…, file is ${actual.slice(0,12)}…`));
+
+    const spans = D.runs.flatMap(r => (r.grounding?.quote_spans || []).filter(s => s.resolution));
+    const tally = (xs, f) => { const t = {}; for (const x of xs) { const k = f(x); t[k] = (t[k]||0)+1; } return t; };
+    const derived = {
+      "corpus.records": [manifest.corpus?.records, Object.keys(D.corpus).length],
+      "runs.count": [manifest.runs?.count, D.runs.length],
+      "runs.with_corpus_version": [manifest.runs?.with_corpus_version,
+                                    D.runs.filter(r => r.corpus_version).length],
+      "spans.claimed": [manifest.spans?.claimed, spans.length],
+      "places.groups": [manifest.places?.groups, (P.groups || []).length],
+      "places.edges": [manifest.places?.edges, (P.edges || []).length],
+    };
+    const off = Object.entries(derived).filter(([, [m, d]]) => m !== d)
+      .map(([k, [m, d]]) => `${k}: manifest ${m}, data.js ${d}`);
+    const auditOff = JSON.stringify(manifest.spans?.audit) !==
+      JSON.stringify(Object.fromEntries(Object.entries(tally(spans, s => s.resolution.state)).sort()));
+    const provOff = JSON.stringify(manifest.spans?.corpus_provenance) !==
+      JSON.stringify(Object.fromEntries(Object.entries(tally(spans, s => s.resolution.provenance.state)).sort()));
+    if (auditOff) off.push("spans.audit disagrees with the spans in data.js");
+    if (provOff) off.push("spans.corpus_provenance disagrees with the spans in data.js");
+    note(off.length === 0,
+         `every figure in the manifest is re-derivable from data.js (${Object.keys(derived).length + 2} checked)` +
+         (off.length ? ` — ${off.join("; ")}` : ""));
+
+    // The manifest must keep the two axes apart. Merging them in a summary is
+    // how a decomposition quietly becomes a total.
+    note(manifest.spans?.audit != null && manifest.spans?.corpus_provenance != null,
+         "the manifest reports both verify axes, separately");
+  }
 }
 
 /* ---- 3. the UI's on-screen claims are true of the data ---- */

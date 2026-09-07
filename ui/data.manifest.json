@@ -1,0 +1,143 @@
+{
+  "_": "Generated beside ui/data.js by ui/build_ui_data.py. Never edited by hand, and never read as truth: check_ui.mjs re-derives every figure below from data.js itself and fails on disagreement. It exists so a change to a 9.5MB single-line file can be reviewed (debt row 7, FINDING 74).",
+  "generated": "2026-09-07T10:26:13+00:00",
+  "data_js": {
+    "bytes": 9768352,
+    "sha256": "4c32f724d3af8c4bfe4086483562fef66fc5a366029a237063bbfcc499b1db5b"
+  },
+  "corpus": {
+    "records": 54,
+    "digest": "0e7845055e440c7c46535f1aa2e5ea55e5116ed733d77bbb616404e8bdc2c839",
+    "digest_algorithm": "sha256-of-canonical-json-v1",
+    "languages": [
+      "arb",
+      "arc",
+      "da",
+      "en",
+      "fr",
+      "gez",
+      "gmq-pro",
+      "grc",
+      "ko",
+      "la",
+      "lzh",
+      "non",
+      "ocm",
+      "omy",
+      "oty",
+      "pal",
+      "san",
+      "vi",
+      "xna",
+      "xpr",
+      "xsa"
+    ],
+    "regions": {
+      "Arabia": 8,
+      "East Asia": 9,
+      "Persia": 7,
+      "Scandinavia": 7,
+      "South Asia": 7,
+      "Southeast Asia": 9,
+      "Sub-Saharan Africa": 7
+    },
+    "sha256": "10f7eedef640cee24a257d439a06972253f0c6d8605e3c844487da566e593703"
+  },
+  "runs": {
+    "count": 685,
+    "questions": [
+      "How did Chinese sources describe the Roman empire?",
+      "How were the rulers of Da Qin chosen, according to the Weilue?",
+      "In the Weilüe's own Classical Chinese, how is Da Qin described?",
+      "Was Oc Eo the Cattigara of Ptolemy?",
+      "Were Roman coins found at Oc Eo?",
+      "What Roman coins were found at Illerup Adal?",
+      "What Roman object was found at Khao Sam Kaeo?",
+      "What did Rome trade with the Kingdom of Aksum?",
+      "What did ships carry from Muziris?",
+      "What did the Roman embassy of 166 bring to the Han court?",
+      "What do the Vimose runes say?",
+      "What does DNA evidence from Pattanam show about the site's population?",
+      "What does the Ge'ez text of the Ezana Stone say?",
+      "What does the Jabal Dabub inscription say?",
+      "What does the Latin legend on the Oc Eo gold medallion read?",
+      "What does the Nabataean epitaph of Raqōš say?",
+      "What does the Tamil poem say about Yavana ships at Muciri?",
+      "What is depicted on the Sasanian gilded silver hunting plate?",
+      "What is shown on the gold coin of King Ezanas?",
+      "What is shown on the silver drachm of Shapur I?",
+      "What rates did the Palmyrene tax tariff set?",
+      "What runic inscriptions are on the Gudme bracteates?",
+      "What titles does Ezana claim on the Ezana Stone?",
+      "What titles does Shapur I claim in the Res Gestae Divi Saporis?",
+      "What was exported from Adulis?",
+      "What was exported from Cana?",
+      "What was the cargo of the Hermapollon worth?",
+      "When was the Antikythera mechanism built?",
+      "Where was the Roman glass from the Silla royal tomb made?",
+      "Which Roman emperors does the Res Gestae Divi Saporis name?",
+      "Who made the silver cups from the Hoby grave?",
+      "Who was the Silius named on the Hoby cups?",
+      "யவனர் முசிறி பொன்னொடு வந்து கறியொடு பெயரும்"
+    ],
+    "prompt_versions": {
+      "p7-answer-v1": 5,
+      "p7-answer-v2": 5,
+      "p7-answer-v2r": 654,
+      "p7-answer-v3": 6,
+      "p7-answer-v4": 15
+    },
+    "with_corpus_version": 608,
+    "sha256": "d9dbebd1f6b56ccfe903bb694fd97698f6e432bd06e73517ecf87d7b24ef17d8"
+  },
+  "spans": {
+    "claimed": 1289,
+    "audit": {
+      "absent": 1,
+      "case_folded": 50,
+      "case_only": 9,
+      "moved": 1,
+      "resolved": 1227,
+      "whitespace_only": 1
+    },
+    "corpus_provenance": {
+      "changed": 1121,
+      "unrecorded": 168
+    },
+    "sha256": "1e2566a4ddb7d66cd4b7125ac7b0369ecdd5a1053c0df68ff439d27504225bb3"
+  },
+  "places": {
+    "stats": {
+      "documents_declared_unplaceable": 1,
+      "documents_placed": 53,
+      "documents_unconsidered": 0,
+      "edges_drawable": 19,
+      "edges_total": 49,
+      "extents": 6,
+      "gaps": 90,
+      "pins": 73
+    },
+    "groups": 63,
+    "edges": 49,
+    "declared_unplaceable": [
+      "persia-03-coin"
+    ],
+    "unconsidered": [],
+    "sha256": "8891057f92d28536dbc52b94928b011c9a4d77636294e20655f8d487e75405fe"
+  },
+  "coastline": {
+    "source": "Natural Earth",
+    "scale": "1:110m",
+    "retrieved": "2026-08-13",
+    "terms": "public domain",
+    "polygon_count": 46,
+    "point_count": 2060,
+    "simplify_tolerance": 0.05,
+    "sha256": "38087ece47785ea0b6782ef4dafa036f2740c20df0a43e44544816394ade7f97"
+  },
+  "gold": {
+    "answer_cases": "0a2a3af453f5bbad3d288cf96ccc2e93a50bc32f86cea1d314ad973ec999cae6",
+    "confidence_profiles": "dae245200b3f916a54e1f10657cddd4ae77c4a9133033ec9af91f5922e2d039e",
+    "floor": "9eeed1193cfd5a1df35d2ddfa25063e6f1c2649ba8c5a09ef544c175b990a344"
+  }
+}

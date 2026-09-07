@@ -45,6 +45,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import datetime as _dt
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -56,6 +57,15 @@ CORPUS_DIR = REPO / "data" / "seed_corpus"
 GOLD_DIR = REPO / "eval" / "gold"
 GAZETTEER_PATH = REPO / "data" / "gazetteer.json"
 OUT = Path(__file__).resolve().parent / "data.js"
+# DEBT ROW 7, FINDING 74. `data.js` is one line of ~9.5MB, so every rebuild is
+# `2 +-` in `git diff --stat` and no reviewer -- human or otherwise -- can tell
+# a corpus rebuild from a coastline swap from a corruption. This is the diff
+# that can be read: pretty-printed, sorted, one fact per line, written by the
+# same command in the same breath so it cannot drift from what it describes.
+# It is a DESCRIPTION and never a second source of truth: `check_ui.mjs`
+# re-derives every figure in it from `data.js` and fails on any disagreement,
+# which is what stops it from becoming a file that says whatever it last said.
+MANIFEST = Path(__file__).resolve().parent / "data.manifest.json"
 
 # `ingest` is a sibling package, not a subpackage of `ui`. This script is run
 # as `python ui/build_ui_data.py`, not `python -m ui.build_ui_data`, so the
@@ -746,6 +756,95 @@ def verify_spans(runs: list[dict], corpus: dict[str, dict]) -> dict[str, list]:
     return buckets
 
 
+def _digest(obj: Any) -> str:
+    """Stable sha256 of any bundle section, over canonical JSON."""
+    return hashlib.sha256(
+        json.dumps(obj, ensure_ascii=False, sort_keys=True,
+                   separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+
+
+def build_manifest(bundle: dict, data_js: bytes, buckets: dict,
+                   today_digest: str) -> dict:
+    """A reviewable description of `data.js`, small enough to read in a diff.
+
+    Every count here is derived from the bundle that was just written, in this
+    process, from the same objects. A manifest assembled from a second pass
+    over the corpus could disagree with the file it names and be the more
+    convincing of the two.
+    """
+    runs = bundle["runs"]
+    spans = [s for r in runs
+             for s in r.get("grounding", {}).get("quote_spans", [])
+             if s.get("resolution")]
+    prov = Counter(s["resolution"]["provenance"]["state"] for s in spans)
+    states = Counter(s["resolution"]["state"] for s in spans)
+    places = bundle.get("places") or {}
+    coast = bundle.get("coastline") or {}
+    corpus = bundle["corpus"]
+
+    return {
+        "_": "Generated beside ui/data.js by ui/build_ui_data.py. Never edited "
+             "by hand, and never read as truth: check_ui.mjs re-derives every "
+             "figure below from data.js itself and fails on disagreement. It "
+             "exists so a change to a 9.5MB single-line file can be reviewed "
+             "(debt row 7, FINDING 74).",
+        "generated": bundle["generated"],
+        "data_js": {
+            "bytes": len(data_js),
+            "sha256": hashlib.sha256(data_js).hexdigest(),
+        },
+        "corpus": {
+            "records": len(corpus),
+            "digest": today_digest,
+            "digest_algorithm": CORPUS_DIGEST_ALGORITHM,
+            "languages": sorted({c for rec in corpus.values()
+                                 for c in rec.get("language_code") or []}),
+            "regions": dict(sorted(Counter(
+                rec.get("region") or "(none)" for rec in corpus.values()).items())),
+            "sha256": _digest(corpus),
+        },
+        "runs": {
+            "count": len(runs),
+            "questions": sorted({r["question"] for r in runs}),
+            "prompt_versions": dict(sorted(Counter(
+                r.get("prompt_version") or "(none)" for r in runs).items())),
+            "with_corpus_version": sum(1 for r in runs if r.get("corpus_version")),
+            "sha256": _digest(runs),
+        },
+        "spans": {
+            "claimed": sum(len(v) for v in buckets.values()),
+            # FIRST AXIS: does the archived quote still sit at its offset.
+            "audit": dict(sorted(states.items())),
+            # SECOND AXIS (D1): has the record moved underneath the span. Kept
+            # as its own key because the two are different questions and a
+            # manifest that merged them would make the merge look official.
+            "corpus_provenance": dict(sorted(prov.items())),
+            "sha256": _digest([s["resolution"] for s in spans]),
+        },
+        "places": {
+            "stats": dict(sorted((places.get("stats") or {}).items())),
+            "groups": len(places.get("groups") or []),
+            "edges": len(places.get("edges") or []),
+            "declared_unplaceable": sorted(places.get("declared_unplaceable") or {}),
+            "unconsidered": sorted(places.get("unconsidered") or []),
+            "sha256": _digest(places),
+        },
+        "coastline": {
+            "source": coast.get("source"),
+            "scale": coast.get("scale"),
+            "retrieved": coast.get("retrieved"),
+            "terms": coast.get("terms"),
+            "polygon_count": coast.get("polygon_count"),
+            "point_count": coast.get("point_count"),
+            "simplify_tolerance": coast.get("simplify_tolerance"),
+            "sha256": _digest(coast),
+        } if coast else None,
+        "gold": {name: _digest(obj)
+                 for name, obj in sorted((bundle.get("gold") or {}).items())},
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="bundle archived runs for ui/index.html")
     parser.add_argument("--verify", action="store_true",
@@ -893,6 +992,15 @@ def main(argv: list[str] | None = None) -> int:
     )
     size = OUT.stat().st_size / 1024
     print(f"wrote {OUT.relative_to(REPO)} ({size:.0f} KB)")
+
+    # Debt row 7. Written from the bundle in hand, in the same run, so it can
+    # never describe a data.js that is not the one on disk beside it.
+    manifest = build_manifest(bundle, OUT.read_bytes(), buckets, today_digest)
+    MANIFEST.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=False) + "\n",
+        encoding="utf-8")
+    print(f"wrote {MANIFEST.relative_to(REPO)} "
+          f"({MANIFEST.stat().st_size / 1024:.1f} KB) — the diffable one")
     return 0
 
 
