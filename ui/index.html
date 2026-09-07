@@ -769,7 +769,7 @@
   <div class="brandbar">
     <div class="brand">
       <h1>Mundus Ulterior</h1>
-      <span class="sub">Rome and the wider world, 27 BC – 1204 AD — answers traced to the characters they came from</span>
+      <span class="sub">Rome and the wider world, 27 BC – 1204 AD: source-based answers</span>
     </div>
     <button class="themebtn" id="themebtn" type="button" hidden>theme</button>
   </div>
@@ -2625,14 +2625,11 @@ function statStrip() {
   const total = Object.values(a).reduce((n, v) => n + (v || 0), 0);
   const langs = new Set();
   for (const rec of Object.values(D.corpus)) (rec.language_code || []).forEach(l => langs.add(l));
-  const ps = P.stats || {};
   document.getElementById("statstrip").innerHTML =
     `<span><b>${Object.keys(D.corpus).length}</b> primary sources</span>
      <span><b>${langs.size}</b> languages</span>
-     <span><b>${D.runs.length}</b> archived answers</span>
      <span><b>${total}</b> citations, <b>${a.resolved || 0}</b> resolving to characters on disk</span>
-     <span><b>${(P.groups||[]).length}</b> places drawn, <b>${ps.gaps||0}</b> named and not drawable,
-       <b>${ps.edges_drawable||0}</b> of ${ps.edges_total||0} trade edges</span>`;
+     <span><b>${(P.groups||[]).length}</b> locations</span>`;
 }
 
 /* The hash is written FROM state, never the other way round in the same
