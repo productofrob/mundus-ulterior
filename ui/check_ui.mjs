@@ -102,7 +102,7 @@ try {
     "\n;globalThis.__api = { D, P, byQuestion, QUESTIONS, state, renderAnswerText," +
     " renderQuoteProvenance, renderPassageProvenance, renderRecordProvenance," +
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
-    " buildMap, mapState, mapWindow, mapBase, viewQuestions, viewPlaces, viewAbout," +
+    " buildMap, mapState, mapWindow, mapBase, viewHome, viewQuestions, viewPlaces, viewAbout," +
     " SPAN_STATES, PROVENANCE, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -116,7 +116,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderQuoteProvenance, renderPassageProvenance,
         renderRecordProvenance, renderPlaceProvenance, renderGroupProvenance,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase,
-        viewQuestions, viewPlaces, viewAbout,
+        viewHome, viewQuestions, viewPlaces, viewAbout,
         SPAN_STATES, PROVENANCE, langName, placeLedger } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
@@ -150,8 +150,15 @@ for (const docId of Object.keys(D.corpus)) {
   catch (e) { fail.push(`record panel ${docId}: ${e.message}`); }
 }
 note(true, `built a record panel for all ${Object.keys(D.corpus).length} seed records`);
+/* Every view the tab bar can reach is rendered here BY NAME. A view that is
+   not in this list is a surface with no guard on it at all: the Home tab was
+   added after this harness was written, and until it was named here a Home tab
+   that threw would have shipped green. Add the next one the same day it
+   exists. */
 try { viewPlaces(); viewAbout(); note(true, "places and about views render"); }
 catch (e) { note(false, `a view threw: ${e.message}`); }
+try { viewHome(); note(true, "the home view renders"); }
+catch (e) { note(false, `the home view threw: ${e.message}`); }
 
 /* ---- 2b. Phase 2, A5: every placement is reachable, plotted or not ----
  *

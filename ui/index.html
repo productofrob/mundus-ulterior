@@ -775,9 +775,10 @@
   </div>
   <div class="statstrip" id="statstrip"></div>
   <div class="tabs" role="tablist">
-    <button class="tab" role="tab" data-view="questions" aria-selected="true">Questions</button>
-    <button class="tab" role="tab" data-view="places"    aria-selected="false">Places</button>
-    <button class="tab" role="tab" data-view="about"     aria-selected="false">What you are looking at</button>
+    <button class="tab" role="tab" data-view="home"      aria-selected="true">Home</button>
+    <button class="tab" role="tab" data-view="questions" aria-selected="false">Questions</button>
+    <button class="tab" role="tab" data-view="map"       aria-selected="false">Map</button>
+    <button class="tab" role="tab" data-view="data"      aria-selected="false">Data &amp; Sources</button>
   </div>
 </header>
 
@@ -939,7 +940,7 @@ for (const runs of byQuestion.values()) {
 const QUESTIONS = [...byQuestion.keys()];
 
 let state = {
-  view: "questions",
+  view: "home",
   question: QUESTIONS[0],
   runIndex: null,       // null => pick the most interesting run
   selection: null,      // { kind:"quote"|"passage"|"record", ... }
@@ -987,16 +988,17 @@ const runStamp = r => String(r.timestamp || "").replace(/[-:]/g, "").replace(/\.
 const questionBySlug = new Map(QUESTIONS.map(q => [slugOf(q), q]));
 
 function hashOf(s) {
-  if (s.view === "places") {
+  if (s.view === "home") return "#";
+  if (s.view === "map") {
     const sel = s.selection;
     if (sel && sel.kind === "place") return `#place/${encodeURIComponent(sel.key)}`;
     if (sel && sel.kind === "group") return `#point/${encodeURIComponent(sel.cacheKey)}`;
     if (sel && sel.kind === "edge")  return `#edge/${sel.idx}`;
     if (sel && sel.kind === "record") return `#record/${encodeURIComponent(sel.docId)}`;
-    return "#places";
+    return "#map";
   }
-  if (s.view === "about") return "#about";
-  if (s.intro && s.selection == null && s.runIndex == null) return "#";
+  if (s.view === "data") return "#data";
+  if (s.intro && s.selection == null && s.runIndex == null) return "#questions";
   const runs = byQuestion.get(s.question) || [];
   const run = runs[s.runIndex == null ? defaultRunIndex(runs) : Math.min(s.runIndex, runs.length - 1)];
   let h = `#q/${slugOf(s.question)}`;
@@ -1020,31 +1022,34 @@ function applyHash(raw) {
   const seg = h.split("/").filter(Boolean).map(decodeURIComponent);
   state.selection = null;
   state.hashError = null;
-  if (!seg.length) { state.view = "questions"; state.intro = true; state.runIndex = null; return null; }
+  if (!seg.length) { state.view = "home"; state.intro = true; state.runIndex = null; return null; }
 
   state.intro = false;
-  if (seg[0] === "places")  { state.view = "places"; return null; }
-  if (seg[0] === "about")   { state.view = "about";  return null; }
+  if (seg[0] === "home")      { state.view = "home"; state.intro = true; return null; }
+  if (seg[0] === "questions") { state.view = "questions"; state.intro = true;
+                                state.runIndex = null; return null; }
+  if (seg[0] === "map")       { state.view = "map";  return null; }
+  if (seg[0] === "data")      { state.view = "data"; return null; }
 
   if (seg[0] === "record") {
     if (!D.corpus[seg[1]]) return `no record with the id ${seg[1]}`;
-    state.view = "places"; state.selection = { kind: "record", docId: seg[1] };
+    state.view = "map"; state.selection = { kind: "record", docId: seg[1] };
     return null;
   }
   if (seg[0] === "place") {
     if (!placeByKey.has(seg[1])) return `no placement with the key ${seg[1]}`;
-    state.view = "places"; state.selection = { kind: "place", key: seg[1] };
+    state.view = "map"; state.selection = { kind: "place", key: seg[1] };
     return null;
   }
   if (seg[0] === "point") {
     if (!groupsByKey.has(seg[1])) return `no cached coordinate with the id ${seg[1]}`;
-    state.view = "places"; state.selection = { kind: "group", cacheKey: seg[1] };
+    state.view = "map"; state.selection = { kind: "group", cacheKey: seg[1] };
     return null;
   }
   if (seg[0] === "edge") {
     const i = Number(seg[1]);
     if (!Number.isInteger(i) || !(P.edges || [])[i]) return `no edge numbered ${seg[1]}`;
-    state.view = "places"; state.selection = { kind: "edge", idx: i };
+    state.view = "map"; state.selection = { kind: "edge", idx: i };
     return null;
   }
   if (seg[0] === "q") {
@@ -1786,7 +1791,7 @@ function introSection() {
         : `<strong>${X.brokenN} citation${X.brokenN === 1 ? "" : "s"} fail the first audit, and not all
            of them are in the unknowable bucket</strong> — the ones with a recorded provenance can be
            told apart from the ones without.`}</p>
-      <button class="go" data-goto="about">both audits, in full →</button>
+      <button class="go" data-goto="data">both audits, in full →</button>
     </div>`;
 
   return `<div class="intro">
@@ -2488,6 +2493,84 @@ function viewPlaces() {
   </div>`;
 }
 
+/* ------------------------------------------------------------------ *
+ * THE HOME TAB.
+ *
+ * Prose only, deliberately: the figures and the two findings live on the
+ * Questions tab's front section and are not repeated here. What this tab
+ * carries is the thing no figure states — what the project is, what the portal
+ * does, why it exists, and what it covers.
+ *
+ * The scope card is the About tab's "What this page is showing", MOVED rather
+ * than copied. Two tabs printing the same derived sentence is exactly the
+ * duplication the rest of this page is built to avoid.
+ *
+ * Every figure and every list below is derived. The only constants are the
+ * project's declared period and the Latin, neither of which the corpus knows.
+ * ------------------------------------------------------------------ */
+function viewHome() {
+  const regions = [...new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean))].sort();
+
+  return `${hashNotice()}<div class="cols cols-single">
+    <div>
+    <div class="card">
+      <h3>Mundus Ulterior — the world further out</h3>
+      <p><em>Mundus</em> is Latin for the world; <em>ulterior</em> is the comparative of
+      <em>ulter</em>, that which lies beyond — so <strong>the world further out</strong>, the
+      country on the far side. It is how the Roman world's own language framed everywhere it
+      was not.</p>
+      <p>This project takes ${listOf(regions)} between 27 BC and the sack of Constantinople in
+      1204 AD, and asks what connected them to Rome — goods, coins, envoys, religion, hearsay.
+      <strong>It reads those connections from the sources of those regions, in their own
+      languages</strong>, rather than only from Roman texts written about them from a distance.</p>
+    </div>
+
+    <div class="card">
+      <h3>What this portal does</h3>
+      <p>You ask a question in English. The system searches a curated corpus of primary sources in
+      their own languages, retrieves the passages that answer it, and writes an answer that quotes
+      them. <strong>Every quotation is clickable, and every click lands on
+      the exact characters in the exact file the quotation came from.</strong></p>
+      <p>The Map tab does the same thing for geography: every point on it comes from a cached
+      gazetteer identifier, never a hand-placed coordinate, and every place the corpus names but
+      cannot honestly plot is listed rather than dropped.</p>
+    </div>
+
+    <div class="card">
+      <h3>Why it exists</h3>
+      <p><strong>An AI answer about the ancient world is normally unverifiable.</strong> It reads
+      fluently, cites nothing you can follow, and a quotation that has drifted a word looks exactly
+      like one that has not. This portal is an argument that it does not have to be that way: the
+      whole chain — question, retrieval, passage, quotation, character offset, file — is on the
+      screen and clickable.</p>
+      <p><strong>And it lets these regions speak rather than be spoken about.</strong> The
+      standard account of Rome's further world is assembled from Greek and Latin authors describing
+      it; the sources here are largely not those. A Sabaic inscription, a Chinese dynastic history
+      and a Tamil poem answer an English question in their own words.</p>
+      <p><strong>The failures are kept.</strong> Refusals, citations that no longer resolve and
+      places the map will not draw are counted and shown, because a system that only displays its
+      successes is not evidence of anything.</p>
+    </div>
+
+    <div class="card">
+      <h3>Scope</h3>
+      <p>Every answer here was produced by asking a question of a corpus of
+      ${Object.keys(D.corpus).length} primary sources — inscriptions, literary texts, papyri and
+      excavation records — drawn from the
+      ${new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean)).size} regions Rome traded
+      with or heard about, between 27 BC and 1204 AD. Sources are in ${esc(listOf(corpusLanguages()))}, and English. An English
+      question retrieves them in their own languages, and the answer quotes them.</p>
+      <p>The claim worth checking is not that the answers read well. It is that
+      <strong>every quotation resolves to a specific range of characters in a specific
+      field of a specific file</strong>. Click any highlighted phrase to see those
+      characters. Nothing on this page is generated live: these are
+      ${D.runs.length} runs archived while the system was being built, replayed against
+      the corpus as it stands today.</p>
+    </div>
+
+    </div></div>`;
+}
+
 function viewAbout() {
   const a = D.span_audit || {};
   const problems = (D.span_problems || []);
@@ -2506,22 +2589,6 @@ function viewAbout() {
 
   return `${hashNotice()}<div class="cols cols-single">
     <div>
-    <div class="card">
-      <h3>What this page is showing</h3>
-      <p>Every answer here was produced by asking a question of a corpus of
-      ${Object.keys(D.corpus).length} primary sources — inscriptions, literary texts, papyri and
-      excavation records — drawn from the
-      ${new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean)).size} regions Rome traded
-      with or heard about, between 27 BC and 1204 AD. Sources are in ${esc(listOf(corpusLanguages()))}, and English. An English
-      question retrieves them in their own languages, and the answer quotes them.</p>
-      <p>The claim worth checking is not that the answers read well. It is that
-      <strong>every quotation resolves to a specific range of characters in a specific
-      field of a specific file</strong>. Click any highlighted phrase to see those
-      characters. Nothing on this page is generated live: these are
-      ${D.runs.length} runs archived while the system was being built, replayed against
-      the corpus as it stands today.</p>
-    </div>
-
     <div class="card">
       <h3>Citations checked against the corpus, just now</h3>
       <p class="cardlead">Of <strong>${Object.values(a).reduce((n, v) => n + (v || 0), 0)}</strong>
@@ -2651,8 +2718,9 @@ function writeHash() {
 }
 
 function render() {
-  main.innerHTML = state.view === "questions" ? viewQuestions()
-                 : state.view === "places"    ? viewPlaces()
+  main.innerHTML = state.view === "home"      ? viewHome()
+                 : state.view === "questions" ? viewQuestions()
+                 : state.view === "map"       ? viewPlaces()
                  : viewAbout();
   for (const t of document.querySelectorAll(".tab"))
     t.setAttribute("aria-selected", String(t.dataset.view === state.view));
@@ -2661,8 +2729,6 @@ function render() {
      twice. Nothing is removed; one of the two is redundant at a time. */
   const strip = document.getElementById("statstrip");
   if (strip) strip.hidden = !!(state.intro && state.view === "questions");
-  const back = document.getElementById("overviewbtn");
-  if (back) back.hidden = !!state.intro;
   writeHash();
 }
 
@@ -2801,10 +2867,6 @@ document.addEventListener("click", ev => {
   const theme = ev.target.closest("#themebtn");
   if (theme) return setTheme(nextTheme());
 
-  const back = ev.target.closest("#overviewbtn");
-  if (back) { state.view = "questions"; state.intro = true; state.runIndex = null;
-              state.selection = null; state.hashError = null; return render(); }
-
   const dismiss = ev.target.closest('[data-dismiss="hash"]');
   if (dismiss) { state.hashError = null; return render(); }
 
@@ -2822,14 +2884,17 @@ document.addEventListener("click", ev => {
   const go = ev.target.closest(".go");
   if (go) {
     state.intro = false;
-    if (go.dataset.goto === "about") { state.view = "about"; state.selection = null; }
-    else { state.view = "places"; state.selection = { kind: "group", cacheKey: go.dataset.group }; }
+    if (go.dataset.goto === "data") { state.view = "data"; state.selection = null; }
+    else { state.view = "map"; state.selection = { kind: "group", cacheKey: go.dataset.group }; }
     return render();
   }
 
+  /* Clicking a tab returns it to its own landing state: the front section
+     comes back on Questions rather than being lost the first time anything is
+     clicked. The Home tab is the other way back to it. */
   const tab = ev.target.closest(".tab");
   if (tab) { state.view = tab.dataset.view; state.selection = null;
-             state.intro = false; return render(); }
+             state.intro = true; state.runIndex = null; return render(); }
 
   const q = ev.target.closest(".qbtn");
   if (q) { state.question = q.dataset.question; state.runIndex = null;
