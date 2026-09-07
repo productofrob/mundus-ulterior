@@ -38,6 +38,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 49-52       F3_RULINGS.md             full text, "## Ruling N" headings
 53-79       NOT INDEXED. See the note below.
 80-82       W3_RULINGS.md             full text, "## Ruling N" headings
+83          UI_RULINGS.md             full text, "# RULING N" heading
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -58,7 +59,20 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 83. The next free finding is 97.**
+**The next free ruling number is 84. The next free finding is 100.**
+
+> **CORRECTED BY THE UI BLOCK, 2026-09-07.** This line read *"The next free
+> ruling number is 83. The next free finding is 97."* and the finding half was
+> already one behind when it was written: **W3 used 97** — the three
+> `mutate_fidelity` mutations that reported MISS — and recorded it in
+> `W3_RESULT.md` §5 without carrying it here. `UI_START.md` §10 said 98 and was
+> right. The UI block then used **98** (the `whitespace_only` span rendering
+> clean, reading broken and explaining nothing) and **99** (every citation
+> marker on the page emitted as broken HTML), and **ruling 83**. The original
+> sentence is quoted rather than deleted, because a next-free line that has
+> silently drifted once will drift again, and the way it drifted is the useful
+> part: **a number used in a RESULT document and not carried back here is
+> invisible to the next session that needs one.**
 
 ## The register
 
