@@ -215,4 +215,44 @@ transcription is curation, which §5 forbids. It is the third time this project'
 transcription practice has caught a defect no reader would see — after the
 forty-four non-breaking spaces in `arabia-07-cih541` and the byte-order error in
 `seasia-08-pong-tuk-lamp` — and the first time an INSTRUMENT found one rather
-than a digest comparison.
+than a digest comparison.---
+
+# FINDING 97 — three refusal guards were watching the PREDICATE and not their CLAUSE, and the mutation harness is the only thing that could have said so
+
+`scripts/mutate_fidelity.py` on the host reported **three MISSes out of the
+fourteen mutations W3 added**, each in the same shape: *expected `<guard>` to
+fail, got no failures.* The suite was green, the mutation applied cleanly, and
+the guard did not notice.
+
+**All three were satisfied by a DIFFERENT CLAUSE OF THE SAME PREDICATE.**
+
+```
+mutation                                  what actually raised instead
+clause 1 off, `if False:`                 clause 4 -- str(MISSING) is not a
+                                          language code, so the unknown-code
+                                          clause refused it
+clause 1 narrowed to `and body`           clause 3 -- a sentinel over an empty
+                                          field is "a language over nothing"
+the Latin-script branch off               the wrong-script branch -- `"".startswith(())`
+                                          is False for every string, so `matched`
+                                          is 0 and the second branch fires
+```
+
+**The guards asserted only that the call refused.** For a six-clause predicate
+that tests the predicate and not the clause, and a clause nobody has seen fail
+alone is a clause nobody has seen work. `W3_RESULT.md` said each clause was
+mutated separately; that sentence was true of the mutations and false of the
+assertions, and it took the harness to find the gap between them.
+
+**The fix is `refused_saying(needle, ...)`:** every refusal guard now requires
+`DeclarationError` **and** the message its own clause writes. Disabling a clause
+now changes which message comes back, and the guard fails. Verified by applying
+all three mutations to a COPY of `ingest/` outside the connected folder and
+running the suite against each — HOST-ONLY applies to the harness, which restores
+the tree; a copy nobody can see cannot leave a live mutation in the user's.
+
+**This is the second time in this project that a MISS was not list drift.**
+`BLOCK_D_START.md` already warned: *a MISS that says "detected by another guard"
+may not be drift; check what the mutation actually does before re-ordering the
+lists.* It was written about `mutate_ranking` in C7 and it applied here verbatim.
+

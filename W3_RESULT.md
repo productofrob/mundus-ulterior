@@ -132,10 +132,24 @@ DID NOT   chunk ids, chunk count (170), chunk text, char_start/char_end
           -- verified by diffing every record against HEAD: not one field VALUE
              changed, two keys added, none lost
 
-OWED      the embeddings. The bridge cannot reach Postgres; W3_HOST_RUNBOOK.md
-          step 2 is where `run_embed --stats` before and after settles it, and
-          P3 is refuted if it reports pending work.
+NOR DID   the embeddings. CONFIRMED ON THE HOST, 2026-09-07, and this was the
+          half W3_DECLARE_DONT_INFER.md section 4 said to verify rather than
+          assume:
+
+            before   eligible 561  embedded 561  pending 0
+            after    eligible 561  embedded 561  pending 0
+            ingest   pruned_chunks 0, pruned_documents 0, awaiting_embedding 0
+
+          Not one chunk was re-embedded. The declaration reaches the chunk's
+          metadata and never its text or its id, so `run_embed` had nothing to
+          do -- which is what "expect no re-embed" had to mean to be worth
+          checking.
 ```
+
+**And the index says the same thing the bridge said.** `run_ingest`'s `by_lang`
+over all 563 chunks, distractors included, moved `arc: 3` out and `mul: 3` in,
+and nothing else. FINDING 95 is now true of the corpus, the loader AND the
+retrieval index.
 
 **The consequence P3 predicted so it would not read as a defect happened, and
 the number in the prediction was wrong.** `build_ui_data.py --verify`'s second
@@ -266,15 +280,30 @@ FINDING 96   W3_RULINGS.md  a Cyrillic Є inside the Greek signature on
 **`W3_HOST_RUNBOOK.md`.** This document reports no figure for either.
 
 ```
-mutate_fidelity   84/84 expected, was 70/70. FOURTEEN new mutations, and NOT ONE
-                  of them is in UNMUTATED_AND_OWED, which stays at 3
-mutate_cost       58/58, must not move
-run_ingest        and `run_embed --stats` before and after: P3's open half
+mutate_cost       58/58                        DONE 2026-09-07, unmoved
+run_ingest        + run_embed --stats          DONE 2026-09-07, P3 confirmed
+mutate_fidelity   81 of 84, then 84/84         DONE 2026-09-07. FINDING 97 in
+                                               between, and the three mutations
+                                               that reported MISS now each fail
+                                               their own guard
+UNMUTATED_AND_OWED   3, unchanged              not one W3 clause joined it
+git diff --stat                                no file whose every line changed
 ```
 
-Verified from the bridge without running them: MUTATIONS and EXPECTED are both
-84, every mutation target occurs exactly once in `ingest/fidelity.py`, and every
-guard the suite prints is in one of the three coverage lists.
+**Nothing in W3 is outstanding.**
+
+**`mutate_fidelity` earned its keep on its first run and the session owes it a
+second.** Three of W3's fourteen mutations reported *expected `<guard>` to fail,
+got no failures*, because three refusal guards asserted only that the call
+refused and a different clause of the same predicate refused for them. FINDING
+97. `refused_saying` now makes every clause name its own message, the three
+mutations were replayed against a copy of `ingest/` outside the connected folder
+and each now fails its own guard, and `ingest.test_fidelity` is still 145.
+
+**The re-run came back `84/84`**, with `UNMUTATED_AND_OWED` still 3 and no file
+whose every line changed. **Every one of the six refusal clauses, the curation
+gate and the two classifier constants has now been SEEN TO FAIL ALONE** — which
+is what the first run proved was not yet true.
 
 ---
 

@@ -810,6 +810,30 @@ def refused(fn, *args) -> bool:
     return False
 
 
+def refused_saying(needle: str, fn, *args) -> bool:
+    """True when the call raises DeclarationError AND the message is THAT clause's.
+
+    WRITTEN 2026-09-07 BECAUSE `refused` WAS NOT ENOUGH, and the mutation
+    harness is what said so. FINDING 97: three of these guards used `refused`
+    alone, and when their clause was mutated away A DIFFERENT CLAUSE OF THE SAME
+    PREDICATE raised instead, so the guard passed and the mutation reported MISS.
+    A six-clause predicate needs six mutations AND six assertions that can tell
+    the six apart; asserting only that something refused tests the predicate, not
+    the clause.
+    """
+    try:
+        fn(*args)
+    except DeclarationError as exc:
+        if needle in str(exc):
+            return True
+        print(f"       refused, but by another clause: {exc}")
+        return False
+    except Exception as exc:  # noqa: BLE001
+        print(f"       raised {type(exc).__name__} rather than DeclarationError: {exc}")
+        return False
+    return False
+
+
 def test_declaration():
     print("check_declaration -- the six refusal clauses")
 
@@ -827,32 +851,38 @@ def test_declaration():
            "GUARD French is Latin script whatever its accents")
 
     # 1. the key is absent
-    expect(refused(check_declaration, "x", "original_text_excerpt", MISSING, "text"),
+    expect(refused_saying("no 'original_text_lang'", check_declaration,
+                          "x", "original_text_excerpt", MISSING, "text"),
            "GUARD a record with no original_text_lang is REFUSED")
-    expect(refused(check_declaration, "x", "reference_translation", MISSING, None),
+    expect(refused_saying("no 'reference_translation_lang'", check_declaration,
+                          "x", "reference_translation", MISSING, None),
            "GUARD a record with no reference_translation_lang is refused even "
            "when the field is empty -- a missing key declares nothing")
 
     # 2. null over a field that holds text
-    expect(refused(check_declaration, "x", "original_text_excerpt", None, GREEK_TEXT),
+    expect(refused_saying("is null but", check_declaration,
+                          "x", "original_text_excerpt", None, GREEK_TEXT),
            "GUARD null declared over a field holding text is REFUSED")
 
     # 3. a language over a field that holds nothing
-    expect(refused(check_declaration, "x", "original_text_excerpt", "grc", ""),
+    expect(refused_saying("A language over nothing", check_declaration,
+                          "x", "original_text_excerpt", "grc", ""),
            "GUARD a language declared over an empty field is REFUSED")
-    expect(refused(check_declaration, "x", "original_text_excerpt", "grc", "   "),
+    expect(refused_saying("A language over nothing", check_declaration,
+                          "x", "original_text_excerpt", "grc", "   "),
            "GUARD whitespace is empty for the purposes of that clause")
 
     # 4. a code the corpus does not contain
-    expect(refused(check_declaration, "x", "original_text_excerpt", "klingon", "abc"),
+    expect(refused_saying("not a language code", check_declaration,
+                          "x", "original_text_excerpt", "klingon", "abc"),
            "GUARD a language code not in LANG_SCRIPTS is REFUSED")
     expect("tha" in LANG_SCRIPTS and "fra" in LANG_SCRIPTS,
            "GUARD the two codes W3's worked examples need are known to the "
            "classifier, which is the half of the fix that had to work")
 
     # 5. `mul` over a field that is not multilingual
-    expect(refused(check_declaration, "x", "original_text_excerpt",
-                   MULTILINGUAL, GREEK_TEXT),
+    expect(refused_saying("holds more than one language", check_declaration,
+                          "x", "original_text_excerpt", MULTILINGUAL, GREEK_TEXT),
            "GUARD `mul` over a single-script field is REFUSED, so it cannot "
            "become the lenient default")
     expect(not refused(check_declaration, "x", "original_text_excerpt",
@@ -860,9 +890,11 @@ def test_declaration():
            "GUARD `mul` is accepted over a field that really does hold two scripts")
 
     # 6. the script present is not the declared language's
-    expect(refused(check_declaration, "x", "original_text_excerpt", "en", GREEK_TEXT),
+    expect(refused_saying("a Latin-script language, over a field", check_declaration,
+                          "x", "original_text_excerpt", "en", GREEK_TEXT),
            "GUARD a Latin-script language declared over non-Latin text is REFUSED")
-    expect(refused(check_declaration, "x", "original_text_excerpt", "tha", GREEK_TEXT),
+    expect(refused_saying("whose non-Latin characters are", check_declaration,
+                          "x", "original_text_excerpt", "tha", GREEK_TEXT),
            "GUARD a declared language whose script is absent is REFUSED")
     expect(not refused(check_declaration, "x", "original_text_excerpt", "tha", THAI),
            "GUARD Thai text declared `tha` is ACCEPTED -- the record F7 refused")
@@ -875,9 +907,11 @@ def test_declaration():
            "because that is how seven of this corpus's records are stored")
 
     print("check_curation_gate -- the ruling W3 does not make")
-    expect(refused(check_curation_gate, "x", "original_text_excerpt", "tha"),
+    expect(refused_saying("blocked pending", check_curation_gate,
+                          "x", "original_text_excerpt", "tha"),
            "GUARD a record declaring `tha` is REFUSED pending the section 8 ruling")
-    expect(refused(check_curation_gate, "x", "original_text_excerpt", "fra"),
+    expect(refused_saying("blocked pending", check_curation_gate,
+                          "x", "original_text_excerpt", "fra"),
            "GUARD a record declaring `fra` is REFUSED pending the section 8 ruling")
     expect(not refused(check_curation_gate, "x", "original_text_excerpt", "grc"),
            "GUARD the gate refuses only the codes pending a ruling")
