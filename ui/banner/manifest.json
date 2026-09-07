@@ -1,0 +1,105 @@
+{
+ "generated": "2026-09-07T20:10:23.245Z",
+ "scale": 3,
+ "specimens": [
+  {
+   "code": "oty",
+   "doc": "southasia-01-akananuru-149",
+   "from": "சிறுபுன்",
+   "chars": 24,
+   "text": "சிறுபுன் சிதலை",
+   "native": true,
+   "image": "banner/oty.png",
+   "w": 222,
+   "h": 44
+  },
+  {
+   "code": "lzh",
+   "doc": "eastasia-02-hou-hanshu",
+   "from": "至桓帝延熹九年",
+   "chars": 15,
+   "text": "至桓帝延熹九年，大秦王安敦遣使",
+   "native": true,
+   "image": "banner/lzh.png",
+   "w": 394,
+   "h": 44
+  },
+  {
+   "code": "san",
+   "doc": "southasia-05-brihatsamhita",
+   "from": "म्लेच्छा",
+   "chars": 30,
+   "text": "म्लेच्छा हि यवनास्तेषु सम्यक्",
+   "native": true,
+   "image": "banner/san.png",
+   "w": 258,
+   "h": 44
+  },
+  {
+   "code": "ko",
+   "doc": "eastasia-03-hwangnam-glass",
+   "from": "경주 98호",
+   "chars": 18,
+   "text": "경주 98호 남분 유리병 및 잔",
+   "native": true,
+   "image": "banner/ko.png",
+   "w": 301,
+   "h": 44
+  },
+  {
+   "code": "grc",
+   "doc": "africa-04-silko-talmis",
+   "from": "ἐγὼ Σιλκώ",
+   "chars": 30,
+   "text": "ἐγὼ Σιλκώ, βασιλίσκος Νουβάδων",
+   "native": true,
+   "image": "banner/grc.png",
+   "w": 421,
+   "h": 44
+  },
+  {
+   "code": "xsa",
+   "doc": "arabia-07-cih541",
+   "from": "mlkn w-bn-hw",
+   "chars": 30,
+   "text": "mlkn w-bn-hw gbʾ mlkn ʿdy h—",
+   "native": false,
+   "image": "banner/xsa.png",
+   "w": 294,
+   "h": 44
+  },
+  {
+   "code": "gez",
+   "doc": "africa-06-ezana-rie189",
+   "from": "Wa-takalkū",
+   "chars": 30,
+   "text": "Wa-takalkū manbara wǝstēta",
+   "native": false,
+   "image": "banner/gez.png",
+   "w": 274,
+   "h": 44
+  },
+  {
+   "code": "omy",
+   "doc": "seasia-06-kedukan-bukit",
+   "from": "svasti śrī",
+   "chars": 32,
+   "text": "svasti śrī śaka varṣātīta 605",
+   "native": false,
+   "image": "banner/omy.png",
+   "w": 305,
+   "h": 44
+  },
+  {
+   "code": "gmq-pro",
+   "doc": "scandinavia-05-thorsberg-chape",
+   "from": "owlþuþewaz",
+   "chars": 26,
+   "text": "owlþuþewaz / niwajemariz",
+   "native": false,
+   "image": "banner/gmq-pro.png",
+   "w": 253,
+   "h": 44
+  }
+ ]
+}

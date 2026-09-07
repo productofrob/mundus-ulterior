@@ -103,6 +103,7 @@ try {
     " renderQuoteProvenance, renderPassageProvenance, renderRecordProvenance," +
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
     " buildMap, mapState, mapWindow, mapBase, viewHome, viewQuestions, viewPlaces, viewAbout," +
+    " BANNER, BANNER_H, BANNER_NATIVE, bannerText," +
     " SPAN_STATES, PROVENANCE, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -117,6 +118,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderRecordProvenance, renderPlaceProvenance, renderGroupProvenance,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase,
         viewHome, viewQuestions, viewPlaces, viewAbout,
+        BANNER, BANNER_H, BANNER_NATIVE, bannerText,
         SPAN_STATES, PROVENANCE, langName, placeLedger } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
@@ -159,6 +161,58 @@ try { viewPlaces(); viewAbout(); note(true, "places and about views render"); }
 catch (e) { note(false, `a view threw: ${e.message}`); }
 try { viewHome(); note(true, "the home view renders"); }
 catch (e) { note(false, `the home view threw: ${e.message}`); }
+
+/* ---- 2c. the masthead script band ----
+ *
+ * The band shows source text as IMAGES, because live web type would give a
+ * visitor without a Tamil, Devanagari, CJK or polytonic Greek font a row of
+ * tofu boxes. An image is the one thing on this page a reader cannot check by
+ * clicking, so it is checked here instead, on four counts:
+ *
+ *   - the page's declared list and ui/banner/manifest.json agree. They are two
+ *     declarations of one curation decision, in two files, and nothing else
+ *     would notice them drifting apart
+ *   - the record each specimen names still exists
+ *   - the declared start is still IN that record's field. If a record is
+ *     re-curated and the substring goes, the page silently drops the specimen
+ *     and this says so
+ *   - the characters the page reads back for the alt text are the characters
+ *     the generator baked into the image. An image whose alt text has drifted
+ *     from the picture is a caption that lies, and it is exactly the class of
+ *     defect FINDING 98 was: three renderings of one thing, disagreeing.
+ */
+{
+  let manifest = null;
+  try { manifest = JSON.parse(readFileSync(join(UI, "banner", "manifest.json"), "utf8")); }
+  catch (e) { note(false, `ui/banner/manifest.json is unreadable: ${e.message}`); }
+
+  if (manifest) {
+    const byCode = new Map(manifest.specimens.map(sp => [sp.code, sp]));
+    const problems = [];
+    if (manifest.specimens.length !== BANNER.length)
+      problems.push(`the page declares ${BANNER.length} specimen(s), the manifest ${manifest.specimens.length}`);
+    for (const s of BANNER) {
+      const m = byCode.get(s.code);
+      if (!m) { problems.push(`${s.code}: declared on the page, absent from the manifest`); continue; }
+      if (m.doc !== s.doc)     problems.push(`${s.code}: page says ${s.doc}, manifest says ${m.doc}`);
+      if (m.from !== s.from)   problems.push(`${s.code}: the declared start differs between page and manifest`);
+      if (m.w !== s.w)         problems.push(`${s.code}: declared width ${s.w} but the image was rendered ${m.w}`);
+      if (!D.corpus[s.doc])    problems.push(`${s.code}: ${s.doc} is not in the corpus`);
+      const text = bannerText(s);
+      if (text == null)        problems.push(`${s.code}: the declared start "${s.from}" is no longer in ${s.doc}`);
+      else if (text !== m.text) problems.push(`${s.code}: the page reads "${text}" where the image shows "${m.text}"`);
+      try { statSync(join(UI, "banner", `${s.code}.png`)); }
+      catch { problems.push(`${s.code}: ui/banner/${s.code}.png is missing`); }
+    }
+    note(problems.length === 0,
+         `every masthead specimen (${BANNER.length}) has its record, its characters and its image` +
+         (problems.length ? ` — ${problems.slice(0, 4).join("; ")}` : ""));
+
+    const nat = BANNER.filter(s => BANNER_NATIVE.has(s.code)).length;
+    note(BANNER.every(s => BANNER_NATIVE.has(s.code) === !!byCode.get(s.code)?.native),
+         `native script and romanised transliteration are not confused (${nat} native of ${BANNER.length})`);
+  }
+}
 
 /* ---- 2b. Phase 2, A5: every placement is reachable, plotted or not ----
  *

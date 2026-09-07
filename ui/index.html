@@ -244,14 +244,15 @@
     padding: var(--s-5) var(--s-7) 0;
     position: relative; z-index: 2;
   }
-  .brandbar { display: flex; align-items: baseline; gap: var(--s-4); flex-wrap: nowrap; }
+  .brandbar { display: flex; align-items: center; gap: var(--s-6); flex-wrap: nowrap; }
   .brand { display: flex; align-items: baseline; gap: var(--s-4); flex-wrap: wrap; min-width: 0; flex: 1 1 auto; }
+  .mapthumb[hidden], .themebtn[hidden] { display: none; }
   .brand h1 {
     font-size: var(--t-xl); margin: 0; letter-spacing: .005em; line-height: var(--lh-tight);
   }
   .brand .sub { color: var(--ink-faint); font-size: var(--t-s); font-family: var(--font-sans); }
   .themebtn {
-    margin-left: auto; font: inherit; font-family: var(--font-sans); font-size: var(--t-2xs);
+    align-self: flex-start; font: inherit; font-family: var(--font-sans); font-size: var(--t-2xs);
     letter-spacing: .04em; text-transform: uppercase; color: var(--ink-faint);
     background: none; border: var(--rule) solid var(--line); border-radius: var(--r-pill);
     padding: var(--s-1) var(--s-3); cursor: pointer; flex: none;
@@ -680,6 +681,95 @@
      that is hidden by attribute needs to be told. */
   .statstrip[hidden] { display: none; }
 
+
+  /* ---------- the masthead map ----------
+     The map is 900 x 388 in its own viewBox, and a full-width banner strip at
+     that ratio can hold about twenty degrees of latitude — which crops Rome
+     out of a project about Rome. So the frame fits the MAP here rather than
+     the map being cut to fit a banner: whole extent, true aspect, every one of
+     the cached coordinates in view. preserveAspectRatio is left alone; a
+     stretched projection is refused in the masthead for the same reason
+     check_ui.mjs refuses it on the live map. */
+  .mapthumb {
+    flex: none; width: 430px; height: 186px; position: relative; padding: 0;
+    border: var(--rule) solid var(--line-soft); border-radius: var(--r-md);
+    overflow: hidden; background: var(--map-sea); cursor: pointer;
+  }
+  .mapthumb:hover { border-color: var(--accent-line); }
+  .mapthumb svg { width: 100%; height: 100%; display: block; pointer-events: none; }
+  .mapthumb .sea { fill: var(--map-sea); }
+  .mapthumb .grat { stroke: var(--map-grat); stroke-width: 1; }
+  .mapthumb .land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: .8; stroke-linejoin: round; }
+  .mapthumb .edge { fill: none; stroke: var(--accent); stroke-opacity: .34; stroke-width: 1.2; }
+  .mapthumb .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .24; }
+  .mapthumb .extent { fill: var(--accent); fill-opacity: .09; stroke: var(--accent);
+                      stroke-opacity: .42; stroke-dasharray: 3 2; }
+  .mapthumb .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.1; }
+  .mapthumb .pin.contested circle.dot { fill: var(--card); stroke: var(--warn);
+                                        stroke-width: 1.6; stroke-dasharray: 2 1.4; }
+  .mapthumb .pin text.n, .mapthumb .lbl { display: none; }
+  .mapthumb .credit {
+    position: absolute; right: 6px; bottom: 4px; font-family: var(--font-sans);
+    font-size: var(--t-3xs); color: var(--ink-faint);
+    background: color-mix(in srgb, var(--card) 76%, transparent);
+    padding: 1px 5px; border-radius: 3px;
+  }
+
+  /* ---------- the script band ----------
+     Nine specimens of the corpus's own source text, five of them in the script
+     the source is written in and four in the romanised transliteration the
+     corpus actually holds — marked as such, because dressing a transliteration
+     up as script would be the one un-sourced claim on the page.
+
+     Each specimen is a PNG of black glyphs on transparency, used as a MASK with
+     the ink supplied by CSS, so one asset serves both themes. Live web type
+     would depend on the visitor owning a font for Tamil, Devanagari, CJK and
+     polytonic Greek, and a visitor without one gets tofu boxes. The characters
+     are not lost to the machine: each specimen carries the real text in its
+     `aria-label`, and each is a button that opens its own record. */
+  .scriptband {
+    background: var(--card); border-bottom: var(--rule) solid var(--line);
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .scriptband::-webkit-scrollbar { display: none; }
+  .scriptband .row {
+    display: flex; align-items: flex-end; width: max-content;
+    padding: var(--s-4) var(--s-7) var(--s-3);
+  }
+  .spec {
+    flex: none; display: flex; flex-direction: column; gap: var(--s-2);
+    background: none; border: none; padding: 0; cursor: pointer; text-align: left;
+    font: inherit;
+  }
+  /* An <img>, NOT a CSS mask.
+     The mask was the better idea and it does not work here: a mask-image is a
+     CORS-restricted resource, and this file's whole point is that it opens from
+     file://, where the origin is `null` and every mask is refused. Chromium
+     logs "blocked by CORS policy" and paints nothing, while the same PNG loads
+     without complaint as an <img>. Caught by rendering the page and looking at
+     it, which is now the fourth time on this project that was the instrument
+     that worked.
+     So the ink is baked black and the dark theme inverts it. That is the one
+     thing on this page whose colour is not a token, and it is here rather than
+     silently broken. */
+  .spec .glyph { display: block; opacity: .78; }
+  .spec:hover .glyph { opacity: 1; }
+  .spec.roman .glyph { opacity: .6; }
+  .spec.roman:hover .glyph { opacity: .85; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .spec .glyph { filter: invert(1); opacity: .82; }
+    :root:not([data-theme="light"]) .spec.roman .glyph { opacity: .62; }
+  }
+  :root[data-theme="dark"] .spec .glyph { filter: invert(1); opacity: .82; }
+  :root[data-theme="dark"] .spec.roman .glyph { opacity: .62; }
+  .spec .lbl {
+    font-family: var(--font-sans); font-size: 9.5px; text-transform: uppercase;
+    letter-spacing: .09em; color: var(--ink-faint); white-space: nowrap;
+  }
+  .spec:hover .lbl { color: var(--accent); }
+  .specsep { flex: none; width: 1px; align-self: stretch; background: var(--line-soft); margin: 0 var(--s-6); }
+
   /* ---------- an unresolvable deep link says so. RULING 84. ---------- */
   .hashnotice {
     display: flex; gap: var(--s-4); align-items: baseline;
@@ -760,6 +850,11 @@
     .regiongrid, .placards { grid-template-columns: 1fr; }
     .maparea { padding: var(--s-2); }
     .maplegend { gap: var(--s-3); font-size: var(--t-2xs); }
+    /* No room for the map beside a 390px wordmark, and the Map tab is one tap
+       away. The band stays: it scrolls, exactly as the stat strip above it does. */
+    .mapthumb { display: none; }
+    .scriptband .row { padding: var(--s-3) var(--s-5); }
+    .specsep { margin: 0 var(--s-5); }
   }
 </style>
 </head>
@@ -771,6 +866,8 @@
       <h1>Mundus Ulterior</h1>
       <span class="sub">Rome and the wider world, 27 BC – 1204 AD: source-based answers</span>
     </div>
+    <button class="mapthumb" id="mapthumb" type="button" hidden
+      title="the whole map — open the Map tab"></button>
     <button class="themebtn" id="themebtn" type="button" hidden>theme</button>
   </div>
   <div class="statstrip" id="statstrip"></div>
@@ -781,6 +878,7 @@
     <button class="tab" role="tab" data-view="data"      aria-selected="false">Data &amp; Sources</button>
   </div>
 </header>
+<div class="scriptband" id="scriptband"></div>
 
 <!--
   THE LOADING STATE, and it is deliberately not a spinner.
@@ -2687,6 +2785,97 @@ function viewAbout() {
 /* ------------------------------------------------------------------ *
  * wiring
  * ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
+ * THE MASTHEAD SCRIPT BAND.
+ *
+ * Nine specimens of the corpus's own source text. FIVE of them are the script
+ * the source is written in — Old Tamil, Literary Chinese, Sanskrit in
+ * Devanagari, Korean, Ancient Greek — and that is every native script this
+ * corpus holds. The other four are the romanised transliteration the corpus
+ * actually carries, and they say so. Dressing a transliteration up as script,
+ * or fetching glyphs from outside to fill the gap, would be the only claim on
+ * this page that came from nowhere citable.
+ *
+ * WHAT IS DECLARED: which records stand at the top of the page, in what order,
+ * and where in each field the specimen starts. That is a curation decision and
+ * is declared rather than inferred. THE SAME LIST IS DECLARED IN
+ * ui/build_banner.mjs, which renders the images, and check_ui.mjs asserts the
+ * two agree — the data.manifest.json pattern, because a description is only
+ * safe when something re-derives it.
+ *
+ * EVERYTHING ELSE IS READ FROM THE RECORD: the characters, the record's title,
+ * the language name, the alt text. The image is a MASK, not a picture, so the
+ * ink comes from the theme and one asset serves both.
+ * ------------------------------------------------------------------ */
+const BANNER = [
+  { code: "oty",     doc: "southasia-01-akananuru-149",     chars: 24, from: "சிறுபுன்" , w: 222 },
+  { code: "lzh",     doc: "eastasia-02-hou-hanshu",         chars: 15, from: "至桓帝延熹九年" , w: 394 },
+  { code: "san",     doc: "southasia-05-brihatsamhita",     chars: 30, from: "म्लेच्छा" , w: 258 },
+  { code: "ko",      doc: "eastasia-03-hwangnam-glass",     chars: 18, from: "경주 98호" , w: 301 },
+  { code: "grc",     doc: "africa-04-silko-talmis",         chars: 30, from: "ἐγὼ Σιλκώ" , w: 421 },
+  { code: "xsa",     doc: "arabia-07-cih541",               chars: 30, from: "mlkn w-bn-hw" , w: 294 },
+  { code: "gez",     doc: "africa-06-ezana-rie189",         chars: 30, from: "Wa-takalkū" , w: 274 },
+  { code: "omy",     doc: "seasia-06-kedukan-bukit",        chars: 32, from: "svasti śrī" , w: 305 },
+  { code: "gmq-pro", doc: "scandinavia-05-thorsberg-chape", chars: 26, from: "owlþuþewaz" , w: 253 },
+];
+const BANNER_NATIVE = new Set(["oty", "lzh", "san", "ko", "grc"]);
+const BANNER_H = 44;   // the height ui/build_banner.mjs rendered each specimen at
+/* `w` is each image's rendered width at that height. It has to be declared
+   because a mask has no intrinsic size to give the element — and because it is
+   declared, check_ui.mjs asserts it against the width the generator recorded,
+   so a re-render that changes a specimen's length cannot silently clip it. */
+
+/* The characters the image shows, read back out of the record so the alt text
+   and the picture cannot drift apart. Same word-boundary rule as the
+   generator: trim to a word only when the slice actually cut one in half. */
+function bannerText(s) {
+  const rec = D.corpus[s.doc];
+  const full = (rec && rec.fields && rec.fields.original_text_excerpt) || "";
+  const at = full.indexOf(s.from);
+  if (at < 0) return null;
+  const flat = full.slice(at).replace(/\s+/g, " ");
+  const t = flat.slice(0, s.chars);
+  const cutMidWord = flat.length > s.chars && !/\s/.test(flat[s.chars]) && !/\s$/.test(t);
+  return (cutMidWord ? t.replace(/\S*$/, "") : t).trim() || t;
+}
+
+function scriptBand() {
+  const host = document.getElementById("scriptband");
+  if (!host) return;
+  const parts = [];
+  for (const s of BANNER) {
+    const rec = D.corpus[s.doc];
+    const text = bannerText(s);
+    // A specimen whose record or whose declared start has gone is DROPPED, not
+    // guessed at. check_ui.mjs fails on the same condition, loudly.
+    if (!rec || !text) continue;
+    const native = BANNER_NATIVE.has(s.code);
+    if (parts.length) parts.push(`<span class="specsep"></span>`);
+    // The alt text is the CHARACTERS THEMSELVES, read back out of the record —
+    // so the picture stops a visitor seeing tofu without stopping a screen
+    // reader, or a search, from getting the actual source text.
+    parts.push(`<button class="spec${native ? "" : " roman"}" data-record="${esc(s.doc)}"
+      title="${esc(rec.title)}">
+      <img class="glyph" src="banner/${esc(s.code)}.png" width="${s.w}" height="${BANNER_H}"
+        alt="${esc(langName(s.code))}: ${esc(text)}">
+      <span class="lbl">${esc(langName(s.code))}${native ? "" : " · romanised"}</span>
+    </button>`);
+  }
+  host.innerHTML = `<div class="row">${parts.join("")}</div>`;
+}
+
+/* The whole map at true aspect beside the wordmark. Built once, at zoom 1, so
+   it always shows the full extent no matter what the Map tab is doing — and
+   the class is renamed off `mapsvg` so the wheel and drag handlers, which are
+   bound to that class on `document`, never find it. */
+function mapThumb() {
+  const host = document.getElementById("mapthumb");
+  if (!host || !(P.groups || []).length) return;
+  host.innerHTML = buildMap().replace('class="mapsvg"', 'class="mapthumbsvg"')
+    + (D.coastline ? `<span class="credit">${esc(D.coastline.source)} ${esc(D.coastline.scale)}</span>` : "");
+  host.hidden = false;
+}
+
 function statStrip() {
   const a = D.span_audit || {};
   const total = Object.values(a).reduce((n, v) => n + (v || 0), 0);
@@ -2864,6 +3053,24 @@ document.addEventListener("click", ev => {
     return repaintPanel();
   };
 
+  /* A specimen opens its own record. The record panel lives on the Map and
+     Questions views, so a click from the masthead has to travel to one of them
+     — landing on the Home tab and repainting a panel that is not on screen
+     would be a button that does nothing. It scrolls the panel into view for
+     the same reason. */
+  const spec = ev.target.closest(".spec");
+  if (spec) {
+    state.view = "map"; state.intro = true;
+    state.selection = { kind: "record", docId: spec.dataset.record };
+    render();
+    const panel = document.getElementById("panel");
+    if (panel && panel.scrollIntoView) panel.scrollIntoView({ block: "center" });
+    return;
+  }
+
+  const thumb = ev.target.closest("#mapthumb");
+  if (thumb) { state.view = "map"; state.selection = null; state.intro = true; return render(); }
+
   const theme = ev.target.closest("#themebtn");
   if (theme) return setTheme(nextTheme());
 
@@ -2951,6 +3158,8 @@ function setTheme(t) {
 }
 
 statStrip();
+scriptBand();
+mapThumb();
 wireMap();
 
 /* Boot. Everything below needs a real browser; `check_ui.mjs` runs this script
