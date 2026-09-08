@@ -303,16 +303,11 @@
     font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
     line-height: var(--lh-snug); display: block; margin-top: var(--s-1);
   }
-  .findrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: var(--s-5); }
-  .findcard {
-    background: var(--card); border: var(--rule) solid var(--line);
-    border-radius: var(--r-lg); padding: var(--s-5) var(--s-6);
-    box-shadow: var(--shadow-1);
-  }
-  .findcard .lead { font-size: var(--t-m); line-height: var(--lh-snug); margin: 0; color: var(--ink-soft); }
-  .findcard .lead strong { color: var(--ink); }
-  /* `.go` was scoped to `.findcard`, so the chain figure's own link inherited
-     the browser's default button chrome instead. It is its own class now. */
+  /* `.findrow`, `.findcard` and `.findcard .lead` went with the two finding
+     cards they dressed. `.go` stays: it was scoped to `.findcard` once, which is
+     why the chain figure's own link inherited the browser's default button
+     chrome, and it has been its own class since. The chain figure on Home is the
+     one thing that still uses it. */
   .go {
     font-family: var(--font-sans); font-size: var(--t-xs); color: var(--accent);
     background: none; border: none; padding: 0; margin-top: var(--s-3); cursor: pointer;
@@ -2185,33 +2180,20 @@ function introSection() {
   for (const rec of Object.values(D.corpus)) (rec.language_code || []).forEach(l => langs.add(l));
   const regions = new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean));
   const L = placeLedger();
-  const C = contestedCoordinate();
   const X = spanCrossTab();
 
   const fig = (num, cap) => `<div class="fig"><span class="num">${num}</span><span class="cap">${cap}</span></div>`;
 
-  const contestedCard = C ? `<div class="findcard">
-      <h3 class="eyebrow sm">one coordinate, taken ${C.group.members.length} and refused ${C.refused.length}</h3>
-      <p class="lead"><strong>${esc(C.group.resolved.title)}</strong> (<code>${esc(C.key)}</code>)
-      is the id this corpus disagrees with itself about most.
-      ${C.group.members.length} placement${C.group.members.length === 1 ? " takes" : "s take"} it;
-      ${C.refused.length} name it in a note in order to refuse it. A map that drew all of them
-      would be asserting an identification this corpus declined ${C.refused.length} times.</p>
-      <button class="go" data-goto="point" data-group="${esc(C.key)}">both lists, on the map →</button>
-    </div>` : "";
+  /* The two finding cards that stood under the figures — "one coordinate, taken
+     2 and refused 9" and "what the failures say" — are gone from here. Both
+     survive where they were born and are not lost with them: the contested
+     coordinate is a full card on the Map tab, with both lists and every name
+     clickable, and the two audits are the first two cards on Data & Sources.
 
-  const auditCard = `<div class="findcard">
-      <h3 class="eyebrow sm">what the failures say</h3>
-      <p class="lead">${X.allUnrec
-        ? `<strong>Every one of the ${X.brokenN} citations that fails the first audit has provenance
-           <code>unrecorded</code>.</strong> This project cannot say, of a single one of its failing
-           citations, whether the failure is a defect in the span or the record moving underneath it —
-           they were all archived before anything recorded a corpus version.`
-        : `<strong>${X.brokenN} citation${X.brokenN === 1 ? "" : "s"} fail the first audit, and not all
-           of them are in the unknowable bucket</strong> — the ones with a recorded provenance can be
-           told apart from the ones without.`}</p>
-      <button class="go" data-goto="data">both audits, in full →</button>
-    </div>`;
+     `contestedCoordinate()` and `spanCrossTab()` are NOT removed. The design
+     block lifted them out of those two views so the front section could state a
+     figure without deriving it a second time; both views still call them, and
+     `spanCrossTab()` still supplies the fourth figure above. */
 
   return `<div class="intro">
     <h2>Ask the ancient world a question and discover where those answers come from</h2>
@@ -2227,7 +2209,6 @@ function introSection() {
         corpus items without a specific location`)}
       ${fig(X.brokenN, `failed citation checks`)}
     </div>
-    <div class="findrow">${contestedCard}${auditCard}</div>
   </div>`;
 }
 
@@ -3595,19 +3576,22 @@ document.addEventListener("click", ev => {
     return;
   }
 
-  // The front section's two cards, which travel to the material they describe.
   /* The Home map, and the chain figure's own link. The chain travels to the
      exact run and quotation it drew, which is the deep-link scheme doing the
-     job it was built for rather than being described. */
+     job it was built for rather than being described.
+
+     This handler had three other branches — `data`, `map` and a fallback that
+     opened a coordinate on the Map tab — for the two finding cards that used to
+     sit under the front section's figures. Nothing on the page emits those
+     values now, and a branch no element can reach is a branch nobody can test.
+     Same argument as the run-chip handler, RULING 85. */
   const homemap = ev.target.closest(".homemap");
   if (homemap) { state.view = "map"; state.selection = null; state.intro = true; return render(); }
 
   const go = ev.target.closest(".go");
   if (go) {
     state.intro = false;
-    if (go.dataset.goto === "data") { state.view = "data"; state.selection = null; }
-    else if (go.dataset.goto === "map") { state.view = "map"; state.selection = null; }
-    else if (go.dataset.goto === "chain") {
+    if (go.dataset.goto === "chain") {
       const c = chainExample();
       if (!c) return;
       const runs = byQuestion.get(c.q) || [];
@@ -3615,7 +3599,6 @@ document.addEventListener("click", ev => {
       state.runIndex = runs.indexOf(c.run);
       state.selection = { kind: "quote", si: c.si };
     }
-    else { state.view = "map"; state.selection = { kind: "group", cacheKey: go.dataset.group }; }
     return render();
   }
 
