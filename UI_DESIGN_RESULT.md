@@ -281,3 +281,197 @@ things this block adds to it:
 **And the thing the port block should not inherit quietly: FINDING 100.** If the
 port carries `check_ui.mjs`'s structural check across in any form, it should
 carry the fix the design block declined to make.
+
+---
+---
+
+# PART TWO — **THE BLOCK DID NOT STOP AT §5, AND THIS IS WHAT HAPPENED AFTER IT.**
+
+*Appended 2026-09-08. Everything above this line is the block as originally
+scoped, scored against `UI_DESIGN_PREDICTIONS.md`, and is **not edited** — the
+five predictions stand as they were read. Seven commits followed, all of them
+work Rob directed after seeing the page rendered, and the document above was
+left saying 39 checks while the harness said 43. **A result document that has
+gone stale is worse than no result document**, because the next thread opens
+from it believing it.*
+
+---
+
+## THE STATE BLOCK IS GENERATED. NOTHING BELOW IT IS RESTATED.
+
+`python scripts/state_block.py`, at `db89c3e`:
+
+```
+ingest.verify                        green, 54 documents
+ingest.test_fidelity                 145   [green]
+ingest.test_cost                     78   [green]
+eval.test_answer_eval                425   [green]
+eval.test_ranking_check              258   [green]
+answer.test_answer                   150   [green]
+ui/test_build_ui_data.py             19   [green]
+scripts/test_recover_baseline.py     56   [green]
+scripts/test_harnesses.py            43   [green]
+python -m ingest.gazetteer --check   GREEN
+node ui/check_ui.mjs                 GREEN
+```
+
+**`node ui/check_ui.mjs`: 39 at Part One's close, 43 now.** Every one of the
+four was added deliberately and in the same commit as the surface it guards, and
+every one was verified to FAIL on a broken version of that surface before being
+believed.
+
+---
+
+# 6. THE SEVEN COMMITS
+
+```
+b6d4aaa  the header line and the stat strip
+83b1b10  a Home tab, the tabs renamed, the harness 39 -> 40
+439bd8b  the masthead script band and map, 40 -> 42
+f53b6e9  the band made scrollable with a mouse
+a57f0ce  the band's order, and a Greek specimen from outside the empire
+a06ed0e  ui/data.js regenerated on the host, and FINDING 101
+db89c3e  the chain drawn on Home, and the map beside "What this portal does", 42 -> 43
+```
+
+## WHAT IS ON THE PAGE THAT WAS NOT BEFORE
+
+**A HOME TAB, and the tabs are Home / Questions / Map / Data & Sources.** Home
+is prose only — the derived figures and the two findings stay on the Questions
+tab's front section rather than being said twice. The old About tab's "What this
+page is showing" card MOVED to Home as its Scope card and is not duplicated.
+
+**The addresses follow the labels: `#`, `#questions`, `#map`, `#data`.** RULING
+84 says a URL names the thing, and nothing had been shared, so `#places` and
+`#about` now report as unresolvable rather than silently landing on the renamed
+tab. That is the ruling behaving as written.
+
+**A MASTHEAD SCRIPT BAND of nine specimens of the corpus's own source text.**
+Five are the script the source is written in — Old Tamil, Literary Chinese,
+Sanskrit in Devanagari, Korean, Ancient Greek — and **that is every native
+script this corpus holds.** The other four are the romanised transliteration the
+corpus actually carries and say so. Images rather than web type, because a
+visitor without a font for those scripts gets tofu boxes; the alt text carries
+the real characters, read back out of the record so the caption cannot drift
+from the picture. Each specimen opens its record.
+
+**THE MAP beside the wordmark, and again beside "What this portal does".** Whole
+extent, true aspect. A full-width banner strip at the map's 900×388 holds about
+twenty degrees of latitude, which crops Rome out of a project about Rome, so the
+frame fits the map rather than the map being cut to fit a banner.
+
+**THE CHAIN, DRAWN, on Home.** Question → source retrieved in its own language →
+quotation → the characters at their offsets, shown in place inside the real
+field. **The example is not declared**: it is the page's own default, so the
+figure shows what a visitor actually meets and changes by itself when the
+archive does.
+
+---
+
+# 7. THE FOUR NEW GUARDS, AND WHY EACH EXISTS
+
+```
+40  the home view renders
+    check_ui.mjs rendered three views BY NAME. A fourth was invisible to it, so
+    a Home tab that threw would have shipped green. Its own check rather than a
+    line folded into the existing one, so a red line names the view
+
+41  every masthead specimen has its record, its characters and its image
+42  native script and romanised transliteration are not confused
+    The specimen list is declared TWICE -- in index.html for the page and in
+    ui/build_banner.mjs for the images -- so these assert the two agree: every
+    record exists, every declared start is still in its field, every declared
+    width matches what was rendered, every image is present, and THE CHARACTERS
+    THE PAGE READS BACK FOR THE ALT TEXT ARE THE CHARACTERS BAKED INTO THE
+    PICTURE. That is the data.manifest.json pattern: a description is only safe
+    when something re-derives it
+
+43  the chain figure draws a quotation that still resolves
+    The figure says, of a specific quotation, "these are the characters on
+    disk". That is the page's whole claim in one picture, and a picture is the
+    one thing on this page a reader cannot click to check
+```
+
+---
+
+# 8. FINDING 100 AND FINDING 101
+
+**FINDING 100 — `check_ui.mjs` counts inline scripts inside HTML comments.**
+Its first check matches `<script(?![^>]*\bsrc=)`; the lookahead excludes `src=`
+but not `<script src>` with no equals sign, so a COMMENT describing a script tag
+was counted as a second inline script and the harness went red pointing at the
+page. It fails safe — a comment can make it red, nothing can make it green — and
+it is recorded rather than fixed, because a design block quietly editing the
+guard file it is judged by is worse than the defect.
+
+**FINDING 101 — a Windows text-mode write puts CRLF into files this repository
+stores verbatim, and the citation system is denominated in byte offsets.**
+`build_ui_data.py` writes with `Path.write_text`, which is text mode: on Windows
+every `\n` becomes `\r\n`. `.gitattributes` is `* -text`, so git stores those CR
+bytes exactly as they arrive. It surfaced on `ui/data.js`, which gained two CR
+bytes and a different sha256 for a reason unrelated to its content. **It would
+not be harmless on `data/seed_corpus/`**, where 168 archived citation spans
+point into the records by exact offset and one inserted byte per line shifts
+every offset after the first newline — silently, and looking entirely
+convincing. Nothing is broken: the seed corpus is curated by hand, not written
+by that script. This is the hazard demonstrating itself on the one file where it
+could do no damage.
+
+---
+
+# 9. WHAT LOOKING CAUGHT THAT NO CHECK WOULD HAVE
+
+Part One recorded three. Five more, and the pattern is now the block's clearest
+result: **every defect in this half was found by rendering the page and using
+it, and not one was found by the harness.**
+
+- **CSS masks do not load from `file://`.** The specimens were built as
+  black-on-transparent PNGs used as `mask-image`, so one asset would serve both
+  themes with the ink coming from a token. A mask is a CORS-restricted resource
+  and this page's founding property is that it opens from a disk, where the
+  origin is `null` and every mask is refused. Chromium logs the block and paints
+  nothing; the same file loads without complaint as an `<img>`.
+- **The band was not scrollable with a mouse.** It had `overflow-x: auto` and
+  3142px of content in a 1500px box, and the scrollbar was hidden in imitation
+  of the stat strip. On a phone a finger scrolls it. On a desktop there was no
+  bar to drag, no horizontal wheel, and the vertical wheel scrolls the page —
+  four of the nine specimens unreachable, with nothing on screen saying so.
+  **Reported by Rob, not by me and not by a check.**
+- **The specimen slicing dropped the last word of every specimen**, rendering
+  `owlþuþewaz / niwajemariz` as `owlþuþewaz /`.
+- **The chain figure was squeezed into the 104-character reading column**, which
+  gave each of four steps about a hundred pixels. Prose wants a measure; a
+  diagram wants the room.
+- **A false finding, stopped by looking.** Mid-block I wrote a comment asserting
+  the map legend's swatches rendered black, because they are drawn with
+  `fill="var(--accent)"` as SVG presentation attributes and those, I was
+  confident, do not resolve custom properties. Then I rendered the legend and
+  read the computed styles: **they resolve, and the swatches had always been
+  right.** The comment was corrected before it was committed and no finding was
+  opened. That is the first time on this project that looking worked by stopping
+  something being written down rather than by catching something already wrong.
+
+---
+
+# 10. WHAT PART TWO DID NOT DO
+
+- **Did not build the chatbot or a question box.** Still ruling 83, still a
+  later block.
+- **Did not curate a record or author a coordinate.**
+- **Did not hand-edit `ui/data.js`.** It was regenerated ON THE HOST by a plain
+  `build_ui_data.py` run, and the commit that carried it measured the difference
+  rather than assuming it: `cmp -l` over the 9.5MB file reports exactly six
+  differing bytes, all inside the `generated` timestamp. Both verify axes and
+  the corpus digest are unmoved.
+- **Did not build the strip of object images.** Only two of the 54 records are
+  objects whose rights position has been read, and both are held by institutions
+  with open-access image programmes — exactly the situation FINDING 69 describes.
+  RULING 74 says a rights position is read by a person off the source, not
+  inferred from a policy.
+- **Did not fix FINDING 100 or FINDING 101.** Both are recorded and both are
+  carried into `UI_QUESTIONS_START.md` as live debt.
+- **Did not touch the Questions tab's own layout** beyond the run picker and the
+  front section that Part One built.
+
+**`RULINGS.md` reads next free ruling 85, next free finding 102, carried back in
+the same sittings that used 84, 100 and 101.**
