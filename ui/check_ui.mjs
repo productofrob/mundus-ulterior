@@ -127,6 +127,7 @@ try {
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
     " buildMap, mapState, mapWindow, mapBase, viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
+    " railPartition, showableRuns, caseOf," +
     " SPAN_STATES, PROVENANCE, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -142,6 +143,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase,
         viewHome, viewQuestions, viewPlaces, viewAbout,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
+        railPartition, showableRuns, caseOf,
         SPAN_STATES, PROVENANCE, langName, placeLedger } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
@@ -184,6 +186,61 @@ try { viewPlaces(); viewAbout(); note(true, "places and about views render"); }
 catch (e) { note(false, `a view threw: ${e.message}`); }
 try { viewHome(); note(true, "the home view renders"); }
 catch (e) { note(false, `the home view threw: ${e.message}`); }
+
+/* ---- 2c. the question rail is a PARTITION of the archive, and the two
+   groups are what they claim to be. RULING 86.
+
+   The rail lists 24 of 33 questions under seven regions, groups 7 more as
+   refusals, and counts the rest in a line at its foot. That is three filters
+   over one array, and three filters are how a question comes to be in none of
+   them: the failure this guards against is not a wrong label, it is a question
+   that silently stops being anywhere the day the archive grows a case the
+   partition did not anticipate. So the assertion is set arithmetic — every
+   archived question, exactly once — and not a count.
+
+   The second check is the one that keeps the refusals group honest. "The corpus
+   refuses this" is a CLAIM, and the evidence for it is that a person declared
+   the case `correctly_refusable` in gold/ before the runs were made. A question
+   that merely happens to have no showable run is a failure and belongs in the
+   counted line, not under a heading that says the refusal was correct. ---- */
+{
+  const rail = railPartition();
+  const listed = [
+    ...rail.regions.flatMap(([, qs]) => qs),
+    ...rail.refusals,
+    ...rail.withheld,
+  ];
+  const seen = new Map();
+  for (const q of listed) seen.set(q, (seen.get(q) || 0) + 1);
+  const missing = QUESTIONS.filter(q => !seen.has(q));
+  const twice = [...seen.keys()].filter(q => seen.get(q) > 1);
+  const stray = [...seen.keys()].filter(q => !QUESTIONS.includes(q));
+  note(
+    missing.length === 0 && twice.length === 0 && stray.length === 0
+      && listed.length === QUESTIONS.length,
+    missing.length || twice.length || stray.length
+      ? `the rail is not a partition of the archive — ${missing.length} question(s) in no group `
+        + `(e.g. ${JSON.stringify(missing[0] || "")}), ${twice.length} in two, ${stray.length} in neither`
+      : `every archived question is in the rail exactly once `
+        + `(${rail.regions.reduce((n, [, qs]) => n + qs.length, 0)} under `
+        + `${rail.regions.length} regions, ${rail.refusals.length} refusals, `
+        + `${rail.withheld.length} withheld and counted)`,
+  );
+
+  const listedWithNothing = rail.regions
+    .flatMap(([, qs]) => qs).filter(q => showableRuns(q).length === 0);
+  const notDeclared = rail.refusals
+    .filter(q => (caseOf.get(q) || {}).expected_behaviour !== "correctly_refusable");
+  note(
+    listedWithNothing.length === 0 && notDeclared.length === 0,
+    listedWithNothing.length || notDeclared.length
+      ? `the rail's two groups do not hold what they claim — ${listedWithNothing.length} region `
+        + `question(s) with no showable run, ${notDeclared.length} refusal(s) gold does not `
+        + `declare correctly_refusable (e.g. ${JSON.stringify(notDeclared[0] || listedWithNothing[0] || "")})`
+      : `the region rail holds only questions with a showable run, and every refusal is `
+        + `declared correctly_refusable in gold (${rail.refusals.length} checked)`,
+  );
+}
 
 /* ---- 2d. the chain figure on Home ----
  *

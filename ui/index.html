@@ -356,9 +356,29 @@
     background: var(--card); border-color: var(--line); color: var(--ink);
     box-shadow: var(--shadow-1);
   }
-  .qbtn .meta {
-    display: block; font-family: var(--font-sans); font-size: var(--t-2xs);
-    color: var(--ink-faint); margin-top: var(--s-1);
+  /* The rail is grouped by region now, so a group's name is the only apparatus
+     on it. Each button used to carry a second line — `41 archived runs ·
+     40 grounded · 0 refused` — thirty-three times, which is a census of the
+     archive standing between a visitor and the questions. The census is still
+     true and is still on the page; it is not on every button. */
+  .qgroup { margin-top: var(--s-5); }
+  .qgroup:first-child { margin-top: 0; }
+  .qgroup > h3 {
+    font-family: var(--font-sans); font-size: 10.5px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em; color: var(--ink-faint);
+    margin: 0 0 var(--s-2);
+  }
+  /* The refusals group is a claim, not a leftover, so it is separated by a rule
+     rather than by being placed last and hoped about. */
+  .qgroup.refusals { border-top: var(--rule) solid var(--line); padding-top: var(--s-4); }
+  .qgroup .note {
+    font-family: var(--font-sans); font-size: var(--t-2xs); line-height: var(--lh-snug);
+    color: var(--ink-faint); margin: var(--s-2) 0 0;
+  }
+  .railfoot {
+    font-family: var(--font-sans); font-size: var(--t-2xs); line-height: var(--lh-snug);
+    color: var(--ink-faint); margin-top: var(--s-5);
+    border-top: var(--rule) solid var(--line-soft); padding-top: var(--s-3);
   }
 
   .card {
@@ -366,45 +386,20 @@
     border-radius: var(--r-lg); padding: var(--s-6); margin-bottom: var(--s-5);
   }
 
-  /* ---------- run picker ----------
-     41 undifferentiated chips in a six-row block used to sit between the
-     question and the answer. The chips are all still here, one click away,
-     and nothing is dropped; what changed is that the page now says WHICH run
-     you are reading, why that one, and what the other forty are. */
-  .runline {
-    display: flex; align-items: baseline; gap: var(--s-3); flex-wrap: wrap;
-    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
-  }
-  .runline .now { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
-  .runline .why { color: var(--ink-soft); }
-  .runspread { display: flex; gap: var(--s-4); flex-wrap: wrap; }
-  .runspread b { color: var(--ink); font-weight: 600; }
-  details.runs { margin-top: var(--s-3); }
-  details.runs > summary {
-    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--accent);
-    cursor: pointer; list-style: none; display: inline-flex; gap: var(--s-2); align-items: center;
-  }
-  details.runs > summary::-webkit-details-marker { display: none; }
-  details.runs > summary::before { content: "▸"; font-size: 9px; }
-  details.runs[open] > summary::before { content: "▾"; }
-  .rungroup { margin-top: var(--s-4); }
-  .rungroup .gname {
-    font-family: var(--font-sans); font-size: var(--t-2xs); color: var(--ink-faint);
-    text-transform: uppercase; letter-spacing: .08em; margin-bottom: var(--s-2);
-  }
-  .runbar { display: flex; gap: var(--s-2); flex-wrap: wrap; }
-  .runchip {
-    font-family: var(--font-sans); font-size: var(--t-xs); cursor: pointer;
-    border: var(--rule) solid var(--line); background: var(--card); border-radius: var(--r-pill);
-    padding: var(--s-1) var(--s-4); color: var(--ink-soft);
-    display: inline-flex; gap: var(--s-2); align-items: center;
-  }
-  .runchip:hover { border-color: var(--ink-faint); color: var(--ink); }
-  .runchip[aria-current="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
-  .runchip .pv { opacity: .6; }
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--good); flex: none; }
-  .dot.refused { background: var(--ink-faint); }
-  .dot.ungrounded { background: var(--bad); }
+  /* ---------- the run picker is GONE, and this comment is its headstone ----
+     It was one line naming the chosen run, a five-figure spread line, and a
+     disclosure holding every chip grouped by prompt version. All of it was
+     accurate and all of it was apparatus: a visitor who has come to see whether
+     a quotation resolves is asked first to hold in mind that there are
+     forty-one archived attempts at this question, five prompt versions, and a
+     rule by which one of them was chosen.
+
+     RULING 85: a run keeps its ADDRESS and loses its CONTROL.
+     `#q/<slug>/r/<stamp>` still resolves, `applyHash` still sets `runIndex`
+     from it, and `defaultRunIndex` still chooses. What is gone is the UI, and
+     the classes it needed — `.runline`, `.runspread`, `details.runs`,
+     `.rungroup`, `.runbar`, `.runchip`, `.dot` — went with it rather than
+     being left behind for a later reader to wonder about. */
 
   /* the answer itself */
   .answer { font-size: var(--t-l); line-height: var(--lh-prose); }
@@ -1160,7 +1155,9 @@ function bestEffortLocate(rec, name) {
 
 /* Group the archive by question. Runs of the same question differ by prompt
    version, session and sampling — that variation is real and this project
-   measured it, so the picker shows every run rather than a chosen best. */
+   measured it, and every one of them is kept, archived and addressable. What
+   changed in this block is that the page no longer draws a control for them:
+   RULING 85, and the headstone in the stylesheet says the rest. */
 const byQuestion = new Map();
 for (const run of D.runs) {
   if (!byQuestion.has(run.question)) byQuestion.set(run.question, []);
@@ -1169,7 +1166,83 @@ for (const run of D.runs) {
 for (const runs of byQuestion.values()) {
   runs.sort((a, b) => String(a.timestamp).localeCompare(String(b.timestamp)));
 }
+/* EVERY archived question, in archive order, and this array is not filtered.
+   `QUESTIONS[0]` is the default question and the Home tab's chain figure;
+   `questionBySlug` is built from it, so every question that has ever had a link
+   made to it still resolves. The rail is a DERIVED VIEW of this array (see
+   `railPartition`) and never a replacement for it — filtering here would
+   quietly renumber the default question, redraw the chain figure and cut
+   `check_ui.mjs`'s run count from 685 to whatever survived. */
 const QUESTIONS = [...byQuestion.keys()];
+
+/* ------------------------------------------------------------------ *
+ * WHAT THE RAIL LISTS, AND WHY. RULING 86.
+ *
+ * A visitor's first click should not land on a question this corpus cannot
+ * answer. That is not the same as hiding what it cannot answer, and the
+ * difference is the whole of this section.
+ *
+ * A run is SHOWABLE if it was not refused, passed the grounding check, and
+ * claims at least one character span. A question is shown in the region rail
+ * if it has at least one. Nine of the thirty-three do not — and SEVEN OF THOSE
+ * NINE ARE QUESTIONS `gold.answer_cases` DECLARES `correctly_refusable`: the
+ * system refused them because refusing was right. Those seven are not failures
+ * and are not deleted; they are grouped and labelled as what they are, which is
+ * the strongest evidence on this page that a retrieval system can decline.
+ *
+ * The remaining two are failures — one `answerable` question every run of which
+ * refused, one whose runs never quote anything. They are not listed, and they
+ * are COUNTED in a line at the foot of the rail, because the Home tab says "the
+ * failures are kept ... a system that only displays its successes is not
+ * evidence of anything" and a rail that drops two failures in silence makes that
+ * sentence false one tab away.
+ *
+ * The region comes from `gold.answer_cases`, where a person declared it, and
+ * not from counting which region's records a run happened to retrieve. Every
+ * region name in that file is one the corpus already uses, so the rail's
+ * vocabulary is the Map tab's and the source cards'. A question with no
+ * declared case falls into a group that SAYS SO rather than disappearing —
+ * empty today, and guard 44 is what will notice the day it is not.
+ * ------------------------------------------------------------------ */
+const CASES = (D.gold && D.gold.answer_cases && D.gold.answer_cases.cases) || [];
+const caseOf = new Map(CASES.map(c => [c.question, c]));
+const UNDECLARED_REGION = "not declared in the gold cases";
+
+const showableRuns = q => (byQuestion.get(q) || []).filter(
+  r => !r.refused && r.grounded
+    && (r.grounding?.quote_spans || []).some(s => s.abs_start != null));
+
+/* One pass, one partition, and the three parts are disjoint by construction:
+   every question lands in exactly one of `regions`, `refusals` and `withheld`.
+   Returned as data rather than as markup so `check_ui.mjs` can assert the
+   partition without matching prose — the `data-*` pattern, one layer up. */
+function railPartition() {
+  const regions = new Map();
+  const refusals = [], withheld = [];
+  for (const q of QUESTIONS) {
+    if (showableRuns(q).length) {
+      const region = (caseOf.get(q) || {}).region || UNDECLARED_REGION;
+      if (!regions.has(region)) regions.set(region, []);
+      regions.get(region).push(q);
+      continue;
+    }
+    ((caseOf.get(q) || {}).expected_behaviour === "correctly_refusable"
+      ? refusals : withheld).push(q);
+  }
+  /* Regions alphabetically, which is what the Map tab's record cards already
+     do; questions inside a region by how many showable runs they have, then
+     alphabetically. Both orders are stated here rather than being whatever the
+     archive happened to hold, and the second one puts the questions this corpus
+     answers most consistently at the top of their own region. */
+  for (const qs of regions.values())
+    qs.sort((a, b) => showableRuns(b).length - showableRuns(a).length
+                   || a.localeCompare(b));
+  return {
+    regions: [...regions.entries()].sort((a, b) => a[0].localeCompare(b[0])),
+    refusals: refusals.slice().sort((a, b) => a.localeCompare(b)),
+    withheld,
+  };
+}
 
 let state = {
   view: "home",
@@ -1331,10 +1404,6 @@ const currentRun  = () => {
   return runs[Math.min(i, runs.length - 1)];
 };
 
-function shortTime(ts) {
-  const m = String(ts || "").match(/T(\d{2}):(\d{2})/);
-  return m ? `${m[1]}:${m[2]}` : "—";
-}
 
 /* ------------------------------------------------------------------ *
  * FINDING 98. Every state `classify_span` can produce, rendered DELIBERATELY.
@@ -2050,93 +2119,48 @@ function introSection() {
  * views
  * ------------------------------------------------------------------ */
 function viewQuestions() {
-  const runs = currentRuns();
   const run  = currentRun();
-  const activeIndex = runs.indexOf(run);
   const quotes = (run.grounding?.quote_spans || []).filter(s => s.abs_start != null).length;
 
-  const qlist = QUESTIONS.map(q => {
-    const rs = byQuestion.get(q);
-    const grounded = rs.filter(r => r.grounded).length;
-    const refused  = rs.filter(r => r.refused).length;
-    return `<button class="qbtn" data-question="${esc(q)}"
-      aria-current="${q === state.question}">${esc(q)}
-      <span class="meta">${rs.length} archived run${rs.length === 1 ? "" : "s"} ·
-      ${grounded} grounded · ${refused} refused</span></button>`;
-  }).join("");
+  /* THE RAIL, GROUPED BY REGION. `railPartition` decides what is in it and the
+     comment above that function is the argument; this only draws it. Every
+     count below is counted here, and the rail prints exactly one of them. */
+  const rail = railPartition();
+  const qbtn = q => `<button class="qbtn" data-question="${esc(q)}"
+      aria-current="${q === state.question}">${esc(q)}</button>`;
 
-  /* THE RUN PICKER.
-   *
-   * Every question in this archive has at least seventeen runs and the default
-   * one has forty-one, so this used to be a six-row block of undifferentiated
-   * chips sitting between the question and the answer. `defaultRunIndex` chose
-   * a good one and the reader had no way of knowing that a choice had been
-   * made, which one it was, or what the other forty were for.
-   *
-   * The variation between runs is real and this project measured it — that is
-   * worth showing, and forty-one identical pills is not showing it. So: one
-   * line saying which run this is and why it was chosen, the spread stated as
-   * a count, and every chip still one click away behind a disclosure, grouped
-   * by the prompt version that is the actual axis of variation. NOTHING IS
-   * DROPPED; the structural guards count the rendered string and still pass.
-   *
-   * Every figure below is counted from `runs`. None is written down. */
-  const spread = { grounded: 0, refused: 0, ungrounded: 0 };
-  const byPrompt = new Map();
-  for (const r of runs) {
-    spread[r.refused ? "refused" : r.grounded ? "grounded" : "ungrounded"]++;
-    const pv = r.prompt_version || "unversioned";
-    if (!byPrompt.has(pv)) byPrompt.set(pv, []);
-    byPrompt.get(pv).push(r);
-  }
+  const qlist = rail.regions.map(([region, qs]) => `<div class="qgroup">
+      <h3>${esc(region)}</h3>
+      <div class="qlist">${qs.map(qbtn).join("")}</div>
+    </div>`).join("")
+    + (rail.refusals.length ? `<div class="qgroup refusals">
+      <h3>and what it refuses</h3>
+      <div class="qlist">${rail.refusals.map(qbtn).join("")}</div>
+      <p class="note">${rail.refusals.length} question${rail.refusals.length === 1 ? "" : "s"}
+      the evidence here does not answer. Each is a case this project declared
+      <code>correctly_refusable</code> before the runs were made, and every archived
+      attempt declined it. Open one: the sources it searched are listed under the
+      refusal.</p>
+    </div>` : "")
+    + (rail.withheld.length ? `<p class="railfoot">${rail.withheld.length}
+      further question${rail.withheld.length === 1 ? " is" : "s are"} archived and not listed:
+      ${rail.withheld.length === 1 ? "its" : "their"} runs never produced a grounded answer
+      that quotes anything, and ${rail.withheld.length === 1 ? "it is" : "they are"} a failure
+      rather than a refusal. Counted here rather than dropped.</p>` : "");
 
-  const chip = (r, i) => {
-    const cls = r.refused ? "refused" : r.grounded ? "" : "ungrounded";
-    return `<button class="runchip" data-run="${i}" aria-current="${i === activeIndex}"
-      title="${esc(r.timestamp)} · ${esc(r.prompt_version)}">
-      <span class="dot ${cls}"></span>${shortTime(r.timestamp)}
-      <span class="pv">${esc((r.prompt_version || "").replace("p7-answer-", ""))}</span>
-    </button>`;
-  };
-  const runGroups = [...byPrompt.entries()].map(([pv, rs]) => `<div class="rungroup">
-      <div class="gname">${esc(pv)} — ${rs.length} run${rs.length === 1 ? "" : "s"}</div>
-      <div class="runbar">${rs.map(r => chip(r, runs.indexOf(r))).join("")}</div>
-    </div>`).join("");
-
-  /* Why THIS run. `defaultRunIndex` scores quotations first, then grounding,
-     then not-refused — so the reason is read back off the run it picked
-     rather than asserted, and a run the reader chose says so instead. */
-  const chosenWhy = state.runIndex != null
-    ? "you chose this one"
-    : quotes
-      ? `chosen because it quotes the most: ${quotes} quotation${quotes === 1 ? "" : "s"} traced to disk`
-      : run.grounded ? "chosen because it is the first grounded answer archived"
-                     : "chosen because no run of this question quotes anything";
-
-  const picker = `<div class="runline">
-      <span class="now">${shortTime(run.timestamp)}</span>
-      <span class="mono">${esc(run.prompt_version || "")}</span>
-      <span class="why">${chosenWhy}</span>
-    </div>
-    <div class="runline runspread">
-      <span>${runs.length} archived run${runs.length === 1 ? "" : "s"} of this question</span>
-      <span><b>${spread.grounded}</b> grounded</span>
-      <span><b>${spread.refused}</b> refused</span>
-      ${spread.ungrounded ? `<span><b>${spread.ungrounded}</b> failed a grounding check</span>` : ""}
-      <span>${byPrompt.size} prompt version${byPrompt.size === 1 ? "" : "s"}</span>
-    </div>
-    <details class="runs"${state.runIndex != null ? " open" : ""}>
-      <summary>every run, grouped by the prompt that produced it</summary>
-      ${runGroups}
-    </details>`;
-
+  /* The badges are what is LEFT after the run picker went, and the difference
+     between the two is the point. Each of these three says something about the
+     answer on screen — whether every claim carries a citation, how many of its
+     quotations reach characters on disk, how many sources it consulted. The
+     picker's figures were about the archive around the answer. A fourth badge
+     printing the prompt version went with the picker for that reason: it named
+     the machinery, not the evidence. */
   const badges = [
     run.refused ? `<span class="badge neutral">no answer in these sources</span>`
                 : `<span class="badge ${run.grounded ? "good" : "bad"}">${
                     run.grounded ? "every claim carries a citation" : "failed a grounding check"}</span>`,
     quotes ? `<span class="badge">${quotes} quotation${quotes === 1 ? "" : "s"} traced to disk</span>` : "",
     `<span class="badge">${(run.passages || []).length} sources consulted</span>`,
-    `<span class="badge neutral mono">${esc(run.prompt_version || "")}</span>`
   ].join("");
 
   const refusalNote = run.refused ? `<div class="refusal-note">
@@ -2161,20 +2185,23 @@ function viewQuestions() {
       </div></div>`;
   }).join("");
 
+  /* The rail carried a note here saying "Every run is kept; none is hidden."
+     It was true of the archive and it was true of the page while the picker
+     stood. With the picker gone it would be a promise the screen no longer
+     keeps — the runs are all still kept and still addressable, and none of them
+     is on offer. A sentence that has stopped being true of what a reader can
+     see is worse than no sentence, so it is gone rather than reworded. */
   return `${hashNotice()}${state.intro ? introSection() : ""}<div class="cols">
-    <div class="rail"><h2>Questions asked</h2><div class="qlist">${qlist}</div>
-      <div class="sect"><h3>runs of this question</h3>
-      <div class="dormant">The same question, prompt and evidence produced different
-      answers on different days. Every run is kept; none is hidden.</div></div>
-    </div>
+    <div class="rail"><h2>Questions asked</h2>${qlist}</div>
 
     <div class="answercol">
+      <!-- The question sits IN the answer card now. It had its own card while
+           the run picker filled one, and with the picker gone that card held a
+           single line of text in a box the height of three — which reads as
+           something missing rather than as room. Found by rendering it. -->
       <div class="card">
         <p class="qtext">${esc(run.question)}<button class="copylink" data-copy="1"
           title="copy a link to this run">copy link</button></p>
-        ${picker}
-      </div>
-      <div class="card">
         <div class="badges">${badges}</div>
         ${refusalNote}
         <div class="answer" id="answer">${renderAnswerText(run)}</div>
@@ -3467,13 +3494,35 @@ document.addEventListener("click", ev => {
   if (tab) { state.view = tab.dataset.view; state.selection = null;
              state.intro = true; state.runIndex = null; return render(); }
 
-  const q = ev.target.closest(".qbtn");
-  if (q) { state.question = q.dataset.question; state.runIndex = null;
-           state.selection = null; state.intro = false; return render(); }
+  /* FINDING 102, found by using the page rather than by any check.
+     A question at the foot of the rail is a long way down: measured at 1600px,
+     clicking one from the bottom of the rail left the answer 1,461 pixels ABOVE
+     the viewport, and 2,505 on a phone. The visitor clicks a question and sees
+     nothing happen, because what happened is off the top of the screen. It has
+     been true since the rail existed and the region groups make it easier to
+     reach, since the refusals are deliberately at the bottom.
 
-  const rc = ev.target.closest(".runchip");
-  if (rc) { state.runIndex = +rc.dataset.run; state.selection = null;
-            state.intro = false; return render(); }
+     The answer is brought into view only when it is NOT already in view: a page
+     that scrolls on every click takes the position away from a reader who was
+     already looking at the right thing. Guarded for the harness's thin DOM,
+     which has neither `scrollIntoView` nor a layout to ask about. */
+  const q = ev.target.closest(".qbtn");
+  if (q) {
+    state.question = q.dataset.question; state.runIndex = null;
+    state.selection = null; state.intro = false;
+    render();
+    const col = document.querySelector(".answercol");
+    const box = col && col.getBoundingClientRect && col.getBoundingClientRect();
+    if (box && col.scrollIntoView && (box.top < 0 || box.top > window.innerHeight * 0.5))
+      col.scrollIntoView({ block: "start" });
+    return;
+  }
+
+  /* The run-chip handler stood here. Nothing on the page emits a `.runchip`
+     any more (RULING 85), and a handler for an element that cannot exist is a
+     handler nobody can test. `state.runIndex` is still set — by `applyHash`,
+     from a `/r/<stamp>` in the URL, and by the chain figure on Home, which
+     travels to the exact run it drew. */
 
   const mk = ev.target.closest("mark.q");
   if (mk) return select({ kind: "quote", si: +mk.dataset.span });
