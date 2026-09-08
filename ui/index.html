@@ -1780,16 +1780,21 @@ function renderQuoteProvenance(run, si) {
     }
   }
 
+  /* Three rows came out of this chain: `file` (the path on disk), `characters`
+     (the offset pair) and `chunk` (the retrieval id). The panel still SHOWS the
+     characters below, in place inside the field, which is the thing a reader can
+     check; what went is the machine's way of naming them.
+
+     Worth knowing rather than assumed: the offsets are still what the page runs
+     on — `fieldWithSpan` reads them to mark the passage, `check_ui.mjs` asserts
+     all 1227 resolved spans still hold their quoted characters at them, and the
+     chain figure on Home prints a file, a field and an offset pair beside its
+     quotation. They are no longer printed HERE. */
   out += `<div class="chain">
     ${chainRow("quoted in", span.within === "english"
         ? "the published English translation" : "the source-language text")}
     ${chainRow("record", esc(rec ? rec.title : span.doc_id))}
-    ${chainRow("file", `<code>${esc(rec ? rec.file : "—")}</code>`)}
     ${chainRow("field", `<code>${esc(span.source_field)}</code>`)}
-    ${chainRow("characters", span.abs_start == null
-        ? "<em>no character span claimed — verified in the English only</em>"
-        : `<code>[${span.abs_start}:${span.abs_end}]</code>`)}
-    ${chainRow("chunk", `<code>${esc(span.chunk_id)}</code>`)}
     ${chainRow("citation", rec && rec.citation
         ? `<a href="${esc(rec.citation)}" target="_blank" rel="noopener">${esc(rec.citation)}</a>` : null)}
   </div>`;
@@ -1798,7 +1803,7 @@ function renderQuoteProvenance(run, si) {
   if (text != null && span.abs_start != null && res && res.state !== "absent") {
     const s = res.state === "moved" ? res.now_at[0] : span.abs_start;
     const e = res.state === "moved" ? res.now_at[1] : span.abs_end;
-    out += `<div class="sect"><h3>the characters on disk</h3>
+    out += `<div class="sect"><h3>Source Characters</h3>
       <div class="fieldtext">${fieldWithSpan(text, s, e)}</div></div>`;
   } else if (text != null) {
     out += `<div class="sect"><h3>the field as it stands today</h3>
@@ -1862,12 +1867,11 @@ function renderEnglishProvenance(p) {
     strength of evidence.</div>`;
   } else if (e.kind === "published" || e.kind === "published_document" || e.kind === "source") {
     out += `<div class="dormant"><strong>Translation confidence: dormant.</strong>
-      This passage reached English through a published translation, so the
-      back-translation check does not apply and no band was assigned. Every
-      non-English passage in this corpus has aligned published English, so the
-      machine-translation path is never taken here. It exists, and is exercised
-      only by offline tests, waiting on material that has no published
-      translation.</div>`;
+      This passage reached English through a published translation, so no
+      back-translation checks apply. Every non-English passage in this corpus has
+      aligned published English, so the machine-translation was never used.
+      Though machine translation is possible, it is reserved for material with no
+      published translation.</div>`;
   }
   return out + `</div>`;
 }
