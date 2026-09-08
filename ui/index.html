@@ -727,16 +727,70 @@
      polytonic Greek, and a visitor without one gets tofu boxes. The characters
      are not lost to the machine: each specimen carries the real text in its
      `aria-label`, and each is a button that opens its own record. */
+  /* SCROLLABLE, AND VISIBLY SO.
+     The first version copied the stat strip's treatment and hid the scrollbar.
+     On a phone that is fine, because a finger scrolls it. ON A DESKTOP WITH A
+     MOUSE IT LEFT NO WAY TO MOVE THE BAND AT ALL: no scrollbar to drag, no
+     horizontal wheel, and a vertical wheel scrolls the page instead. Nine
+     specimens, four of them unreachable, and nothing on screen saying so.
+     So: a real scrollbar, a fade at the edge that means what it says, a wheel
+     that works, and drag-to-pan — the same four affordances the map has. */
   .scriptband {
+    position: relative;
     background: var(--card); border-bottom: var(--rule) solid var(--line);
-    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    overflow-x: auto; overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin; scrollbar-color: var(--line) transparent;
     -webkit-overflow-scrolling: touch;
+    cursor: grab;
   }
-  .scriptband::-webkit-scrollbar { display: none; }
+  .scriptband.dragging { cursor: grabbing; }
+  .scriptband::-webkit-scrollbar { height: 8px; }
+  .scriptband::-webkit-scrollbar-track { background: transparent; }
+  .scriptband::-webkit-scrollbar-thumb {
+    background: var(--line); border-radius: var(--r-pill);
+    border: 2px solid var(--card);
+  }
+  .scriptband::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+  /* No edge fade. A gradient mask would have to sit on the scrolling row,
+     where it fades at 88% of the ROW's three thousand pixels rather than at
+     the viewport edge, and pinning it to the edge means wrapping the scroller
+     in a second element for a decoration. The scrollbar says "there is more"
+     more plainly than a fade does. */
   .scriptband .row {
     display: flex; align-items: flex-end; width: max-content;
     padding: var(--s-4) var(--s-7) var(--s-3);
   }
+  /* Arrows, because a scrollbar is not something I can verify a visitor sees.
+     `scrollbar-width: thin` renders as an overlay bar on some platforms and a
+     classic one on others, and an affordance that may or may not be drawn is
+     not an affordance. These are drawn only when there is somewhere to go:
+     `updateBandNav` hides each one at its end of the track. */
+  .bandwrap { position: relative; }
+  /* Styled as the map's zoom buttons are, because they do the same kind of job
+     and a page with two vocabularies for "nudge this thing" has one too many.
+     The gradient behind each one fades the specimens out rather than letting a
+     glyph be sliced by the viewport edge. */
+  .bandnav {
+    position: absolute; top: 0; bottom: var(--rule); width: 56px;
+    display: flex; align-items: center; border: none; cursor: pointer; z-index: 1;
+    font: 15px/1 var(--font-sans); color: var(--ink-soft); padding: 0;
+  }
+  .bandnav::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+  }
+  .bandnav.prev { left: 0; justify-content: flex-start; padding-left: var(--s-3); }
+  .bandnav.next { right: 0; justify-content: flex-end;  padding-right: var(--s-3); }
+  .bandnav.prev::before { background: linear-gradient(90deg,  var(--card) 58%, transparent 100%); }
+  .bandnav.next::before { background: linear-gradient(270deg, var(--card) 58%, transparent 100%); }
+  .bandnav span {
+    display: flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    border: var(--rule) solid var(--line); background: var(--card);
+    box-shadow: var(--shadow-1);
+  }
+  .bandnav:hover span { border-color: var(--ink-faint); color: var(--ink); }
+  .bandnav[hidden] { display: none; }
   .spec {
     flex: none; display: flex; flex-direction: column; gap: var(--s-2);
     background: none; border: none; padding: 0; cursor: pointer; text-align: left;
@@ -854,6 +908,9 @@
        away. The band stays: it scrolls, exactly as the stat strip above it does. */
     .mapthumb { display: none; }
     .scriptband .row { padding: var(--s-3) var(--s-5); }
+    /* A finger scrolls the band, and an arrow over a 390px viewport covers a
+       specimen to solve a problem that does not exist there. */
+    .bandnav { display: none; }
     .specsep { margin: 0 var(--s-5); }
   }
 </style>
@@ -878,7 +935,11 @@
     <button class="tab" role="tab" data-view="data"      aria-selected="false">Data &amp; Sources</button>
   </div>
 </header>
-<div class="scriptband" id="scriptband"></div>
+<div class="bandwrap">
+  <button class="bandnav prev" id="bandprev" type="button" aria-label="earlier specimens" hidden><span>‹</span></button>
+  <div class="scriptband" id="scriptband"></div>
+  <button class="bandnav next" id="bandnext" type="button" aria-label="later specimens" hidden><span>›</span></button>
+</div>
 
 <!--
   THE LOADING STATE, and it is deliberately not a spinner.
@@ -2983,6 +3044,86 @@ function mapZoomBy(factor, anchor) {
   repaintMap();
 }
 
+/* ------------------------------------------------------------------ *
+ * Making the script band actually scrollable with a mouse.
+ *
+ * A horizontal scroller is reachable by touch and by trackpad and by NOTHING
+ * ELSE. A mouse has no horizontal wheel, and the page's own scroll takes the
+ * vertical one. So a vertical wheel over the band is turned into horizontal
+ * movement, and the band can be dragged like the map can.
+ *
+ * Bound once on `document`, the way `wireMap` is, so it survives every
+ * re-render — and, like the map, a drag that actually moved swallows the click
+ * that follows it, or dragging across the band would open whichever record
+ * happened to be under the pointer when the button came up.
+ * ------------------------------------------------------------------ */
+let bandSuppressClick = false;
+
+/* Each arrow is shown only while there is track left on its side, so the band
+   never offers a move it cannot make. */
+function updateBandNav() {
+  const band = document.getElementById("scriptband");
+  const prev = document.getElementById("bandprev");
+  const next = document.getElementById("bandnext");
+  if (!band || !prev || !next) return;
+  const room = band.scrollWidth - band.clientWidth;
+  prev.hidden = band.scrollLeft <= 2;
+  next.hidden = room <= 2 || band.scrollLeft >= room - 2;
+}
+
+function wireBand() {
+  if (wireBand.done) return;
+  wireBand.done = true;
+
+  const scrollable = el => el && el.scrollWidth > el.clientWidth + 1;
+
+  const band = document.getElementById("scriptband");
+  // The harness's DOM stub has no addEventListener; the guard keeps the
+  // page's top-level code completing there, which is what check 1 asserts.
+  if (band && band.addEventListener) band.addEventListener("scroll", updateBandNav, { passive: true });
+  if (typeof window !== "undefined" && window.addEventListener)
+    window.addEventListener("resize", updateBandNav);
+  updateBandNav();
+
+  document.addEventListener("wheel", ev => {
+    const band = ev.target.closest && ev.target.closest(".scriptband");
+    if (!band || !scrollable(band)) return;
+    // A trackpad already sends deltaX; only a vertical-only wheel is redirected.
+    const dx = Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? ev.deltaX : ev.deltaY;
+    if (!dx) return;
+    const before = band.scrollLeft;
+    band.scrollLeft += dx;
+    // Only swallow the page's scroll if the band actually consumed it, so a
+    // wheel at either end of the band still scrolls the page past it.
+    if (band.scrollLeft !== before) ev.preventDefault();
+  }, { passive: false });
+
+  let drag = null;
+  document.addEventListener("mousedown", ev => {
+    const band = ev.target.closest && ev.target.closest(".scriptband");
+    if (!band || ev.button !== 0 || !scrollable(band)) return;
+    drag = { band, x: ev.clientX, left: band.scrollLeft, moved: false };
+    band.classList.add("dragging");
+    ev.preventDefault();                      // do not start a text/image drag
+  });
+
+  document.addEventListener("mousemove", ev => {
+    if (!drag) return;
+    const dx = ev.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) < 4) return;   // tolerate a shaky click
+    drag.moved = true;
+    drag.band.scrollLeft = drag.left - dx;
+  });
+
+  document.addEventListener("mouseup", () => {
+    if (!drag) return;
+    drag.band.classList.remove("dragging");
+    if (drag.moved) bandSuppressClick = true;
+    drag = null;
+    updateBandNav();
+  });
+}
+
 function wireMap() {
   // Bound once, on document, so it survives every re-render of the view.
   if (wireMap.done) return;
@@ -3032,9 +3173,11 @@ function wireMap() {
 let mapSuppressClick = false;
 
 document.addEventListener("click", ev => {
-  // Swallow exactly one click after a pan, so dragging across the map does not
-  // also select whichever marker the pointer was released over.
+  // Swallow exactly one click after a pan, so dragging across the map — or
+  // across the script band — does not also select whichever marker or specimen
+  // the pointer was released over.
   if (mapSuppressClick) { mapSuppressClick = false; return; }
+  if (bandSuppressClick) { bandSuppressClick = false; return; }
 
   const zoomBtn = ev.target.closest(".mapbtn");
   if (zoomBtn) {
@@ -3052,6 +3195,16 @@ document.addEventListener("click", ev => {
     if (state.intro && state.view === "questions") { state.intro = false; return render(); }
     return repaintPanel();
   };
+
+  const nav = ev.target.closest(".bandnav");
+  if (nav) {
+    const band = document.getElementById("scriptband");
+    if (band) {
+      const step = Math.max(160, Math.round(band.clientWidth * 0.8));
+      band.scrollBy({ left: nav.classList.contains("next") ? step : -step, behavior: "smooth" });
+    }
+    return;
+  }
 
   /* A specimen opens its own record. The record panel lives on the Map and
      Questions views, so a click from the masthead has to travel to one of them
@@ -3160,6 +3313,7 @@ function setTheme(t) {
 statStrip();
 scriptBand();
 mapThumb();
+wireBand();
 wireMap();
 
 /* Boot. Everything below needs a real browser; `check_ui.mjs` runs this script
