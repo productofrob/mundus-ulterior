@@ -366,14 +366,11 @@
   /* The refusals group is a claim, not a leftover, so it is separated by a rule
      rather than by being placed last and hoped about. */
   .qgroup.refusals { border-top: var(--rule) solid var(--line); padding-top: var(--s-4); }
+  /* Above the buttons, not below them: the note says what the category IS, and
+     a category is explained before its members rather than after. */
   .qgroup .note {
     font-family: var(--font-sans); font-size: var(--t-2xs); line-height: var(--lh-snug);
-    color: var(--ink-faint); margin: var(--s-2) 0 0;
-  }
-  .railfoot {
-    font-family: var(--font-sans); font-size: var(--t-2xs); line-height: var(--lh-snug);
-    color: var(--ink-faint); margin-top: var(--s-5);
-    border-top: var(--rule) solid var(--line-soft); padding-top: var(--s-3);
+    color: var(--ink-faint); margin: 0 0 var(--s-3);
   }
 
   .card {
@@ -2220,8 +2217,19 @@ function viewQuestions() {
   const quotes = (run.grounding?.quote_spans || []).filter(s => s.abs_start != null).length;
 
   /* THE RAIL, GROUPED BY REGION. `railPartition` decides what is in it and the
-     comment above that function is the argument; this only draws it. Every
-     count below is counted here, and the rail prints exactly one of them. */
+     comment above that function is the argument; this only draws it.
+
+     The refusals group's note is ABOVE its buttons: a reader meeting a heading
+     called "Not fully answerable" needs to know what the category is before
+     reading seven questions in it, not after. It is the only place on the rail
+     that explains a group, and it is the group that needs explaining.
+
+     RULING 86 ALSO OWED A COUNTED LINE HERE, for the questions withheld as
+     failures, and it is gone. That obligation is not discharged by deleting the
+     sentence: Home says "the failures are kept ... a system that only displays
+     its successes is not evidence of anything", and until the count is stated on
+     the Data & Sources tab the page is one claim short of that. Recorded rather
+     than left to be noticed. */
   const rail = railPartition();
   const qbtn = q => `<button class="qbtn" data-question="${esc(q)}"
       aria-current="${q === state.question}">${esc(q)}</button>`;
@@ -2232,18 +2240,13 @@ function viewQuestions() {
     </div>`).join("")
     + (rail.refusals.length ? `<div class="qgroup refusals">
       <h3>Not fully answerable</h3>
-      <div class="qlist">${rail.refusals.map(qbtn).join("")}</div>
       <p class="note">${rail.refusals.length} question${rail.refusals.length === 1 ? "" : "s"}
       the evidence here does not answer. Each is a case this project declared
       <code>correctly_refusable</code> before the runs were made, and every archived
       attempt declined it. Open one: it says why, and lists the sources it
       searched.</p>
-    </div>` : "")
-    + (rail.withheld.length ? `<p class="railfoot">${rail.withheld.length}
-      further question${rail.withheld.length === 1 ? " is" : "s are"} archived and not listed:
-      ${rail.withheld.length === 1 ? "its" : "their"} runs never produced a grounded answer
-      that quotes anything, and ${rail.withheld.length === 1 ? "it is" : "they are"} a failure
-      rather than a refusal. Counted here rather than dropped.</p>` : "");
+      <div class="qlist">${rail.refusals.map(qbtn).join("")}</div>
+    </div>` : "");
 
   /* The badges are what is LEFT after the run picker went, and the difference
      between the two is the point. Each of these three says something about the
