@@ -39,6 +39,8 @@ section anywhere — they exist only as one-line entries in a numbered list in
 53-79       NOT INDEXED. See the note below.
 80-82       W3_RULINGS.md             full text, "## Ruling N" headings
 83          UI_RULINGS.md             full text, "# RULING N" heading
+84          UI_DESIGN_RULINGS.md      full text, "# RULING N" heading
+85-86       UI_QUESTIONS_RULINGS.md   full text, "# RULING N" headings
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -59,7 +61,40 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 85. The next free finding is 102.**
+**The next free ruling number is 87. The next free finding is 104.**
+
+> **FINDING 103, added by the same block, 2026-09-08.** Git cannot commit from
+> the Linux bridge unless FILE DELETION is enabled for the repository folder.
+> Every commit creates and removes `.git/index.lock` and `HEAD.lock`, and an
+> unlink that is refused leaves a lock behind that blocks every attempt after
+> it — `git add` and `git commit` both fail with "Another git process seems to
+> be running", which names the wrong cause. This session found a stale
+> `index.lock` already sitting in `.git/`, dated before it started: the fossil
+> of an earlier attempt that hit the same wall and left no other trace.
+> Enable deletion for the folder at the START of a block. FINDING 94 is the
+> neighbouring one — the bridge needs `psycopg[binary]` and `sqlglot` installed
+> or `scripts/state_block.py` reports a RED that is not about the repository.
+
+> **UPDATED BY THE UI QUESTIONS BLOCK, 2026-09-08.** This line read *"The next
+> free ruling number is 85. The next free finding is 102."* The block used
+> **ruling 85** (the run picker retired: a run keeps its ADDRESS and loses its
+> CONTROL — `#q/<slug>/r/<stamp>` still resolves and nothing on the page offers
+> the other runs, which narrows ruling 84 without reversing it), **ruling 86**
+> (what the question rail lists: the 24 questions with a showable run, grouped
+> by the region `gold.answer_cases` declares; the 7 the project declared
+> `correctly_refusable` grouped and labelled as that rather than deleted; the 2
+> failures counted in a derived line rather than dropped in silence — and
+> `QUESTIONS` itself left unfiltered, so every question is still addressable)
+> and **FINDING 102** (clicking a question from the foot of the rail left the
+> answer 1,461px above the viewport at 1600px and 2,505px on a phone; found by
+> using the page, fixed in the same commit). Full text in
+> `UI_QUESTIONS_RULINGS.md`, scored in `UI_QUESTIONS_RESULT.md`, and carried
+> back here in the same sitting.
+>
+> **And one thing corrected while here:** the index table above stopped at 83
+> and did not name `UI_DESIGN_RULINGS.md` for ruling 84, which the design block
+> declared. It does now. That is exactly the drift the note below describes,
+> one row rather than one number.
 
 > **UPDATED 2026-09-08.** FINDING 101: build_ui_data.py writes with
 > `Path.write_text`, which is text mode, so a run on the Windows host turns
