@@ -511,9 +511,17 @@
     margin-top: var(--s-2); display: flex; gap: var(--s-4); flex-wrap: wrap; align-items: center;
   }
   .src-meta .quoted { color: var(--accent); }
-  .sim { display: inline-flex; align-items: center; gap: 5px; }
-  .simbar { width: 42px; height: 4px; background: var(--line-soft); border-radius: 2px; overflow: hidden; }
-  .simbar i { display: block; height: 100%; background: var(--accent); }
+  /* The cosine bar and its number are gone from the source cards. `quoted` and
+     `consulted` are what a reader can act on — one says the answer took words
+     from this source, the other says it was searched and not used — and a
+     retrieval score is a fact about the retriever, not about the answer. It is
+     still on the source's own provenance panel, one click away, where the rest
+     of the apparatus lives.
+
+     `.sim`, `.simbar` and `.simbar i` went with it, and with them THE LAST
+     INLINE `style=` ATTRIBUTE ON THIS PAGE: the bar's computed
+     `width:${...}%`. The design block left exactly one and said so; there are
+     none now. */
 
   /* ---------- provenance panel ---------- */
   .panel { position: sticky; top: var(--s-5); }
@@ -2167,9 +2175,13 @@ function viewQuestions() {
     <strong>These sources don't answer this question.</strong> Rather than fill the
     gap, the system says so. Everything it searched is listed below.</div>` : "";
 
+  /* A source card says where the source is from, what language it is in, and
+     whether the answer QUOTED it or merely CONSULTED it. The cosine score and
+     its bar are on the source's own panel instead: the card is the list a
+     reader scans, and a number that is only interpretable against the other
+     numbers in the same list does not survive being scanned. */
   const sources = (run.passages || []).map(p => {
     const rec = D.corpus[p.doc_id];
-    const sim = p.similarity != null ? Math.max(0, Math.min(1, (p.similarity - 0.3) / 0.35)) : 0;
     const quoted = (run.grounding?.quote_spans || []).some(s => s.marker === p.marker);
     const lang = p.lang || (rec && rec.language_code && rec.language_code[0]);
     return `<div class="src" data-marker="${esc(p.marker)}">
@@ -2181,7 +2193,6 @@ function viewQuestions() {
         <span>${esc(rec ? rec.region : "—")}</span>
         <span>${esc(langName(lang))}</span>
         ${quoted ? `<span class="quoted">quoted</span>` : `<span>consulted</span>`}
-        ${p.similarity != null ? `<span class="sim"><span class="simbar"><i style="width:${(sim*100).toFixed(0)}%"></i></span>${p.similarity.toFixed(2)}</span>` : ""}
       </div></div>`;
   }).join("");
 
