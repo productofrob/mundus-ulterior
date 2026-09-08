@@ -90,6 +90,28 @@ def run(corpus_dir: Path = SEED_CORPUS_DIR, state: bool = False) -> int:
             bad_offsets.append(c.chunk_id)
     check(not bad_offsets, f"offsets do not round-trip for: {bad_offsets[:5]}")
 
+    # 1b. FINDING 101. No seed record holds a CR byte.
+    #
+    #     `.gitattributes` is `* -text`, so git stores whatever arrives —
+    #     and a Windows text-mode write turns every \n into \r\n. On
+    #     `ui/data.js` that was harmless and is how the hazard was found. Here
+    #     it would not be: 168 archived citation spans point into these records
+    #     by EXACT BYTE OFFSET, and one inserted byte per line shifts every
+    #     offset after the first newline — silently, and looking entirely
+    #     convincing, because check 1 above re-reads the same shifted file and
+    #     agrees with itself.
+    #
+    #     Checked as BYTES on purpose. Reading these files as text is exactly
+    #     the operation that hides the defect: Python's universal newlines
+    #     turn \r\n back into \n on the way in, so a text-mode reader
+    #     cannot see the bytes it is being asked about.
+    crlf = [
+        path.name
+        for path in iter_seed_records(corpus_dir)
+        if b"\r" in path.read_bytes()
+    ]
+    check(not crlf, f"CR bytes in seed records (FINDING 101): {crlf[:5]}")
+
     # 2. Provenance is never null.
     required = ("doc_id", "region", "citation", "lang", "source_field", "text_fidelity")
     missing = [
