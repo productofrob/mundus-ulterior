@@ -59,7 +59,16 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 85. The next free finding is 101.**
+**The next free ruling number is 85. The next free finding is 102.**
+
+> **UPDATED 2026-09-08.** FINDING 101: build_ui_data.py writes with
+> `Path.write_text`, which is text mode, so a run on the Windows host turns
+> every `\n` into `\r\n` — and `.gitattributes` is `* -text`, so git stores
+> those CR bytes verbatim. It surfaced on `ui/data.js`, where it is harmless.
+> It would not be harmless on `data/seed_corpus/`, where 168 archived citation
+> spans point into the records BY EXACT OFFSET and one inserted byte per line
+> shifts every offset after the first newline. Recorded in the commit that
+> carried the regenerated bundle.
 
 > **UPDATED BY THE UI DESIGN BLOCK, 2026-09-07.** This line read *"The next free
 > ruling number is 84. The next free finding is 100."* and was correct when it

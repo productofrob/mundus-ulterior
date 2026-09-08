@@ -1,9 +1,9 @@
 {
   "_": "Generated beside ui/data.js by ui/build_ui_data.py. Never edited by hand, and never read as truth: check_ui.mjs re-derives every figure below from data.js itself and fails on disagreement. It exists so a change to a 9.5MB single-line file can be reviewed (debt row 7, FINDING 74).",
-  "generated": "2026-09-07T10:26:13+00:00",
+  "generated": "2026-09-08T08:29:05+00:00",
   "data_js": {
-    "bytes": 9768352,
-    "sha256": "4c32f724d3af8c4bfe4086483562fef66fc5a366029a237063bbfcc499b1db5b"
+    "bytes": 9768354,
+    "sha256": "97e61cc58845bcc0f482061852e708bddf8c0b53ceb808c8c8660e758be67465"
   },
   "corpus": {
     "records": 54,
