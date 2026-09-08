@@ -2135,10 +2135,15 @@ function renderEdgeProvenance(idx) {
 function renderPanel() {
   const sel = state.selection;
   if (!sel) {
-    return `<p class="empty">Click a highlighted quotation, a citation marker, a source,
-      or — on the Places tab — a point, a shaded region or a line. Every quotation in an
-      answer resolves to a range of characters in a named field of a named file, and this
-      panel shows you those characters.</p>`;
+    /* NOTE FOR WHOEVER EDITS THIS NEXT: one string, two tabs. This panel is the
+       Questions tab's Provenance box AND the Map tab's Place box, and this is
+       the empty state of both. The sentence naming a point, a shaded region and
+       a line was here because the Map tab has no other instruction — it is worth
+       knowing that it went, and that the Map tab now opens with a panel that
+       describes clicking things it does not have. */
+    return `<p class="empty">Click a highlighted quotation, a citation marker, or a source.
+      Every quotation resolves to its corresponding range in a given source. This panel
+      shows specific details of each highlight when clicked.</p>`;
   }
   if (sel.kind === "record")  return renderRecordProvenance(sel.docId);
   if (sel.kind === "place")   return renderPlaceProvenance(sel.key);
