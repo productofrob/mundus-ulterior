@@ -692,7 +692,11 @@
   }
   .statstrip b { color: var(--ink); font-weight: 600; }
   /* `display:flex` beats the user agent's [hidden] rule, so a flex container
-     that is hidden by attribute needs to be told. */
+     hidden by attribute has to be told. Nothing hides this one any more — the
+     strip is on every tab — and the rule stays because the reason it exists is
+     not about this element: the next flex container on this page that someone
+     hides with `hidden` will hit the same wall, and this is where the note
+     lives. */
   .statstrip[hidden] { display: none; }
 
 
@@ -3294,7 +3298,7 @@ function statStrip() {
   document.getElementById("statstrip").innerHTML =
     `<span><b>${Object.keys(D.corpus).length}</b> primary sources</span>
      <span><b>${langs.size}</b> languages</span>
-     <span><b>${total}</b> citations, <b>${a.resolved || 0}</b> resolving to characters on disk</span>
+     <span><b>${total}</b> citations, <b>${a.resolved || 0}</b> resolving to characters</span>
      <span><b>${(P.groups||[]).length}</b> locations</span>`;
 }
 
@@ -3323,11 +3327,15 @@ function render() {
                  : viewAbout();
   for (const t of document.querySelectorAll(".tab"))
     t.setAttribute("aria-selected", String(t.dataset.view === state.view));
-  /* The front section carries the same figures the header strip does, so the
-     header strip stands down while it is showing rather than saying everything
-     twice. Nothing is removed; one of the two is redundant at a time. */
-  const strip = document.getElementById("statstrip");
-  if (strip) strip.hidden = !!(state.intro && state.view === "questions");
+  /* The header strip is on every tab, including the Questions tab's landing.
+     It used to stand down there, on the argument that the front section below
+     it carries the same figures and a page should not say everything twice.
+     That argument was about the FRONT SECTION and it made the strip a thing
+     that appears and disappears as you move around the page — which reads as a
+     glitch rather than as restraint, and leaves the one tab a visitor spends
+     their time on as the only tab with no standing figures at the top. It is
+     always drawn now; the front section is the thing to trim if the repetition
+     is worth removing. */
   writeHash();
 }
 

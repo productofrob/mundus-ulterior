@@ -61,7 +61,24 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 88. The next free finding is 104.**
+**The next free ruling number is 88. The next free finding is 105.**
+
+> **FINDING 104, 2026-09-08.** A file written from the cloud session to this
+> machine can report SUCCESS and not land. Seen twice in one sitting on
+> `ui/index.html`: the write returned the path as written, and the file on disk
+> still had its old size and old content. The second identical write landed
+> both times.
+>
+> **The danger is not the lost write, it is what happens next.** After the
+> first occurrence the harness was run against what was believed to be the new
+> file and reported 45 green — it was reading the OLD one, and would have
+> reported the same on a change that broke the page. A green harness proves
+> nothing about a file that never arrived.
+>
+> So: after writing a file to this machine, CHECK THE FILE — byte count, or a
+> grep for a string the change introduced — BEFORE running anything against
+> it. `git status` is the cheapest version: a write that landed shows the file
+> as modified.
 
 > **UPDATED 2026-09-08, same block, after its first close.** **Ruling 87**: a
 > refusal says WHICH KIND of refusal it is — outside the corpus, a record whose
