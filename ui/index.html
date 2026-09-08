@@ -2214,11 +2214,10 @@ function introSection() {
     </div>`;
 
   return `<div class="intro">
-    <h2>Ask the ancient world a question, then check every word of the answer.</h2>
-    <p class="claim">${D.runs.length} answers, archived while this system was being built and
-      replayed here against the corpus as it stands today. The claim worth checking is not that they
-      read well — it is that <strong>every quotation resolves to a named range of characters in a
-      named field of a named file</strong>. Click a highlighted phrase and you get the characters.</p>
+    <h2>Ask the ancient world a question and discover where those answers come from</h2>
+    <p class="claim">The answers here come from a validated corpus with an evaluation framework
+      to ensure that <strong>every quotation resolves to the specific characters in a
+      field</strong>. Click highlighted phrases to see specifics about that passage.</p>
     <div class="figrow">
       ${fig(Object.keys(D.corpus).length, `primary sources from ${regions.size} regions, in
         ${langs.size} languages — inscriptions, literary texts, papyri and excavation records`)}
