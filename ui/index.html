@@ -2224,10 +2224,9 @@ function introSection() {
         ${langs.size} languages — inscriptions, literary texts, papyri and excavation records`)}
       ${fig(totalSpans, `character spans claimed across every archived answer,
         <b>${a.resolved || 0}</b> of them holding exactly the quoted characters today`)}
-      ${fig(L.groups, `places drawn from a cached gazetteer id, and <b>${L.gaps.length}</b> the corpus
-        names that this map refuses to draw`)}
-      ${fig(X.brokenN, `citations that no longer hold, kept and explained rather than
-        quietly repaired`)}
+      ${fig(L.groups, `places drawn from a validated gazetteer, and <b>${L.gaps.length}</b>
+        corpus items without a specific location`)}
+      ${fig(X.brokenN, `unverified citations`)}
     </div>
     <div class="findrow">${contestedCard}${auditCard}</div>
   </div>`;
