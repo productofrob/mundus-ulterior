@@ -71,7 +71,30 @@ const note = (ok, msg) => { console.log(`  ${ok ? "ok  " : "FAIL"}  ${msg}`);
 
 /* ---- 1. the page parses, and its data loads ---- */
 const html = readFileSync(join(UI, "index.html"), "utf8");
+
+/* FINDING 100, fixed here rather than in the design block that found it — a
+   block quietly editing the guard file it is being judged by is worse than the
+   defect, and this block is not judged by this line.
+
+   The defect: this matched script tags ANYWHERE in the file, including inside
+   HTML comments. A comment above the loading state described the tag it sits
+   over, writing `<script src>` with no `=`; the lookahead excludes `src=` and
+   not that, so the comment was counted as a second inline script and the
+   capture ran from the middle of a comment to the first real `</script>`. The
+   harness went red pointing at the page rather than at itself.
+
+   The fix is to ignore matches that START INSIDE A COMMENT, rather than to
+   strip comments out of `html` before matching: `scripts[0]` is what gets
+   EXECUTED in the VM below, one of the page's own template strings contains an
+   HTML comment, and a harness that runs a lightly-edited copy of the file is a
+   harness asserting about something that does not ship. The comment ranges are
+   computed once and the matches are filtered by index; every captured body is
+   still byte-for-byte what is in the file. */
+const commentRanges = [...html.matchAll(/<!--[\s\S]*?-->/g)]
+  .map(m => [m.index, m.index + m[0].length]);
+const inComment = i => commentRanges.some(([a, b]) => i >= a && i < b);
 const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)]
+  .filter(m => !inComment(m.index))
   .map(m => m[1]);
 note(scripts.length === 1, `index.html has exactly one inline script (found ${scripts.length})`);
 
