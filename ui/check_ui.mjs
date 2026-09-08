@@ -103,7 +103,7 @@ try {
     " renderQuoteProvenance, renderPassageProvenance, renderRecordProvenance," +
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
     " buildMap, mapState, mapWindow, mapBase, viewHome, viewQuestions, viewPlaces, viewAbout," +
-    " BANNER, BANNER_H, BANNER_NATIVE, bannerText," +
+    " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
     " SPAN_STATES, PROVENANCE, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -118,7 +118,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderRecordProvenance, renderPlaceProvenance, renderGroupProvenance,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase,
         viewHome, viewQuestions, viewPlaces, viewAbout,
-        BANNER, BANNER_H, BANNER_NATIVE, bannerText,
+        BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
         SPAN_STATES, PROVENANCE, langName, placeLedger } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
@@ -161,6 +161,40 @@ try { viewPlaces(); viewAbout(); note(true, "places and about views render"); }
 catch (e) { note(false, `a view threw: ${e.message}`); }
 try { viewHome(); note(true, "the home view renders"); }
 catch (e) { note(false, `the home view threw: ${e.message}`); }
+
+/* ---- 2d. the chain figure on Home ----
+ *
+ * The figure says, of a specific quotation, "these are the characters on
+ * disk". That is the page's whole claim stated in one picture, and a picture
+ * is the one thing on this page a reader cannot click to check. So it is
+ * checked here: the example still exists, its span still resolves, and the
+ * characters at the recorded offsets ARE the quoted characters.
+ *
+ * A figure illustrating click-through provenance with a quotation that no
+ * longer resolves would be the most embarrassing defect this page could carry,
+ * and nothing else in this harness looks at it — the example is chosen at
+ * render time from whatever the archive holds, so it can change without anyone
+ * editing a line.
+ */
+{
+  const c = chainExample();
+  if (!c) {
+    note(false, "the chain figure has no example: no default run has a resolved quotation");
+  } else {
+    const problems = [];
+    if (c.span.resolution?.state !== "resolved")
+      problems.push(`the chosen span is ${c.span.resolution?.state}, not resolved`);
+    if (c.onDisk !== c.span.quote)
+      problems.push(`the characters at [${c.span.abs_start}:${c.span.abs_end}] are not the quoted ` +
+                    `characters (${JSON.stringify(c.onDisk.slice(0, 40))} vs ` +
+                    `${JSON.stringify(c.span.quote.slice(0, 40))})`);
+    if (!c.rec.file) problems.push("the record names no file");
+    note(problems.length === 0,
+         `the chain figure draws a quotation that still resolves ` +
+         `(${c.rec.file}:${c.span.source_field}[${c.span.abs_start}:${c.span.abs_end}])` +
+         (problems.length ? ` — ${problems.join("; ")}` : ""));
+  }
+}
 
 /* ---- 2c. the masthead script band ----
  *

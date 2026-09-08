@@ -311,11 +311,14 @@
   }
   .findcard .lead { font-size: var(--t-m); line-height: var(--lh-snug); margin: 0; color: var(--ink-soft); }
   .findcard .lead strong { color: var(--ink); }
-  .findcard .go {
+  /* `.go` was scoped to `.findcard`, so the chain figure's own link inherited
+     the browser's default button chrome instead. It is its own class now. */
+  .go {
     font-family: var(--font-sans); font-size: var(--t-xs); color: var(--accent);
     background: none; border: none; padding: 0; margin-top: var(--s-3); cursor: pointer;
+    text-align: left;
   }
-  .findcard .go:hover { text-decoration: underline; }
+  .go:hover { text-decoration: underline; }
   /* ---------- questions view ---------- */
   .cols {
     display: grid;
@@ -824,6 +827,72 @@
   .spec:hover .lbl { color: var(--accent); }
   .specsep { flex: none; width: 1px; align-self: stretch; background: var(--line-soft); margin: 0 var(--s-6); }
 
+
+  /* ---------- the chain figure, on Home ----------
+     Four steps and three arrows. On a phone the arrows turn to point down
+     rather than the row scrolling sideways: this is an explanation, and an
+     explanation the reader has to drag is not one. */
+  .chaincard .chainlead { margin: 0 0 var(--s-5); }
+  .chainfig {
+    display: grid; gap: var(--s-3);
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1.4fr;
+    align-items: stretch;
+  }
+  .cstep {
+    background: var(--card-2); border: var(--rule) solid var(--line-soft);
+    border-radius: var(--r-md); padding: var(--s-4);
+    display: flex; flex-direction: column; gap: var(--s-2); min-width: 0;
+  }
+  .cstep .eyebrow { margin: 0; }
+  .chainfig .carrow {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-faint); font-family: var(--font-sans); font-size: 15px;
+  }
+  .cq { font-size: var(--t-m); margin: 0; line-height: var(--lh-snug); }
+  .cquote { font-size: var(--t-m); margin: 0; line-height: var(--lh-snug); }
+  .cfile { line-height: 1.7; word-break: break-word; }
+  .cdisk {
+    font-size: var(--t-xs); line-height: var(--lh-snug); color: var(--ink-soft);
+    background: var(--paper); border: var(--rule) solid var(--line-soft);
+    border-radius: var(--r-sm); padding: var(--s-3); word-break: break-word;
+  }
+  mark.chainmark { background: var(--mark); color: inherit; border-radius: 2px; padding: 1px 0; }
+  .chaincard .go { margin-top: var(--s-5); }
+
+  /* ---------- the map beside "What this portal does" ---------- */
+  .withmap { display: grid; grid-template-columns: minmax(0,1fr) 320px; gap: var(--s-6); align-items: start; }
+  .withmap > div > p:first-child { margin-top: 0; }
+  .homemap {
+    display: block; position: relative; padding: 0; cursor: pointer; text-align: left;
+    background: var(--map-sea); border: var(--rule) solid var(--line-soft);
+    border-radius: var(--r-md); overflow: hidden; font: inherit; width: 100%;
+  }
+  .homemap:hover { border-color: var(--accent-line); }
+  .homemap svg { width: 100%; height: auto; display: block; pointer-events: none; }
+  .homemap .sea { fill: var(--map-sea); }
+  .homemap .grat { stroke: var(--map-grat); stroke-width: 1; }
+  .homemap .land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: .8; stroke-linejoin: round; }
+  .homemap .edge { fill: none; stroke: var(--accent); stroke-opacity: .34; stroke-width: 1.2; }
+  .homemap .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .24; }
+  .homemap .extent { fill: var(--accent); fill-opacity: .09; stroke: var(--accent);
+                     stroke-opacity: .42; stroke-dasharray: 3 2; }
+  .homemap .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.1; }
+  .homemap .pin.contested circle.dot { fill: var(--card); stroke: var(--warn);
+                                       stroke-width: 1.6; stroke-dasharray: 2 1.4; }
+  .homemap .pin text.n, .homemap .lbl { display: none; }
+  .homemap .credit {
+    position: absolute; right: 5px; top: 4px; font-family: var(--font-sans);
+    font-size: var(--t-3xs); color: var(--ink-faint);
+    background: color-mix(in srgb, var(--card) 76%, transparent);
+    padding: 1px 5px; border-radius: 3px;
+  }
+  .homemap-cap {
+    display: block; font-family: var(--font-sans); font-size: var(--t-2xs);
+    line-height: var(--lh-snug); color: var(--ink-faint);
+    background: var(--card); padding: var(--s-3);
+    border-top: var(--rule) solid var(--line-soft);
+  }
+
   /* ---------- an unresolvable deep link says so. RULING 84. ---------- */
   .hashnotice {
     display: flex; gap: var(--s-4); align-items: baseline;
@@ -911,6 +980,10 @@
     /* A finger scrolls the band, and an arrow over a 390px viewport covers a
        specimen to solve a problem that does not exist there. */
     .bandnav { display: none; }
+    .withmap { grid-template-columns: 1fr; }
+    /* The chain becomes a column and the arrows turn to point down. */
+    .chainfig { grid-template-columns: 1fr; }
+    .chainfig .carrow { transform: rotate(90deg); }
     .specsep { margin: 0 var(--s-5); }
   }
 </style>
@@ -2667,6 +2740,92 @@ function viewPlaces() {
  * Every figure and every list below is derived. The only constants are the
  * project's declared period and the Latin, neither of which the corpus knows.
  * ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
+ * THE CHAIN, DRAWN.
+ *
+ * Nothing on this page showed the mechanism at a glance, and the mechanism is
+ * the project: an English question retrieves a source in its own language, the
+ * answer quotes it, and the quotation resolves to a named range of characters
+ * in a named field of a named file.
+ *
+ * IT IS A REAL ANSWER, NOT AN ILLUSTRATION. The example is not declared: it is
+ * the page's OWN default — the first question, the run `defaultRunIndex`
+ * chooses for it, and the first quotation in that run that resolves exactly.
+ * So the figure shows whatever a visitor would see on the Questions tab, and
+ * if the archive changes underneath it the figure changes with it.
+ *
+ * The last step re-reads the characters out of the record at the offsets the
+ * archive recorded, rather than repeating the quoted string, so the figure is
+ * making the same claim the page makes rather than describing it. If that
+ * claim ever stops being true, `check_ui.mjs` fails: it asserts the chosen
+ * span still resolves AND that the characters at the offsets are the quoted
+ * characters. A figure that says "these are the characters on disk" must not
+ * be the one thing on the page nobody checked.
+ * ------------------------------------------------------------------ */
+function chainExample() {
+  const q = QUESTIONS[0];
+  const runs = byQuestion.get(q) || [];
+  const run = runs[defaultRunIndex(runs)];
+  if (!run) return null;
+  const spans = run.grounding?.quote_spans || [];
+  const si = spans.findIndex(s => s.abs_start != null && s.resolution
+                                  && s.resolution.state === "resolved");
+  if (si < 0) return null;
+  const span = spans[si];
+  const rec = D.corpus[span.doc_id];
+  if (!rec || !rec.fields || rec.fields[span.source_field] == null) return null;
+  const passage = (run.passages || []).find(p => p.marker === span.marker);
+  return { q, run, si, span, rec, passage,
+           onDisk: rec.fields[span.source_field].slice(span.abs_start, span.abs_end) };
+}
+
+function chainFigure() {
+  const c = chainExample();
+  if (!c) return "";
+  const { q, run, si, span, rec, passage, onDisk } = c;
+
+  // A short window either side of the quotation, so the reader can see it
+  // sitting inside a real field rather than floating alone.
+  const text = rec.fields[span.source_field];
+  const PAD = 90;
+  const from = Math.max(0, span.abs_start - PAD);
+  const to = Math.min(text.length, span.abs_end + PAD);
+  const window_ = (from > 0 ? "… " : "") + esc(text.slice(from, span.abs_start))
+    + `<mark class="chainmark">${esc(onDisk)}</mark>`
+    + esc(text.slice(span.abs_end, to)) + (to < text.length ? " …" : "");
+
+  const lang = langName(passage?.lang || (rec.language_code || [])[0]);
+  const step = (n, label, body) => `<div class="cstep">
+      <div class="eyebrow sm">${n} · ${label}</div>${body}</div>`;
+
+  return `<div class="card chaincard">
+    <h3>How one answer is put together</h3>
+    <p class="prose-soft chainlead">Not a diagram of the idea — this is an answer
+    the system actually produced, and every step below is read out of the archive
+    when this page loads.</p>
+    <div class="chainfig">
+      ${step(1, "an English question", `<p class="cq">${esc(q)}</p>`)}
+      <div class="carrow" aria-hidden="true">→</div>
+      ${step(2, "a source retrieved in its own language", `
+        <div class="rec-title">${esc(rec.title)}</div>
+        <div class="rec-meta">${esc(rec.region)} · ${esc(lang)}${
+          span.within === "english" ? " — quoted from its published translation" : ""
+        }${passage && passage.similarity != null
+          ? ` · ${passage.similarity.toFixed(2)} cosine to the question` : ""}</div>`)}
+      <div class="carrow" aria-hidden="true">→</div>
+      ${step(3, "quoted in the answer", `
+        <p class="cquote">“${esc(span.quote)}”</p>`)}
+      <div class="carrow" aria-hidden="true">→</div>
+      ${step(4, "the characters, on disk", `
+        <div class="rec-meta cfile"><code>${esc(rec.file)}</code> ·
+          <code>${esc(span.source_field)}</code> ·
+          <code>[${span.abs_start}:${span.abs_end}]</code></div>
+        <div class="cdisk">${window_}</div>`)}
+    </div>
+    <button class="go" data-goto="chain">open this quotation on the Questions tab →</button>
+  </div>`;
+}
+
 function viewHome() {
   const regions = [...new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean))].sort();
 
@@ -2686,14 +2845,33 @@ function viewHome() {
 
     <div class="card">
       <h3>What this portal does</h3>
-      <p>You ask a question in English. The system searches a curated corpus of primary sources in
-      their own languages, retrieves the passages that answer it, and writes an answer that quotes
-      them. <strong>Every quotation is clickable, and every click lands on
-      the exact characters in the exact file the quotation came from.</strong></p>
-      <p>The Map tab does the same thing for geography: every point on it comes from a cached
-      gazetteer identifier, never a hand-placed coordinate, and every place the corpus names but
-      cannot honestly plot is listed rather than dropped.</p>
+      <div class="withmap">
+        <div>
+          <p>You ask a question in English. The system searches a curated corpus of primary sources in
+          their own languages, retrieves the passages that answer it, and writes an answer that quotes
+          them. <strong>Every quotation is clickable, and every click lands on
+          the exact characters in the exact file the quotation came from.</strong></p>
+          <p>The Map tab does the same thing for geography: every point on it comes from a cached
+          gazetteer identifier, never a hand-placed coordinate, and every place the corpus names but
+          cannot honestly plot is listed rather than dropped.</p>
+        </div>
+        ${fullMap() ? `<button class="homemap" type="button" data-goto="map"
+          title="open the Map tab">${fullMap()}${mapCredit()}
+          <span class="homemap-cap">${(P.groups || []).length} places drawn from a cached
+            gazetteer id · ${placeLedger().gaps.length} the corpus names and this map
+            will not draw</span></button>` : ""}
+      </div>
     </div>
+
+    </div></div>
+
+    <!-- The chain steps out of the 104-character reading column. Four steps
+         squeezed into a measure meant for prose gave each one about a hundred
+         pixels, which turned an explanation into four narrow towers of text.
+         Prose wants a column; a diagram wants the room. -->
+    ${chainFigure()}
+
+    <div class="cols cols-single"><div>
 
     <div class="card">
       <h3>Why it exists</h3>
@@ -2925,15 +3103,33 @@ function scriptBand() {
   host.innerHTML = `<div class="row">${parts.join("")}</div>`;
 }
 
-/* The whole map at true aspect beside the wordmark. Built once, at zoom 1, so
-   it always shows the full extent no matter what the Map tab is doing — and
-   the class is renamed off `mapsvg` so the wheel and drag handlers, which are
-   bound to that class on `document`, never find it. */
+/* The whole map at its full extent, built once and reused.
+ *
+ * `buildMap()` draws whatever `mapState` currently says, so a reader who has
+ * zoomed the Map tab and then walked to Home would otherwise find a "whole
+ * map" that is not the whole map. This borrows mapState, resets it, draws, and
+ * puts it back — and memoises, because the result never changes.
+ *
+ * The class is renamed off `mapsvg` so the wheel and drag handlers, which are
+ * bound to that class on `document`, never find these copies and start zooming
+ * the masthead. */
+let fullMapSvg = null;
+function fullMap() {
+  if (fullMapSvg !== null) return fullMapSvg;
+  if (!(P.groups || []).length) return (fullMapSvg = "");
+  const z = mapState.zoom, cx = mapState.cx, cy = mapState.cy;
+  mapState.zoom = 1; mapState.cx = null; mapState.cy = null;
+  fullMapSvg = buildMap().replace('class="mapsvg"', 'class="mapthumbsvg"');
+  mapState.zoom = z; mapState.cx = cx; mapState.cy = cy;
+  return fullMapSvg;
+}
+const mapCredit = () => D.coastline
+  ? `<span class="credit">${esc(D.coastline.source)} ${esc(D.coastline.scale)}</span>` : "";
+
 function mapThumb() {
   const host = document.getElementById("mapthumb");
-  if (!host || !(P.groups || []).length) return;
-  host.innerHTML = buildMap().replace('class="mapsvg"', 'class="mapthumbsvg"')
-    + (D.coastline ? `<span class="credit">${esc(D.coastline.source)} ${esc(D.coastline.scale)}</span>` : "");
+  if (!host || !fullMap()) return;
+  host.innerHTML = fullMap() + mapCredit();
   host.hidden = false;
 }
 
@@ -3241,10 +3437,25 @@ document.addEventListener("click", ev => {
   }
 
   // The front section's two cards, which travel to the material they describe.
+  /* The Home map, and the chain figure's own link. The chain travels to the
+     exact run and quotation it drew, which is the deep-link scheme doing the
+     job it was built for rather than being described. */
+  const homemap = ev.target.closest(".homemap");
+  if (homemap) { state.view = "map"; state.selection = null; state.intro = true; return render(); }
+
   const go = ev.target.closest(".go");
   if (go) {
     state.intro = false;
     if (go.dataset.goto === "data") { state.view = "data"; state.selection = null; }
+    else if (go.dataset.goto === "map") { state.view = "map"; state.selection = null; }
+    else if (go.dataset.goto === "chain") {
+      const c = chainExample();
+      if (!c) return;
+      const runs = byQuestion.get(c.q) || [];
+      state.view = "questions"; state.question = c.q;
+      state.runIndex = runs.indexOf(c.run);
+      state.selection = { kind: "quote", si: c.si };
+    }
     else { state.view = "map"; state.selection = { kind: "group", cacheKey: go.dataset.group }; }
     return render();
   }
