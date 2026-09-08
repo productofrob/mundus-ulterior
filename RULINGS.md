@@ -40,7 +40,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 80-82       W3_RULINGS.md             full text, "## Ruling N" headings
 83          UI_RULINGS.md             full text, "# RULING N" heading
 84          UI_DESIGN_RULINGS.md      full text, "# RULING N" heading
-85-87       UI_QUESTIONS_RULINGS.md   full text, "# RULING N" headings
+85-88       UI_QUESTIONS_RULINGS.md   full text, "# RULING N" headings
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -61,7 +61,28 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 88. The next free finding is 105.**
+**The next free ruling number is 89. The next free finding is 106.**
+
+> **UPDATED 2026-09-08, same block.** **Ruling 88**: D1's second axis is
+> rendered on Data & Sources, cell by cell, and not on the quotation panel —
+> "has the record moved underneath this citation?" is a question about the
+> archive's bookkeeping, and beside a quotation "not knowable" reads as doubt
+> about that quotation. The guard MOVED WITH IT and asserts more than it did:
+> the old pair could only say a state appeared on a panel, the new pair
+> re-derives the whole cross-tabulation and asserts every cell is on screen
+> with its own count, so folding `unrecorded` into a neighbour now fails on
+> arithmetic. Verified red both ways first.
+>
+> **FINDING 105**, found by that guard on its first run: `spanCrossTab()`
+> keyed its map with a LITERAL NUL BYTE typed into `ui/index.html` — which is
+> why grep reported that file as binary — and `viewAbout` split those keys on
+> a SPACE, as its own comment said it could. Every row of the cross-tabulation
+> on Data & Sources has been rendering as a mangled state with a blank
+> provenance label and an empty tag, and the `cross["resolved unchanged"]`
+> lookup beside it read 0 whatever the archive held. No check caught it: the
+> guard in force asserted an attribute on a panel, and the attribute was
+> there. Fixed in the same commit — there are no string keys now, the function
+> returns cells, and the five NUL bytes are gone from the file.
 
 > **FINDING 104, 2026-09-08.** A file written from the cloud session to this
 > machine can report SUCCESS and not land. Seen twice in one sitting on

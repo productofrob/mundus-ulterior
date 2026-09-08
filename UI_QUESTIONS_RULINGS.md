@@ -1,4 +1,4 @@
-# UI QUESTIONS RULINGS — **85, 86 AND 87, EACH DECLARED IN THE SESSION THAT
+# UI QUESTIONS RULINGS — **85 TO 88, EACH DECLARED IN THE SESSION THAT
 # MADE IT.** 87 was declared after the block's first close, and says so.
 
 *Written 2026-09-08, during the Questions block, before the result document and
@@ -222,3 +222,91 @@ day the pass happens.
   own account of why it refused is the run's claim, not the project's.
 - **It does not license a sentence with no re-derivable claim.** Guard 46 fails
   a reason that declares none, rather than printing it unchecked.
+
+---
+
+# RULING 88 — **THE SECOND AXIS IS RENDERED WHERE IT CAN BE READ, AND THE GUARD
+# MOVES WITH IT AND GETS STRONGER.**
+
+*Declared 2026-09-08, when Rob asked a second time for "record moved?" to come
+off the Provenance box, having ruled out both relaxing a guard and losing the
+information. `RULINGS.md` read at the time: next free ruling 88, next free
+finding 105.*
+
+D1's second axis — has the record moved underneath this citation? — is no longer
+on the Questions tab. It is on **Data & Sources**, cell by cell, beside the first
+axis it has to be read against.
+
+## Why it is not on the quotation panel
+
+**It is a question about the archive's own bookkeeping, asked of a reader who
+came to see whether a quotation matches its source.** For every failing citation
+on this page the answer is *not knowable from the archive* — which, read beside a
+quotation, lands as a doubt about that quotation. It is not one: it says the
+project cannot tell whether a failure is a defect in the span or the record
+moving under it, because nothing recorded a corpus version at the time. That is
+worth stating once, in a place where the two axes sit together and the sentence
+explaining them is on screen. It is not worth stating 1,289 times next to
+individual quotations that are fine.
+
+## What makes this different from hiding it
+
+**The guard moved to the new surface and asserts MORE than it did.** The old pair
+called `renderQuoteProvenance` for every span and checked that the panel's HTML
+contained the right `data-provenance`. It could only say a state APPEARED.
+
+The new pair re-derives the whole cross-tabulation from the archive and asserts
+**every cell of it is on screen with its own count**, both states machine-readable
+on the row. Folding `unrecorded` into a neighbour now fails on arithmetic rather
+than on a missing attribute; a cell that quietly disappears fails too. Verified
+red both ways before being believed: stripping the attributes reports every cell
+as not on screen, and rendering `unrecorded` as `changed` reports 0 of 168 still
+their own third answer.
+
+**`unrecorded` is still its own third answer and is still never rounded into
+either neighbour.** What changed is where the page says so, not whether it does.
+
+## What this does not license
+
+- **It does not license moving a guard to a surface that does not carry the
+  claim.** The move was only available because the cross-tabulation states the
+  same fact per cell. A guard re-pointed at something weaker is a relaxed guard
+  wearing a move.
+- **It does not license removing the axis from the bundle.** `build_ui_data.py`
+  still writes `resolution.provenance` onto all 1,289 spans; a field that reaches
+  the bundle and no screen is the A6 defect, and the cross-tab is the screen.
+
+---
+
+# FINDING 105 — **THE CROSS-TABULATION HAS BEEN PRINTING A MANGLED STATE AND A
+# BLANK LABEL ON THE DATA & SOURCES TAB, AND THE GUARD FOUND IT THE MOMENT IT
+# STARTED COUNTING.**
+
+`spanCrossTab()` returned a map keyed by `state + SEPARATOR + provenance`, and
+**the separator was a literal NUL BYTE typed into `ui/index.html`** — which is
+why `grep` has been reporting that file as binary. Every test inside the function
+used the same byte and was therefore right: 11, 1121 and `allUnrec` were all
+correct.
+
+**`viewAbout` split those keys on a SPACE**, as its own comment said it could.
+So it got back one mangled string and an `undefined` provenance, and every row of
+the cross-tabulation rendered as `resolved<?>changed — 1070 spans —` with **no
+provenance label and an empty tag**. The `cross["resolved unchanged"]` lookup
+beside it read 0 whatever the archive held; it printed correctly by luck, because
+`unchanged` is genuinely 0.
+
+```
+BEFORE   resolved<?>changed     1070 spans —            (blank tag)
+AFTER    resolved               1070 spans — the record moved after this run  CHANGED
+```
+
+**No check caught it for as long as it existed**, because the guard in force
+asserted that a `data-provenance` attribute appeared on a *panel*, and it did.
+The check that found it is the one RULING 88 moved to this surface, on its first
+run: it asked whether the archive's cells were on screen with their counts, and
+they were not there at all.
+
+**Fixed in the same commit.** There are no string keys now — `spanCrossTab()`
+returns cells, `{state, provenance, n}`, so nothing downstream parses anything,
+and `cellN(state, provenance)` answers the one lookup that wanted a key. The five
+NUL bytes are gone from the file with them.

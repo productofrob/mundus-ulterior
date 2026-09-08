@@ -682,28 +682,62 @@ if (D.coastline && D.coastline.polygons) {
  * anything else -- the failure would be invisible on screen and would quietly
  * turn eleven unknowns into eleven verdicts.
  */
+/* RULING 88 MOVED THIS CHECK, AND MADE IT A STRONGER ONE.
+ *
+ * It used to call `renderQuoteProvenance` for all 1289 spans and assert that
+ * each panel's HTML contained its own `data-provenance`. The quotation panel no
+ * longer carries the second axis — a reader looking at a quotation was being
+ * asked a question about the archive's bookkeeping, and "not knowable from the
+ * archive" reads as doubt about the quotation rather than as what it means — so
+ * the axis is rendered on the Data & Sources tab instead, cell by cell, beside
+ * the first axis it has to be read against.
+ *
+ * The guard moved with it and asserts MORE than it did. The old one could only
+ * say a state APPEARED somewhere in a panel. This one re-derives the whole
+ * cross-tabulation from the archive and asserts every cell of it is on screen
+ * with the right COUNT and both its states machine-readable — so collapsing
+ * `unrecorded` into `unchanged` now fails on arithmetic, not on a missing
+ * attribute, and a cell that quietly disappears fails too.
+ */
 {
-  const missing = [], collapsed = [], tally = {};
-  for (const run of D.runs) {
-    const spans = run.grounding?.quote_spans || [];
-    for (let si = 0; si < spans.length; si++) {
-      const p = spans[si].resolution?.provenance?.state;
-      if (!p) continue;
-      tally[p] = (tally[p] || 0) + 1;
-      const html = renderQuoteProvenance(run, si);
-      if (!html.includes(`data-provenance="${p}"`)) missing.push(`${run.run_key}#${si} (${p})`);
-      else if (p === "unrecorded" &&
-               (html.includes('data-provenance="unchanged"') ||
-                html.includes('data-provenance="changed"')))
-        collapsed.push(`${run.run_key}#${si}`);
+  const cross = {}, tally = {};
+  for (const run of D.runs)
+    for (const s of run.grounding?.quote_spans || []) {
+      const st = s.resolution?.state;
+      const pv = s.resolution?.provenance?.state;
+      if (!st || !pv) continue;
+      cross[`${st} ${pv}`] = (cross[`${st} ${pv}`] || 0) + 1;
+      tally[pv] = (tally[pv] || 0) + 1;
     }
+
+  const aboutHtml = viewAbout();
+  const cells = [...aboutHtml.matchAll(
+    /data-span-state="([^"]+)"\s+data-provenance="([^"]+)"\s+data-cell-count="(\d+)"/g)]
+    .map(m => [`${m[1]} ${m[2]}`, Number(m[3])]);
+  const onScreen = Object.fromEntries(cells);
+
+  const wrong = [];
+  for (const [k, n] of Object.entries(cross)) {
+    if (!(k in onScreen)) wrong.push(`${k}: ${n} spans, not on screen at all`);
+    else if (onScreen[k] !== n) wrong.push(`${k}: archive says ${n}, screen says ${onScreen[k]}`);
   }
-  note(missing.length === 0,
-       `every citation panel carries its corpus provenance — ${JSON.stringify(tally)}` +
-       (missing.length ? ` — NOT shown: ${missing.slice(0, 3).join(", ")}` : ""));
-  note(collapsed.length === 0,
-       `no 'unrecorded' span is ever rendered as 'unchanged' or 'changed'` +
-       (collapsed.length ? ` — collapsed in ${collapsed.slice(0, 3).join(", ")}` : ""));
+  for (const [k, n] of cells)
+    if (!(k in cross)) wrong.push(`${k}: on screen (${n}) and not in the archive`);
+
+  note(wrong.length === 0,
+       `every cell of the two axes is on screen with its own count — ` +
+       `${cells.length} cells, ${JSON.stringify(tally)}` +
+       (wrong.length ? ` — WRONG: ${wrong.slice(0, 3).join("; ")}` : ""));
+
+  /* The second assertion, unchanged in substance and now checkable by counting:
+     the spans the archive calls `unrecorded` must be reported as `unrecorded`.
+     Folding them into either neighbour moves the number, and the number is
+     what is asserted. */
+  const unrecOnScreen = cells.filter(([k]) => k.endsWith(" unrecorded"))
+    .reduce((n, [, v]) => n + v, 0);
+  note(unrecOnScreen === (tally.unrecorded || 0),
+       `no 'unrecorded' span is reported as 'unchanged' or 'changed' ` +
+       `(${unrecOnScreen} of ${tally.unrecorded || 0} still their own third answer)`);
 
   // Every provenance state must have a deliberate entry too, same argument.
   const untabled = Object.keys(tally).filter(p => !(p in PROVENANCE));

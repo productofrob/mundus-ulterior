@@ -423,13 +423,9 @@
   /* D1's second axis. A CATEGORY, not a severity — see the PROVENANCE comment
      in the script. Deliberately not built from --good/--warn/--bad, in either
      theme. */
-  .provbox {
-    font-family: var(--font-sans); font-size: var(--t-xs); line-height: var(--lh-snug);
-    background: var(--card); border: var(--rule) solid var(--line);
-    border-left: 3px solid var(--ink-faint); border-radius: var(--r-md);
-    padding: var(--s-3) var(--s-4);
-  }
-  .provbox strong { color: var(--ink); }
+  /* `.provbox` dressed the second axis's box on the quotation panel and went
+     with it (RULING 88). The axis is rendered on Data & Sources, in the same
+     `.chain` rows the rest of that cross-tabulation uses. */
   .axis2 {
     display: flex; gap: var(--s-6); flex-wrap: wrap; margin: var(--s-3) 0 2px;
     font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-soft);
@@ -1631,33 +1627,28 @@ const PROVENANCE = {
     gloss: `The run recorded a corpus version and this document is not in it.` },
 };
 
-/* ONE ROW, NOT A SECTION — and the axis is not merged, hidden or softened.
+/* THE SECOND AXIS IS NOT ON THE QUOTATION PANEL. RULING 88, and the reason it
+ * needed a ruling rather than a deletion.
  *
- * This was a headed section carrying a verdict and two paragraphs: the state's
- * standing gloss, and then the span's own `why`, which say the same thing in
- * different words. Three hundred pixels on every panel to state a verdict of
- * three words.
+ * It was a headed section, then a single row, and now it is nowhere on the
+ * Questions tab. "Has the record moved underneath this citation?" is a question
+ * about the archive's own bookkeeping, and it was being asked of a reader who
+ * came to see whether a quotation matches its source — a reader for whom "not
+ * knowable from the archive" is at best a puzzle and at worst a doubt about the
+ * quotation in front of them, which is not what it means.
  *
- * It is now the last row of the chain above, and `data-provenance` rides on the
- * row — so checks 30 and 31 still assert exactly what they asserted before: that
- * EVERY citation panel carries its own second-axis state, and that no span whose
- * data says `unrecorded` is ever rendered as `unchanged` or `changed`. The
- * guards did not move and were not relaxed; the surface they read got smaller.
+ * WHAT DOES NOT HAPPEN IS THE AXIS GOING QUIET. It is rendered on the Data &
+ * Sources tab, cell by cell, where the reader has the first axis beside it and
+ * the two can be read as the pair they are — and the guards that protected it
+ * moved to that surface and got STRONGER for the move. The per-panel check could
+ * only assert that a state APPEARED somewhere in 1289 panels; the cross-tab
+ * check asserts every cell's COUNT against the archive, so folding `unrecorded`
+ * into a neighbour now fails on the arithmetic rather than on a missing
+ * attribute.
  *
- * The gloss is not deleted, it is on the row's `title`. What a reader loses is
- * having it in front of them unasked; what they keep is the answer itself, which
- * for every failing citation on this page is "not knowable from the archive" —
- * the third answer this project refuses to round into either neighbour. The full
- * cross-tabulation is still a card on Data & Sources.
+ * `unrecorded` is still its own third answer and is still never rounded. What
+ * changed is where the page says so, not whether it does.
  */
-function provenanceRow(res) {
-  const p = res && res.provenance;
-  if (!p) return "";
-  const d = PROVENANCE[p.state] || { label: p.state, gloss: "" };
-  const tip = String(p.why || d.gloss || "").replace(/\s+/g, " ").trim();
-  return `<div data-provenance="${esc(p.state)}"><span class="k">record moved?</span>
-    <span class="v" title="${esc(tip)}">${esc(d.label)}</span></div>`;
-}
 
 /* ------------------------------------------------------------------ *
  * answer rendering: markers become buttons, quotations become clickable
@@ -1813,7 +1804,6 @@ function renderQuoteProvenance(run, si) {
     ${chainRow("field", `<code>${esc(span.source_field)}</code>`)}
     ${chainRow("citation", rec && rec.citation
         ? `<a href="${esc(rec.citation)}" target="_blank" rel="noopener">${esc(rec.citation)}</a>` : null)}
-    ${provenanceRow(res)}
   </div>`;
 
   const text = rec && rec.fields ? rec.fields[span.source_field] : null;
@@ -1839,8 +1829,8 @@ function renderQuoteProvenance(run, si) {
     }
   }
 
-  /* The second axis is a row in the chain at the top of this panel now
-     (`provenanceRow`), not a section down here. */
+  /* The second axis is not rendered here at all — RULING 88, and the comment
+     above `PROVENANCE` says why and where it went instead. */
   if (passage) out += renderEnglishProvenance(passage);
   return out;
 }
@@ -2688,24 +2678,45 @@ function contestedCoordinate() {
 
 /* The two verify axes, crossed. Lifted out of `viewAbout` for the same reason:
    the front section states the sentence this cross-tabulation makes available
-   and must state it from the same arithmetic the About tab prints. */
+   and must state it from the same arithmetic the About tab prints.
+
+   FINDING 105. This returned a map keyed by `state + SEPARATOR + provenance`,
+   and the separator was a literal NUL BYTE typed into this file — which is why
+   `grep` reported index.html as binary. Every test inside this function used the
+   same byte and was therefore correct; `viewAbout` split those keys on a SPACE,
+   as the comment there said it could, and got back one mangled string and an
+   undefined provenance. The cross-tabulation on Data & Sources has been printing
+   `resolved<?>changed` with a blank label and an empty tag ever since, and the
+   `cross["resolved unchanged"]` lookup beside it has been reading 0 whatever the
+   archive held. It read correctly by luck: `unchanged` is genuinely 0.
+
+   There are no string keys now. It returns CELLS — `{state, provenance, n}` —
+   so nothing downstream parses anything, and `cellN(state, provenance)` answers
+   the one lookup that wanted a key. */
 function spanCrossTab() {
-  const cross = {};
+  const cells = [], at = new Map();
   let total = 0;
   for (const run of D.runs)
     for (const s of run.grounding?.quote_spans || []) {
       if (!s.resolution) continue;
-      const k = s.resolution.state + " " + (s.resolution.provenance?.state || "unrecorded");
-      cross[k] = (cross[k] || 0) + 1; total++;
+      const state = s.resolution.state;
+      const provenance = s.resolution.provenance?.state || "unrecorded";
+      const key = state + "\u0000" + provenance;
+      let cell = at.get(key);
+      if (!cell) { cell = { state, provenance, n: 0 }; at.set(key, cell); cells.push(cell); }
+      cell.n++; total++;
     }
-  const failing = Object.entries(cross).filter(([k]) => !k.startsWith("resolved "));
-  const failingBroken = failing.filter(([k]) => /^(moved|absent|case_only|article_added) /.test(k));
+  cells.sort((a, b) => b.n - a.n);
+  /* The first axis's four BROKEN states, named rather than pattern-matched. */
+  const BROKEN = new Set(["moved", "absent", "case_only", "article_added"]);
+  const failingBroken = cells.filter(c => BROKEN.has(c.state));
+  const cellN = (state, provenance) =>
+    (cells.find(c => c.state === state && c.provenance === provenance) || { n: 0 }).n;
   return {
-    cross, total, failingBroken,
-    allUnrec: failingBroken.every(([k]) => k.endsWith(" unrecorded")),
-    brokenN: failingBroken.reduce((n, [, v]) => n + v, 0),
-    changedN: Object.entries(cross).filter(([k]) => k.endsWith(" changed"))
-      .reduce((n, [, v]) => n + v, 0),
+    cells, cellN, total, failingBroken,
+    allUnrec: failingBroken.every(c => c.provenance === "unrecorded"),
+    brokenN: failingBroken.reduce((n, c) => n + c.n, 0),
+    changedN: cells.filter(c => c.provenance === "changed").reduce((n, c) => n + c.n, 0),
   };
 }
 
@@ -3129,16 +3140,26 @@ function viewAbout() {
       ${(() => {
         // Derived by `spanCrossTab()`, which the front section also calls, so
         // the sentence below and the sentence on the first screen cannot come
-        // apart. The separator is a space because no state contains one.
+        // apart. It hands back cells, not keys: the line that used to say "the
+        // separator is a space because no state contains one" was wrong about
+        // the separator, and that is FINDING 105.
         const X = spanCrossTab();
-        const cross = X.cross;
-        const rows = Object.entries(cross).sort((a, b) => b[1] - a[1]).map(([k, n]) => {
-          const [st, pv] = k.split(" ");
+        const rows = X.cells.map(({ state: st, provenance: pv, n }) => {
           // Every row is tagged, including the two `resolved` rows: they are
           // the same first-axis state with different second-axis answers, and
           // tagging only the failures would make the axis look like a
           // severity scale, which is the one thing it is not.
-          return `<div class="chain"><div>
+          //
+          // RULING 88. These rows are now WHERE THE SECOND AXIS IS RENDERED --
+          // the quotation panel no longer carries it -- so each one is machine
+          // readable: its two states and its count. `check_ui.mjs` reads them
+          // back and asserts the whole cross-tabulation cell by cell against the
+          // archive, which is a stronger claim than the per-panel attribute it
+          // replaced: that guard could only say the state APPEARED, this one
+          // says every count is right and nothing has been folded into a
+          // neighbour.
+          return `<div class="chain"><div data-span-state="${esc(st)}"
+            data-provenance="${esc(pv)}" data-cell-count="${n}">
             <span class="k wide">${esc(st)}</span>
             <span class="v">${n} span${n === 1 ? "" : "s"} — ${esc((PROVENANCE[pv] || {}).label || pv)}
             <span class="ground-tag spaced${pv === "unrecorded" ? " contested" : ""}">${esc(pv)}</span></span></div></div>`;
@@ -3157,7 +3178,7 @@ function viewAbout() {
           be told apart from the ones without.`}
           <br><br><strong>And the mirror, which is the better half:</strong> the corpus moved under
           ${changedN} spans, and the archive still holds. <code>unchanged</code> is
-          ${cross["resolved unchanged"] || 0} not because nothing survived but because W3 added two
+          ${X.cellN("resolved", "unchanged")} not because nothing survived but because W3 added two
           keys to all ${Object.keys(D.corpus).length} records in one commit, so every content hash moved
           at once. A span whose record is <code>changed</code> is explained, not defective.</div>`;
       })()}
