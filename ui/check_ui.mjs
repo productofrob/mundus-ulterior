@@ -127,7 +127,7 @@ try {
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
     " buildMap, mapState, mapWindow, mapBase, viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
-    " railPartition, showableRuns, caseOf," +
+    " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason," +
     " SPAN_STATES, PROVENANCE, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -143,7 +143,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase,
         viewHome, viewQuestions, viewPlaces, viewAbout,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
-        railPartition, showableRuns, caseOf,
+        railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason,
         SPAN_STATES, PROVENANCE, langName, placeLedger } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
@@ -231,6 +231,62 @@ catch (e) { note(false, `the home view threw: ${e.message}`); }
     .flatMap(([, qs]) => qs).filter(q => showableRuns(q).length === 0);
   const notDeclared = rail.refusals
     .filter(q => (caseOf.get(q) || {}).expected_behaviour !== "correctly_refusable");
+  /* ---- 2c-iii. RULING 87: every refusal prints a REASON, and every claim
+     that reason makes is re-derived here from the bundle.
+
+     A sentence typed about the corpus is the prose form of a typed count, and
+     the page's rule against those is the reason this guard exists rather than a
+     comment asking the next person to be careful. Each sentence declares what
+     it rests on — strings that appear in no field of a named record (or of any
+     record), or a record that carries no translation and whose excerpt is a
+     bracketed editorial pointer — and if the corpus stops making that true the
+     line goes red instead of the page going quietly wrong.
+
+     The Palmyrene case is the live one: `manifest.json` lists that record for a
+     transcription pass, and its own gold note calls the case "a tripwire on
+     that follow-up". The day the pass happens, this check is the tripwire. ---- */
+  const reasonProblems = [];
+  for (const q of rail.refusals) {
+    const c = caseOf.get(q) || {};
+    const r = refusalReason(q);
+    if (!r) { reasonProblems.push(`${c.id || q}: no reason written`); continue; }
+    if (!r.line || !r.line.trim()) { reasonProblems.push(`${c.id}: empty reason`); continue; }
+    const h = r.holds || {};
+    if (h.absent) {
+      const recs = h.doc ? [[h.doc, D.corpus[h.doc]]] : Object.entries(D.corpus);
+      if (h.doc && !D.corpus[h.doc]) { reasonProblems.push(`${c.id}: no record ${h.doc}`); continue; }
+      for (const w of h.absent) {
+        const found = recs.filter(([, rec]) =>
+          Object.values((rec && rec.fields) || {})
+            .some(v => String(v).toLowerCase().includes(w.toLowerCase())));
+        if (found.length)
+          reasonProblems.push(`${c.id}: "${w}" is NOT absent — it is in ${found[0][0]}`);
+      }
+    }
+    if (h.pointerOnly) {
+      const rec = D.corpus[h.doc];
+      const f = (rec && rec.fields) || {};
+      const excerpt = String(f.original_text_excerpt || "").trim();
+      if (!rec) reasonProblems.push(`${c.id}: no record ${h.doc}`);
+      else if (f.reference_translation)
+        reasonProblems.push(`${c.id}: ${h.doc} now carries a reference_translation — `
+          + `the record has gained reachable text and the sentence is stale`);
+      else if (!excerpt.startsWith("["))
+        reasonProblems.push(`${c.id}: ${h.doc}'s excerpt is no longer a bracketed pointer`);
+    }
+    if (!h.absent && !h.pointerOnly)
+      reasonProblems.push(`${c.id}: reason makes no re-derivable claim`);
+  }
+  note(
+    reasonProblems.length === 0,
+    reasonProblems.length
+      ? `a refusal's stated reason no longer holds — ${reasonProblems[0]}`
+        + (reasonProblems.length > 1 ? ` (and ${reasonProblems.length - 1} more)` : "")
+      : `every refusal states why, and every claim those reasons make still holds `
+        + `against the corpus (${rail.refusals.length} reasons, `
+        + `${Object.values(REFUSAL_REASONS).reduce((n, r) => n + ((r.holds.absent || []).length || 1), 0)} claims)`,
+  );
+
   note(
     listedWithNothing.length === 0 && notDeclared.length === 0,
     listedWithNothing.length || notDeclared.length

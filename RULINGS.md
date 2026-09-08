@@ -40,7 +40,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 80-82       W3_RULINGS.md             full text, "## Ruling N" headings
 83          UI_RULINGS.md             full text, "# RULING N" heading
 84          UI_DESIGN_RULINGS.md      full text, "# RULING N" heading
-85-86       UI_QUESTIONS_RULINGS.md   full text, "# RULING N" headings
+85-87       UI_QUESTIONS_RULINGS.md   full text, "# RULING N" headings
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -61,7 +61,16 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 87. The next free finding is 104.**
+**The next free ruling number is 88. The next free finding is 104.**
+
+> **UPDATED 2026-09-08, same block, after its first close.** **Ruling 87**: a
+> refusal says WHICH KIND of refusal it is — outside the corpus, a record whose
+> text is unreachable, a record whose notes advertise what its text does not
+> hold, or an answer everything nearby makes look available — in one sentence
+> per case, shown when the question is opened, and **every claim those
+> sentences make is re-derived from the bundle by guard 46**, because a typed
+> sentence about the corpus is the prose form of a typed count. The rail group
+> is renamed *Not fully answerable*. Full text in `UI_QUESTIONS_RULINGS.md`.
 
 > **FINDING 103, added by the same block, 2026-09-08.** Git cannot commit from
 > the Linux bridge unless FILE DELETION is enabled for the repository folder.

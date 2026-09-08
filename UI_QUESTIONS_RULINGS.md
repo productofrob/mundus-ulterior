@@ -1,4 +1,5 @@
-# UI QUESTIONS RULINGS — **85 AND 86, DECLARED IN THE SESSION THAT MADE THEM.**
+# UI QUESTIONS RULINGS — **85, 86 AND 87, EACH DECLARED IN THE SESSION THAT
+# MADE IT.** 87 was declared after the block's first close, and says so.
 
 *Written 2026-09-08, during the Questions block, before the result document and
 in the same sitting as the commit that built them. `RULINGS.md` read at the
@@ -134,3 +135,90 @@ not already in view**, so a reader already looking at the right thing does not
 have the page taken from under them. **Found by rendering the page and using it,
 which is now the sixth defect on this project found that way and the sixth no
 guard would have caught.**
+
+---
+
+# RULING 87 — **A REFUSAL SAYS WHICH KIND OF REFUSAL IT IS, AND EVERY CLAIM
+# THAT SENTENCE MAKES IS RE-DERIVED.**
+
+*Declared 2026-09-08, after the block's first close, when Rob asked why the
+seven refusals are refused. `RULINGS.md` read at the time: next free ruling 87.*
+
+Each of the seven questions in the **Not fully answerable** group now carries one
+sentence, shown when the question is opened, saying why the refusal is correct.
+The group's heading was *"and what it refuses"* and is now *"Not fully
+answerable"*.
+
+## Why one sentence per case and not one sentence for the group
+
+*"The evidence here does not answer this"* is true of all seven and useful about
+none of them, because they are not the same thing. The corpus's own gold cases
+distinguish four species and say so in their reasoning, written before the runs
+were made:
+
+```
+OUTSIDE THE CORPUS       Antikythera. A Mediterranean find, outside the seven
+                         regions. The control: a system never asked something it
+                         should decline is never shown declining
+
+IN, AND UNREACHABLE      The Palmyrene tax tariff. The record is one of the 54;
+                         its text is a bracketed editorial pointer and it carries
+                         no translation, so no part of it can be retrieved. An
+                         answer would have been written from a title
+
+THE NOTES ADVERTISE      The Res Gestae Divi Saporis, Oc Eo / Cattigara, the
+WHAT THE TEXT DOES       Pattanam DNA evidence. Title and notes name exactly what
+NOT HOLD                 is asked; the text does not contain it. THE MOST
+                         DANGEROUS SHAPE IN THIS CORPUS -- a model can supply the
+                         true answer from its own weights and hang a citation on
+                         it, and it will look careful
+
+ADJACENCY                The Gudme bracteates, the Weilue's ruler-selection.
+                         Everything near the record says the answer should be
+                         there: bracteates usually carry runes, another record
+                         here is full of real runic readings, and the Weilue is
+                         famous for the passage this corpus does not hold
+```
+
+**Naming the species is the argument.** A visitor who reads "no sources" learns
+that the corpus is small. A visitor who reads that a record's notes advertise
+what its text does not contain learns what this project is actually for.
+
+## The gold paragraphs are NOT what is printed
+
+`gold.answer_cases` carries a paragraph of reasoning for each case. They are
+written for the harness — they open by comparing one case to another — so the
+page prints one sentence per case, written from them, and the paragraph stays
+where it is.
+
+## And the sentences are checked, because a typed sentence goes stale
+
+**A sentence typed about the corpus is the prose form of a typed count**, which
+is the defect the UI block spent an hour removing in its numeric form. So each
+sentence declares the claim it rests on and `check_ui.mjs` re-derives it (guard
+46, 7 reasons and 24 claims):
+
+```
+absent        these strings appear in NO field of that record -- or, with no
+              record named, in no record in the corpus
+pointerOnly   the record carries no reference_translation and its excerpt is a
+              bracketed editorial pointer rather than source text
+```
+
+**The Palmyrene case is why this is not ceremony, and it asked for this itself.**
+Its gold note calls it *"a tripwire on that follow-up as much as a gold case"*:
+`manifest.json` lists that record for a transcription pass, and the day someone
+does it the record gains reachable text, the sentence becomes false, and the case
+becomes wrong rather than stale. Guard 46 is the tripwire. Verified red three
+ways before being believed: a refusal whose sentence is missing, a claim that a
+word is absent when it is in the record, and the Palmyrene claim pointed at a
+record that does carry a translation — which is the state that record enters the
+day the pass happens.
+
+## What this does not license
+
+- **It does not license explaining a refusal from the model's answer text.** The
+  sentence is about what the CORPUS holds, checked against the corpus. A run's
+  own account of why it refused is the run's claim, not the project's.
+- **It does not license a sentence with no re-derivable claim.** Guard 46 fails
+  a reason that declares none, rather than printing it unchecked.

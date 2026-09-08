@@ -492,6 +492,14 @@
     background: var(--line-soft); border-radius: var(--r-md);
     padding: var(--s-3) var(--s-5); margin-bottom: var(--s-5);
   }
+  /* The reason this particular refusal is correct. Set apart from the sentence
+     above it because the two are different kinds of claim: the first is what the
+     system did, the second is what this project checked about the corpus. */
+  .refusal-note .why {
+    margin-top: var(--s-3); padding-top: var(--s-3);
+    border-top: var(--rule) solid var(--line); color: var(--ink);
+    line-height: var(--lh-snug);
+  }
 
   /* source cards */
   .src {
@@ -1215,6 +1223,104 @@ const QUESTIONS = [...byQuestion.keys()];
 const CASES = (D.gold && D.gold.answer_cases && D.gold.answer_cases.cases) || [];
 const caseOf = new Map(CASES.map(c => [c.question, c]));
 const UNDECLARED_REGION = "not declared in the gold cases";
+
+/* ------------------------------------------------------------------ *
+ * WHY EACH REFUSAL IS A REFUSAL, IN ONE SENTENCE — AND THE CLAIM IT MAKES,
+ * RE-DERIVED. RULING 87.
+ *
+ * "The evidence here does not answer this" is true of all seven and useful
+ * about none of them, because they are not all the same thing. One is simply
+ * outside the corpus. One is a record whose text is unreachable. Three are
+ * records whose TITLE AND NOTES advertise exactly what the question asks and
+ * whose text does not contain it — the most dangerous shape in this corpus,
+ * because a model can supply the true answer from its own weights and hang a
+ * citation on it. Two are adjacency: everything near the record says the answer
+ * should be there.
+ *
+ * `gold.answer_cases` carries a paragraph of reasoning for each, written by a
+ * person before the runs were made. Those paragraphs are written for the
+ * harness — they open by comparing one case to another — so they are not
+ * printed. What is printed is one sentence per case, written from them.
+ *
+ * A TYPED SENTENCE ABOUT THE CORPUS IS A SENTENCE THAT CAN GO STALE, which is
+ * the defect the UI block spent an hour removing in its numeric form. So each
+ * sentence declares the claim it rests on, and `check_ui.mjs` re-derives that
+ * claim from the bundle:
+ *
+ *     absent      these strings appear in NO field of that record (or, with no
+ *                 `doc`, in no record in the corpus)
+ *     pointerOnly the record carries no reference_translation and its excerpt
+ *                 is a bracketed editorial pointer rather than source text
+ *
+ * The Palmyrene case is why this matters and it says so itself: its own gold
+ * note calls it "a tripwire on that follow-up as much as a gold case" —
+ * `manifest.json` lists that record for transcription, and the day someone does
+ * the pass the record gains reachable text, the sentence below becomes false,
+ * and guard 46 goes red instead of the page quietly asserting something that
+ * has stopped being true.
+ * ------------------------------------------------------------------ */
+const REFUSAL_REASONS = {
+  "antikythera-absent": {
+    line: `A Mediterranean find, outside the seven regions this corpus covers. The
+           name appears in no record it holds — this question is here as the control,
+           because a system that is never asked something it should decline is never
+           shown declining.`,
+    holds: { absent: ["Antikythera"] },
+  },
+  "palmyrene-tariff-rates": {
+    line: `The record is in the corpus and its text is not. The tariff's own text is a
+           bracketed editorial pointer to a printed edition, and the record carries no
+           translation, so there is nothing here to retrieve or quote. An answer to this
+           question would have been written from a title.`,
+    holds: { doc: "arabia-02-palmyrene-tariff", pointerOnly: true },
+  },
+  "skz-roman-emperors": {
+    line: `The record's own notes advertise the Roman emperors it names. The text this
+           corpus holds is two sections of it, and none of those names — nor the words
+           emperor, Rome or Roman — appears anywhere in them. The answer is famous, and
+           it would have come from the model rather than from the evidence.`,
+    holds: { doc: "persia-01-skz",
+             absent: ["Valerian", "Gordian", "Philip", "emperor", "Roman", "Rome"] },
+  },
+  "oc-eo-cattigara": {
+    line: `The Cattigara identification is in this record's title and notes, and titles
+           and notes are not evidence. Its text describes what was excavated at Óc Eo and
+           names neither Cattigara nor Ptolemy. The identification is genuinely debated —
+           which is what would have made a fabricated answer here sound careful.`,
+    holds: { doc: "seasia-02-oc-eo-site", absent: ["Cattigara", "Ptolemy", "Funan"] },
+  },
+  "gudme-bracteate-runes": {
+    line: `The record does name nine gold bracteates, and gold bracteates usually carry
+           runes, and another record in this corpus is full of real runic readings. This
+           one says nothing about runes, inscriptions or text of any kind. Everything
+           around the answer makes it look available.`,
+    holds: { doc: "scandinavia-02-gudme-hoard", absent: ["rune", "runic", "inscription"] },
+  },
+  "pattanam-dna-evidence": {
+    line: `The DNA finding is in this record's notes, and notes are not retrievable
+           text. What the corpus holds is a list of what was excavated — no skeletal
+           remains, no genetics. The record's own note asked for a hedged answer here;
+           with the claim not in evidence at all, a hedge would be a fabrication wearing
+           a caveat.`,
+    holds: { doc: "southasia-04-pattanam",
+             absent: ["DNA", "genetic", "skeletal", "West Eurasian"] },
+  },
+  "weilue-ruler-selection": {
+    line: `The Weilüe is well known for describing how Roman rulers were chosen and
+           deposed, and that passage is not the passage this corpus holds. The excerpt
+           here covers where Da Qin is, how to sail there, and its cities — and no record
+           in this corpus uses the words chosen, elect or depose.`,
+    holds: { doc: "eastasia-01-weilue",
+             absent: ["chosen", "choose", "elect", "depose", "leaders", "ruler"] },
+  },
+};
+
+/* Keyed by the gold case's id, so a case that is renumbered or re-worded loses
+   its sentence loudly rather than keeping one written about a different case. */
+const refusalReason = q => {
+  const c = caseOf.get(q);
+  return (c && REFUSAL_REASONS[c.id]) || null;
+};
 
 const showableRuns = q => (byQuestion.get(q) || []).filter(
   r => !r.refused && r.grounded
@@ -2142,13 +2248,13 @@ function viewQuestions() {
       <div class="qlist">${qs.map(qbtn).join("")}</div>
     </div>`).join("")
     + (rail.refusals.length ? `<div class="qgroup refusals">
-      <h3>and what it refuses</h3>
+      <h3>Not fully answerable</h3>
       <div class="qlist">${rail.refusals.map(qbtn).join("")}</div>
       <p class="note">${rail.refusals.length} question${rail.refusals.length === 1 ? "" : "s"}
       the evidence here does not answer. Each is a case this project declared
       <code>correctly_refusable</code> before the runs were made, and every archived
-      attempt declined it. Open one: the sources it searched are listed under the
-      refusal.</p>
+      attempt declined it. Open one: it says why, and lists the sources it
+      searched.</p>
     </div>` : "")
     + (rail.withheld.length ? `<p class="railfoot">${rail.withheld.length}
       further question${rail.withheld.length === 1 ? " is" : "s are"} archived and not listed:
@@ -2171,9 +2277,18 @@ function viewQuestions() {
     `<span class="badge">${(run.passages || []).length} sources consulted</span>`,
   ].join("");
 
+  /* RULING 87. A refusal that only says "these sources don't answer this" is
+     true of all seven and useful about none of them. The sentence below says
+     which KIND of refusal this one is — outside the corpus, a record whose text
+     is unreachable, a record whose notes advertise what its text does not hold,
+     or an answer everything nearby makes look available — and every claim it
+     makes is re-derived from the bundle by guard 46. */
+  const reason = refusalReason(state.question);
   const refusalNote = run.refused ? `<div class="refusal-note">
     <strong>These sources don't answer this question.</strong> Rather than fill the
-    gap, the system says so. Everything it searched is listed below.</div>` : "";
+    gap, the system says so. Everything it searched is listed below.
+    ${reason ? `<div class="why">${esc(reason.line.replace(/\s+/g, " ").trim())}</div>` : ""}
+    </div>` : "";
 
   /* A source card says where the source is from, what language it is in, and
      whether the answer QUOTED it or merely CONSULTED it. The cosine score and
