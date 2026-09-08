@@ -1631,16 +1631,32 @@ const PROVENANCE = {
     gloss: `The run recorded a corpus version and this document is not in it.` },
 };
 
-function provenanceSection(res) {
+/* ONE ROW, NOT A SECTION — and the axis is not merged, hidden or softened.
+ *
+ * This was a headed section carrying a verdict and two paragraphs: the state's
+ * standing gloss, and then the span's own `why`, which say the same thing in
+ * different words. Three hundred pixels on every panel to state a verdict of
+ * three words.
+ *
+ * It is now the last row of the chain above, and `data-provenance` rides on the
+ * row — so checks 30 and 31 still assert exactly what they asserted before: that
+ * EVERY citation panel carries its own second-axis state, and that no span whose
+ * data says `unrecorded` is ever rendered as `unchanged` or `changed`. The
+ * guards did not move and were not relaxed; the surface they read got smaller.
+ *
+ * The gloss is not deleted, it is on the row's `title`. What a reader loses is
+ * having it in front of them unasked; what they keep is the answer itself, which
+ * for every failing citation on this page is "not knowable from the archive" —
+ * the third answer this project refuses to round into either neighbour. The full
+ * cross-tabulation is still a card on Data & Sources.
+ */
+function provenanceRow(res) {
   const p = res && res.provenance;
   if (!p) return "";
   const d = PROVENANCE[p.state] || { label: p.state, gloss: "" };
-  return `<div class="sect"><h3>has the record moved underneath this citation?</h3>
-    <div class="provbox" data-provenance="${esc(p.state)}">
-      <strong>${esc(d.label)}</strong>
-      <div class="dormant stack">${d.gloss}</div>
-      ${p.why ? `<div class="dormant stack">${esc(p.why)}</div>` : ""}
-    </div></div>`;
+  const tip = String(p.why || d.gloss || "").replace(/\s+/g, " ").trim();
+  return `<div data-provenance="${esc(p.state)}"><span class="k">record moved?</span>
+    <span class="v" title="${esc(tip)}">${esc(d.label)}</span></div>`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -1797,6 +1813,7 @@ function renderQuoteProvenance(run, si) {
     ${chainRow("field", `<code>${esc(span.source_field)}</code>`)}
     ${chainRow("citation", rec && rec.citation
         ? `<a href="${esc(rec.citation)}" target="_blank" rel="noopener">${esc(rec.citation)}</a>` : null)}
+    ${provenanceRow(res)}
   </div>`;
 
   const text = rec && rec.fields ? rec.fields[span.source_field] : null;
@@ -1822,7 +1839,8 @@ function renderQuoteProvenance(run, si) {
     }
   }
 
-  out += provenanceSection(res);
+  /* The second axis is a row in the chain at the top of this panel now
+     (`provenanceRow`), not a section down here. */
   if (passage) out += renderEnglishProvenance(passage);
   return out;
 }
