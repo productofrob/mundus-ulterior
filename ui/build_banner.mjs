@@ -51,20 +51,26 @@ catch {
 const UI = dirname(fileURLToPath(import.meta.url));
 const OUT = join(UI, "banner");
 
-/* Order is deliberate: the two scripts that say at a glance that this is not a
-   European archive come first, then the other non-Latin ones, then Greek, then
-   the records the corpus holds only in romanised transliteration. At 390px
-   roughly one specimen is visible at a time, so first is not a small decision. */
+/* ORDER. The band opens on the writing systems that say at a glance this is not
+   a European archive, then travels to the regions furthest from Rome, and puts
+   Greek AFTER them. Greek is the one language here the empire also spoke, so
+   leading with it would open the band on the familiar; and the Greek specimen
+   is an AKSUMITE king's throne inscription at Adulis, on the Red Sea coast,
+   rather than the Silko inscription at Talmis, whose own findspot field records
+   it as standing inside the Dodecaschoenus — the strip Rome had held. A Greek
+   text from inside the empire is not what this band is for.
+   At 390px roughly one specimen is visible at a time, so first is not a small
+   decision. */
 const SPECIMENS = [
   { code: "oty",     doc: "southasia-01-akananuru-149",     chars: 24, from: "சிறுபுன்" },
   { code: "lzh",     doc: "eastasia-02-hou-hanshu",         chars: 15, from: "至桓帝延熹九年" },
   { code: "san",     doc: "southasia-05-brihatsamhita",     chars: 30, from: "म्लेच्छा" },
   { code: "ko",      doc: "eastasia-03-hwangnam-glass",     chars: 18, from: "경주 98호" },
-  { code: "grc",     doc: "africa-04-silko-talmis",         chars: 30, from: "ἐγὼ Σιλκώ" },
+  { code: "gmq-pro", doc: "scandinavia-05-thorsberg-chape", chars: 26, from: "owlþuþewaz" },
+  { code: "omy",     doc: "seasia-06-kedukan-bukit",        chars: 32, from: "svasti śrī" },
+  { code: "grc",     doc: "africa-05-adulis-throne",        chars: 30, from: "αὐτὸς ἐγὼ" },
   { code: "xsa",     doc: "arabia-07-cih541",               chars: 30, from: "mlkn w-bn-hw" },
   { code: "gez",     doc: "africa-06-ezana-rie189",         chars: 30, from: "Wa-takalkū" },
-  { code: "omy",     doc: "seasia-06-kedukan-bukit",        chars: 32, from: "svasti śrī" },
-  { code: "gmq-pro", doc: "scandinavia-05-thorsberg-chape", chars: 26, from: "owlþuþewaz" },
 ];
 
 /* One family per script. Everything else falls back to the page's own serif. */

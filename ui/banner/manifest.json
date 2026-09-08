@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-07T20:10:23.245Z",
+ "generated": "2026-09-08T08:33:46.617Z",
  "scale": 3,
  "specimens": [
   {
@@ -47,14 +47,36 @@
    "h": 44
   },
   {
+   "code": "gmq-pro",
+   "doc": "scandinavia-05-thorsberg-chape",
+   "from": "owlþuþewaz",
+   "chars": 26,
+   "text": "owlþuþewaz / niwajemariz",
+   "native": false,
+   "image": "banner/gmq-pro.png",
+   "w": 253,
+   "h": 44
+  },
+  {
+   "code": "omy",
+   "doc": "seasia-06-kedukan-bukit",
+   "from": "svasti śrī",
+   "chars": 32,
+   "text": "svasti śrī śaka varṣātīta 605",
+   "native": false,
+   "image": "banner/omy.png",
+   "w": 305,
+   "h": 44
+  },
+  {
    "code": "grc",
-   "doc": "africa-04-silko-talmis",
-   "from": "ἐγὼ Σιλκώ",
+   "doc": "africa-05-adulis-throne",
+   "from": "αὐτὸς ἐγὼ",
    "chars": 30,
-   "text": "ἐγὼ Σιλκώ, βασιλίσκος Νουβάδων",
+   "text": "αὐτὸς ἐγὼ ἐν ταῖς μάχαις παρὼν",
    "native": true,
    "image": "banner/grc.png",
-   "w": 421,
+   "w": 400,
    "h": 44
   },
   {
@@ -77,28 +99,6 @@
    "native": false,
    "image": "banner/gez.png",
    "w": 274,
-   "h": 44
-  },
-  {
-   "code": "omy",
-   "doc": "seasia-06-kedukan-bukit",
-   "from": "svasti śrī",
-   "chars": 32,
-   "text": "svasti śrī śaka varṣātīta 605",
-   "native": false,
-   "image": "banner/omy.png",
-   "w": 305,
-   "h": 44
-  },
-  {
-   "code": "gmq-pro",
-   "doc": "scandinavia-05-thorsberg-chape",
-   "from": "owlþuþewaz",
-   "chars": 26,
-   "text": "owlþuþewaz / niwajemariz",
-   "native": false,
-   "image": "banner/gmq-pro.png",
-   "w": 253,
    "h": 44
   }
  ]
