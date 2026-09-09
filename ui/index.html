@@ -2137,16 +2137,19 @@ function renderPassageProvenance(run, marker) {
      source cards for the same reason it goes from here — it is a fact about the
      retriever, and one only interpretable against the other numbers in the same
      list — and the path on disk went from the quotation panel in the same pass.
-     `rank` stays: it is not printed for any run in this archive (no passage
-     carries one), and a row that would appear the day the field does is not the
-     same thing as a row on screen. */
+     `rank` went with them, and the correction is worth keeping beside it: the
+     commit that removed similarity claimed rank printed for nothing, "no passage
+     carries one". That was asserted without measuring. 4,014 of the 4,110
+     passages in this archive carry a rank and it rendered as "#1 of what was
+     retrieved" on nearly every source panel. It is the same kind of fact as the
+     cosine — where the retriever put this passage in a list — and it goes for
+     the same reason. */
   out += `<div class="chain">
     ${chainRow("region", esc(rec ? rec.region : "—"))}
     ${chainRow("language", esc(langName(p.lang || (rec && rec.language_code && rec.language_code[0]))))}
     ${chainRow("kind", esc(rec ? rec.source_type : null))}
     ${chainRow("date", esc(rec ? rec.date : null))}
     ${chainRow("findspot", esc(rec ? rec.findspot : null))}
-    ${chainRow("rank", p.rank != null ? "#" + p.rank + " of what was retrieved" : null)}
     ${chainRow("field", `<code>${esc(p.source_field)}</code> [${p.char_start}:${p.char_end}]`)}
     ${chainRow("citation", rec && rec.citation
         ? `<a href="${esc(rec.citation)}" target="_blank" rel="noopener">${esc(rec.citation)}</a>` : null)}
