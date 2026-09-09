@@ -1906,11 +1906,18 @@ function renderPassageProvenance(run, marker) {
   const rec = D.corpus[p.doc_id];
   let out = `<p class="prov-q">${esc(rec ? rec.title : p.doc_id)}</p>`;
 
-  if (run.partial_passages) {
-    out += `<div class="warnbox warn">This run was reconstructed from a partial
-      archive, so its passage records carry no language, region or citation.
-      Those fields are shown from the seed record instead of being invented.</div>`;
-  }
+  /* THE PARTIAL-ARCHIVE BOX IS GONE FROM HERE, AND IT LEAVES A DEBT.
+     It said: this run was reconstructed from a partial archive, so its passage
+     records carry no language, region or citation, and those fields are shown
+     from the seed record rather than invented. That is true of 16 of the 685
+     archived runs, across 5 questions, and the substitution still happens two
+     lines below — `p.lang || rec.language_code[0]`, and `rec.region`.
+
+     So the panel now shows a language and a region for those 16 runs WITHOUT
+     saying they came from the record rather than from the run. Nothing on the
+     page says it yet. Owed to the Data & Sources tab, alongside the two
+     withheld failures and the second axis, and it should be stated there in the
+     same commit that states them. */
 
   /* `similarity` and `file` are gone from this panel. The cosine went from the
      source cards for the same reason it goes from here — it is a fact about the
