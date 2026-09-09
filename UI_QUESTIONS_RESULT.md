@@ -1,8 +1,10 @@
-# UI QUESTIONS RESULT — **THE RULE ROB ASKED FOR WOULD HAVE DELETED THE SEVEN
-# QUESTIONS THIS CORPUS REFUSES CORRECTLY, AND THAT WAS FOUND BY MEASURING IT
-# BEFORE BUILDING IT.** The rail is grouped by region, the run apparatus is
-# gone, the harness is 45 green, and one prediction is refuted for a reason
-# worth more than the four that held.
+# UI QUESTIONS RESULT — **PART ONE SCORES THE PREDICTIONS. PART TWO CARRIES THE
+# NINETEEN COMMITS THAT FOLLOWED AND IS WHERE THE HARNESS COUNT LIVES.**
+#
+# **THE RULE ROB ASKED FOR WOULD HAVE DELETED THE SEVEN QUESTIONS THIS CORPUS
+# REFUSES CORRECTLY, AND THAT WAS FOUND BY MEASURING IT BEFORE BUILDING IT.**
+# The rail is grouped by region, the run apparatus is gone, and one prediction is
+# refuted for a reason worth more than the four that held.
 
 *Written 2026-09-08 at the close of the Questions block.
 `UI_QUESTIONS_PREDICTIONS.md` was committed at `ea87767` **before a line of
@@ -309,3 +311,182 @@ FINDING 102  found by using the page, fixed in the same commit
   there, dated before it started — the fossil of an earlier attempt that hit the
   same wall. Enable deletion for the repository folder at the start of a block,
   not in the middle of one.
+
+---
+---
+
+# PART TWO — **NINETEEN COMMITS OF ROB'S OWN EDITS FOLLOWED THE CLOSE, AND ONE
+# OF THEM UNCOVERED A DEFECT THAT HAD BEEN ON THE DATA & SOURCES TAB THE WHOLE
+# TIME.**
+
+*Appended 2026-09-09. Everything above this line is the block as originally
+scoped, scored against `UI_QUESTIONS_PREDICTIONS.md`, and is **not edited** — the
+five predictions stand as they were read. The design block left its own result
+document saying 39 checks while the harness said 43, and recorded that **a result
+document that has gone stale is worse than no result document**. This is that
+lesson applied to this one.*
+
+---
+
+## THE STATE BLOCK IS GENERATED. NOTHING BELOW IT IS RESTATED.
+
+`python scripts/state_block.py`, at `c78ebab`:
+
+```
+ingest.verify                        green, 54 documents
+ingest.test_fidelity                 145   [green]
+ingest.test_cost                     78   [green]
+eval.test_answer_eval                425   [green]
+eval.test_ranking_check              258   [green]
+answer.test_answer                   150   [green]
+ui/test_build_ui_data.py             19   [green]
+scripts/test_recover_baseline.py     56   [green]
+scripts/test_harnesses.py            43   [green]
+python -m ingest.gazetteer --check   GREEN
+node ui/check_ui.mjs                 GREEN
+```
+
+**`node ui/check_ui.mjs`: 45 checks at Part One's close, 47 now.** Guard 46
+(RULING 87) and guard 47 (RULING 89). Every guard added or moved in this half was
+verified to FAIL on a broken version first, and the two that MOVED were verified
+red on both of the failures they inherited.
+
+**`ui/data.js` was not regenerated and appears in no diff.**
+
+---
+
+# 7. WHAT THE NINETEEN COMMITS DID
+
+Rob directed all of it, after seeing the page rendered. Grouped by surface
+rather than by commit:
+
+```
+THE HEADER      'on disk' out of the citation line, and the strip now on EVERY
+                tab -- it used to stand down on the Questions landing, which
+                made it a thing that appears and disappears as you move around
+
+THE FRONT       A new headline and claim. Two captions reworded. THE TWO FINDING
+SECTION         CARDS REMOVED -- the contested coordinate and 'what the failures
+                say' -- both of which survive as full cards on the tabs they
+                came from
+
+THE RAIL        The refusals note moved ABOVE its questions, the group renamed
+                'Not fully answerable', and the withheld-failures line removed
+
+THE REFUSALS    RULING 87. Each of the seven now says WHICH KIND of refusal it
+                is, in one sentence, and guard 46 re-derives every claim those
+                sentences make -- 7 reasons, 24 claims
+
+THE SOURCE      The cosine bar and its value off the cards; similarity, file and
+CARDS           rank off the panel behind them
+
+THE PANEL       1,276px -> 844px. Out: file, characters, chunk, the partial-
+                archive box, and the whole 'has the record moved' section
+                (RULING 88). In: region, language, date, findspot. 'the
+                characters on disk' and 'the passage, as it sits in the file'
+                are both 'Source Characters' now
+
+THE NOTES       RULING 89. 54 curator's notes read; the page shows a declared
+                VERBATIM EXCERPT of each, sliced by ui/build_public_notes.py and
+                re-derived by guard 47
+
+THE BAND        Ge'ez and Korean swapped, so the opening view carries Africa
+                rather than a second East Asian script
+```
+
+---
+
+# 8. THE TWO RULINGS THAT ARE ABOUT GUARDS RATHER THAN ABOUT DESIGN
+
+**RULING 88 is the one worth reading before touching a guard on this project.**
+Rob asked twice for the second axis to come off the quotation panel, and ruled
+out both relaxing a guard and losing the information. Checks 30 and 31 asserted
+against the panel's own HTML, so the honest move was neither to delete them nor
+to point them at something weaker: **the axis moved to the Data & Sources
+cross-tabulation, and the guards moved with it and got stronger.** The old pair
+could say only that a state APPEARED in a panel; the new pair re-derives the
+whole cross-tabulation and asserts every cell is on screen **with its own count**.
+
+**And on its first run it found FINDING 105**, which had been live on the Data &
+Sources tab for as long as that tab existed: `spanCrossTab()` keyed its map with
+a **literal NUL byte** typed into `index.html` — which is why `grep` had been
+reporting that file as binary — while `viewAbout` split those keys on a space, as
+its own comment said it could. Every row of the cross-tabulation was rendering as
+`resolved<?>changed — 1070 spans —` with **no provenance label and an empty tag**,
+and the `cross["resolved unchanged"]` lookup beside it read 0 whatever the
+archive held. It printed correctly by luck: `unchanged` is genuinely 0.
+
+**No check caught it, because the guard in force asserted an attribute on a
+panel, and the attribute was there.** The lesson is the one the design block kept
+finding from the other direction: a guard that asserts PRESENCE cannot see a
+value that is wrong.
+
+---
+
+# 9. WHAT IS OWED, AND ALL OF IT IS OWED TO ONE TAB
+
+Three claims left the Questions tab in this half and **have not yet landed
+anywhere else.** They are recorded in the source at the point of each removal,
+and they are listed here because a commit message is not where the next thread
+looks.
+
+```
+1  THE TWO WITHHELD FAILURES         Ruling 86 says they are COUNTED rather
+   (ruling 86 owes an amendment)     than dropped silently, because Home says
+                                     'the failures are kept'. The line came off
+                                     the rail. Until the count is stated on Data
+                                     & Sources the page is one claim short of
+                                     what Home promises, and ruling 86 should be
+                                     amended in the commit that lands it
+
+2  THE PARTIAL-ARCHIVE SUBSTITUTION  16 of the 685 runs, across 5 questions, were
+                                     reconstructed from a partial archive, and
+                                     their panels show a language and a region
+                                     taken from the seed record rather than from
+                                     the run. The box that said so is gone and
+                                     the substitution still happens
+
+3  THE SECOND AXIS                   Already there, already guarded (ruling 88).
+                                     Listed so the next thread does not think it
+                                     owes it twice
+```
+
+**And one thing the Map tab is owed:** `renderPanel`'s empty state is ONE STRING
+SERVING TWO TABS, and the clause it lost — *"or, on the Places tab, a point, a
+shaded region or a line"* — was the Map tab's only instruction. That tab now
+opens with a panel describing things it does not have.
+
+---
+
+# 10. WHAT LOOKING CAUGHT, AND ONE THING IT DID NOT
+
+**FINDING 102**, in Part One, and the question card that was left holding one
+sentence in a box built for four lines — both found by rendering the page.
+
+**And the counter-example, which is the more useful half.** The `rank` row was
+left on the source panel in `bb25cb2` on the stated ground that "no passage in
+this archive carries one, so it prints for nothing today". **That was asserted
+without measuring, and it is false**: 4,014 of the 4,110 passages carry a rank
+and it rendered on nearly every source panel. It was caught by looking at a
+screenshot two commits later, corrected in the log rather than fixed quietly, put
+to Rob, and the row came off in `c78ebab`.
+
+**A sentence written into a commit message is as capable of being wrong as a
+sentence written onto the page, and nothing checks the commit message.**
+
+---
+
+# 11. WHAT THIS HALF DID NOT DO
+
+- **Did not build the chatbot or a question box.** Still ruling 83.
+- **Did not curate a record or author a coordinate.** RULING 89 reads all 54
+  notes and edits none of them; the excerpts are a view of the corpus, not a
+  change to it.
+- **Did not regenerate or hand-edit `ui/data.js`.**
+- **Did not relax or delete a guard.** Two moved surfaces, both to a place that
+  carries the same claim, both verified red on the failures they inherited.
+- **Did not touch the Map tab**, which is a thread of its own and now carries the
+  §9 debt above.
+- **Did not amend the predictions.** They are scored in Part One and stand.
+
+**`RULINGS.md` reads next free ruling 90, next free finding 106.**

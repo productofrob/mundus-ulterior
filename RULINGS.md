@@ -40,7 +40,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 80-82       W3_RULINGS.md             full text, "## Ruling N" headings
 83          UI_RULINGS.md             full text, "# RULING N" heading
 84          UI_DESIGN_RULINGS.md      full text, "# RULING N" heading
-85-88       UI_QUESTIONS_RULINGS.md   full text, "# RULING N" headings
+85-89       UI_QUESTIONS_RULINGS.md   full text, "# RULING N" headings
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -61,7 +61,21 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 89. The next free finding is 106.**
+**The next free ruling number is 90. The next free finding is 106.**
+
+> **UPDATED 2026-09-09, at the close of the same session.** **Ruling 89**: a
+> record's note on the page shows the curator's words about the SOURCE and
+> nothing about the project. Each excerpt is VERBATIM and is SLICED out of
+> the record's own note by `ui/build_public_notes.py` rather than retyped;
+> guard 47 asserts every fragment is still a substring of the note it came
+> from, and a record with NO declaration fails rather than showing its whole
+> note. 54 notes read, 67 fragments, 20,430 characters. The corpus is
+> untouched — the excerpts are a view of it.
+>
+> Full text in `UI_QUESTIONS_RULINGS.md`; the session's nineteen post-close
+> commits are scored in `UI_QUESTIONS_RESULT.md` Part Two, which also carries
+> the three claims now OWED TO THE DATA & SOURCES TAB and a correction to
+> this session's own commit log.
 
 > **UPDATED 2026-09-08, same block.** **Ruling 88**: D1's second axis is
 > rendered on Data & Sources, cell by cell, and not on the quotation panel —

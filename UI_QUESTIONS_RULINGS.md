@@ -1,4 +1,4 @@
-# UI QUESTIONS RULINGS — **85 TO 88, EACH DECLARED IN THE SESSION THAT
+# UI QUESTIONS RULINGS — **85 TO 89, EACH DECLARED IN THE SESSION THAT
 # MADE IT.** 87 was declared after the block's first close, and says so.
 
 *Written 2026-09-08, during the Questions block, before the result document and
@@ -310,3 +310,74 @@ they were not there at all.
 returns cells, `{state, provenance, n}`, so nothing downstream parses anything,
 and `cellN(state, provenance)` answers the one lookup that wanted a key. The five
 NUL bytes are gone from the file with them.
+
+---
+
+# RULING 89 — **A RECORD'S NOTE SHOWS THE CURATOR'S WORDS ABOUT THE SOURCE, AND
+# NOTHING ABOUT THE PROJECT.**
+
+*Declared 2026-09-09, at the close of the session, when Rob asked for the record
+notes to stop carrying project-internal references. `RULINGS.md` read at the
+time: next free ruling 89.*
+
+Every one of the 54 records carries a curator's note, and those notes are
+working documents. They open with which tranche placed the record, which ruling
+bought its slot, which prediction it tests and which tier it counts toward — and
+then, usually, they say what the source is and why it matters, which is the best
+writing in this project. **The page was printing the whole of one.** A visitor to
+a showcase was reading the scaffolding.
+
+The panel now shows a declared excerpt. Measured before it was built: 731
+sentences across the 54 notes, of which roughly 29% mention project machinery,
+mixed sentence by sentence — 5 notes clean throughout, 5 machinery end to end,
+44 mixed.
+
+## The excerpts are SLICED, never retyped
+
+`ui/build_public_notes.py` holds a start and end marker for each fragment, chosen
+by a person, and cuts the text out of the record's own note. **A marker that is
+missing or that appears twice is a hard error**, because an ambiguous boundary is
+how an excerpt silently becomes a different sentence. 67 fragments, 20,430
+characters, 53 of 54 records with something public to show.
+
+## And guard 47 re-derives it at run time
+
+Every fragment must still be a substring of the note it came from, whitespace
+aside. A note edited underneath an excerpt goes **red** rather than the page
+attributing to a curator a sentence they no longer hold.
+
+**A record with NO entry is a failure, not a blank.** The defect this exists to
+catch is a record curated later whose entire note reaches the screen because
+nobody looked at it. An entry declared empty is fine — that is somebody having
+looked, and `eastasia-01-weilue` is the one record declared so.
+
+## Why not a rule over the prose
+
+A filter that drops any sentence mentioning a ruling, a tier or a gold case was
+considered and refused. **RULING 74 already refuses a matcher over
+`citation_original`, and `gold.answer_cases`' own refusal rule says a rule that
+has to be interpreted is a rule that will be broken, and inside a matcher it
+would be broken silently.** At a 29% hit rate it would cut real content and keep
+real machinery, and both failures would look fine on screen.
+
+## What this does not license
+
+- **It does not license editing the records.** Not one note changed; the corpus
+  is untouched and the excerpts are a view of it.
+- **It does not license the page writing a summary.** Every character shown is
+  the curator's, and guard 47 is what keeps that true rather than a comment
+  asking the next person to be careful.
+
+---
+
+# THE CORRECTION THIS SESSION OWES ITS OWN LOG
+
+`bb25cb2` removed `similarity` and `file` from the source panel and said of the
+`rank` row that it "prints for nothing today — no passage in this archive carries
+one". **That is false.** 4,014 of the 4,110 passages carry a rank, across 669 of
+the 685 runs, and it rendered as `#1 of what was retrieved` on nearly every
+source panel. The claim was asserted without measuring and the measurement takes
+one line.
+
+It was corrected in `bc58c1a`'s message rather than fixed quietly, put to Rob as
+his call, and `rank` came off in `c78ebab` for the same reason the cosine did.
