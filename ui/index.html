@@ -3264,16 +3264,27 @@ function viewAbout() {
  * the language name, the alt text. The image is a MASK, not a picture, so the
  * ink comes from the theme and one asset serves both.
  * ------------------------------------------------------------------ */
+/* ORDER IS A CURATION DECISION AND THIS IS THE SECOND ONE MADE ABOUT IT.
+   Korean and Ge'ez have swapped places. The first screenful used to run Old
+   Tamil, Literary Chinese, Sanskrit, Korean — three of the first four from Asia,
+   and a visitor who never scrolled the band saw a project about one half of its
+   own scope. Ge'ez in that fourth slot puts Sub-Saharan Africa in the opening
+   view instead of a second East Asian script, and Korean keeps its place in the
+   band rather than being dropped for it.
+
+   Nothing else moves with it: `check_ui.mjs` matches this list to
+   `ui/banner/manifest.json` BY CODE, not by position, and each image is
+   `banner/<code>.png`, so no specimen needed re-rendering. */
 const BANNER = [
   { code: "oty",       doc: "southasia-01-akananuru-149",       chars: 24, from: "சிறுபுன்", w: 222 },
   { code: "lzh",       doc: "eastasia-02-hou-hanshu",           chars: 15, from: "至桓帝延熹九年", w: 394 },
   { code: "san",       doc: "southasia-05-brihatsamhita",       chars: 30, from: "म्लेच्छा", w: 258 },
-  { code: "ko",        doc: "eastasia-03-hwangnam-glass",       chars: 18, from: "경주 98호", w: 301 },
+  { code: "gez",       doc: "africa-06-ezana-rie189",           chars: 30, from: "Wa-takalkū", w: 274 },
   { code: "gmq-pro",   doc: "scandinavia-05-thorsberg-chape",   chars: 26, from: "owlþuþewaz", w: 253 },
   { code: "omy",       doc: "seasia-06-kedukan-bukit",          chars: 32, from: "svasti śrī", w: 305 },
   { code: "grc",       doc: "africa-05-adulis-throne",          chars: 30, from: "αὐτὸς ἐγὼ", w: 400 },
   { code: "xsa",       doc: "arabia-07-cih541",                 chars: 30, from: "mlkn w-bn-hw", w: 294 },
-  { code: "gez",       doc: "africa-06-ezana-rie189",           chars: 30, from: "Wa-takalkū", w: 274 },
+  { code: "ko",        doc: "eastasia-03-hwangnam-glass",       chars: 18, from: "경주 98호", w: 301 },
 ];
 const BANNER_NATIVE = new Set(["oty", "lzh", "san", "ko", "grc"]);
 const BANNER_H = 44;   // the height ui/build_banner.mjs rendered each specimen at
