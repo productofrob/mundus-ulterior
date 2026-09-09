@@ -1797,10 +1797,26 @@ function renderQuoteProvenance(run, si) {
      all 1227 resolved spans still hold their quoted characters at them, and the
      chain figure on Home prints a file, a field and an offset pair beside its
      quotation. They are no longer printed HERE. */
+  /* Region, language, date and findspot come from the RECORD, and are the four
+     things that place a quotation in the world: where the source is from, what
+     language it is in, when it was written and where it was dug up. The source
+     panel has carried them since A5; a reader who arrives at the same record by
+     clicking the quotation rather than the source card gets them too now.
+
+     `language` is read the way the source panel reads it — the retrieved
+     passage's own code first, since a record can carry more than one, and the
+     record's first code only as a fallback. FINDING 95 is why that matters: one
+     record's three chunks are not all in the same language. */
+  const passageLang = passage && passage.lang;
   out += `<div class="chain">
     ${chainRow("quoted in", span.within === "english"
         ? "the published English translation" : "the source-language text")}
     ${chainRow("record", esc(rec ? rec.title : span.doc_id))}
+    ${chainRow("region", esc(rec ? rec.region : null))}
+    ${chainRow("language", esc(langName(passageLang
+        || (rec && rec.language_code && rec.language_code[0]))))}
+    ${chainRow("date", esc(rec ? rec.date : null))}
+    ${chainRow("findspot", esc(rec ? rec.findspot : null))}
     ${chainRow("field", `<code>${esc(span.source_field)}</code>`)}
     ${chainRow("citation", rec && rec.citation
         ? `<a href="${esc(rec.citation)}" target="_blank" rel="noopener">${esc(rec.citation)}</a>` : null)}
@@ -1896,15 +1912,20 @@ function renderPassageProvenance(run, marker) {
       Those fields are shown from the seed record instead of being invented.</div>`;
   }
 
+  /* `similarity` and `file` are gone from this panel. The cosine went from the
+     source cards for the same reason it goes from here — it is a fact about the
+     retriever, and one only interpretable against the other numbers in the same
+     list — and the path on disk went from the quotation panel in the same pass.
+     `rank` stays: it is not printed for any run in this archive (no passage
+     carries one), and a row that would appear the day the field does is not the
+     same thing as a row on screen. */
   out += `<div class="chain">
     ${chainRow("region", esc(rec ? rec.region : "—"))}
     ${chainRow("language", esc(langName(p.lang || (rec && rec.language_code && rec.language_code[0]))))}
     ${chainRow("kind", esc(rec ? rec.source_type : null))}
     ${chainRow("date", esc(rec ? rec.date : null))}
     ${chainRow("findspot", esc(rec ? rec.findspot : null))}
-    ${chainRow("similarity", p.similarity != null ? p.similarity.toFixed(3) + " cosine to the question" : null)}
     ${chainRow("rank", p.rank != null ? "#" + p.rank + " of what was retrieved" : null)}
-    ${chainRow("file", rec ? `<code>${esc(rec.file)}</code>` : null)}
     ${chainRow("field", `<code>${esc(p.source_field)}</code> [${p.char_start}:${p.char_end}]`)}
     ${chainRow("citation", rec && rec.citation
         ? `<a href="${esc(rec.citation)}" target="_blank" rel="noopener">${esc(rec.citation)}</a>` : null)}
