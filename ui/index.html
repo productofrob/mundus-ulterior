@@ -555,6 +555,8 @@
     background: var(--line-soft); border-radius: var(--r-sm);
     padding: var(--s-3); line-height: var(--lh-snug);
   }
+  .dormant p { margin: 0 0 var(--s-3); }
+  .dormant p:last-child { margin-bottom: 0; }
   .stack { margin-top: var(--s-3); }
   .clickable { cursor: pointer; }
   .warnbox {
@@ -1651,6 +1653,218 @@ const PROVENANCE = {
  */
 
 /* ------------------------------------------------------------------ *
+ * WHAT A RECORD'S NOTE SHOWS ON THIS PAGE. RULING 89.
+ *
+ * Every record carries a curator's note, and those notes are working
+ * documents: they open with which tranche placed the record, which ruling
+ * bought its slot, which prediction it tests, and which tier it counts
+ * toward — and then, usually, they say what the source actually is and why it
+ * matters, which is the best writing in this project. A showcase page that
+ * prints the whole of one is showing a visitor the scaffolding.
+ *
+ * NOTHING HERE IS WRITTEN BY THE PAGE. Each entry is a VERBATIM EXCERPT of the
+ * record's own note, sliced from it by ui/build_public_notes.py against start
+ * and end markers a person chose, never retyped — and `check_ui.mjs` asserts,
+ * for all 54 records, that every fragment below still appears in the note it
+ * came from. So the page cannot show prose a curator did not write, and a note
+ * that is edited underneath an excerpt turns the harness red instead of
+ * quietly changing what the page attributes to the curator.
+ *
+ * A record with no entry at all is a HARD FAILURE, not an empty note: the
+ * failure this guards against is a record added later whose whole note goes on
+ * screen because nobody looked at it. `eastasia-01-weilue` is the one record
+ * whose note is entirely project bookkeeping, and it is declared empty
+ * deliberately.
+ * ------------------------------------------------------------------ */
+const PUBLIC_NOTES = {
+  "arabia-07-cih541": [
+    "Line 89: `mḥs²kt mlk Rmn`, the ambassador of the king of Rome, arriving at the court of a South Arabian king in 548 CE — **named in the same sentence as the Negus of Aksum, the king of Persia, and the envoys of al-Mundhir, of Ḥārith b. Jabala and of Abū Karib b. Jabala.** This corpus's premise is the world beyond the Roman Empire; here that world's own monumental record lists Rome as ONE DELEGATION AMONG SIX, in the order the stone puts it, after the Negus.",
+  ],
+  "arabia-03-jsnab17": [
+    "Notable for the epithet 'Lord of the World' (possibly monotheistic) and for mixing Aramaic and Arabic in a dated (267 CE) legal-funerary text",
+  ],
+  "arabia-05-ruwafa": [
+    "A temple on the north-west Arabian frontier, built by the natio of the Thamud and dedicated for the eternal duration of the power of Marcus Aurelius Antoninus and Lucius Aurelius Verus, styled Armeniaci and — in section C — Medici and Parthici Maximi, the titles of the eastern war. The Roman administration is present in it by name and by office: Claudius Modestus with the title of propraetor, and Adventus, whom the edition's footnote identifies with the legatus Quintus Antistius Adventus. The Nabataean sections name what the Greek does not — the ’pkl, the priest Ša‘aḏaṯ son of Muḡīḏō of the tribe Roḇaṯō, and the god ’Ilahā to whom the building was made. It is a provincial community writing itself into imperial victory in its own language and in the empire's, on one monument, and the record carries both because it is a bilingual and not a translation.",
+  ],
+  "arabia-02-palmyrene-tariff": [
+    "Palmyra sat astride the Roman/Parthian frontier and the Arabian caravan routes — the tariff is direct documentary evidence of Roman-era customs administration in a non-Roman-language legal text.",
+    "What the tariff regulates: customs duties on goods entering and leaving Palmyra and on local trades, rather than long-distance caravan tolls specifically; J.F. Healey, Aramaic Inscriptions and Documents of the Roman Period (2009) and Shifman/Healey, The Palmyrene Tax Tariff (Oxford, 2014). John Matthews describes it as 'one of the most important single items of evidence for the economic life of any part of the Roman Empire.'",
+  ],
+  "arabia-01-periplus": [
+    "Directly documents the incense-route economy (Cana/Qana, Eleazus = the Hadrami king Ilaz Yalit) that connected the Roman Red Sea trade to South Arabia",
+  ],
+  "arabia-04-jabal-dabub": [
+    "the pre-Islamic South Arabian religious vocabulary (Rahmanan) relevant to Red Sea contact narratives.",
+  ],
+  "arabia-06-syllaeus": [
+    "It is not an embassy, a treaty or a trade notice. A man in the basalt desert records his ancestry for nine generations, grieves for three dead, asks Bʿls¹mn for help and security, and dates the whole of it by a piece of news from the imperial capital — the year Syllaeus fled from Rome. ROME APPEARS HERE AS A CALENDAR. That is a different kind of evidence from anything else in this corpus's Arabian holdings: not contact, but the reach of Roman political news into a nomadic community's sense of time. The man who guided Aelius Gallus's expedition into Arabia and was tried at Rome is, to this writer, simply what happened the year his friends died.",
+  ],
+  "arabia-08-walters-marib-pediment": [
+    "A nude fertility goddess emerging from vine leaves and grapes, on a pediment at Maʾrib, described by the institution that owns it as Greco-Roman influence arriving in South Arabia. The corpus's other Arabian records are inscriptions and a tax tariff; this is the first time it holds Rome reaching Arabia as an IMAGE rather than as a word.",
+    "`arabia-07-cih541` is the Great Dam inscription at Maʾrib, where the ambassador of the king of Rome arrives at a South Arabian court in 548 CE. This pediment is from the same town four centuries earlier, and what arrives is a motif. Two records, one gazetteer id, two blocks — a findspot and an origin — and two completely different kinds of contact.",
+  ],
+  "eastasia-06-cefu-yuangui": [
+    "A Byzantine embassy — 拂菻, Fulin — arrives at the Tang court in 643 and presents 赤頗黎 and 綠頗黎, red glass and green glass, with malachite and gold-essence. THIS CORPUS ALREADY HOLDS ROMAN AND BYZANTINE GLASS AS ARCHAEOLOGY, in eastasia-03-hwangnam-glass, in the Scandinavian records and in the Oc Eo material. This is the same substance arriving as diplomacy, named in a Chinese archival register, on a dated day.",
+    "Fulin is one line among Xue Yantuo, Baekje, Goguryeo, Silla, Tuyuhun, Kangguo and the rest. Byzantium is not a marvel here; it is an entry in a tribute register, filed beside its neighbours.",
+  ],
+  "eastasia-02-hou-hanshu": [
+    "Records what Chinese sources present as the first direct Rome-China diplomatic contact (166 CE), traditionally identified with Marcus Aurelius.",
+  ],
+  "eastasia-03-hwangnam-glass": [
+    "One of the clearest physical-evidence anchors for direct Rome-East Asia material contact via the Silk Road, independent of the textual Weilue/Hou Hanshu sources (eastasia-01, -02).",
+  ],
+  "eastasia-04-jingjiao-stele": [
+    "A Christian community in Tang China, on a monument it erected in the imperial capital, describes the country it came from — and describes it by CITING CHINESE BOOKS: 案西域圖記及漢魏史策, 'according to the Illustrated Record of the Western Regions and the histories of the Han and Wei'. The bounds it gives are the Da Qin topoi this corpus already holds in eastasia-01-weilue and eastasia-02-hou-hanshu, and the products are the same list — asbestos cloth, soul-returning incense, bright-moon pearls, night-shining jade. The influence runs in an unexpected direction: to explain itself to a Chinese readership, a church of Roman origin reached not for its own memory of Rome but for the Chinese historians' Rome. The eleven characters of source-citation are the record, as much as the bounds are.",
+  ],
+  "eastasia-09-jiutangshu-fulin": [
+    "A Tang-dynasty history describing Byzantium: four hundred cities; twelve ministers who govern jointly; a king who is deposed if the rains come at the wrong time; a bag carried behind the royal carriage for written complaints; granite walls of enormous height; a gate of bronze twenty chang high; a golden scale on the second gate from which twelve golden balls drop to mark the hours; roofs cooled in summer by water led up and released over the eaves; and the lambs that grow in the ground and must be frightened loose from their navels. Then the embassies: Yang-ti of the Sui wished to open intercourse and failed; in 643 the king of Fu-lin sent red glass and green gold-gems; the Arabs besieged the capital and were bought off with annual tribute of gold and silk; and further embassies came in 667, 701 and 719, the last bringing lions and antelopes and, months later, `priests of great virtue`.",
+  ],
+  "eastasia-05-liangshu-qin-lun": [
+    "This is the most concrete Roman person in the East Asian record: a merchant of Da Qin who reaches Jiaozhi in 226, is forwarded to Sun Quan, is questioned about the customs of his own country, is shown captured short-statured people and remarks that Da Qin rarely sees such people, and is sent home with an escort who dies on the road.",
+  ],
+  "eastasia-08-songshi-fulin": [
+    "It is a description — climate, houses without tiles, gold and silver and西錦, single-humped camels, grape wine, four named musical instruments, the king's gold-threaded turban, a red couch carried by the people, punishment by feather bag thrown into the sea, and coins with no square hole.",
+  ],
+  "eastasia-07-tang-huiyao": [
+    "A Tang administrative dossier on Byzantium, opening by welding the Han-era name 大秦 to the Tang-era 拂菻 in its first clause. Four hundred walled cities; palace pillars of rock-crystal and glass; twelve senior ministers governing jointly; a bag carried beside the king's carriage into which any subject may throw a petition; a king who is not hereditary but chosen for worth AND DEPOSED WHEN THERE ARE PORTENTS OR UNSEASONABLE WEATHER; a great gate faced with gold; a striking water-clock of twelve golden balls and a golden figure that calls the hours; water drawn up to the eaves in high summer to make a cool wind; and the lamb that grows out of the ground on a navel-cord. Then the notices: the embassy of Zhenguan 17, later subjection to the 大食, and gifts of lions and antelopes in Kaiyuan 10.",
+  ],
+  "eastasia-01-weilue": [],
+  "persia-05-abnun": [
+    "A courtier — the master of ceremonies of the harem — is at Wisp-šād at worship when he hears the Romans are coming against Pārs and Pahlaw, and he makes a private bargain with the gods: if Šābuhr beats them and they are made submissive, he will found a fire. Then he founds it, and names it after the king and after himself.",
+  ],
+  "persia-04-bronze-heracles": [
+    "This is a GREEK statue of Heracles carrying two inscriptions — Greek on the right thigh, Parthian on the left — and the Parthian text calls the figure VERETHRAGNA. One bronze, two religious vocabularies, the Greco-Roman and the Iranian, naming the same body. That is the Hellenistic-Roman world inside the Parthian empire as a fact about an object rather than as an argument about influence, which is the standard arabia-04-jabal-dabub set for admitting a record that does not mention Rome. Vologaeses IV, who set it up, is the king Rome fought ten years later in Lucius Verus's Parthian war of 161-166.",
+  ],
+  "persia-03-coin": [
+    "Coinage of Shapur I is directly contemporary with the ŠKZ inscription (persia-01) and the Valerian campaign it narrates",
+  ],
+  "persia-07-met-ewer-anahita": [
+    "either a Sasanian court silversmith was drawing Greek maenads, or an Iranian goddess had taken over the Greek figures' clothes. A museum says, in its own catalogue, that it cannot tell which. That is the world beyond Rome reading Rome's images and leaving the reading open",
+  ],
+  "persia-06-shahrestaniha": [
+    "This is an administrative list, and Rome appears in it as an ordinary fact of the world: §32 the nine cities of upper Mesopotamia were built by `āmitūs <ud> kēsar brādar-zād` — Amidos, the NEPHEW OF CAESAR. §33 of twenty-four cities in Syria, Yemen, Africa, Kūfa, Mecca and Medina, `ast šāhān šāh ast kēsar` — SOME BY THE KING OF KINGS, SOME BY THE CAESAR. §22 Nisibis and §23 Edessa, the two cities the Roman and Persian empires spent three centuries exchanging, are here simply founded by a son of Gēv and by Narsē the Arsacian. §12 Alexander is `gizistag skandar ī hrōmāyīg` — the accursed Alexander THE ROMAN. §33 IS THE SENTENCE. A Middle Persian geography divides the city-founding of the whole known world between two builders and names them in the same breath, with no verb of conflict between them: the King of Kings and the Caesar, as the two agents by whom cities come to exist. That is the Roman empire seen from Ērānšahr as a PEER INSTITUTION rather than as an adversary",
+  ],
+  "persia-02-silver-plate": [
+    "Sasanian royal silver plate imagery is a recurring genre compared against Roman decorated silverware in the scholarship (see British Museum curator's comments).",
+  ],
+  "persia-01-skz": [
+    "directly documents Roman emperors (Gordian III, Philip the Arab, Valerian) in a non-Roman, trilingual monumental inscription.",
+  ],
+  "scandinavia-02-gudme-hoard": [
+    "Gudme was one of Iron Age Denmark's largest and wealthiest settlements (a magnate's farm plus ~50 smaller farms) and shows the clearest concentration of Roman silver coinage in Scandinavia, alongside Dankirke in Jutland. Roman denarii/siliquae at these sites are read by scholars as markers of political centrality and foreign-trade connections rather than ordinary circulating currency",
+  ],
+  "scandinavia-01-hoby-treasure": [
+    "a named Roman maker, a plausibly named Roman donor (Gaius Silius), and a named/identifiable local recipient context.",
+  ],
+  "scandinavia-04-illerup-adal": [
+    "the Illerup Roman coins arrived as war booty carried by a defeated Scandinavian raiding force — a third, distinct mode of Rome-Scandinavia contact (military/mercenary rather than trade or gift-exchange)",
+  ],
+  "scandinavia-07-rycksta-grikkium": [
+    "`walhakurne` and `gulli` are the same substance five centuries apart, once named after the people it came from and once shared out in their capital. Nothing in this corpus was chosen to make that pair; it is what the two inscriptions say.",
+    "It does not say `Grikkir` means Byzantines, or Romans, or the Varangian Guard. The published translations say `Greece` and `Grekland` and this record quotes them and stops.",
+  ],
+  "scandinavia-05-thorsberg-chape": [
+    "the Thorsberg moor is a votive deposit of war equipment, the chape is a scabbard fitting of Roman military pattern, and the corpus already holds scandinavia-04-illerup-adal and scandinavia-02-gudme-hoard as find records of the same phenomenon. This is that phenomenon with the local language written ON it — Roman form, Proto-Norse text, c. 200 CE — which is the distinction between a region that received Roman goods and a region that answered them.",
+  ],
+  "scandinavia-06-tjurko-bracteate": [
+    "`walhakurne` is a compound whose first element is the Germanic word for the peoples of the Roman south, and the published English marks it as a figure with its own quotation marks. A Proto-Norse speaker naming gold after the Romans is a different kind of evidence from a Roman object in a Danish bog: it is the connection having got as far as the language.",
+    "Bracteates are the Scandinavian descendants of Roman imperial gold medallions, and a C-type is the form furthest from its model. What this record puts in the corpus is one object that is a Roman medallion four generations removed, carrying a word that calls its own material Roman.",
+  ],
+  "scandinavia-03-vimose": [
+    "Vimose is a weapon-sacrifice bog deposit containing Roman-influenced military equipment alongside the earliest Scandinavian writing — making it the clearest Scandinavian case where a genuinely regional-language text (proto-Norse runes, not Latin or Greek) and direct Roman-contact material culture come from the very same findspot and period.",
+  ],
+  "southasia-01-akananuru-149": [
+    "One of only 9 Yavana references across the Sangam corpus; directly names Roman/Greek trading ships 'arriving with gold and departing with pepper' at Muziris",
+  ],
+  "southasia-07-bm-claudius-aureus": [
+    "A Julio-Claudian gold coin is carried to South India by the Red Sea trade — the trade `southasia-02-periplus-muziris` and `southasia-03-muziris-papyrus` document from the Roman end — and then somebody in India puts a chisel through the emperor's face. The British Museum exhibited it in 2016-17 under the title `Defacing the past: desecration and damnation in imperial Rome`.",
+    "`EX.S.C. OB CIVES SERVATOS` — by decree of the Senate, for having saved the citizens — is an oak-wreath legend about the emperor as saviour of Roman citizens, on a coin that ended its life in India with a chisel through the portrait.",
+  ],
+  "southasia-05-brihatsamhita": [
+    "Varāhamihira, laying down who may be trusted to practise astral science, has to account for the fact that the science reached India from the Greek-speaking Mediterranean, and he does it in one verse: the Yavanas stand where they stand, the science is soundly established among them, and they are honoured like ṛṣis for it — so how much more the twice-born who knows it. An Indian intellectual placing the Mediterranean in a hierarchy rather than trading with it, and conceding its learning while keeping its rank.",
+  ],
+  "southasia-06-cosmas-taprobane": [
+    "A Roman merchant from Adulé and a Persian ship put into Taprobane on the same day. Both parties are brought before the king, who asks which of their kings is the greater. The Persian answers first and at length — King of Kings, richer, more powerful, able to do whatever he desires. Sopatrus says nothing, and then says: you have both kings here, look at their money. The king has the two coins brought out, turns them over, and gives the verdict to the gold. Sopatrus is put on an elephant and paraded round the city with drums.",
+    "The king does not weigh armies or territory. He weighs the ring, the brightness and the shaping of a gold nomisma against a silver miliarision — and Cosmas, who is not a disinterested witness, adds the detail that undercuts his own story if you read it carefully: `pieces of this kind are picked for export to the island`.",
+  ],
+  "southasia-03-muziris-papyrus": [
+    "Direct documentary evidence of the financial scale of Rome-India trade: this single cargo (nard, ivory, and other goods, ivory/nard portion alone valued near 1,154 talents of silver) corroborates the 'gold for pepper' exchange described in Akananuru 149 (southasia-01) and the Periplus (southasia-02) with hard numbers.",
+  ],
+  "southasia-04-pattanam": [
+    "Roman amphora/terra sigillata shards and a 1983 hoard of Roman coins found ~9.7 km inland support the port identification.",
+  ],
+  "southasia-02-periplus-muziris": [
+    "Direct external (Roman-Greek) corroboration of the Akananuru 149 and Pattanam excavation evidence (southasia-01, southasia-04) for the same port",
+  ],
+  "seasia-04-dong-yen-chau": [
+    "This is the local voice of the same coast in the same centuries, and the Sanskrit loanwords inside its Austronesian grammar are that same Indian Ocean network arriving in language rather than in objects.",
+  ],
+  "seasia-06-kedukan-bukit": [
+    "Srivijaya held the Straits of Malacca -- the chokepoint of the maritime road that carried goods between the Mediterranean and China.",
+    "Kedukan Bukit is the logistics document of the pair: it counts an expedition. seasia-07-talang-tuo, dated one year later, is its religious counterpart.",
+  ],
+  "seasia-03-khao-sam-kaeo": [
+    "Khao Sam Kaeo is an early port-city (4th century BCE onward) on the trans-peninsular route linking the Indian Ocean to the South China Sea, and yielded South Asian seals alongside this Roman intaglio — direct physical evidence of the same Indian-Ocean exchange network documented textually in the South Asia cluster (Periplus, Muziris papyrus).",
+  ],
+  "seasia-05-my-son-b6": [
+    "Mỹ Sơn is the dynastic sanctuary of Champa, the polity holding the coast where Roman-derived objects reached Óc Eo and Khao Sam Kaeo — both already in this corpus as find records. The Sanskrit is the same maritime network arriving as language and liturgy rather than as objects, and dated to the day.",
+  ],
+  "seasia-01-oc-eo-medallion": [
+    "these are imitation pendants, not genuine circulating Roman coinage",
+  ],
+  "seasia-02-oc-eo-site": [
+    "Óc Eo is the maritime-route site connecting the Southeast Asia seed cluster: it sits on the same 166 CE 'Romans-first-landed-here-before-China' tradition documented from the Chinese side by the Hou Hanshu (eastasia-02).",
+    "Scholarly identification with Ptolemy's 'Cattigara' remains debated",
+  ],
+  "seasia-09-oc-eo-unesco": [
+    "`International trade has been proven through artifacts found such as wooden boat pieces, copper Roman gold coins and medals, Han bronze mirrors, Persian lamps; glass materials, precious metals imported from India and Mediterranean countries`",
+    "Rome, Han China and Persia in one clause, as three of the places whose goods turned up in one Mekong Delta town",
+  ],
+  "seasia-08-pong-tuk-lamp": [
+    "A cast bronze lamp with its lid moulded as the head of Silenus, a palm-leaf handle and two dolphins facing each other, found at Pong Tuek in Kanchanaburi and displayed in Bangkok. The museum's own account of how it got there is the sentence this record exists for: made in Alexandria under Roman rule, and `the Indian traders brought into the country`, along a route the district still sits on.",
+  ],
+  "seasia-07-talang-tuo": [
+    "Srivijaya held the Straits of Malacca -- the chokepoint of the maritime road that carried goods between the Mediterranean and China.",
+    "Talang Tuo is the religious counterpart to seasia-06-kedukan-bukit, dated one year later: where that record counts an expedition, this one dedicates a public park and enumerates what its merit is meant to buy — food, water, freedom from disease, and finally `anuttarābhisamyaksambodhi`. Read together they are a polity describing itself in two registers within thirteen months.",
+  ],
+  "africa-05-adulis-throne": [
+    "The king sends a fleet and an army across the Red Sea, subdues the kings of the Arabitae and Kinaidokolpitai, and orders the routes kept safe by land and sea from Λευκῆς κώμης to the country of the Sabaeans — and Leuke Kome is the Roman Red Sea port the Periplus names",
+  ],
+  "africa-02-aksumite-coin": [
+    "Aksum was one of only a handful of ancient states to strike its own gold coinage (alongside Rome, Persia, and the Kushan Empire) — itself a signal of engagement with the Roman-dominated Red Sea gold-trade economy.",
+    "This specimen's findspot in Yemen, not Ethiopia, is a direct data point for Aksum-Arabia contact",
+  ],
+  "africa-07-cosmas-sasu": [
+    "it follows an Aksumite state expedition, sent every other year through the governor of Agau, five hundred traders strong, carrying oxen, salt and iron six months into the interior to exchange them for gold at a hedge of thorns, with neither side speaking the other's language.",
+    "Cosmas is an Alexandrian merchant of the empire, writing in Greek in Justinian's reign, who had been to Adulis himself",
+  ],
+  "africa-06-ezana-rie189": [
+    "Nothing in these fourteen lines names Rome. The connection is that **the same king published the same war twice, in two languages, for two readerships** — and it is the GREEK version, RIÉ 271, that is explicitly Christian, invoking the Trinity, while this Ge‘ez one uses the doctrinally neutral `’ǝgzī’a samāy`, the Lord of Heaven.",
+  ],
+  "africa-01-ezana-stone": [
+    "Often called the 'African Rosetta Stone.' Documents Aksum's self-presentation as a multi-regional power (Himyar, Saba, Beja, Kasu/Kush) in direct dialogue with the Greek-speaking Mediterranean world",
+    "the inscription records Ezana's military campaigns and, in later versions, his conversion to Christianity.",
+  ],
+  "africa-03-periplus-adulis": [
+    "This is the first surviving external (Greco-Roman) written reference to Aksum by name ('Auxumites') and its king (Zoskales, usually identified as an early Aksumite ruler)",
+  ],
+  "africa-04-silko-talmis": [
+    "Silko calls himself βασιλίσκος -- the Greco-Roman diminutive used of client kings on the empire's frontier -- writes in Greek on the wall of a temple the Roman empire built, in the Dodecaschoenus it had abandoned under Diocletian, and credits ὁ θεός with his victory. The influence is in the vocabulary, the language, the building and the god, and in nothing the Romans did.",
+  ],
+};
+
+/* The note as the page shows it: the curator's own sentences, with the
+   `code` and **emphasis** conventions those notes already use rendered rather
+   than printed as punctuation. */
+function publicNoteHtml(docId) {
+  const frags = PUBLIC_NOTES[docId] || [];
+  if (!frags.length) return "";
+  return frags.map(f => `<p>${esc(f)
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/`([^`]+)`/g, "<code>$1</code>")}</p>`).join("");
+}
+
+/* ------------------------------------------------------------------ *
  * answer rendering: markers become buttons, quotations become clickable
  * highlights coloured by whether they still resolve to disk.
  * ------------------------------------------------------------------ */
@@ -1954,9 +2168,10 @@ function renderPassageProvenance(run, marker) {
       <div class="fieldtext">${esc(p.english.text)}</div></div>`;
   }
   out += renderEnglishProvenance(p);
-  if (rec && rec.notes) {
+  const pnote = rec ? publicNoteHtml(p.doc_id) : "";
+  if (pnote) {
     out += `<div class="sect"><h3>note on the record</h3>
-      <div class="dormant">${esc(rec.notes)}</div></div>`;
+      <div class="dormant">${pnote}</div></div>`;
   }
   return out;
 }
@@ -1996,7 +2211,8 @@ function renderRecordProvenance(docId) {
     if (t) out += `<div class="sect"><h3>${label} — <code>${field}</code>, ${t.length} characters</h3>
       <div class="fieldtext">${esc(t.slice(0, 1400))}${t.length > 1400 ? "…" : ""}</div></div>`;
   }
-  if (rec.notes) out += `<div class="sect"><h3>note</h3><div class="dormant">${esc(rec.notes)}</div></div>`;
+  const pnote = publicNoteHtml(docId);
+  if (pnote) out += `<div class="sect"><h3>note</h3><div class="dormant">${pnote}</div></div>`;
   return out;
 }
 

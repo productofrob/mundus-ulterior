@@ -127,7 +127,7 @@ try {
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
     " buildMap, mapState, mapWindow, mapBase, viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
-    " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason," +
+    " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES," +
     " SPAN_STATES, PROVENANCE, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -143,7 +143,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase,
         viewHome, viewQuestions, viewPlaces, viewAbout,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
-        railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason,
+        railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES,
         SPAN_STATES, PROVENANCE, langName, placeLedger } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
@@ -744,6 +744,50 @@ if (D.coastline && D.coastline.polygons) {
   note(untabled.length === 0,
        `PROVENANCE covers every provenance state in the archive` +
        (untabled.length ? ` — MISSING: ${untabled.join(", ")}` : ""));
+}
+
+/* ---- 2f-ii. RULING 89: the note a record shows is the curator's own words ----
+ *
+ * The notes in `data/seed_corpus/` are working documents — which tranche placed
+ * the record, which ruling bought its slot, which prediction it tests — wrapped
+ * around the best writing in this project about what each source actually is.
+ * The page shows only the second part, as VERBATIM EXCERPTS declared in
+ * `PUBLIC_NOTES` and sliced out by `ui/build_public_notes.py` rather than
+ * retyped.
+ *
+ * This asserts the property that makes that safe: every fragment on the page is
+ * still a substring of the note it came from, whitespace aside. A note edited
+ * underneath an excerpt goes RED here instead of the page quietly attributing
+ * to a curator a sentence they no longer hold.
+ *
+ * And a record with NO entry is a failure rather than a blank: the defect this
+ * exists to catch is a record curated later whose whole note reaches the screen
+ * because nobody looked at it. An entry declared empty is fine — that is
+ * somebody having looked. ---- */
+{
+  const flat = t => String(t).replace(/\s+/g, " ").trim();
+  const undeclared = [], drifted = [], blank = [];
+  for (const [docId, rec] of Object.entries(D.corpus)) {
+    if (!(docId in PUBLIC_NOTES)) { undeclared.push(docId); continue; }
+    const note = flat(rec.notes || "");
+    for (const frag of PUBLIC_NOTES[docId]) {
+      if (!flat(frag)) { blank.push(docId); continue; }
+      if (!note.includes(flat(frag)))
+        drifted.push(`${docId}: "${flat(frag).slice(0, 60)}…" is not in the record's note`);
+    }
+  }
+  const shown = Object.values(PUBLIC_NOTES).filter(f => f.length).length;
+  const frags = Object.values(PUBLIC_NOTES).reduce((n, f) => n + f.length, 0);
+  note(undeclared.length === 0 && drifted.length === 0 && blank.length === 0,
+       undeclared.length || drifted.length || blank.length
+         ? `a record note on screen is not the curator's — `
+           + `${undeclared.length} record(s) with no declaration`
+           + (undeclared.length ? ` (e.g. ${undeclared[0]})` : "")
+           + `, ${drifted.length} drifted`
+           + (drifted.length ? ` (${drifted[0]})` : "")
+           + `, ${blank.length} blank`
+         : `every record note shown is a verbatim excerpt of that record's own note `
+           + `(${frags} fragments across ${shown} of ${Object.keys(D.corpus).length} records)`);
 }
 
 /* ---- 2g. no count on this page is written down ----
