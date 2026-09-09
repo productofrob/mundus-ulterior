@@ -1935,7 +1935,10 @@ function renderPassageProvenance(run, marker) {
     const txt = rec.fields[p.source_field];
     if (txt != null) {
       const s = Math.max(0, p.char_start | 0), e = Math.min(txt.length, p.char_end | 0);
-      out += `<div class="sect"><h3>the passage, as it sits in the file</h3>
+      /* Same heading as the quotation panel's, and deliberately: both show the
+         characters the record holds, with the cited range marked inside them.
+         Two names for one thing was a difference the reader had to work out. */
+      out += `<div class="sect"><h3>Source Characters</h3>
         <div class="fieldtext">${fieldWithSpan(txt, s, e)}</div></div>`;
     }
   }
