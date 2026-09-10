@@ -320,19 +320,57 @@
     grid-template-columns: var(--rail-left) minmax(0,1fr) var(--rail-right);
     gap: var(--s-6); align-items: start;
   }
-  /* Two former INLINE grid-template-columns declarations are these two
-     classes. An inline style beat the 860px media query below, which is the
-     whole of why the Places tab scrolled sideways on a phone and the
-     Questions tab did not. UI_DESIGN_START.md section 6. */
-  .cols.cols-main-panel { grid-template-columns: minmax(0,1fr) var(--rail-right); }
+  /* Two former INLINE grid-template-columns declarations became classes here.
+     An inline style beat the 860px media query below, which is the whole of why
+     the Places tab scrolled sideways on a phone and the Questions tab did not.
+     UI_DESIGN_START.md section 6.
+
+     `.cols-main-panel` was one of them and is GONE: `.mapcols` below is what the
+     Map tab uses now, and it was the only caller. A class no element carries is
+     the stylesheet's version of a handler nobody can test — RULING 85. */
   .cols.cols-half       { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--s-6); }
   .cols.cols-single     { grid-template-columns: minmax(0, 104ch); }
+
+  /* ---------- THE MAP TAB'S COLUMNS ----------
+     UI_QUESTIONS_START.md section 3A, and it was the largest known defect on
+     this page: the panel that answers a click on the map sat in the tab's
+     BOTTOM `.cols`, below thirteen cards and the whole region grid. Measured at
+     the open of this block, on ui/measure_map.mjs: click a pin and the panel
+     that just filled with your answer is 7,306 pixels below the fold at 1600px,
+     and 16,464 below it on a 390px phone. The visitor clicks and nothing
+     appears to happen.
+
+     THE PANEL IS NOW A COLUMN BESIDE EVERYTHING, not a card underneath it. It
+     is placed in grid row 1 / span 2 so its grid AREA runs the height of the
+     whole tab, which is what lets `position: sticky` hold it on screen past the
+     map and all the way down the gap lists and the region grid — every one of
+     which is clickable and every one of which fills this same panel. A panel
+     that is sticky beside the map alone would have moved the defect down the
+     page rather than fixing it.
+
+     The map keeps column 1 row 1; everything else keeps column 1 row 2. Reading
+     order is unchanged, which is why not one `data-*` check moves. */
+  .cols.mapcols          { grid-template-columns: minmax(0,1fr) var(--rail-right); }
+  .mapcols > .mapcol     { grid-column: 1; grid-row: 1; min-width: 0; }
+  .mapcols > .rail-right { grid-column: 2; grid-row: 1 / span 2; }
+  .mapcols > .mapbelow   { grid-column: 1; grid-row: 2; min-width: 0; }
+
   @media (max-width: 1240px) {
     .cols { grid-template-columns: var(--rail-left) minmax(0,1fr); }
     .rail-right { grid-column: 1 / -1; }
   }
   @media (max-width: 860px) {
-    .cols, .cols.cols-main-panel, .cols.cols-half { grid-template-columns: 1fr; }
+    .cols, .cols.cols-half { grid-template-columns: 1fr; }
+    /* The Map tab stacks map -> panel -> everything else. Explicit, because
+       `.cols.mapcols` outranks the bare `.cols` above it and a two-column grid
+       left standing at 390px is exactly the sideways scroll section 6 fixed. */
+    .cols.mapcols { grid-template-columns: 1fr; }
+    .mapcols > .mapcol,
+    .mapcols > .rail-right,
+    .mapcols > .mapbelow { grid-column: 1; grid-row: auto; }
+    .mapcols > .mapcol     { order: 1; }
+    .mapcols > .rail-right { order: 2; }
+    .mapcols > .mapbelow   { order: 3; }
   }
 
   .rail h2, .panel h2 {
@@ -3129,25 +3167,37 @@ function viewPlaces() {
     </div>`;
   }).join("");
 
+  /* THE PANEL IS THE SECOND CHILD, and that is asserted rather than left to a
+     reader of this function: guard 48 reads this view's own markup and fails if
+     `id="panel"` stops appearing before `class="regiongrid"`. The stylesheet
+     comment on `.mapcols` is the argument; this is the order it needs.
+
+     Nothing below moved relative to anything else. `notice`, the three cards,
+     the placards, the heading and the grid are in the order they were in, in
+     `.mapbelow`, which is why every `data-*` check on this tab still passes. */
   return `<div>
     ${hashNotice()}
-    ${notice}
-    ${mapCard}
-    ${contestedCard}
-    ${focusCard}
-    ${allGapCards}
-    <div class="placards">
-      <div class="card placard"><h3>edges named in the text, not drawn on the map
-        (${partialGapEdges.length} of ${L.edgesTotal})</h3>
-        ${edgeGapRows || `<p class="empty">none</p>`}</div>
-      <div class="card placard"><h3>not yet placed</h3>${unconsideredRows || `<p class="empty">none</p>`}</div>
-      <div class="card placard"><h3>declared unplaceable</h3>${unplaceableRows || `<p class="empty">none</p>`}</div>
-    </div>
-    <h2 class="eyebrow">All ${Object.keys(D.corpus).length} records, by region</h2>
-    <div class="cols cols-main-panel">
-      <div class="regiongrid">${regionCards()}</div>
+    <div class="cols mapcols">
+      <div class="mapcol">${mapCard}</div>
+
       <div class="rail-right panel"><h2>Place</h2>
         <div class="panel-inner" id="panel">${renderPanel()}</div></div>
+
+      <div class="mapbelow">
+        ${notice}
+        ${contestedCard}
+        ${focusCard}
+        ${allGapCards}
+        <div class="placards">
+          <div class="card placard"><h3>edges named in the text, not drawn on the map
+            (${partialGapEdges.length} of ${L.edgesTotal})</h3>
+            ${edgeGapRows || `<p class="empty">none</p>`}</div>
+          <div class="card placard"><h3>not yet placed</h3>${unconsideredRows || `<p class="empty">none</p>`}</div>
+          <div class="card placard"><h3>declared unplaceable</h3>${unplaceableRows || `<p class="empty">none</p>`}</div>
+        </div>
+        <h2 class="eyebrow">All ${Object.keys(D.corpus).length} records, by region</h2>
+        <div class="regiongrid">${regionCards()}</div>
+      </div>
     </div>
   </div>`;
 }
@@ -3841,7 +3891,26 @@ document.addEventListener("click", ev => {
   const select = sel => {
     state.selection = sel;
     if (state.intro && state.view === "questions") { state.intro = false; return render(); }
-    return repaintPanel();
+    repaintPanel();
+    /* FINDING 102's fix, generalised to the thing that clicks the panel rather
+       than to one rail. On a wide screen the panel is sticky and already on
+       screen, so this does nothing. At 860px and below it is static and sits
+       ABOVE the gap lists and the region grid — so a click on a record row
+       fills a panel that is off the TOP of the screen, which is the same defect
+       section 3A names, mirrored. Brought over only when it is NOT already in
+       view: a page that scrolls on every click takes the position away from a
+       reader who was looking at the right thing. Guarded for the harness's thin
+       DOM, which has neither `scrollIntoView` nor a layout to ask about.
+
+       `block: "start"` and not `"nearest"`, and that was found by measuring
+       rather than reasoned: at 390px the panel has no max-height and runs to
+       nearly two thousand pixels, so `"nearest"` brought its BOTTOM edge to the
+       fold and landed the reader at the end of the answer they had just asked
+       for. Same choice, and the same reason, as FINDING 102's fix. */
+    const el = document.getElementById("panel");
+    const box = el && el.getBoundingClientRect && el.getBoundingClientRect();
+    if (box && el.scrollIntoView && (box.bottom < 40 || box.top > window.innerHeight - 40))
+      el.scrollIntoView({ block: "start" });
   };
 
   const nav = ev.target.closest(".bandnav");

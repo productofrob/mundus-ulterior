@@ -599,6 +599,39 @@ if (D.coastline && D.coastline.polygons) {
        (missing.length ? ` — missing: ${missing.slice(0,5).join(", ")}` : ""));
 }
 
+/* ---- GUARD 48. The Map tab's panel is rendered BESIDE the map, not below the
+   whole tab. UI_QUESTIONS_START.md section 3A.
+
+   The defect this exists to stop coming back was measured, not felt: the panel
+   sat in the tab's bottom `.cols`, and clicking a marker filled it 7,306 pixels
+   below the fold at 1600px and 16,464 below it on a phone.
+
+   WHY THIS IS ASSERTABLE AT ALL, given FINDING 102 ruled that scroll position
+   after a click is not the harness's business and no guard was added for it.
+   The distinction is that this is not a fact about layout: it is a fact about
+   the ORDER of three landmarks in markup the harness already has in a string.
+   The CSS turns that order into a column, and the CSS is not what this checks —
+   which is why the note below says what it says. A block that keeps the order
+   and breaks the stylesheet passes this and fails ui/measure_map.mjs, and both
+   of those are correct.
+
+   A RELATION, NOT A PRESENCE. FINDING 105's lesson from the other side: the
+   guard it replaced could say a `data-provenance` attribute APPEARED and could
+   not see that its value was mangled. Three indexes and two comparisons cannot
+   be satisfied by a landmark merely existing. ---- */
+{
+  const html = viewPlaces();
+  const at = needle => html.indexOf(needle);
+  const map   = at(`class="maparea"`);
+  const panel = at(`id="panel"`);
+  const grid  = at(`class="regiongrid"`);
+  const found = map >= 0 && panel >= 0 && grid >= 0;
+  note(found && map < panel && panel < grid,
+       `the Map tab renders the map, then its panel, then the record grid` +
+       (found ? ` (${map} < ${panel} < ${grid})`
+              : ` — a landmark is missing: map ${map}, panel ${panel}, grid ${grid}`));
+}
+
 /* ---- 2e. FINDING 98: every span state renders DELIBERATELY ----
  *
  * `whitespace_only` reached neither renderer. It fell through the class chain
