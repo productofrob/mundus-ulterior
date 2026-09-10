@@ -125,7 +125,8 @@ try {
     "\n;globalThis.__api = { D, P, byQuestion, QUESTIONS, state, renderAnswerText," +
     " renderQuoteProvenance, renderPassageProvenance, renderRecordProvenance," +
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
-    " buildMap, mapState, mapWindow, mapBase, viewHome, viewQuestions, viewPlaces, viewAbout," +
+    " buildMap, mapState, mapWindow, mapBase, MARK, MAP_LABEL_PX," +
+    " viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger };",
@@ -140,7 +141,7 @@ try {
 const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderQuoteProvenance, renderPassageProvenance,
         renderRecordProvenance, renderPlaceProvenance, renderGroupProvenance,
-        renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase,
+        renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase, MARK, MAP_LABEL_PX,
         viewHome, viewQuestions, viewPlaces, viewAbout,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
         railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES,
@@ -709,6 +710,57 @@ if (D.coastline && D.coastline.polygons) {
   note(problems.length === 0,
        `every tab with a panel has its own empty state, naming what that tab can select` +
        ` (${withPanel.map(v => `${v}: ${PANEL_EMPTY[v] ? PANEL_EMPTY[v].selects.length : 0}`).join(", ")})` +
+       (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 50. The map's label size is declared twice and the two agree.
+
+   A place label is the one piece of type on this page that is ALSO A GEOMETRY.
+   The browser draws it from `--map-label` in the stylesheet; `buildMap` decides
+   which labels fit by solving collisions in viewBox units, using metrics
+   derived from `MAP_LABEL_PX` in the script. No expression can be shared
+   between a CSS custom property and a script constant, so the size is declared
+   in both places — the BANNER pattern, where the specimen list is declared in
+   this file and in ui/build_banner.mjs and a check asserts they agree.
+
+   THE FAILURE THIS CATCHES IS SILENT AND LOOKS FINE IN THE SOURCE. Raise the
+   CSS value alone and every label is drawn larger than the size the collider
+   cleared room for, so names overlap their neighbours and each other — and the
+   diff that caused it is one plausible-looking number. Nothing else on the page
+   would go red, because every other guard here asserts a label EXISTS.
+
+   WHAT IT DOES NOT COVER, said plainly: this harness has no layout engine, so
+   it cannot check that the browser's rendered glyphs match `charW`. It checks
+   that the two declarations agree and that the collider's metrics are still
+   proportional to the declared size. ui/measure_map.mjs is what reads the type
+   the browser actually drew. ---- */
+{
+  const problems = [];
+  const decl = html.match(/--map-label:\s*([\d.]+)px/);
+  if (!decl) problems.push("the stylesheet declares no --map-label");
+  else if (Number(decl[1]) !== MAP_LABEL_PX)
+    problems.push(`the stylesheet says --map-label: ${decl[1]}px and the script says ${MAP_LABEL_PX}`);
+
+  // ...and the rule that draws a label actually reads that token. A token with
+  // the right value that nothing uses is FINDING 105's shape: present, and not
+  // doing the job it is credited with.
+  const rule = html.match(/\.mapsvg \.lbl \{[\s\S]*?\}/);
+  if (!rule) problems.push("no `.mapsvg .lbl` rule found");
+  else if (!rule[0].includes("var(--map-label)"))
+    problems.push("`.mapsvg .lbl` does not take its size from var(--map-label)");
+
+  // The collider's metrics have to follow the declared size rather than having
+  // been a matching pair of numbers once.
+  const cw = MARK.charW / MAP_LABEL_PX, lh = MARK.lineH / MAP_LABEL_PX;
+  if (!(cw > 0.4 && cw < 0.8))
+    problems.push(`MARK.charW is ${MARK.charW}, which is ${cw.toFixed(2)}em — not a glyph width`);
+  if (!(lh > 1.0 && lh < 1.6))
+    problems.push(`MARK.lineH is ${MARK.lineH}, which is ${lh.toFixed(2)}em — not a line height`);
+
+  note(problems.length === 0,
+       `the map's label size is declared once in the stylesheet and once in the script, ` +
+       `and the collider solves against it (${MAP_LABEL_PX}px, ` +
+       `dots ${MARK.dot}/${MARK.dotMulti})` +
        (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 

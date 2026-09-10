@@ -54,7 +54,12 @@
     --font-sans:  system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --font-mono:  "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
 
-    --t-3xs: 10px;    /* map labels, the smallest thing on the page */
+    --t-3xs: 10px;    /* ground tags and the map credits. It was "map labels,
+                         the smallest thing on the page" and it is not: a map
+                         label has its own token below, because it is the one
+                         piece of type on this page whose size is also a
+                         GEOMETRY, solved against in the label collider. */
+    --map-label: 14px;  /* MUST equal MAP_LABEL_PX in the script — guard 50. */
     --t-2xs: 11px;    /* eyebrows, tags */
     --t-xs:  11.5px;  /* apparatus meta */
     --t-s:   13px;
@@ -650,14 +655,20 @@
   }
   .mapsvg .extent:hover, .mapsvg .extent.hl { fill-opacity: .2; stroke-opacity: .9; }
   .mapsvg .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.3; cursor: pointer; }
-  .mapsvg .pin:hover circle.dot, .mapsvg .pin.hl circle.dot { fill: var(--ink); r: 6; }
+  .mapsvg .pin:hover circle.dot, .mapsvg .pin.hl circle.dot { fill: var(--ink); r: 12; }
   .mapsvg .pin.contested circle.dot { fill: var(--card); stroke: var(--warn); stroke-width: 2; stroke-dasharray: 2 1.4; }
   .mapsvg .pin.contested:hover circle.dot, .mapsvg .pin.contested.hl circle.dot { fill: var(--warn-bg); }
-  .mapsvg .pin text.n { font: 700 9px var(--font-sans); fill: var(--on-accent); pointer-events: none; text-anchor: middle; }
+  .mapsvg .pin text.n { font: 700 12px var(--font-sans); fill: var(--on-accent); pointer-events: none; text-anchor: middle; }
   .mapsvg .pin.contested text.n { fill: var(--warn); }
+  /* THE ONE PIECE OF TYPE ON THIS PAGE THAT IS ALSO A GEOMETRY. `buildMap`
+     drops any label that would collide with one already placed, and it solves
+     that in viewBox units using metrics derived from MAP_LABEL_PX. Change this
+     value without changing that one and the collider is solving against a size
+     the page no longer draws — labels overlap, and nothing looks wrong in the
+     source. Guard 50 is what stops the two drifting. */
   .mapsvg .lbl {
-    font: var(--t-3xs) var(--font-sans); fill: var(--ink-soft); pointer-events: none;
-    paint-order: stroke; stroke: var(--card); stroke-width: 2.6px; stroke-linejoin: round;
+    font: var(--map-label) var(--font-sans); fill: var(--ink-soft); pointer-events: none;
+    paint-order: stroke; stroke: var(--card); stroke-width: 3.4px; stroke-linejoin: round;
   }
   .mapsvg .lbl.extent { fill: var(--accent); font-style: italic; }
 
@@ -750,9 +761,22 @@
   .mapthumb .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .24; }
   .mapthumb .extent { fill: var(--accent); fill-opacity: .09; stroke: var(--accent);
                       stroke-opacity: .42; stroke-dasharray: 3 2; }
-  .mapthumb .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.1; }
+  /* THE THUMBNAILS KEEP THE SMALL DOT, and this is the one place the mark
+     sizes are overridden rather than inherited. `buildMap` draws three
+     surfaces: the Map tab, this masthead thumbnail and the map on Home. The
+     Map tab's dots were enlarged to 8/10.5 because they are CLICK TARGETS —
+     12.9 CSS pixels was under half what a pointer wants. Nothing here is
+     clickable (`pointer-events: none`), this is 430px wide, and at that scale
+     the larger dot merges the Arabian and Konkan clusters into a smudge. So
+     `r` is set in CSS, which beats the presentation attribute in the markup —
+     the same mechanism the live map's own hover rule uses.
+
+     One radius rather than two: the single/multi distinction is carried by the
+     numeral, and `text.n` is display:none on this surface, so a second radius
+     would be a difference these thumbnails were never showing. */
+  .mapthumb .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.1; r: 4; }
   .mapthumb .pin.contested circle.dot { fill: var(--card); stroke: var(--warn);
-                                        stroke-width: 1.6; stroke-dasharray: 2 1.4; }
+                                        stroke-width: 1.6; stroke-dasharray: 2 1.4; r: 4; }
   .mapthumb .pin text.n, .mapthumb .lbl { display: none; }
   .mapthumb .credit {
     position: absolute; right: 6px; bottom: 4px; font-family: var(--font-sans);
@@ -919,9 +943,10 @@
   .homemap .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .24; }
   .homemap .extent { fill: var(--accent); fill-opacity: .09; stroke: var(--accent);
                      stroke-opacity: .42; stroke-dasharray: 3 2; }
-  .homemap .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.1; }
+  /* Same override, same reason as `.mapthumb` above — this one is 320px. */
+  .homemap .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.1; r: 4; }
   .homemap .pin.contested circle.dot { fill: var(--card); stroke: var(--warn);
-                                       stroke-width: 1.6; stroke-dasharray: 2 1.4; }
+                                       stroke-width: 1.6; stroke-dasharray: 2 1.4; r: 4; }
   .homemap .pin text.n, .homemap .lbl { display: none; }
   .homemap .credit {
     position: absolute; right: 5px; top: 4px; font-family: var(--font-sans);
@@ -2753,6 +2778,53 @@ function regionCards() {
 const mapState = { base: null, zoom: 1, cx: null, cy: null };
 const MAP_MAX_ZOOM = 60;
 
+/* ------------------------------------------------------------------ *
+ * THE MAP'S MARK SIZES, IN viewBox UNITS.
+ *
+ * Measured before they were changed, because "small" is not a number. The map
+ * is authored in a 900-unit viewBox and drawn at `width: 100%` of its column,
+ * so one authored radius is a different thing at every width:
+ *
+ *              scale     clickable dot     place label
+ *   1600px     1.18x      12.9 CSS px       11.8 CSS px
+ *    390px     0.38x       4.2 CSS px        3.8 CSS px
+ *
+ * A 12.9-pixel target is under half what a pointer wants and a third of what a
+ * finger does, and 11.8px of sans over a busy coastline is at the edge of
+ * readable. These are the sizes that fix that at desktop width. THEY DO NOT FIX
+ * THE PHONE: at 0.38x the map is a 148-pixel postage stamp and no mark size
+ * rescues it, which is a fact about the map's HEIGHT and is its own edit.
+ *
+ * DECLARED TOGETHER BECAUSE THEY ARE COUPLED, and that is the whole reason this
+ * block exists rather than six numbers at six call sites:
+ *
+ *   - `hit` is the box a marker presents to the label collider. It has to grow
+ *     with `dotMulti` or a label lands on top of the pin it belongs to.
+ *   - `charW` and `lineH` ARE the label's size, in the collider's own units. If
+ *     they stop matching the type the browser draws, the collider solves
+ *     against geometry that is not on screen and labels overlap silently.
+ *   - `off` and `mid` place a label against a dot's edge and its centre line,
+ *     so both follow the dot radius and the type size rather than being
+ *     re-guessed.
+ *
+ * `MAP_LABEL_PX` is declared HERE and again as `--map-label` in the stylesheet,
+ * because the browser must draw the type and this file must solve against it,
+ * and no expression can be shared between the two. That is the BANNER pattern —
+ * declared twice, and guard 50 asserts the two agree.
+ * ------------------------------------------------------------------ */
+const MAP_LABEL_PX = 14;
+const MARK = {
+  dot:      8,            // a pin holding one placement
+  dotMulti: 10.5,         // a pin several placements share; it carries a numeral
+  numeral:  3.6,          // baseline nudge that centres that numeral in the dot
+  hit:      11,           // half the obstacle box a marker shows the collider
+  gap:      3,            // clearance the collider keeps between two labels
+  charW:    MAP_LABEL_PX * 0.56,   // mean glyph width of the sans stack
+  lineH:    MAP_LABEL_PX * 1.2,
+  off:      13,           // a side label's distance from the pin's centre
+  mid:      MAP_LABEL_PX * 0.35,   // baseline nudge that centres it on the dot
+};
+
 function mapBase() {
   if (mapState.base !== null) return mapState.base;
   const groups = P.groups || [];
@@ -2882,8 +2954,8 @@ function buildMap() {
     const [lon, lat] = g.resolved.point;
     const px = x(lon), py = y(lat), n = g.members.length;
     svg += `<g class="pin${anyContested ? " contested" : ""}" data-group="${esc(g.cache_key)}">
-      <circle class="dot" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${n > 1 ? 5.5 : 4}"/>
-      ${n > 1 ? `<text class="n" x="${px.toFixed(1)}" y="${(py + 2.8).toFixed(1)}">${n}</text>` : ""}
+      <circle class="dot" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="${n > 1 ? MARK.dotMulti : MARK.dot}"/>
+      ${n > 1 ? `<text class="n" x="${px.toFixed(1)}" y="${(py + MARK.numeral).toFixed(1)}">${n}</text>` : ""}
       <title>${esc(g.resolved.title)} (${n} placement${n === 1 ? "" : "s"})${anyContested ? " — a contested identification is among them" : ""}</title>
     </g>`;
   }
@@ -2904,9 +2976,10 @@ function buildMap() {
   // names at all, which is precisely what the first attempt did.
   const placed = groups.map(g => {
     const [lon, lat] = groupXY(g);
-    return { x: x(lon) - 6, y: y(lat) - 6, w: 12, h: 12, own: g.cache_key };
+    return { x: x(lon) - MARK.hit, y: y(lat) - MARK.hit,
+             w: MARK.hit * 2, h: MARK.hit * 2, own: g.cache_key };
   });
-  const CHAR_W = 5.6, LINE_H = 12, GAP = 3;
+  const CHAR_W = MARK.charW, LINE_H = MARK.lineH, GAP = MARK.gap;
   const fits = (bx, by, bw, self) =>
     bx >= 2 && bx + bw <= W - 2 && by >= 2 && by + LINE_H <= H - 2 &&
     !placed.some(p => p.own !== self &&
@@ -2937,10 +3010,31 @@ function buildMap() {
     const [lon, lat] = groupXY(g);
     const w = title.length * CHAR_W;
     const px = x(lon), py = y(lat);
+    /* EIGHT PLACES TO TRY, NOT FOUR, and that is what paid for the type.
+       Right of the dot, left, above, below, then the four diagonals — in that
+       order, so a name reads beside its point wherever there is room and the
+       tidiest position always wins when there is a choice.
+
+       Measured, because the trade is real and goes the wrong way: at the old
+       10px type 28 of the 64 marks got a label. Setting the type to 14px and
+       the dots to 8/10.5 dropped that to 17 — bigger names collide with more
+       of their neighbours, and the collider drops every one that does. Adding
+       the four diagonals brought it back to 24, and trimming `hit` from 13 to
+       11 and `gap` from 4 to 3 was the last of it. So the map carries four
+       fewer names than it did, at nearly twice the dot and 40% more type, and
+       the four are the ones with genuinely nowhere to go.
+
+       Nothing is lost by a dropped label: every point is clickable, and every
+       name is in the panel beside it and in the record lists below. */
     const spots = g.kind === "pin"
-      ? [[px + 8, py + 3.5], [px - 8 - w, py + 3.5],
-         [px - w / 2, py - 9], [px - w / 2, py + 15]]
-      : [[px - w / 2, py + 3.5]];
+      ? [[px + MARK.off, py + MARK.mid], [px - MARK.off - w, py + MARK.mid],
+         [px - w / 2, py - MARK.dotMulti - MARK.gap],
+         [px - w / 2, py + MARK.dotMulti + MARK.lineH * 0.75],
+         [px + MARK.off * 0.7, py - MARK.dotMulti],
+         [px - MARK.off * 0.7 - w, py - MARK.dotMulti],
+         [px + MARK.off * 0.7, py + MARK.dotMulti + MARK.lineH * 0.6],
+         [px - MARK.off * 0.7 - w, py + MARK.dotMulti + MARK.lineH * 0.6]]
+      : [[px - w / 2, py + MARK.mid]];
     for (const [lx, ly] of spots) {
       if (!fits(lx, ly - LINE_H + 3.5, w, g.cache_key)) continue;
       placed.push({ x: lx, y: ly - LINE_H + 3.5, w, h: LINE_H, own: null });
