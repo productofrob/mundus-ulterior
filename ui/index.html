@@ -691,6 +691,72 @@
   }
   .mapsvg .lbl.extent { fill: var(--accent); font-style: italic; }
 
+  /* ---------- THE REGION BAND ----------
+     A THIRD SHAPE, AND IT HAD TO BE A THIRD SHAPE.
+
+     `ground` is told apart by shape on this map: a `stated` or `identified`
+     claim is a pin, a `regional` claim is a shaded extent, and neither borrows
+     the other's form. A band is NEITHER OF THOSE THINGS. It is not a `ground`
+     at all and it is not a claim about where anything is: it is the space this
+     map reserves for the records the corpus files under a region and cannot
+     draw as points.
+
+     So it is drawn as a HATCHED PLATE WITH SQUARE CHIPS. Not a circle, because
+     a circle on this map means a cached coordinate. Not the extent's dashed
+     accent rectangle, because that means "the area Pleiades gives this place"
+     — an authored-by-nobody boundary that a band explicitly is not. The hatch
+     is the visual argument: it reads as ruled ground rather than as evidence.
+
+     BANDS ARE DRAWN UNDER EVERYTHING ELSE, immediately above the coastline.
+     That is the rule and it is why band-versus-marker collisions do not need
+     solving: a marker is evidence and a band is furniture, so the evidence sits
+     on top. Bands are collided against EACH OTHER only. */
+  .mapsvg .band .plate {
+    fill: var(--card); fill-opacity: .72; stroke: var(--ink-faint); stroke-opacity: .55;
+    stroke-width: 1.2; stroke-dasharray: 2 3; cursor: pointer;
+  }
+  .mapsvg .band .hatch { pointer-events: none; }
+  .mapsvg .band:hover .plate, .mapsvg .band.hl .plate { stroke-opacity: .95; stroke-dasharray: none; }
+  /* THE HATCH IS WHAT STOPS A BAND READING AS AN EXTENT, so it has to be
+     visible at the scale the map is actually drawn at. The first version was
+     `stroke-opacity: .3` over a transparent plate, and rendered at 1600px the
+     bands read as empty dashed boxes — which is to say, as small `regional`
+     extents, the one confusion the shape vocabulary exists to prevent. Caught
+     by rendering the page and looking at it.
+
+     AND THE SECOND VERSION WAS AN SVG `<pattern>`, WHICH DOES NOT TAKE ITS
+     STYLE FROM THIS STYLESHEET. That is worth writing down because every
+     instrument said it was fine: `getComputedStyle` on the rect inside the
+     pattern reported `rgb(255,255,255)` from `var(--card)` and on the line
+     reported `rgb(138,133,124)` from `var(--ink-faint)`, exactly as authored —
+     and the paint ignored both and filled every band SOLID BLACK, which is
+     `fill`'s initial value. Injecting `fill:#ff0000 !important` on the pattern's
+     own child changed nothing on screen. The style system and the paint
+     disagreed, and only the screenshot knew.
+
+     Same family as the `mask-image` note on `.spec` above: a technique that is
+     correct in the DOM and wrong in the raster. So the hatch is ORDINARY
+     RENDERED LINES inside each band, clipped to the plate — elements this
+     stylesheet actually reaches — and there is no paint server on this map. */
+  .mapsvg .hatchline { stroke: var(--ink-faint); stroke-opacity: .42; stroke-width: 1.2; }
+  .mapsvg .band .bname {
+    font: 700 11px var(--font-sans); fill: var(--ink-faint); pointer-events: none;
+    text-transform: uppercase; letter-spacing: .08em;
+    paint-order: stroke; stroke: var(--card); stroke-width: 3px; stroke-linejoin: round;
+  }
+  .mapsvg .band .chip {
+    fill: var(--card); stroke: var(--ink-faint); stroke-opacity: .75; stroke-width: 1.2; cursor: pointer;
+  }
+  .mapsvg .band .chip:hover, .mapsvg .band .chip.hl {
+    fill: var(--ink-faint); stroke: var(--ink);
+  }
+  /* A record the corpus considered and declared unplaceable is not the same
+     thing as one whose names simply took no id, and the map says so rather
+     than stacking two different claims into one square. */
+  .mapsvg .band .chip.unplaceable { stroke-dasharray: 2 1.4; }
+  .swatch .bnd { fill: none; stroke: var(--ink-faint); stroke-opacity: .6; stroke-dasharray: 2 3; }
+  .swatch .bchip { fill: var(--card); stroke: var(--ink-faint); stroke-width: 1.2; }
+
   .maplegend {
     display: flex; flex-wrap: wrap; gap: var(--s-5); margin-top: var(--s-3); padding-top: var(--s-3);
     border-top: var(--rule) solid var(--line-soft); font-family: var(--font-sans);
@@ -797,6 +863,7 @@
   .mapthumb .pin.contested circle.dot { fill: var(--card); stroke: var(--warn);
                                         stroke-width: 1.6; stroke-dasharray: 2 1.4; r: 4; }
   .mapthumb .pin text.n, .mapthumb .lbl { display: none; }
+  .mapthumb .band { display: none; }
   .mapthumb .credit {
     position: absolute; right: 6px; bottom: 4px; font-family: var(--font-sans);
     font-size: var(--t-3xs); color: var(--ink-faint);
@@ -967,6 +1034,7 @@
   .homemap .pin.contested circle.dot { fill: var(--card); stroke: var(--warn);
                                        stroke-width: 1.6; stroke-dasharray: 2 1.4; r: 4; }
   .homemap .pin text.n, .homemap .lbl { display: none; }
+  .homemap .band { display: none; }
   .homemap .credit {
     position: absolute; right: 5px; top: 4px; font-family: var(--font-sans);
     font-size: var(--t-3xs); color: var(--ink-faint);
@@ -2638,9 +2706,9 @@ const PANEL_EMPTY = {
        is still clickable in every gap list on the tab. The sentence is what a
        visitor reads; this is what the guard re-derives, and the two answer
        different questions. */
-    selects: ["group", "place", "edge", "record"],
-    html: `<p class="empty">Click a point, a shaded region or a line on the map or any
-      record. This box will then display detailed information about your selection.</p>`,
+    selects: ["group", "place", "edge", "record", "region"],
+    html: `<p class="empty">Click a point, a shaded region, a line or a region band on the
+      map, or any record. This box will then display detailed information about your selection.</p>`,
   },
 };
 
@@ -2654,7 +2722,88 @@ const SELECT_ATTR = {
   group:   "data-group",
   place:   "data-place",
   edge:    "data-edge",
+  region:  "data-region",
 };
+
+/* A BAND'S OWN PANEL, and the first thing it has to do is say what a band is
+   NOT. Every other selectable thing on this map answers "where is this?" with a
+   gazetteer id. A band cannot, and a panel that opened with a coordinate would
+   be making exactly the claim the shape was designed to refuse. So the chain
+   opens with the arithmetic — how many records this region has, how many of
+   them the map draws as points, how many are here instead — and the coordinate
+   line, when it is printed, is labelled as the band's own anchor and says what
+   it was derived from. */
+function renderRegionProvenance(region) {
+  const band = regionBands().find(b => b.region === region);
+  if (!band) return `<p class="empty">No band for that region.</p>`;
+  const inRegion = Object.entries(D.corpus).filter(([, r]) => r.region === region);
+  const drawn = inRegion.filter(([id]) => ((P.docs || {})[id] || []).some(e => e.kind !== "gap"));
+
+  let out = `<p class="prov-q">${esc(region)}</p>
+    <div class="badges"><span class="ground-tag">region band</span>
+    <span class="ground-tag spaced">not a boundary</span></div>`;
+  out += `<div class="chain">
+    ${chainRow("records", `${inRegion.length} in this region`)}
+    ${chainRow("on the map", `${drawn.length} draw${drawn.length === 1 ? "s" : ""} as ${drawn.length === 1 ? "a point" : "points"}`)}
+    ${chainRow("in this band", `${band.members.length} the map cannot draw as points`)}
+    ${chainRow("anchor", band.anchor
+        ? `${band.anchor[1].toFixed(2)}, ${band.anchor[0].toFixed(2)} — the centre of the box holding
+           this region's ${band.findspots} cached findspot${band.findspots === 1 ? "" : "s"}`
+        : "none — this region has no cached findspot, so the map has nowhere to put its band")}
+  </div>`;
+  out += `<div class="dormant">A band is where this map KEEPS these records; it is not where they
+    are, and its edges are not a border. Its width is the number of squares in it. The seven regions
+    are this project's own categories rather than anyone's published boundaries, so no region layer is
+    drawn from a source the way the coastline is — the position above is derived from cached gazetteer
+    ids, and nothing else here is geometry at all.</div>`;
+  out += `<div class="sect"><h3>the records kept here (${band.members.length})</h3>` +
+    band.members.map(m => `<div class="rec" data-record="${esc(m.docId)}">
+      <div class="rec-title">${esc(m.title)}</div>
+      <div class="rec-meta">${m.unplaceable ? "considered, and declared unplaceable"
+        : m.unconsidered ? "not yet curated"
+        : `${m.placements} placement${m.placements === 1 ? "" : "s"}, none of which resolves to a drawable point`}</div>
+    </div>`).join("") + `</div>`;
+  return out;
+}
+
+/* FINDING 106, AND IT HAD BEEN OPEN SINCE THE MAP BLOCK: the map never showed
+   what was selected. Four CSS rules style `.pin.hl`, `.extent.hl` and
+   `.edge.hl`, `classList.add` was called twice in this file and both times with
+   `"dragging"`, and the screenshot before clicking a pin and the screenshot
+   after were byte-for-byte the same file. Half of "nothing appears to happen";
+   the panel being far away was the other half and the last block fixed it.
+
+   Every branch marks by the SELECTION, never by remembering what was clicked —
+   the click may have come from a list under the map, or from the trail's back
+   button, and a reader stepping back should see the map follow. */
+function markMap() {
+  const svg = document.querySelector("#mapholder .mapsvg");
+  if (!svg || !svg.querySelectorAll) return 0;
+  for (const el of svg.querySelectorAll(".hl")) el.classList.remove("hl");
+  const sel = state.selection;
+  if (!sel) return 0;
+  const q = v => (globalThis.CSS && CSS.escape) ? CSS.escape(v) : String(v).replace(/["\\]/g, "\\$&");
+  const want = [];
+  const groupOf = key => {
+    const pl = placeByKey.get(key);
+    return pl && pl.cache_key ? `[data-group="${q(pl.cache_key)}"]` : null;
+  };
+  if (sel.kind === "group")  want.push(`[data-group="${q(sel.cacheKey)}"]`);
+  if (sel.kind === "edge")   want.push(`[data-edge="${q(sel.idx)}"]`);
+  if (sel.kind === "region") want.push(`.band[data-region="${q(sel.region)}"] .plate`);
+  if (sel.kind === "place")  { const g = groupOf(sel.key); if (g) want.push(g); }
+  if (sel.kind === "record") {
+    want.push(`.band .chip[data-record="${q(sel.docId)}"]`);
+    for (const e of (P.docs || {})[sel.docId] || []) {
+      const g = groupOf(e.key);
+      if (g && !want.includes(g)) want.push(g);
+    }
+  }
+  let n = 0;
+  for (const w of want)
+    for (const el of svg.querySelectorAll(w)) { el.classList.add("hl"); n++; }
+  return n;
+}
 
 function renderPanel() {
   const sel = state.selection;
@@ -2675,6 +2824,7 @@ function renderPanel() {
   if (sel.kind === "place")   return renderPlaceProvenance(sel.key);
   if (sel.kind === "group")   return renderGroupProvenance(sel.cacheKey);
   if (sel.kind === "edge")    return renderEdgeProvenance(sel.idx);
+  if (sel.kind === "region")  return renderRegionProvenance(sel.region);
   const run = currentRun();
   if (sel.kind === "quote")   return renderQuoteProvenance(run, sel.si);
   if (sel.kind === "passage") return renderPassageProvenance(run, sel.marker);
@@ -2978,6 +3128,136 @@ const MARK = {
   mid:      MAP_LABEL_PX * 0.35,   // baseline nudge that centres it on the dot
 };
 
+/* ------------------------------------------------------------------ *
+ * THE REGION BAND'S SIZE, AND IT IS FURNITURE.
+ *
+ * Every number here is apparatus. NOT ONE OF THEM IS A CLAIM ABOUT HOW BIG A
+ * REGION IS, and that distinction is the whole reason a band can exist on a map
+ * governed by *coordinates are never authored*.
+ *
+ * A5's rule governs PLACEMENTS — claims about where a record's place is — and
+ * the coastline precedent extended it: a reference frame is not a placement and
+ * carries its own provenance instead. A band is a third thing again. It is not
+ * a frame and it is not evidence; it is the map SAYING WHERE IT KEEPS
+ * SOMETHING, the way a legend or a scale bar does. Its width is the number of
+ * records it holds. Its height is the number of rows they wrap into. Neither
+ * has any relationship to territory, and `mapLegend` says so in words on the
+ * page rather than only here.
+ *
+ * THE ONE NUMBER THAT IS DERIVED IS THE BAND'S POSITION, and it is derived from
+ * cached gazetteer ids like everything else on this map — see `regionBands`.
+ * ------------------------------------------------------------------ */
+const BAND = {
+  chip:      9,     // one record, one square
+  chipGap:   3,
+  perRow:    6,     // wraps past this, so a nine-record region is not a bar
+  pad:       6,
+  nameH:     13,    // the region's name, above its chips
+  nameCharW: 7.6,   /* mean glyph width of `.bname`, and it is 7.6 rather than
+                       the 6.6 this started at because `.bname` is UPPERCASE and
+                       carries .08em of tracking. At 6.6 the plate was sized for
+                       lower-case metrics and SUB-SAHARAN AFRICA — the longest
+                       region name in the corpus — ran off its own plate and
+                       across A(u)xoume. Same class of error as `MARK.charW`
+                       above, and found the same way. */
+  radius:    5,
+  clear:     8,     // clearance the placer keeps between two bands
+  hatch:     7,     // spacing of the ruled diagonals inside a plate
+};
+
+/* ------------------------------------------------------------------ *
+ * THE REGION BANDS: WHICH RECORDS, AND WHERE THE MAP KEEPS THEM.
+ *
+ * A record reaches this map as a point when one of its placements resolves to a
+ * cached gazetteer id. `UI_MAP_REGIONS_START.md` measured what that leaves: 32
+ * of 54 records on the map, and the 22 concentrated in the regions whose
+ * evidence is textual, so a visitor reading the map concluded Rome's contact
+ * with East Asia was thin while the corpus said the opposite.
+ *
+ * A BAND IS NOT A BOUNDARY AND CANNOT BE ONE. The seven regions are this
+ * project's own categories, not anyone's published boundaries, and the
+ * coastline's standard — a dated, citable, licence-read source whose lines are
+ * somebody else's — cannot be met for them. Checked rather than assumed: the UN
+ * M49 geoscheme, the obvious candidate, puts IRAN IN SOUTHERN ASIA WITH INDIA
+ * and Arabia with the rest of Western Asia, and has no unit called Scandinavia
+ * at all. Four of the seven, and two of them collided. So no region layer.
+ *
+ * THE POSITION IS DERIVED, AND FROM FINDSPOTS ONLY. This is the part that is
+ * easy to get wrong and the corpus is what makes it wrong: a record's SUBJECT
+ * places are mostly outside its own region, because a project about contact
+ * between Rome and elsewhere is a corpus of texts pointing away from home. East
+ * Asia's subject places reach Mesene at 47 East. Sub-Saharan Africa's reach
+ * Rome. Take the hull of a region's placements and East Asia's spans eighty
+ * degrees of longitude and means nothing.
+ *
+ * A FINDSPOT IS DIFFERENT: it is where the object or the stone actually is, and
+ * it is inside the region by construction. So a band's anchor is the centre of
+ * the box holding that region's own cached findspots, and every corner of that
+ * box traces to an id in `data/gazetteer.json`. Nothing here is hand-placed.
+ *
+ * A region with homeless records and NO cached findspot has no anchor and gets
+ * no band. It is returned with `anchor: null` rather than being dropped, and
+ * `viewPlaces` names it on screen — the empty-state discipline RULING 90 gave
+ * the panel, applied to the map.
+ * ------------------------------------------------------------------ */
+function regionBands() {
+  const homeless = new Map();
+  for (const [id, rec] of Object.entries(D.corpus)) {
+    const es = (P.docs || {})[id] || [];
+    if (es.some(e => e.kind !== "gap")) continue;   // it has a point; not homeless
+    const region = rec.region || "Unplaced";
+    if (!homeless.has(region)) homeless.set(region, []);
+    homeless.get(region).push({
+      docId: id,
+      title: rec.title || id,
+      /* Three different reasons a record has no point, kept apart rather than
+         stacked into one square. `unplaceable` was considered and declared
+         impossible; `unconsidered` has not been curated; the rest took no id. */
+      unplaceable: !!(P.declared_unplaceable || {})[id],
+      unconsidered: (P.unconsidered || []).includes(id),
+      placements: es.length,
+    });
+  }
+  const pts = new Map();
+  for (const es of Object.values(P.docs || {}))
+    for (const e of es) {
+      if (e.kind === "gap" || e.block !== "findspot_places") continue;
+      const region = (D.corpus[e.doc_id] || {}).region;
+      const g = region && groupsByKey.get(e.cache_key);
+      if (!g) continue;
+      if (!pts.has(region)) pts.set(region, []);
+      pts.get(region).push(groupXY(g));
+    }
+  const out = [];
+  for (const [region, members] of homeless) {
+    const ps = pts.get(region) || [];
+    const anchor = ps.length
+      ? [(Math.min(...ps.map(q => q[0])) + Math.max(...ps.map(q => q[0]))) / 2,
+         (Math.min(...ps.map(q => q[1])) + Math.max(...ps.map(q => q[1]))) / 2]
+      : null;
+    members.sort((a, b) => a.title.localeCompare(b.title));
+    out.push({ region, members, anchor, findspots: ps.length });
+  }
+  /* Biggest first, so when two bands want the same corner it is the region with
+     most to say that keeps the position its findspots earned. Stated, and not
+     whatever order the corpus happened to be walked in. */
+  out.sort((a, b) => b.members.length - a.members.length || a.region.localeCompare(b.region));
+  return out;
+}
+
+/* The band's box in viewBox units, from its member count alone. Separated from
+   the drawing so `check_ui.mjs` can ask how big a band should be without
+   parsing one out of the rendered SVG. */
+function bandBox(members) {
+  const cols = Math.min(BAND.perRow, members);
+  const rows = Math.ceil(members / BAND.perRow);
+  const inner = cols * BAND.chip + (cols - 1) * BAND.chipGap;
+  return {
+    cols, rows, inner,
+    h: BAND.pad * 2 + BAND.nameH + rows * BAND.chip + (rows - 1) * BAND.chipGap,
+  };
+}
+
 function mapBase() {
   if (mapState.base !== null) return mapState.base;
   const groups = P.groups || [];
@@ -3069,6 +3349,102 @@ function buildMap() {
   for (let lat = Math.ceil(latMin / 10) * 10; lat <= latMax; lat += 10)
     svg += `<line class="grat" x1="0" y1="${y(lat).toFixed(1)}" x2="${W}" y2="${y(lat).toFixed(1)}"/>`;
 
+  /* ------------------------------------------------------------------ *
+   * THE REGION BANDS.
+   *
+   * Drawn HERE: above the coastline and the graticule, under the edges, the
+   * extents and the pins. That order is the argument and not a z-index
+   * preference — a marker is evidence and a band is furniture, so the evidence
+   * sits on top and a band never obscures a point.
+   *
+   * THE FIRST VERSION OF THIS COLLIDED BANDS AGAINST EACH OTHER ONLY, on the
+   * reasoning that an overlap with a pin costs nothing because the pin is drawn
+   * over it and stays clickable. THAT REASONING IS WRONG AND THE RENDER SAID SO
+   * IMMEDIATELY: clickability was never the problem. Four of the seven bands
+   * landed on the Red Sea and Gulf cluster, and a band's NAME set over a pin and
+   * its label is two pieces of type in one space — PERSIA sat across Ctesiphon
+   * and the Ka'ba, SOUTH ASIA across Sri Lanka, SUB-SAHARAN AFRICA across
+   * A(u)xoume. The band was legible in exactly the three places nothing needed
+   * one. So a marker is an obstacle to a band after all, for the same reason it
+   * is an obstacle to a label, and the reason is legibility rather than access.
+   * ------------------------------------------------------------------ */
+  const bands = regionBands();
+  /* Marker obstacle boxes, computed before the bands rather than after: the
+     label collider builds this same list further down for its own use, and the
+     two are deliberately the same geometry. */
+  const markerBoxes = groups.map(g => {
+    const [lon, lat] = groupXY(g);
+    return { x: x(lon) - MARK.hit, y: y(lat) - MARK.hit, w: MARK.hit * 2, h: MARK.hit * 2 };
+  });
+  const bandBoxes = [];
+  for (const b of bands) {
+    if (!b.anchor) continue;
+    const box = bandBox(b.members.length);
+    const bw = BAND.pad * 2 + Math.max(box.inner, b.region.length * BAND.nameCharW);
+    const bh = box.h;
+    const ax = x(b.anchor[0]), ay = y(b.anchor[1]);
+    /* A SPIRAL OUT FROM THE ANCHOR, and the order is stated rather than tuned:
+       rings of increasing radius, each ring in a fixed compass order, so the
+       band lands as near as it can to the findspots that placed it and lands in
+       the same place on every draw. A ring of nine was tried first and was not
+       enough — in the Gulf corridor every one of the nine is inside the pin
+       cluster, so four bands fell through to the crowded fallback at once. */
+    const step = { x: bw * 0.55 + BAND.clear, y: bh * 0.9 + BAND.clear };
+    const DIRS = [[0,0],[0,-1],[0,1],[-1,0],[1,0],[-1,-1],[1,-1],[-1,1],[1,1],
+                  [0,-2],[0,2],[-2,0],[2,0],[-2,-1],[2,-1],[-2,1],[2,1],
+                  [-1,-2],[1,-2],[-1,2],[1,2],[-3,0],[3,0],[0,-3],[0,3],
+                  [-3,-1],[3,-1],[-3,1],[3,1],[-2,-2],[2,-2],[-2,2],[2,2]];
+    let bx = null, by = null, crowded = false;
+    for (const [dx, dy] of DIRS) {
+      const tx = ax - bw / 2 + dx * step.x;
+      const ty = ay - bh / 2 + dy * step.y;
+      if (tx < 2 || tx + bw > W - 2 || ty < 2 || ty + bh > H - 2) continue;
+      const hits = q => tx < q.x + q.w + BAND.clear && tx + bw + BAND.clear > q.x
+                     && ty < q.y + q.h + BAND.clear && ty + bh + BAND.clear > q.y;
+      if (bandBoxes.some(hits) || markerBoxes.some(hits)) continue;
+      bx = tx; by = ty; break;
+    }
+    if (bx === null) {
+      /* Nowhere clear. Clamped to the canvas at the anchor rather than dropped:
+         a band that vanishes takes its records off the map, which is the whole
+         defect this exists to fix. Marked `crowded`, and counted on screen —
+         a reader should not be the one who discovers it. */
+      bx = Math.max(2, Math.min(W - bw - 2, ax - bw / 2));
+      by = Math.max(2, Math.min(H - bh - 2, ay - bh / 2));
+      crowded = true;
+    }
+    bandBoxes.push({ x: bx, y: by, w: bw, h: bh, region: b.region, crowded });
+    let chips = "";
+    b.members.forEach((m, i) => {
+      const cx = bx + BAND.pad + (i % BAND.perRow) * (BAND.chip + BAND.chipGap);
+      const cy = by + BAND.pad + BAND.nameH
+               + Math.floor(i / BAND.perRow) * (BAND.chip + BAND.chipGap);
+      chips += `<rect class="chip${m.unplaceable ? " unplaceable" : ""}" data-record="${esc(m.docId)}"
+        x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" width="${BAND.chip}" height="${BAND.chip}" rx="1.5"
+        ><title>${esc(m.title)}</title></rect>`;
+    });
+    /* THE HATCH, AS LINES. Diagonals at 45 degrees every `BAND.hatch` units,
+       clipped to the plate. Not a `<pattern>` — see the note in the stylesheet;
+       a pattern's contents do not take their paint from this page's classes and
+       rendered every band solid black while every computed style said white. */
+    const slug = b.region.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    let hatch = "";
+    for (let k = 0; k * BAND.hatch <= bw + bh; k++) {
+      const x0 = bx + k * BAND.hatch;
+      hatch += `<line class="hatchline" x1="${(x0 - bh).toFixed(1)}" y1="${(by + bh).toFixed(1)}"
+        x2="${x0.toFixed(1)}" y2="${by.toFixed(1)}"/>`;
+    }
+    svg += `<g class="band" data-region="${esc(b.region)}">
+      <clipPath id="mu-band-${esc(slug)}"><rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}"
+        width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="${BAND.radius}"/></clipPath>
+      <rect class="plate" x="${bx.toFixed(1)}" y="${by.toFixed(1)}"
+        width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="${BAND.radius}"
+        ><title>${esc(b.region)} — ${b.members.length} record${b.members.length === 1 ? "" : "s"} this map keeps here rather than as points</title></rect>
+      <g class="hatch" clip-path="url(#mu-band-${esc(slug)})">${hatch}</g>
+      <text class="bname" x="${(bx + BAND.pad).toFixed(1)}" y="${(by + BAND.pad + 9).toFixed(1)}">${esc(b.region)}</text>
+      ${chips}</g>`;
+  }
+
   // edges under markers, so a line never obscures the point it reaches
   (P.edges || []).forEach((e, idx) => {
     if (!e.drawable) return;
@@ -3132,6 +3508,11 @@ function buildMap() {
     return { x: x(lon) - MARK.hit, y: y(lat) - MARK.hit,
              w: MARK.hit * 2, h: MARK.hit * 2, own: g.cache_key };
   });
+  /* A BAND IS AN OBSTACLE TO A LABEL even though it is not one to a marker, and
+     the asymmetry is deliberate. A pin drawn over a band is still a pin and
+     still clickable; a place name drawn over a band's own name is two pieces of
+     type in the same space, and neither can be read. */
+  for (const q of bandBoxes) placed.push({ x: q.x, y: q.y, w: q.w, h: q.h, own: null });
   const CHAR_W = MARK.charW, LINE_H = MARK.lineH, GAP = MARK.gap;
   const fits = (bx, by, bw, self) =>
     bx >= 2 && bx + bw <= W - 2 && by >= 2 && by + LINE_H <= H - 2 &&
@@ -3207,6 +3588,10 @@ function mapLegend() {
     <span class="item"><svg class="swatch" width="18" height="14"><rect class="ext" x="2" y="2" width="14" height="10" rx="2"/></svg>regional — the area Pleiades gives it; never a pin</span>
     <span class="item"><svg class="swatch" width="22" height="10"><line class="ln" x1="1" y1="5" x2="21" y2="5"/></svg>source / destination — an edge <code>subject_places</code> draws</span>
     <span class="item"><svg class="swatch" width="22" height="10"><line class="lnw" x1="1" y1="5" x2="21" y2="5"/></svg>waypoint — on the way; no order recorded among waypoints</span>
+    <span class="item"><svg class="swatch" width="26" height="14"><rect class="bnd" x="1" y="2" width="24" height="10" rx="2"/><rect class="bchip" x="5" y="6" width="4" height="4"/><rect class="bchip" x="11" y="6" width="4" height="4"/><rect class="bchip" x="17" y="6" width="4" height="4"/></svg>a region band, and one square per record — where this map keeps
+      the records it cannot draw as points. Its POSITION is the centre of that region's own cached
+      findspots; its SIZE is how many records are in it and is not a claim about territory. A band is
+      not a boundary: these seven regions are this project's categories, not anyone's published ones</span>
     ${D.coastline ? `<span class="item note">Coastline: ${esc(D.coastline.source)}
       ${esc(D.coastline.scale)}, ${esc(D.coastline.terms)}, retrieved ${esc(D.coastline.retrieved)} —
       a modern reference frame, not evidence, and no ancient shoreline</span>` : ""}
@@ -4030,6 +4415,7 @@ function repaintPanel() {
   // step, so it is re-derived here rather than left to the next full render.
   const nav = document.getElementById("panelnav");
   if (nav) nav.innerHTML = panelNav();
+  markMap();
   writeHash();
 }
 
@@ -4048,6 +4434,8 @@ function repaintMap() {
     mapFrame = null;
     const holder = document.getElementById("mapholder");
     if (holder) holder.innerHTML = buildMap();
+    // The SVG was just replaced, so the marks went with it.
+    markMap();
     const readout = document.getElementById("mapzoom");
     if (readout) readout.textContent = mapState.zoom > 1.01 ? `${mapState.zoom.toFixed(1)}×` : "";
   });
@@ -4407,6 +4795,15 @@ document.addEventListener("click", ev => {
 
   const place = ev.target.closest("[data-place]");
   if (place) return select({ kind: "place", key: place.dataset.place });
+
+  /* A band's plate before the generic record click, and AFTER `data-record`
+     would have matched a chip: a chip sits inside the band's own group, so
+     clicking one must select the record and not the region. `closest` walks
+     outwards, so the chip's own `data-record` is found first below only if this
+     block does not swallow it — hence the guard on the chip. */
+  const band = ev.target.closest("[data-region]");
+  if (band && !ev.target.closest("[data-record]"))
+    return select({ kind: "region", region: band.dataset.region });
 
   const rec = ev.target.closest("[data-record]");
   if (rec) return select({ kind: "record", docId: rec.dataset.record });
