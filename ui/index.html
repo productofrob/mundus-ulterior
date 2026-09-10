@@ -3244,6 +3244,62 @@ function placeLedger() {
   };
 }
 
+/* THE GEOGRAPHY LEDGER, AND IT IS ON THE METHODOLOGY TAB.
+ *
+ * It opened the Map & Sources tab until now: 236 pixels of apparatus about what
+ * the map cannot draw, standing above the map. That is RULING 85's test applied
+ * to this tab — does the figure describe the evidence on screen, or the archive
+ * around it — and this one describes the archive. A visitor who came to look at
+ * where things are was being asked first to take on 90 placements that are not
+ * there.
+ *
+ * IT IS NOT DELETED, AND THAT IS THE POINT. Home says "the failures are kept:
+ * refusals, citations that no longer resolve and places the map will not draw
+ * are counted and shown, because a system that only displays its successes is
+ * not evidence of anything." A ledger of what the map refuses to draw is one of
+ * the three things that sentence promises, so it moves to the tab that exists
+ * to carry exactly that and stays whole.
+ *
+ * EVERY CELL IS MACHINE-READABLE, which it was not before. Seven derived
+ * figures were printed here and nothing re-derived one of them — the shape
+ * FINDING 105 had on the cross-tabulation, where a guard asserting presence
+ * could not see that the value was wrong. Guard 53 reads them back off the
+ * rendered markup and checks each against `placeLedger()`.
+ */
+function placeNotice() {
+  const stats = P.stats || {};
+  const L = placeLedger();
+  const onlyRegional = L.groundsMissing.length === 1 && L.groundsMissing[0] === "regional";
+  return `<div class="notice" data-ledger-drawn="${L.groups}"
+      data-ledger-placements="${L.placements}" data-ledger-gaps="${L.gaps.length}">
+    <strong>${L.groups} distinct point${L.groups === 1 ? "" : "s"} and
+    extent${L.groups === 1 ? "" : "s"} are drawn, from ${L.placements} placement${L.placements === 1 ? "" : "s"};
+    ${L.gaps.length} are not.</strong> Everything drawn comes from an id cached in
+    <code>data/gazetteer.json</code> — nothing on it is a hand-placed coordinate.
+    <code>ground</code> is shown, not hidden: a <em>regional</em> claim draws as a shaded area and never as
+    a pin, and a <em>contested</em> identification draws disputed, not settled. Lines are the edges
+    <code>subject_places</code> exists to draw — <code>source → focus → destination</code> — drawn only
+    where both ends have a cached coordinate.
+    <div class="ledger">
+      <div class="cell" data-cell="gaps" data-count="${L.gaps.length}">
+        <div class="num">${L.gaps.length}</div><div class="cap">placements the corpus names
+        and the map cannot draw${onlyRegional ? ` — <b>every one of them <code>regional</code></b>.
+        Not one <code>stated</code> or <code>identified</code> placement is missing` : ""}</div></div>
+      <div class="cell" data-cell="gapsNoId" data-count="${L.gapsNoId.length}">
+        <div class="num">${L.gapsNoId.length}</div><div class="cap">of those took
+        <b>no gazetteer id at all</b>. Read the notes: these are overwhelmingly refusals, not a backlog —
+        an office is not a city, a people is not a place, and an empire is not the town on the Tiber</div></div>
+      <div class="cell" data-cell="gapsIdNoGeometry" data-count="${L.gapsIdNoGeometry.length}">
+        <div class="num">${L.gapsIdNoGeometry.length}</div><div class="cap">took an id the
+        gazetteer holds and <b>does not say where it is</b>. A cached entry with no geometry, listed rather
+        than centred on a guess</div></div>
+      <div class="cell" data-cell="docsAllGap" data-count="${L.docsAllGap.length}">
+        <div class="num">${L.docsAllGap.length}</div><div class="cap">record${L.docsAllGap.length === 1 ? "" : "s"}
+        of the ${stats.documents_placed || 0} with any geography at all appear on the map
+        <b>only in the lists on the ${esc(TABS.map)} tab</b></div></div>
+    </div></div>`;
+}
+
 /* The sharpest thing this corpus's geography says, lifted out of `viewPlaces`
    so the front section can state it without deriving it a second time — two
    derivations of one figure is how a page ends up disagreeing with itself.
@@ -3309,35 +3365,12 @@ function spanCrossTab() {
 }
 
 function viewPlaces() {
-  const stats = P.stats || {};
+  /* `stats` and `allEntries` went with the ledger: both were read only by the
+     notice that is now on the Methodology tab, and a binding nothing reads is
+     the stylesheet-class problem in variable form — RULING 85. */
   const L = placeLedger();
-  const allEntries = Object.entries(P.docs || {});
   const allGapDocs = L.docsAllGap;
   const partialGapEdges = (P.edges || []).filter(e => !e.drawable);
-
-  const onlyRegional = L.groundsMissing.length === 1 && L.groundsMissing[0] === "regional";
-  const notice = `<div class="notice"><strong>${L.groups} distinct point${L.groups === 1 ? "" : "s"} and
-    extent${L.groups === 1 ? "" : "s"} are drawn, from ${L.placements} placement${L.placements === 1 ? "" : "s"};
-    ${L.gaps.length} are not.</strong> Everything drawn comes from an id cached in
-    <code>data/gazetteer.json</code> — nothing here is a hand-placed coordinate, and this block added none.
-    <code>ground</code> is shown, not hidden: a <em>regional</em> claim draws as a shaded area and never as
-    a pin, and a <em>contested</em> identification draws disputed, not settled. Lines are the edges
-    <code>subject_places</code> exists to draw — <code>source → focus → destination</code> — drawn only
-    where both ends have a cached coordinate.
-    <div class="ledger">
-      <div class="cell"><div class="num">${L.gaps.length}</div><div class="cap">placements the corpus names
-        and this map cannot draw${onlyRegional ? ` — <b>every one of them <code>regional</code></b>.
-        Not one <code>stated</code> or <code>identified</code> placement is missing` : ""}</div></div>
-      <div class="cell"><div class="num">${L.gapsNoId.length}</div><div class="cap">of those took
-        <b>no gazetteer id at all</b>. Read the notes: these are overwhelmingly refusals, not a backlog —
-        an office is not a city, a people is not a place, and an empire is not the town on the Tiber</div></div>
-      <div class="cell"><div class="num">${L.gapsIdNoGeometry.length}</div><div class="cap">took an id the
-        gazetteer holds and <b>does not say where it is</b>. A cached entry with no geometry, listed rather
-        than centred on a guess</div></div>
-      <div class="cell"><div class="num">${L.docsAllGap.length}</div><div class="cap">record${L.docsAllGap.length === 1 ? "" : "s"}
-        of the ${stats.documents_placed || 0} with any geography at all appear on this map
-        <b>only in the lists below</b></div></div>
-    </div></div>`;
 
   /* The finding this tab exists to state plainly, and it is structural rather
      than editorial: `focus` is the place a passage is ORGANISED AROUND, and
@@ -3486,7 +3519,6 @@ function viewPlaces() {
         <div class="panel-inner" id="panel">${renderPanel()}</div></div>
 
       <div class="mapbelow">
-        ${notice}
         ${contestedCard}
         ${focusCard}
         ${allGapCards}
@@ -3787,11 +3819,16 @@ function viewAbout() {
     </div>
 
     <div class="card">
+      <h3>What the map draws, and what it will not</h3>
+      <p class="cardlead">Moved here from the ${esc(TABS.map)} tab, where it stood above the map:
+      a ledger of what this project's geography refuses to plot belongs with the rest of what it
+      counts against itself, not in front of the thing it is counting.</p>
+      ${placeNotice()}
+    </div>
+
+    <div class="card">
       <h3>What this page does not show</h3>
-      <p class="prose-soft">The ${esc(TABS.map)} tab draws only what
-      <code>data/gazetteer.json</code> has cached against a gazetteer id — ${(P.stats||{}).gaps||0}
-      placements named in the corpus have no drawable coordinate, and are listed rather than guessed
-      at. ${(P.unconsidered||[]).length === 0
+      <p class="prose-soft">${(P.unconsidered||[]).length === 0
         ? `Every record has now been considered geographically, which was not true at 24 records:
            what is left is not a backlog but a set of refusals, and the ${esc(TABS.map)} tab counts them.`
         : `${(P.unconsidered||[]).length} record(s) have not been geographically placed at all.`}

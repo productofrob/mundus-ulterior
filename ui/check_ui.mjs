@@ -129,7 +129,7 @@ try {
     " viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
-    " pushSelection, stepSelection, clearTrail, canStep, panelNav," +
+    " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -146,7 +146,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         viewHome, viewQuestions, viewPlaces, viewAbout,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
         railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS,
-        pushSelection, stepSelection, clearTrail, canStep, panelNav,
+        pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice,
         SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
         langName, placeLedger } = sandbox.__api;
 
@@ -907,6 +907,66 @@ if (D.coastline && D.coastline.polygons) {
 
   note(problems.length === 0,
        `the Guide's trail steps back and forward and refuses both ends` +
+       (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 53. Every figure in the geography ledger is re-derived, and the
+   ledger is on the tab that claims it.
+
+   Seven derived figures — drawn, placements, gaps, and the four cells — stood
+   at the top of the Map tab for the whole of this project's life with NOTHING
+   RE-DERIVING ONE OF THEM. That is the shape FINDING 105 had on the
+   cross-tabulation: every guard in force asserted that a thing was rendered,
+   and none could see that a number in it was wrong. The ledger has moved to
+   Methodology, and RULING 88's test for a move is that the guard moves with it
+   and gets no weaker — so this is the guard it never had.
+
+   TWO CLAIMS, and the second is the one that makes the first worth having:
+
+     1  every figure the ledger prints equals what `placeLedger()` derives now
+     2  the ledger is rendered on the Methodology tab and NOT on Map & Sources
+
+   Without (2) a later block could quietly restore it to the map, or print it on
+   both, and (1) would stay green on either. Home promises that "places the map
+   will not draw are counted and shown"; this is where the page keeps that
+   promise, and a guard that could not say WHERE would be asserting the promise
+   is kept somewhere. ---- */
+{
+  const problems = [];
+  const L = placeLedger();
+  const html = placeNotice();
+
+  const attr = (name, want, why) => {
+    const m = html.match(new RegExp(`${name}="(\\d+)"`));
+    if (!m) problems.push(`${why}: not machine-readable on the ledger`);
+    else if (Number(m[1]) !== want) problems.push(`${why}: prints ${m[1]}, derives ${want}`);
+  };
+  attr("data-ledger-drawn", L.groups, "points and extents drawn");
+  attr("data-ledger-placements", L.placements, "placements");
+  attr("data-ledger-gaps", L.gaps.length, "placements not drawn");
+
+  for (const [cell, want] of [["gaps", L.gaps.length],
+                              ["gapsNoId", L.gapsNoId.length],
+                              ["gapsIdNoGeometry", L.gapsIdNoGeometry.length],
+                              ["docsAllGap", L.docsAllGap.length]]) {
+    const m = html.match(new RegExp(`data-cell="${cell}" data-count="(\\d+)"`));
+    if (!m) problems.push(`the ${cell} cell is not on the ledger`);
+    else if (Number(m[1]) !== want) problems.push(`the ${cell} cell prints ${m[1]}, derives ${want}`);
+    // ...and the figure a reader SEES, not only the attribute beside it. An
+    // attribute that agrees with the arithmetic while the visible number does
+    // not is FINDING 105 with the axes swapped.
+    else if (!new RegExp(`data-cell="${cell}"[^>]*>\\s*<div class="num">${want}<`).test(html))
+      problems.push(`the ${cell} cell's printed number is not the one it declares`);
+  }
+
+  const onMethodology = viewAbout().includes(`data-ledger-drawn="${L.groups}"`);
+  const onMap = viewPlaces().includes("data-ledger-drawn");
+  if (!onMethodology) problems.push(`the ledger is not on the ${TABS.data} tab`);
+  if (onMap) problems.push(`the ledger is on the ${TABS.map} tab as well`);
+
+  note(problems.length === 0,
+       `every figure in the geography ledger is re-derived, on ${TABS.data} and only there ` +
+       `(${L.groups} drawn of ${L.placements}, ${L.gaps.length} not)` +
        (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
