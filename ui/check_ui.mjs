@@ -128,7 +128,7 @@ try {
     " buildMap, mapState, mapWindow, mapBase, MARK, MAP_LABEL_PX," +
     " viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
-    " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES," +
+    " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -144,7 +144,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase, MARK, MAP_LABEL_PX,
         viewHome, viewQuestions, viewPlaces, viewAbout,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
-        railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES,
+        railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS,
         SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
         langName, placeLedger } = sandbox.__api;
 
@@ -761,6 +761,56 @@ if (D.coastline && D.coastline.polygons) {
        `the map's label size is declared once in the stylesheet and once in the script, ` +
        `and the collider solves against it (${MAP_LABEL_PX}px, ` +
        `dots ${MARK.dot}/${MARK.dotMulti})` +
+       (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 51. The tab bar and the page's own name for each tab agree.
+
+   The page talks about its tabs — on Home, on Data & Sources, in two tooltips
+   — and it used to TYPE the name into each sentence. That is a typed count in
+   words, and it had already gone wrong: `viewAbout` called it "the Places tab"
+   twice, about a tab the bar has labelled "Map" since the design block. Nothing
+   noticed, because nothing re-derived it.
+
+   The fix for the PROSE is derivation, not a check: every sentence reads
+   `TABS`, so it cannot disagree with `TABS` at all. That leaves exactly one
+   second copy to guard — the static tab bar in the header, which has to carry
+   its own text because it is on screen during the loading state, before this
+   script has run.
+
+   A MATCHER OVER THE PAGE'S PROSE WAS CONSIDERED AND REFUSED. Scanning each
+   rendered view for "the <Name> tab" would catch a future block that types a
+   name again — and it would also have to decide about "the same tab", "the one
+   tab", "this tab", and every phrasing nobody has written yet. RULING 89
+   settled that shape: a rule that has to be interpreted is a rule that will be
+   broken, and inside a matcher it would be broken silently. Derivation removes
+   the failure; this guard covers the one copy derivation cannot.
+
+   THE KEYS ARE CHECKED TOO, and that is the half that catches a fifth tab. A
+   tab added to the bar and not to TABS renders a button the page has no name
+   for; one added to TABS and not to the bar is a name for a tab nobody can
+   reach. ---- */
+{
+  const problems = [];
+  const bar = [...html.matchAll(/<button class="tab"[^>]*data-view="([^"]+)"[^>]*>([^<]*)<\/button>/g)]
+    .map(m => [m[1], m[2].trim().replace(/&amp;/g, "&")]);
+
+  if (!bar.length) problems.push("no tab buttons found in the header");
+
+  const barKeys = bar.map(([k]) => k);
+  const tabKeys = Object.keys(TABS);
+  if (barKeys.join("|") !== tabKeys.join("|"))
+    problems.push(`the bar carries [${barKeys.join(", ")}] and TABS declares [${tabKeys.join(", ")}]`);
+
+  for (const [key, label] of bar) {
+    if (!(key in TABS)) continue;               // already reported above
+    if (TABS[key] !== label)
+      problems.push(`the bar says "${label}" for ${key} and TABS says "${TABS[key]}"`);
+  }
+
+  note(problems.length === 0,
+       `every tab's name is declared once and the header agrees with it ` +
+       `(${bar.map(([k, l]) => `${k}: ${l}`).join(", ")})` +
        (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 

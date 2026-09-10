@@ -1064,15 +1064,27 @@
       <h1>Mundus Ulterior</h1>
       <span class="sub">Rome and the wider world, 27 BC – 1204 AD: source-based answers</span>
     </div>
-    <button class="mapthumb" id="mapthumb" type="button" hidden
-      title="the whole map — open the Map tab"></button>
+    <!-- The title is set in `mapThumb()` from TABS, not written here: this one
+         names the tab, and a tab name typed in two places is a tab name that
+         drifts in one of them. -->
+    <button class="mapthumb" id="mapthumb" type="button" hidden></button>
     <button class="themebtn" id="themebtn" type="button" hidden>theme</button>
   </div>
   <div class="statstrip" id="statstrip"></div>
+  <!-- THE TAB BAR IS STATIC, and it has to be: it is on screen during the
+       loading state, before data.js has parsed and before a line of the page's
+       script has run. So each label is written here AND declared in `TABS` in
+       the script, which is where the page's own prose reads it from. Guard 51
+       asserts the two agree, label for label and in order — the BANNER pattern,
+       because a description is only safe when something re-derives it.
+
+       `data-view` is the ADDRESS and is not a label. `#map` is a URL this
+       project has handed out; RULING 84 governs it, and renaming a tab does not
+       touch it. -->
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" data-view="home"      aria-selected="true">Home</button>
     <button class="tab" role="tab" data-view="questions" aria-selected="false">Questions</button>
-    <button class="tab" role="tab" data-view="map"       aria-selected="false">Map</button>
+    <button class="tab" role="tab" data-view="map"       aria-selected="false">Map &amp; Sources</button>
     <button class="tab" role="tab" data-view="data"      aria-selected="false">Data &amp; Sources</button>
   </div>
 </header>
@@ -1414,6 +1426,33 @@ function railPartition() {
     withheld,
   };
 }
+
+/* ------------------------------------------------------------------ *
+ * THE TAB NAMES, DECLARED ONCE.
+ *
+ * The page talks about its own tabs — on Home, on Data & Sources, in the
+ * chain figure's link, in two tooltips — and every one of those sentences used
+ * to TYPE the name. That is the same defect as a typed count, in words instead
+ * of digits, and it had already happened: `viewAbout` said "the Places tab"
+ * twice, about a tab the bar has labelled "Map" since the design block. Nobody
+ * saw it because nothing re-derived it.
+ *
+ * So a tab is named here and nowhere else, and prose interpolates it. The one
+ * unavoidable second copy is the static tab bar in the header, which has to
+ * carry its own text because it is on screen before this script runs — and
+ * guard 51 asserts the two agree.
+ *
+ * THE KEY IS THE ADDRESS AND THE VALUE IS THE LABEL, and the difference is
+ * RULING 84's. `map` is what `#map` resolves to and what `data-view` carries;
+ * it does not change when the words on the button do. Renaming a tab is a
+ * piece of furniture this project can take back. Breaking a link is not.
+ * ------------------------------------------------------------------ */
+const TABS = {
+  home:      "Home",
+  questions: "Questions",
+  map:       "Map & Sources",
+  data:      "Data & Sources",
+};
 
 let state = {
   view: "home",
@@ -3475,12 +3514,12 @@ function viewHome() {
           their own languages, retrieves the passages that answer it, and writes an answer that quotes
           them. <strong>Every quotation is clickable, and every click lands on
           the exact characters in the exact file the quotation came from.</strong></p>
-          <p>The Map tab does the same thing for geography: every point on it comes from a cached
-          gazetteer identifier, never a hand-placed coordinate, and every place the corpus names but
-          cannot honestly plot is listed rather than dropped.</p>
+          <p>The ${esc(TABS.map)} tab does the same thing for geography: every point on it comes
+          from a cached gazetteer identifier, never a hand-placed coordinate, and every place the
+          corpus names but cannot honestly plot is listed rather than dropped.</p>
         </div>
         ${fullMap() ? `<button class="homemap" type="button" data-goto="map"
-          title="open the Map tab">${fullMap()}${mapCredit()}
+          title="open the ${esc(TABS.map)} tab">${fullMap()}${mapCredit()}
           <span class="homemap-cap">${(P.groups || []).length} places drawn from a cached
             gazetteer id · ${placeLedger().gaps.length} the corpus names and this map
             will not draw</span></button>` : ""}
@@ -3633,12 +3672,12 @@ function viewAbout() {
 
     <div class="card">
       <h3>What this page does not show</h3>
-      <p class="prose-soft">The Places tab draws only what
+      <p class="prose-soft">The ${esc(TABS.map)} tab draws only what
       <code>data/gazetteer.json</code> has cached against a gazetteer id — ${(P.stats||{}).gaps||0}
       placements named in the corpus have no drawable coordinate, and are listed rather than guessed
       at. ${(P.unconsidered||[]).length === 0
         ? `Every record has now been considered geographically, which was not true at 24 records:
-           what is left is not a backlog but a set of refusals, and the Places tab counts them.`
+           what is left is not a backlog but a set of refusals, and the ${esc(TABS.map)} tab counts them.`
         : `${(P.unconsidered||[]).length} record(s) have not been geographically placed at all.`}
       <strong>No answer on this page is generated when you read it.</strong> All ${D.runs.length} runs
       were archived while the system was built, each one cost an API call, and each is replayed from
@@ -3775,6 +3814,9 @@ function mapThumb() {
   const host = document.getElementById("mapthumb");
   if (!host || !fullMap()) return;
   host.innerHTML = fullMap() + mapCredit();
+  // Named from TABS rather than written into the markup, for the reason the
+  // comment above that table gives.
+  host.title = `the whole map — open the ${TABS.map} tab`;
   host.hidden = false;
 }
 
