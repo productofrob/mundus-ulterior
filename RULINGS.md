@@ -63,6 +63,22 @@ session: it had already caught itself getting it wrong.
 
 **The next free ruling number is 91. The next free finding is 109.**
 
+> **THE MAP BLOCK CLOSED 2026-09-10**, thirteen commits, 47 checks to 53.
+> `UI_MAP_PREDICTIONS.md` was committed before a line of `ui/` was edited and is
+> scored in `UI_MAP_RESULT.md`, unamended. **Ruling 90** and **findings 106, 107
+> and 108** are recorded below. `UI_MAP_REGIONS_START.md` scopes the next
+> thread: matching every record to a region on the map, usefully.
+>
+> **Two things from it are about practice rather than about the page.** A red
+> test found a hole in a GUARD rather than in the code — guard 52 was written to
+> check that stepping past both ends of the Guide's trail is refused, and it
+> tested one end only; four of five deliberate breaks went red and the fifth did
+> not. And the failure mode the block named in advance — *shipping a Map tab
+> that measures better and reads worse* — happened: the full-width map satisfied
+> every layout figure that had been predicted for it, and Rob reversed it one
+> message later. **The instrument is very good at saying a number moved and has
+> no opinion about whether the page is better.**
+
 > **FINDING 108, 2026-09-10.** **The map's mark sizes are authored in a unit
 > whose meaning on screen depends on the layout, so any layout change resizes
 > every one of them silently, and no guard can see it.** `buildMap` draws into a
