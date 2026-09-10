@@ -129,6 +129,7 @@ try {
     " viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
+    " pushSelection, stepSelection, clearTrail, canStep, panelNav," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -145,6 +146,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         viewHome, viewQuestions, viewPlaces, viewAbout,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
         railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS,
+        pushSelection, stepSelection, clearTrail, canStep, panelNav,
         SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
         langName, placeLedger } = sandbox.__api;
 
@@ -824,6 +826,87 @@ if (D.coastline && D.coastline.polygons) {
   note(problems.length === 0,
        `every tab's name is declared once and the header agrees with it ` +
        `(${bar.map(([k, l]) => `${k}: ${l}`).join(", ")})` +
+       (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 52. The Guide's trail behaves like a history, and its buttons say
+   so.
+
+   Back and forward over the things a reader has opened. RULING 84 exists
+   because "two sources of truth for the selected run is how a back button
+   starts fighting a click handler", and this is a back button — so the thing
+   worth guarding is not that the buttons render, it is that stepping the trail
+   WRITES `state.selection` and that the trail never becomes a second opinion
+   about what is on screen.
+
+   Every claim below is about a VALUE — which selection is current after a
+   sequence of moves — rather than about a control being present. FINDING 105's
+   lesson: the guard it replaced could say a state APPEARED and could not say it
+   was right.
+
+   The last two are the ones a hand-written back button usually gets wrong: a
+   new selection made after stepping back has to DISCARD the forward entries,
+   and stepping past either end has to refuse rather than wrap or run off. ---- */
+{
+  const saved = { sel: state.selection, trail: state.trail, at: state.trailAt };
+  const problems = [];
+  const A = { kind: "record", docId: "a" };
+  const B = { kind: "place",  key: "b" };
+  const C = { kind: "group",  cacheKey: "c" };
+  const D = { kind: "edge",   idx: 4 };
+  const is = (sel, want, why) => {
+    if (JSON.stringify(sel) !== JSON.stringify(want)) problems.push(why);
+  };
+
+  clearTrail();
+  if (canStep(-1) || canStep(1)) problems.push("an empty trail offers a step");
+  if (!/disabled/.test(panelNav()) || panelNav().match(/disabled/g).length !== 2)
+    problems.push("an empty trail does not draw both buttons disabled");
+
+  [A, B, C].forEach(pushSelection);
+  if (state.trail.length !== 3) problems.push(`three pushes made ${state.trail.length} entries`);
+  if (canStep(1)) problems.push("the newest entry offers a forward step");
+  if (!canStep(-1)) problems.push("the newest entry offers no way back");
+
+  // pushing the same thing twice is not a step
+  pushSelection(C);
+  if (state.trail.length !== 3) problems.push("re-opening the same thing added an entry");
+
+  stepSelection(-1); stepSelection(-1);
+  is(state.selection, A, "two steps back did not land on the first entry");
+  if (canStep(-1)) problems.push("the first entry offers a further step back");
+  if ((panelNav().match(/disabled/g) || []).length !== 1)
+    problems.push("at the start of the trail, exactly one button should be disabled");
+
+  if (stepSelection(-1) !== false) problems.push("stepping past the start was allowed");
+  is(state.selection, A, "a refused step still moved the selection");
+
+  /* AND THE OTHER END, which this guard did not cover until a red test found
+     the hole: `if (to < 0) return false` passes every assertion above and lets
+     a forward step run off the end of the trail. Both ends, or neither. */
+  stepSelection(1); stepSelection(1);
+  is(state.selection, C, "two steps forward did not land on the newest entry");
+  if (stepSelection(1) !== false) problems.push("stepping past the end was allowed");
+  is(state.selection, C, "a refused forward step still moved the selection");
+  // back to the first entry, so the step below still means what it meant before
+  // this pair of checks was inserted between them.
+  stepSelection(-1); stepSelection(-1);
+  is(state.selection, A, "walking to the end and back did not return to the first entry");
+
+  stepSelection(1);
+  is(state.selection, B, "a forward step did not land on the second entry");
+
+  // a new selection from the middle abandons the branch that was ahead
+  pushSelection(D);
+  if (state.trail.length !== 3) problems.push(`a new selection left ${state.trail.length} entries, not 3`);
+  is(state.trail[2], D, "the new selection is not the newest entry");
+  if (canStep(1)) problems.push("a new selection left a forward step available");
+  is(state.selection, B, "pushing a selection changed what is on screen by itself");
+
+  Object.assign(state, { selection: saved.sel, trail: saved.trail, trailAt: saved.at });
+
+  note(problems.length === 0,
+       `the Guide's trail steps back and forward and refuses both ends` +
        (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 

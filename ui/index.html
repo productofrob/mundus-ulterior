@@ -383,6 +383,20 @@
     .mapcols > .mapbelow   { order: 3; }
   }
 
+  /* The Guide's header: its name on the left, the trail buttons on the right.
+     They are `.mapbtn`, the map's own zoom buttons, because they do the same
+     kind of job and "a page with two vocabularies for nudge this thing has one
+     too many" — the note above `.mapbtn` itself. */
+  .panelhead { display: flex; align-items: center; gap: var(--s-3); margin-bottom: var(--s-3); }
+  .panelhead h2 { margin: 0; }
+  .panelnav { margin-left: auto; display: flex; gap: var(--s-1); }
+  /* DISABLED AND STILL DRAWN. They are dim and inert at the ends of the trail
+     rather than disappearing: a control that vanishes when it has nothing to do
+     reads as a glitch, which is the argument the masthead strip's own comment
+     makes about appearing and disappearing as you move around the page. */
+  .mapbtn[disabled] { opacity: .35; cursor: default; }
+  .mapbtn[disabled]:hover { border-color: var(--line); color: var(--ink-soft); }
+
   .rail h2, .panel h2 {
     font-family: var(--font-sans); font-size: var(--t-2xs); font-weight: 700;
     text-transform: uppercase; letter-spacing: var(--track-eyebrow);
@@ -1472,8 +1486,81 @@ const TABS = {
   data:      "Methodology",
 };
 
+/* ------------------------------------------------------------------ *
+ * THE TRAIL: back and forward over the things you have opened.
+ *
+ * A reader following the geography clicks a point, then a placement inside it,
+ * then the record that placement came from, then a different placement of that
+ * record — and until now the only way back to the point was to find it on the
+ * map again.
+ *
+ * RULING 84 IS WHY THIS IS SHAPED THE WAY IT IS. That ruling exists because
+ * "two sources of truth for the selected run is how a back button starts
+ * fighting a click handler", and this is literally a back button. So the trail
+ * is NOT a second place the current selection lives: `state.selection` stays
+ * the only one, exactly as before. The trail is a list of selections that have
+ * been made and an index into it, and stepping WRITES `state.selection` from
+ * that list. Nothing reads the current selection out of the trail.
+ *
+ * IT IS NOT THE BROWSER'S HISTORY EITHER, and that was a deliberate choice
+ * rather than an oversight. `writeHash` uses `replaceState`, so the browser's
+ * own back button steps out of the page rather than through its selections;
+ * making it step through them instead would mean `pushState` on every click on
+ * every tab, and a visitor who clicked nine quotations would need nine presses
+ * to leave. The address of each selection is unchanged and still shareable —
+ * RULING 84's promise — and this control is furniture over the top of it, which
+ * is RULING 85's distinction.
+ *
+ * FORWARD ENTRIES ARE DISCARDED ON A NEW SELECTION, the way every history
+ * behaves: going back and then somewhere new abandons the branch you left.
+ * ------------------------------------------------------------------ */
+const selKey = sel => sel ? JSON.stringify(sel) : "";
+
+function pushSelection(sel) {
+  if (!sel) return;
+  // Clicking the same thing twice is not a step. Without this, a reader who
+  // clicks a marker, reads it, and clicks it again has to press back twice to
+  // get anywhere.
+  if (state.trailAt >= 0 && selKey(state.trail[state.trailAt]) === selKey(sel)) return;
+  state.trail = state.trail.slice(0, state.trailAt + 1);
+  state.trail.push(sel);
+  state.trailAt = state.trail.length - 1;
+}
+
+/* Returns whether it moved, so a caller can tell "there was nowhere to go"
+   from "we went". The buttons are disabled at the ends, so a false here means
+   something else called it. */
+function stepSelection(delta) {
+  const to = state.trailAt + delta;
+  if (to < 0 || to >= state.trail.length) return false;
+  state.trailAt = to;
+  state.selection = state.trail[to];
+  return true;
+}
+
+/* A tab change starts a new trail. What a reader opened on the Questions tab
+   is not somewhere "back" should take them from the map. */
+function clearTrail() { state.trail = []; state.trailAt = -1; }
+
+const canStep = delta => {
+  const to = state.trailAt + delta;
+  return state.trailAt >= 0 && to >= 0 && to < state.trail.length;
+};
+
+function panelNav() {
+  const btn = (delta, glyph, title) =>
+    `<button class="mapbtn" data-trail="${delta}"${canStep(delta) ? "" : " disabled"}
+      title="${esc(title)}" aria-label="${esc(title)}">${glyph}</button>`;
+  return btn(-1, "&larr;", "back to the previous thing you opened")
+       + btn(1, "&rarr;", "forward again");
+}
+
 let state = {
   view: "home",
+  /* The trail, and the index of the entry on screen. -1 is "nothing has been
+     opened yet", which is also the empty state of the Guide. */
+  trail: [],
+  trailAt: -1,
   question: QUESTIONS[0],
   runIndex: null,       // null => pick the most interesting run
   selection: null,      // { kind:"quote"|"passage"|"record", ... }
@@ -3393,7 +3480,9 @@ function viewPlaces() {
     <div class="cols mapcols">
       <div class="mapcol">${mapCard}</div>
 
-      <div class="rail-right panel"><h2>Guide</h2>
+      <div class="rail-right panel">
+        <div class="panelhead"><h2>Guide</h2>
+          <div class="panelnav" id="panelnav">${panelNav()}</div></div>
         <div class="panel-inner" id="panel">${renderPanel()}</div></div>
 
       <div class="mapbelow">
@@ -3899,6 +3988,11 @@ function render() {
 function repaintPanel() {
   const el = document.getElementById("panel");
   if (el) { el.innerHTML = renderPanel(); el.scrollTop = 0; }
+  // The buttons live OUTSIDE `#panel`, so repainting the panel does not repaint
+  // them. Their disabled state is a fact about the trail and changes on every
+  // step, so it is re-derived here rather than left to the next full render.
+  const nav = document.getElementById("panelnav");
+  if (nav) nav.innerHTML = panelNav();
   writeHash();
 }
 
@@ -4093,7 +4187,18 @@ document.addEventListener("click", ev => {
   if (mapSuppressClick) { mapSuppressClick = false; return; }
   if (bandSuppressClick) { bandSuppressClick = false; return; }
 
-  const zoomBtn = ev.target.closest(".mapbtn");
+  /* THE TRAIL BUTTONS ARE `.mapbtn` TOO, so they are handled first AND the
+     zoom branch below now requires its own `data-zoom`. Without that second
+     half a trail button fell through to `mapZoomBy(1 / 1.6)` — pressing back
+     would have zoomed the map out. Caught by reading this handler before
+     writing the branch, which is the reason the whole file gets read. */
+  const trailBtn = ev.target.closest("[data-trail]");
+  if (trailBtn) {
+    if (stepSelection(Number(trailBtn.dataset.trail))) repaintPanel();
+    return;
+  }
+
+  const zoomBtn = ev.target.closest(".mapbtn[data-zoom]");
   if (zoomBtn) {
     const how = zoomBtn.dataset.zoom;
     if (how === "reset") { mapState.zoom = 1; mapState.cx = null; mapState.cy = null; repaintMap(); }
@@ -4105,6 +4210,7 @@ document.addEventListener("click", ev => {
   // section, not sit underneath it — otherwise the page shows one thing and
   // the URL it hands you says another.
   const select = sel => {
+    pushSelection(sel);
     state.selection = sel;
     if (state.intro && state.view === "questions") { state.intro = false; return render(); }
     repaintPanel();
@@ -4154,7 +4260,9 @@ document.addEventListener("click", ev => {
   const spec = ev.target.closest(".spec");
   if (spec) {
     state.view = "map"; state.intro = true;
+    clearTrail();
     state.selection = { kind: "record", docId: spec.dataset.record };
+    pushSelection(state.selection);
     render();
     const panel = document.getElementById("panel");
     if (panel && panel.scrollIntoView) panel.scrollIntoView({ block: "center" });
@@ -4211,6 +4319,7 @@ document.addEventListener("click", ev => {
      clicked. The Home tab is the other way back to it. */
   const tab = ev.target.closest(".tab");
   if (tab) { state.view = tab.dataset.view; state.selection = null;
+             clearTrail();
              state.intro = true; state.runIndex = null; return render(); }
 
   /* FINDING 102, found by using the page rather than by any check.
@@ -4308,6 +4417,13 @@ if (HAS_DOM) {
   const boot = h => {
     const err = applyHash(h);
     state.hashError = err;
+    /* A shared link opens exactly one thing, so the trail starts with that one
+       thing and both buttons are inert until the reader clicks something else.
+       `applyHash` writes `state.selection` directly — it is the one place other
+       than `select` that does — so the trail is seeded here rather than inside
+       it, where a hash that resolves to no selection would push nothing. */
+    clearTrail();
+    pushSelection(state.selection);
     render();
   };
   boot(location.hash);
