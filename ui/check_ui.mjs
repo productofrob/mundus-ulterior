@@ -130,7 +130,8 @@ try {
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
     " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice," +
-    " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger };",
+    " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger,"
+    + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
 } catch (e) {
@@ -148,7 +149,8 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS,
         pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice,
         SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
-        langName, placeLedger } = sandbox.__api;
+        langName, placeLedger,
+        regionBands, bandLedger, bandBox, BAND, renderRegionProvenance } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
 let rendered = 0, panels = 0;
@@ -968,6 +970,214 @@ if (D.coastline && D.coastline.polygons) {
        `every figure in the geography ledger is re-derived, on ${TABS.data} and only there ` +
        `(${L.groups} drawn of ${L.placements}, ${L.gaps.length} not)` +
        (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+
+/* ================================================================= *
+ * THE REGION BANDS. GUARDS 54 TO 57.
+ *
+ * A band is the one thing on this map that is NOT a cached coordinate, so it is
+ * the one thing on this map that could quietly become a hand-placed one. These
+ * four exist to make that impossible to do silently, and each was seen RED on a
+ * broken version before it was believed — `UI_MAP_RESULT.md` section 4 is why:
+ * a guard written to check both ends of the Guide's trail checked one of them,
+ * and only breaking the code found it.
+ * ================================================================= */
+
+/* ---- GUARD 54. Every record the map cannot draw as a point is a square in a
+   band, exactly once — and every square in a band is such a record.
+
+   BOTH DIRECTIONS, and the second is the one that matters. The first says
+   nothing was dropped. The second says the map is not quietly showing a record
+   in a band that it ALSO draws as a point, which would double-count the corpus
+   and make the arithmetic in the ledger false while every figure in it still
+   agreed with itself. ---- */
+{
+  const homeless = new Set(Object.keys(D.corpus).filter(
+    id => !((P.docs || {})[id] || []).some(e => e.kind !== "gap")));
+  const svg = buildMap();
+  const chips = [...svg.matchAll(/class="chip[^"]*" data-record="([^"]+)"/g)].map(m => m[1]);
+  const seen = new Set(chips);
+  const dupes = chips.length - seen.size;
+  const missing = [...homeless].filter(id => !seen.has(id));
+  const extra = [...seen].filter(id => !homeless.has(id));
+  const problems = [];
+  if (dupes) problems.push(`${dupes} record(s) drawn in more than one band`);
+  if (missing.length) problems.push(`not on the map at all: ${missing.slice(0, 4).join(", ")}`);
+  if (extra.length) problems.push(`in a band and also drawn as a point: ${extra.slice(0, 4).join(", ")}`);
+  note(problems.length === 0,
+       `every record the map cannot draw as a point is a square in its region's band `
+       + `(${chips.length} squares, ${homeless.size} such records)`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 55. A band's position is derived from that region's own cached
+   FINDSPOTS, and from nothing else.
+
+   This is the guard the whole design rests on. The anchor is recomputed here
+   from `P.docs` independently of the page, so a later block cannot swap
+   findspots for subject places, widen it to "any placement", or type a
+   coordinate in — all three of which would still render a band that looks
+   right. The findspot rule is not a detail: a record's SUBJECT places are
+   mostly outside its own region, so an anchor taken over all placements puts
+   East Asia's band in Mesopotamia.
+
+   AND THE NULL CASE. A region with no cached findspot has no anchor and must
+   not be drawn at somebody's guess — it is asserted absent from the SVG. ---- */
+{
+  const want = new Map();
+  for (const entries of Object.values(P.docs || {}))
+    for (const e of entries) {
+      if (e.kind === "gap" || e.block !== "findspot_places") continue;
+      const region = (D.corpus[e.doc_id] || {}).region;
+      const g = region && (P.groups || []).find(x => x.cache_key === e.cache_key);
+      if (!g) continue;
+      const xy = g.kind === "pin" ? g.resolved.point
+        : [(g.resolved.bbox[0] + g.resolved.bbox[2]) / 2, (g.resolved.bbox[1] + g.resolved.bbox[3]) / 2];
+      if (!want.has(region)) want.set(region, []);
+      want.get(region).push(xy);
+    }
+  const centre = ps => [
+    (Math.min(...ps.map(q => q[0])) + Math.max(...ps.map(q => q[0]))) / 2,
+    (Math.min(...ps.map(q => q[1])) + Math.max(...ps.map(q => q[1]))) / 2];
+  const svg = buildMap();
+  const problems = [];
+  let checked = 0;
+  for (const b of regionBands()) {
+    const ps = want.get(b.region);
+    if (!ps) {
+      if (b.anchor) problems.push(`${b.region}: anchored with no cached findspot of its own`);
+      if (svg.includes(`data-region="${b.region}"`))
+        problems.push(`${b.region}: drawn on the map with nothing to anchor it to`);
+      continue;
+    }
+    const [wx, wy] = centre(ps);
+    if (!b.anchor) { problems.push(`${b.region}: has findspots and no anchor`); continue; }
+    if (Math.abs(b.anchor[0] - wx) > 1e-9 || Math.abs(b.anchor[1] - wy) > 1e-9)
+      problems.push(`${b.region}: anchor ${b.anchor} is not the centre of its findspots ${[wx, wy]}`);
+    if (b.findspots !== ps.length)
+      problems.push(`${b.region}: says ${b.findspots} findspots, derives ${ps.length}`);
+    checked++;
+  }
+  note(problems.length === 0,
+       `every band is anchored on its own region's cached findspots and nothing else (${checked} bands)`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 56. A band's plate is the size its contents declare, AND the size
+   it is declared to hold is the size the browser draws.
+
+   THE FIRST VERSION OF THIS GUARD WAS WORTHLESS AND ONLY BREAKING THE CODE SAID
+   SO. It recomputed the plate's width from `BAND.nameCharW` — the same constant
+   `buildMap` draws with — so the two moved together and the guard saw nothing.
+   Setting `nameCharW` back to the 6.6 that had actually shipped the defect, the
+   longest region name running off its own plate, left this GREEN. It caught a
+   hand-edited rectangle and could not catch the one thing that had gone wrong.
+   Same hole as guard 52's, found the same way, and this is the second time on
+   this project that a red test found the hole in the guard rather than in the
+   code.
+
+   So the band's type size is declared TWICE now — `--band-label` in the
+   stylesheet and `BAND.namePx` in the script — exactly as `--map-label` and
+   `MAP_LABEL_PX` are, and for exactly the same reason: the browser draws the
+   name and this file sizes the plate to hold it, and no expression can be
+   shared between them. The width is derived from a RATIO of that size, so the
+   ratio is a number a reader can argue with rather than a width that agrees
+   with itself.
+
+   WHAT IT STILL DOES NOT COVER, said plainly, because guard 50 says it too:
+   this harness has no layout engine and cannot measure a glyph. It checks that
+   the two declarations agree, that the rule drawing the name reads the token,
+   that the ratio is a plausible glyph width for tracked uppercase, and that
+   every plate is the size its own contents declare. `ui/measure_map.mjs` and
+   looking at the page are what read the type the browser actually drew. ---- */
+{
+  const svg = buildMap();
+  const problems = [];
+  let checked = 0;
+
+  const decl = html.match(/--band-label:\s*([\d.]+)px/);
+  if (!decl) problems.push("the stylesheet declares no --band-label");
+  else if (Number(decl[1]) !== BAND.namePx)
+    problems.push(`the stylesheet says --band-label: ${decl[1]}px and the script says ${BAND.namePx}`);
+  const rule = html.match(/\.mapsvg \.band \.bname \{[\s\S]*?\}/);
+  if (!rule) problems.push("no `.mapsvg .band .bname` rule found");
+  else if (!rule[0].includes("var(--band-label)"))
+    problems.push("`.mapsvg .band .bname` does not take its size from var(--band-label)");
+  if (!(BAND.nameRatio > 0.62 && BAND.nameRatio < 0.85))
+    problems.push(`BAND.nameRatio is ${BAND.nameRatio}, which is not a tracked-uppercase glyph width`);
+  if (Math.abs(BAND.nameCharW - BAND.namePx * BAND.nameRatio) > 1e-9)
+    problems.push(`BAND.nameCharW is ${BAND.nameCharW} and does not follow namePx x nameRatio`);
+
+  /* The band's own chunk of the SVG, found by splitting rather than by a
+     constructed RegExp. The first version of this guard built its pattern with
+     `new RegExp(\`...[\\s\\S]*?...\`)`, and a template literal eats the
+     backslash — so the pattern the harness actually compiled contained `[sS]`
+     and matched nothing, and the guard reported that no band had a plate at
+     all. It went red on its FIRST run, which is the only reason it is right
+     now, and it is the same lesson as guard 52: the check is the thing being
+     tested. */
+  const chunkOf = region => {
+    const key = `<g class="band" data-region="${region}">`;
+    const at = svg.indexOf(key);
+    if (at < 0) return null;
+    const rest = svg.slice(at + key.length);
+    const next = rest.indexOf('<g class="band" data-region="');
+    return next < 0 ? rest : rest.slice(0, next);
+  };
+  for (const b of regionBands()) {
+    if (!b.anchor) continue;
+    const chunk = chunkOf(b.region);
+    const m = chunk && chunk.match(/class="plate"[^>]*?width="([\d.]+)"\s+height="([\d.]+)"/);
+    if (!m) { problems.push(`${b.region}: no plate drawn`); continue; }
+    const box = bandBox(b.members.length);
+    const w = BAND.pad * 2 + Math.max(box.inner, b.region.length * BAND.nameCharW);
+    if (Math.abs(Number(m[1]) - w) > 0.05)
+      problems.push(`${b.region}: plate is ${m[1]} wide, ${b.members.length} record(s) declare ${w.toFixed(1)}`);
+    if (Math.abs(Number(m[2]) - box.h) > 0.05)
+      problems.push(`${b.region}: plate is ${m[2]} tall, declares ${box.h.toFixed(1)}`);
+    checked++;
+  }
+  note(problems.length === 0,
+       `every band is drawn the size its contents declare, and its name's size is `
+       + `declared once in the stylesheet and once in the script (${checked} bands, `
+       + `${BAND.namePx}px names, ${BAND.chip}u squares ${BAND.perRow} to a row)`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 57. THE WHOLE CORPUS REACHES THE MAP, and the ledger says the same
+   number this does.
+
+   `UI_MAP_REGIONS_START.md` opened on 32 of 54, and this is the check that the
+   answer to it is real rather than rendered. Points and squares must PARTITION
+   the corpus: every record in exactly one of them, nothing in both, nothing in
+   neither. The ledger on Methodology prints the same two figures and they are
+   re-derived here, because a page that draws 54 and prints 40 is worse than one
+   that draws 40. ---- */
+{
+  const svg = buildMap();
+  const drawnIds = new Set();
+  for (const [id, entries] of Object.entries(P.docs || {}))
+    if (entries.some(e => e.kind !== "gap")) drawnIds.add(id);
+  const chips = new Set([...svg.matchAll(/class="chip[^"]*" data-record="([^"]+)"/g)].map(m => m[1]));
+  const all = Object.keys(D.corpus);
+  const both = all.filter(id => drawnIds.has(id) && chips.has(id));
+  const neither = all.filter(id => !drawnIds.has(id) && !chips.has(id));
+  const B = bandLedger();
+  const html = placeNotice();
+  const problems = [];
+  if (both.length) problems.push(`${both.length} record(s) drawn twice`);
+  if (neither.length) problems.push(`${neither.length} record(s) reach the map at all: ${neither.slice(0, 4).join(", ")}`);
+  if (B.inBands !== chips.size) problems.push(`the ledger counts ${B.inBands} in bands, the map draws ${chips.size}`);
+  if (B.asPoints !== drawnIds.size) problems.push(`the ledger counts ${B.asPoints} as points, the map draws ${drawnIds.size}`);
+  for (const [attr, wantN] of [["data-band-records", B.inBands], ["data-band-points", B.asPoints]]) {
+    const m = html.match(new RegExp(`${attr}="(\\d+)"`));
+    if (!m) problems.push(`${attr} is not machine-readable on the ledger`);
+    else if (Number(m[1]) !== wantN) problems.push(`${attr} prints ${m[1]}, derives ${wantN}`);
+  }
+  note(problems.length === 0,
+       `all ${all.length} records reach the map — ${drawnIds.size} as points, ${chips.size} as squares in a band`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
 /* ---- 2e. FINDING 98: every span state renders DELIBERATELY ----

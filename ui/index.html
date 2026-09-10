@@ -60,6 +60,9 @@
                          piece of type on this page whose size is also a
                          GEOMETRY, solved against in the label collider. */
     --map-label: 14px;  /* MUST equal MAP_LABEL_PX in the script — guard 50. */
+    --band-label: 11px; /* MUST equal BAND.namePx in the script — same reason,
+                           one shape over: a band's name is type AND geometry,
+                           because the plate is sized to hold it. */
     --t-2xs: 11px;    /* eyebrows, tags */
     --t-xs:  11.5px;  /* apparatus meta */
     --t-s:   13px;
@@ -740,7 +743,7 @@
      stylesheet actually reaches — and there is no paint server on this map. */
   .mapsvg .hatchline { stroke: var(--ink-faint); stroke-opacity: .42; stroke-width: 1.2; }
   .mapsvg .band .bname {
-    font: 700 11px var(--font-sans); fill: var(--ink-faint); pointer-events: none;
+    font: 700 var(--band-label) var(--font-sans); fill: var(--ink-faint); pointer-events: none;
     text-transform: uppercase; letter-spacing: .08em;
     paint-order: stroke; stroke: var(--card); stroke-width: 3px; stroke-linejoin: round;
   }
@@ -3153,17 +3156,23 @@ const BAND = {
   perRow:    6,     // wraps past this, so a nine-record region is not a bar
   pad:       6,
   nameH:     13,    // the region's name, above its chips
-  nameCharW: 7.6,   /* mean glyph width of `.bname`, and it is 7.6 rather than
-                       the 6.6 this started at because `.bname` is UPPERCASE and
-                       carries .08em of tracking. At 6.6 the plate was sized for
-                       lower-case metrics and SUB-SAHARAN AFRICA — the longest
-                       region name in the corpus — ran off its own plate and
-                       across A(u)xoume. Same class of error as `MARK.charW`
-                       above, and found the same way. */
+  namePx:    11,    /* MUST equal --band-label in the stylesheet — guard 56. */
+  nameRatio: 0.69,  /* mean glyph width of `.bname` as a fraction of its size.
+                       0.69 and not the 0.60 of `MARK.charW` because `.bname` is
+                       UPPERCASE and carries .08em of tracking, and both make a
+                       glyph wider. THIS RATIO IS THE THING THAT WENT WRONG:
+                       `nameCharW` was 6.6 — lower-case metrics at 11px — and
+                       SUB-SAHARAN AFRICA, the longest region name in the
+                       corpus, ran off its own plate and across A(u)xoume.
+                       Written as a RATIO rather than as a width so that
+                       changing the type size moves the plate with it, and so
+                       that a guard has something to check other than a number
+                       agreeing with itself. */
   radius:    5,
   clear:     8,     // clearance the placer keeps between two bands
   hatch:     7,     // spacing of the ruled diagonals inside a plate
 };
+BAND.nameCharW = BAND.namePx * BAND.nameRatio;
 
 /* ------------------------------------------------------------------ *
  * THE REGION BANDS: WHICH RECORDS, AND WHERE THE MAP KEEPS THEM.
@@ -3629,6 +3638,22 @@ function placeLedger() {
   };
 }
 
+/* The band arithmetic, derived ONCE. `placeNotice` prints it on Methodology and
+   `viewPlaces` prints it on the map tab, and two derivations of one figure is
+   how a page ends up disagreeing with itself — the note on
+   `contestedCoordinate()` says the same thing about the same problem. */
+function bandLedger() {
+  const bands = regionBands();
+  const total = Object.keys(D.corpus).length;
+  const inBands = bands.reduce((n, b) => n + b.members.length, 0);
+  return {
+    bands, total, inBands,
+    asPoints: total - inBands,
+    anchored: bands.filter(b => b.anchor),
+    unanchored: bands.filter(b => !b.anchor),
+  };
+}
+
 /* THE GEOGRAPHY LEDGER, AND IT IS ON THE METHODOLOGY TAB.
  *
  * It opened the Map & Sources tab until now: 236 pixels of apparatus about what
@@ -3654,12 +3679,17 @@ function placeLedger() {
 function placeNotice() {
   const stats = P.stats || {};
   const L = placeLedger();
+  const B = bandLedger();
   const onlyRegional = L.groundsMissing.length === 1 && L.groundsMissing[0] === "regional";
   return `<div class="notice" data-ledger-drawn="${L.groups}"
-      data-ledger-placements="${L.placements}" data-ledger-gaps="${L.gaps.length}">
+      data-ledger-placements="${L.placements}" data-ledger-gaps="${L.gaps.length}"
+      data-band-records="${B.inBands}" data-band-points="${B.asPoints}">
     <strong>${L.groups} distinct point${L.groups === 1 ? "" : "s"} and
     extent${L.groups === 1 ? "" : "s"} are drawn, from ${L.placements} placement${L.placements === 1 ? "" : "s"};
-    ${L.gaps.length} are not.</strong> Everything drawn comes from an id cached in
+    ${L.gaps.length} are not.</strong> Every one of the ${B.total} records still reaches the map:
+    ${B.asPoints} as points, and ${B.inBands} as squares in their region's band — a band being where
+    the map KEEPS a record it cannot draw, never a claim about where that record is.
+    Everything drawn comes from an id cached in
     <code>data/gazetteer.json</code> — nothing on it is a hand-placed coordinate.
     <code>ground</code> is shown, not hidden: a <em>regional</em> claim draws as a shaded area and never as
     a pin, and a <em>contested</em> identification draws disputed, not settled. Lines are the edges
@@ -3681,7 +3711,10 @@ function placeNotice() {
       <div class="cell" data-cell="docsAllGap" data-count="${L.docsAllGap.length}">
         <div class="num">${L.docsAllGap.length}</div><div class="cap">record${L.docsAllGap.length === 1 ? "" : "s"}
         of the ${stats.documents_placed || 0} with any geography at all appear on the map
-        <b>only in the lists on the ${esc(TABS.map)} tab</b></div></div>
+        <b>only as a square in their region's band</b>, never as a point. THIS CELL USED TO SAY
+        <em>only in the lists on the ${esc(TABS.map)} tab</em>, and that stopped being true the moment
+        the bands were drawn — the same stale-pointer defect RULING 90 exists to catch, and the reason
+        the sentence is now guarded rather than proof-read</div></div>
     </div></div>`;
 }
 
@@ -3806,11 +3839,14 @@ function viewPlaces() {
 
   const focusCard = L.focusGaps.length ? `<div class="card">
     <h3 class="eyebrow">
-      the place the passage is organised around, with nowhere to draw it</h3>
+      the place the passage is organised around, with nowhere to draw it AS A POINT</h3>
     <p class="cardlead tight"><strong>${L.focusGaps.length} of the ${L.focusTotal}
       <code>focus</code> placements in this corpus are gaps.</strong> A reader looking at the map above
       is looking at the places these texts mention in passing, while the place each text is actually
-      about is absent from it. Each row gives the record's own reason, unedited.</p>
+      about is not among them. <b>That is still true of the PLACEMENT and is no longer true of the
+      RECORD:</b> where a record has no drawable point at all it is a square in its region's band, so
+      the text is on the map even though its subject is not. Nothing here was resolved to make that
+      work — a polity is still not a town, and each row gives the record's own reason, unedited.</p>
     ${L.focusGaps.map(e => {
       const rec = D.corpus[e.doc_id];
       // First sentence, unless it is a stub like "NO ID." -- several notes
@@ -3847,9 +3883,12 @@ function viewPlaces() {
      the list can be read. */
   const allGapCards = allGapDocs.length ? `<div class="card fullspan">
     <h3 class="eyebrow">
-      considered — nothing in these records resolves to a drawable point</h3>
-    <p class="rec-meta">Every name below is clickable and opens its own
-      placement, with the id that was refused and the reason it was refused.</p>
+      considered — nothing in these records resolves to a drawable point, and each is a square
+      in its region's band</h3>
+    <p class="rec-meta">These ${allGapDocs.length} records are on the map: not as points, which none
+      of their names supports, but as squares in the band for their region — click one there or open
+      it here. Every name below is clickable and opens its own placement, with the id that was refused
+      and the reason it was refused.</p>
     ${allGapDocs.map(([docId, entries]) => {
       const rec = D.corpus[docId];
       return `<div class="gapdoc">
@@ -3869,13 +3908,14 @@ function viewPlaces() {
     </div>`;
   }).join("");
 
-  const unconsideredRows = (P.unconsidered || []).map(docId => {
-    const rec = D.corpus[docId];
-    return `<div class="miss-row" data-record="${esc(docId)}">
-      <div class="rec-title">${esc(rec ? rec.title : docId)}</div>
-      <div class="rec-meta">${esc(rec ? rec.region : "")} — not yet curated (the GeoNames backlog)</div>
-    </div>`;
-  }).join("");
+  /* `unconsideredRows` and the "not yet placed" placard that printed them are
+     GONE, and this comment is their headstone. `P.unconsidered` is empty and has
+     been since the curation blocks closed, so the card was a full-width box
+     printing the word "none" — and a record that lands in `unconsidered` again
+     is not silently lost by its removal: `regionBands()` puts it in its
+     region's band and labels it `not yet curated`, which is a better home than
+     a card at the foot of the tab. RULING 85: a binding nothing reads is the
+     stylesheet-class problem in variable form. */
 
   const unplaceableRows = Object.entries(P.declared_unplaceable || {}).map(([docId, reason]) => {
     const rec = D.corpus[docId];
@@ -3911,8 +3951,11 @@ function viewPlaces() {
           <div class="card placard"><h3>edges named in the text, not drawn on the map
             (${partialGapEdges.length} of ${L.edgesTotal})</h3>
             ${edgeGapRows || `<p class="empty">none</p>`}</div>
-          <div class="card placard"><h3>not yet placed</h3>${unconsideredRows || `<p class="empty">none</p>`}</div>
-          <div class="card placard"><h3>declared unplaceable</h3>${unplaceableRows || `<p class="empty">none</p>`}</div>
+          <div class="card placard"><h3>declared unplaceable — considered, and kept on the map anyway</h3>
+            <p class="rec-meta">No placement is possible and none is invented. The record is still a
+            square in its region's band, because which region a record BELONGS TO is a fact the corpus
+            declares about the record and not a claim about where anything was found.</p>
+            ${unplaceableRows || `<p class="empty">none</p>`}</div>
         </div>
         <h2 class="eyebrow">All ${Object.keys(D.corpus).length} records, by region</h2>
         <div class="regiongrid">${regionCards()}</div>
