@@ -131,7 +131,7 @@ try {
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
     " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger,"
-    + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance };",
+    + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance, layoutBands };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
 } catch (e) {
@@ -150,7 +150,8 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice,
         SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
         langName, placeLedger,
-        regionBands, bandLedger, bandBox, BAND, renderRegionProvenance } = sandbox.__api;
+        regionBands, bandLedger, bandBox, BAND, renderRegionProvenance,
+        layoutBands } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
 let rendered = 0, panels = 0;
@@ -1059,8 +1060,24 @@ if (D.coastline && D.coastline.polygons) {
       problems.push(`${b.region}: says ${b.findspots} findspots, derives ${ps.length}`);
     checked++;
   }
+  /* AND A BAND THAT COULD NOT SIT ON ITS ANCHOR SAYS SO. `layoutBands` gives up
+     after two rings and clamps to the anchor rather than walking out of the
+     region, so a crowded band overlaps the markers it could not avoid — which a
+     reader can see and cannot explain. The panel explains it, and this is what
+     stops the explanation being dropped the next time the panel is rewritten. */
+  const laid = layoutBands(mapWindow());
+  let crowded = 0;
+  for (const o of laid) {
+    if (!o.drawn || !o.crowded) continue;
+    crowded++;
+    if (!svg.includes(`data-region="${o.band.region}" data-crowded="1"`))
+      problems.push(`${o.band.region}: crowded, and the map does not mark it`);
+    if (!/No room at its anchor/.test(renderRegionProvenance(o.band.region)))
+      problems.push(`${o.band.region}: crowded, and its own panel does not say so`);
+  }
   note(problems.length === 0,
-       `every band is anchored on its own region's cached findspots and nothing else (${checked} bands)`
+       `every band is anchored on its own region's cached findspots and nothing else `
+       + `(${checked} bands, ${crowded} with no room at the anchor and saying so)`
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
@@ -1118,7 +1135,12 @@ if (D.coastline && D.coastline.polygons) {
      now, and it is the same lesson as guard 52: the check is the thing being
      tested. */
   const chunkOf = region => {
-    const key = `<g class="band" data-region="${region}">`;
+    /* The key stops at the closing quote, NOT at the closing angle bracket. It
+       used to include the `>`, and the day a band gained a second attribute —
+       `data-crowded` — every crowded band reported "no plate drawn". The guard
+       was right to go red and right about nothing: it was reading its own
+       pattern, not the page. */
+    const key = `<g class="band" data-region="${region}"`;
     const at = svg.indexOf(key);
     if (at < 0) return null;
     const rest = svg.slice(at + key.length);
@@ -1130,10 +1152,14 @@ if (D.coastline && D.coastline.polygons) {
     const chunk = chunkOf(b.region);
     const m = chunk && chunk.match(/class="plate"[^>]*?width="([\d.]+)"\s+height="([\d.]+)"/);
     if (!m) { problems.push(`${b.region}: no plate drawn`); continue; }
-    const box = bandBox(b.members.length);
-    const w = BAND.pad * 2 + Math.max(box.inner, b.region.length * BAND.nameCharW);
-    if (Math.abs(Number(m[1]) - w) > 0.05)
-      problems.push(`${b.region}: plate is ${m[1]} wide, ${b.members.length} record(s) declare ${w.toFixed(1)}`);
+    const box = bandBox(b.members.length, b.region);
+    if (Math.abs(Number(m[1]) - box.w) > 0.05)
+      problems.push(`${b.region}: plate is ${m[1]} wide, ${b.members.length} record(s) and a `
+        + `${box.lines.length}-line name declare ${box.w.toFixed(1)}`);
+    // The name has to FIT the plate it sized, line by line.
+    for (const line of box.lines)
+      if (line.length * BAND.nameCharW > box.w - BAND.pad * 2 + 0.05)
+        problems.push(`${b.region}: the line "${line}" is wider than its own plate`);
     if (Math.abs(Number(m[2]) - box.h) > 0.05)
       problems.push(`${b.region}: plate is ${m[2]} tall, declares ${box.h.toFixed(1)}`);
     checked++;

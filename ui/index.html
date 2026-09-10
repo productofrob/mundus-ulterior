@@ -2754,6 +2754,12 @@ function renderRegionProvenance(region) {
            this region's ${band.findspots} cached findspot${band.findspots === 1 ? "" : "s"}`
         : "none — this region has no cached findspot, so the map has nowhere to put its band")}
   </div>`;
+  const L = layoutBands(mapWindow()).find(o => o.band.region === region);
+  if (L && L.crowded)
+    out += `<div class="warnbox warn"><strong>No room at its anchor.</strong> Every position this
+      placer tried around ${esc(region)}'s own findspots is inside a cluster of markers, so the band is
+      drawn as near to the anchor as the map allowed and overlaps them. The anchor above is still the
+      derived one — it is the BAND that moved, not the figure.</div>`;
   out += `<div class="dormant">A band is where this map KEEPS these records; it is not where they
     are, and its edges are not a border. Its width is the number of squares in it. The seven regions
     are this project's own categories rather than anyone's published boundaries, so no region layer is
@@ -3153,7 +3159,7 @@ const MARK = {
 const BAND = {
   chip:      9,     // one record, one square
   chipGap:   3,
-  perRow:    6,     // wraps past this, so a nine-record region is not a bar
+  perRow:    4,     // wraps past this, so a nine-record region is not a bar
   pad:       6,
   nameH:     13,    // the region's name, above its chips
   namePx:    11,    /* MUST equal --band-label in the stylesheet — guard 56. */
@@ -3254,17 +3260,135 @@ function regionBands() {
   return out;
 }
 
-/* The band's box in viewBox units, from its member count alone. Separated from
-   the drawing so `check_ui.mjs` can ask how big a band should be without
-   parsing one out of the rendered SVG. */
-function bandBox(members) {
+/* THE NAME WRAPS, AND THAT IS A PLACEMENT DECISION RATHER THAN A TYPOGRAPHIC
+   ONE. `SUB-SAHARAN AFRICA` on one line is a 149-unit plate — wider than a
+   six-record band — and in the Red Sea corridor there is no room for it, so the
+   placer walked three rings out and put Sub-Saharan Africa's band over the
+   Arabian Sea. A band far from its anchor is WORSE than a band overlapping
+   pins, because its position is the only derived thing about it. Two lines
+   makes the plate 84 units and it lands on its own findspots. */
+function bandNameLines(region) {
+  const words = String(region).split(/\s+/).filter(Boolean);
+  /* Threshold 9, not 12, and it was lowered by measuring where the bands
+     landed rather than by taste: at 12 only Sub-Saharan Africa and Southeast
+     Asia wrapped, the other five kept single-line plates, and four of the seven
+     were still being pushed 14 to 23 degrees off their own anchors by the Red
+     Sea corridor. Every name in this corpus that has a space is narrower
+     wrapped, and a narrower plate is a plate that fits where it belongs. */
+  if (words.length < 2 || region.length <= 9) return [region];
+  // Balanced into two lines: the split that makes the longer line shortest.
+  let best = null;
+  for (let i = 1; i < words.length; i++) {
+    const a = words.slice(0, i).join(" "), b = words.slice(i).join(" ");
+    const worst = Math.max(a.length, b.length);
+    if (!best || worst < best.worst) best = { worst, lines: [a, b] };
+  }
+  return best.lines;
+}
+
+/* The band's box in viewBox units, from its member count and its name alone.
+   Separated from the drawing so `check_ui.mjs` can ask how big a band should be
+   without parsing one out of the rendered SVG. */
+function bandBox(members, region) {
   const cols = Math.min(BAND.perRow, members);
   const rows = Math.ceil(members / BAND.perRow);
   const inner = cols * BAND.chip + (cols - 1) * BAND.chipGap;
+  const lines = bandNameLines(region == null ? "" : region);
+  const nameW = Math.max(...lines.map(l => l.length)) * BAND.nameCharW;
   return {
-    cols, rows, inner,
-    h: BAND.pad * 2 + BAND.nameH + rows * BAND.chip + (rows - 1) * BAND.chipGap,
+    cols, rows, inner, lines, nameW,
+    w: BAND.pad * 2 + Math.max(inner, nameW),
+    h: BAND.pad * 2 + BAND.nameH * lines.length + rows * BAND.chip + (rows - 1) * BAND.chipGap,
   };
+}
+
+/* ------------------------------------------------------------------ *
+ * WHERE EACH BAND LANDS, AS A FUNCTION OF THE VIEW AND NOTHING ELSE.
+ *
+ * Lifted out of `buildMap` so that something other than the renderer can ask.
+ * A band whose anchor is inside a cluster of pins gets pushed off it, and until
+ * this was askable the only way to find out was to look at the map — which is
+ * how the first version shipped with SUB-SAHARAN AFRICA sitting across
+ * A(u)xoume and nothing anywhere saying so. `renderRegionProvenance` reports it
+ * now, and a guard asserts that it does.
+ *
+ * Pure in (view, corpus): same window in, same boxes out, on every draw.
+ * ------------------------------------------------------------------ */
+function layoutBands(view) {
+  if (!view) return [];
+  const { W, H, lonMin, lonMax, latMin, latMax } = view;
+  const x = lon => (lon - lonMin) / (lonMax - lonMin) * W;
+  const y = lat => H - (lat - latMin) / (latMax - latMin) * H;
+  const markerBoxes = (P.groups || []).map(g => {
+    const [lon, lat] = groupXY(g);
+    return { x: x(lon) - MARK.hit, y: y(lat) - MARK.hit, w: MARK.hit * 2, h: MARK.hit * 2 };
+  });
+  /* A SQUARE SPIRAL, GENERATED RATHER THAN TYPED. The first version was a
+     hand-written list of thirty-three offsets and it ran out: in the Red Sea
+     and Gulf corridor every one of them is inside the pin cluster, so two bands
+     fell through to the fallback and sat on the markers. Rings out to six, each
+     ring ordered by how far the offset is from the anchor and then by a fixed
+     compass order, so the result is deterministic and the band lands as close
+     to its own findspots as the map allows.
+
+     CAPPED AT THREE RINGS, and the cap is the point. Unbounded, the placer will
+     always find room somewhere, and "somewhere" for Sub-Saharan Africa was the
+     Arabian Sea. A band that has walked out of its own region is a worse lie
+     than a band sitting on top of a pin cluster, because the position is the
+     ONLY thing about a band that is derived from the corpus. Past the cap it
+     stops looking, sits on its anchor, and says so. TWO rings and not three:
+     at three the furthest a band could travel was about 23 degrees, and it
+     used all of it — Sub-Saharan Africa's band drew over Libya. */
+  const DIRS = [[0, 0]];
+  for (let r = 1; r <= 2; r++) {
+    const ring = [];
+    for (let dy = -r; dy <= r; dy++)
+      for (let dx = -r; dx <= r; dx++)
+        if (Math.max(Math.abs(dx), Math.abs(dy)) === r) ring.push([dx, dy]);
+    ring.sort((a, b) => (Math.abs(a[0]) + Math.abs(a[1])) - (Math.abs(b[0]) + Math.abs(b[1]))
+                     || a[1] - b[1] || a[0] - b[0]);
+    DIRS.push(...ring);
+  }
+  const out = [];
+  for (const b of regionBands()) {
+    if (!b.anchor) { out.push({ band: b, drawn: false }); continue; }
+    const box = bandBox(b.members.length, b.region);
+    const w = box.w, h = box.h;
+    const ax = x(b.anchor[0]), ay = y(b.anchor[1]);
+    /* THE STEP, MEASURED. Four settings were tried and the drift of every band
+       from its own anchor was counted, because "does it look right" is not a
+       number and this is a placer:
+
+         cap 1, step .50   worst  7.3 deg   mean 1.5   5 of 7 crowded
+         cap 2, step .35   worst 11.5 deg   mean 5.9   1 of 7 crowded
+         cap 2, step .50   worst 16.7 deg   mean 8.5   1 of 7 crowded
+         cap 3, step .25   worst 18.1 deg   mean 7.3   1 of 7 crowded
+
+       The first is truest and unreadable — five bands sitting on pin clusters.
+       The second is taken. */
+    const step = { x: w * 0.35 + BAND.clear, y: h * 0.75 + BAND.clear };
+    let bx = null, by = null, crowded = false;
+    for (const [dx, dy] of DIRS) {
+      const tx = ax - w / 2 + dx * step.x;
+      const ty = ay - h / 2 + dy * step.y;
+      if (tx < 2 || tx + w > W - 2 || ty < 2 || ty + h > H - 2) continue;
+      const hits = q => tx < q.x + q.w + BAND.clear && tx + w + BAND.clear > q.x
+                     && ty < q.y + q.h + BAND.clear && ty + h + BAND.clear > q.y;
+      if (out.some(o => o.drawn && hits(o)) || markerBoxes.some(hits)) continue;
+      bx = tx; by = ty; break;
+    }
+    if (bx === null) {
+      /* Nowhere clear anywhere on the canvas. Clamped to the anchor rather than
+         dropped — a band that vanishes takes its records off the map, which is
+         the whole defect this exists to fix — and marked, so the band's own
+         panel can say it and a guard can check that it did. */
+      bx = Math.max(2, Math.min(W - w - 2, ax - w / 2));
+      by = Math.max(2, Math.min(H - h - 2, ay - h / 2));
+      crowded = true;
+    }
+    out.push({ band: b, drawn: true, x: bx, y: by, w, h, crowded });
+  }
+  return out;
 }
 
 function mapBase() {
@@ -3359,74 +3483,20 @@ function buildMap() {
     svg += `<line class="grat" x1="0" y1="${y(lat).toFixed(1)}" x2="${W}" y2="${y(lat).toFixed(1)}"/>`;
 
   /* ------------------------------------------------------------------ *
-   * THE REGION BANDS.
-   *
-   * Drawn HERE: above the coastline and the graticule, under the edges, the
-   * extents and the pins. That order is the argument and not a z-index
-   * preference — a marker is evidence and a band is furniture, so the evidence
-   * sits on top and a band never obscures a point.
-   *
-   * THE FIRST VERSION OF THIS COLLIDED BANDS AGAINST EACH OTHER ONLY, on the
-   * reasoning that an overlap with a pin costs nothing because the pin is drawn
-   * over it and stays clickable. THAT REASONING IS WRONG AND THE RENDER SAID SO
-   * IMMEDIATELY: clickability was never the problem. Four of the seven bands
-   * landed on the Red Sea and Gulf cluster, and a band's NAME set over a pin and
-   * its label is two pieces of type in one space — PERSIA sat across Ctesiphon
-   * and the Ka'ba, SOUTH ASIA across Sri Lanka, SUB-SAHARAN AFRICA across
-   * A(u)xoume. The band was legible in exactly the three places nothing needed
-   * one. So a marker is an obstacle to a band after all, for the same reason it
-   * is an obstacle to a label, and the reason is legibility rather than access.
+   * THE REGION BANDS, drawn under everything but the coastline and the
+   * graticule. That order is the argument and not a z-index preference: a
+   * marker is evidence and a band is furniture, so the evidence sits on top.
+   * `layoutBands` decided where each one goes; this only draws them.
    * ------------------------------------------------------------------ */
-  const bands = regionBands();
-  /* Marker obstacle boxes, computed before the bands rather than after: the
-     label collider builds this same list further down for its own use, and the
-     two are deliberately the same geometry. */
-  const markerBoxes = groups.map(g => {
-    const [lon, lat] = groupXY(g);
-    return { x: x(lon) - MARK.hit, y: y(lat) - MARK.hit, w: MARK.hit * 2, h: MARK.hit * 2 };
-  });
   const bandBoxes = [];
-  for (const b of bands) {
-    if (!b.anchor) continue;
-    const box = bandBox(b.members.length);
-    const bw = BAND.pad * 2 + Math.max(box.inner, b.region.length * BAND.nameCharW);
-    const bh = box.h;
-    const ax = x(b.anchor[0]), ay = y(b.anchor[1]);
-    /* A SPIRAL OUT FROM THE ANCHOR, and the order is stated rather than tuned:
-       rings of increasing radius, each ring in a fixed compass order, so the
-       band lands as near as it can to the findspots that placed it and lands in
-       the same place on every draw. A ring of nine was tried first and was not
-       enough — in the Gulf corridor every one of the nine is inside the pin
-       cluster, so four bands fell through to the crowded fallback at once. */
-    const step = { x: bw * 0.55 + BAND.clear, y: bh * 0.9 + BAND.clear };
-    const DIRS = [[0,0],[0,-1],[0,1],[-1,0],[1,0],[-1,-1],[1,-1],[-1,1],[1,1],
-                  [0,-2],[0,2],[-2,0],[2,0],[-2,-1],[2,-1],[-2,1],[2,1],
-                  [-1,-2],[1,-2],[-1,2],[1,2],[-3,0],[3,0],[0,-3],[0,3],
-                  [-3,-1],[3,-1],[-3,1],[3,1],[-2,-2],[2,-2],[-2,2],[2,2]];
-    let bx = null, by = null, crowded = false;
-    for (const [dx, dy] of DIRS) {
-      const tx = ax - bw / 2 + dx * step.x;
-      const ty = ay - bh / 2 + dy * step.y;
-      if (tx < 2 || tx + bw > W - 2 || ty < 2 || ty + bh > H - 2) continue;
-      const hits = q => tx < q.x + q.w + BAND.clear && tx + bw + BAND.clear > q.x
-                     && ty < q.y + q.h + BAND.clear && ty + bh + BAND.clear > q.y;
-      if (bandBoxes.some(hits) || markerBoxes.some(hits)) continue;
-      bx = tx; by = ty; break;
-    }
-    if (bx === null) {
-      /* Nowhere clear. Clamped to the canvas at the anchor rather than dropped:
-         a band that vanishes takes its records off the map, which is the whole
-         defect this exists to fix. Marked `crowded`, and counted on screen —
-         a reader should not be the one who discovers it. */
-      bx = Math.max(2, Math.min(W - bw - 2, ax - bw / 2));
-      by = Math.max(2, Math.min(H - bh - 2, ay - bh / 2));
-      crowded = true;
-    }
-    bandBoxes.push({ x: bx, y: by, w: bw, h: bh, region: b.region, crowded });
+  for (const L of layoutBands(view)) {
+    if (!L.drawn) continue;
+    const b = L.band, bx = L.x, by = L.y, bw = L.w, bh = L.h;
+    bandBoxes.push({ x: bx, y: by, w: bw, h: bh });
     let chips = "";
     b.members.forEach((m, i) => {
       const cx = bx + BAND.pad + (i % BAND.perRow) * (BAND.chip + BAND.chipGap);
-      const cy = by + BAND.pad + BAND.nameH
+      const cy = by + BAND.pad + BAND.nameH * bandBox(b.members.length, b.region).lines.length
                + Math.floor(i / BAND.perRow) * (BAND.chip + BAND.chipGap);
       chips += `<rect class="chip${m.unplaceable ? " unplaceable" : ""}" data-record="${esc(m.docId)}"
         x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" width="${BAND.chip}" height="${BAND.chip}" rx="1.5"
@@ -3443,14 +3513,16 @@ function buildMap() {
       hatch += `<line class="hatchline" x1="${(x0 - bh).toFixed(1)}" y1="${(by + bh).toFixed(1)}"
         x2="${x0.toFixed(1)}" y2="${by.toFixed(1)}"/>`;
     }
-    svg += `<g class="band" data-region="${esc(b.region)}">
+    svg += `<g class="band" data-region="${esc(b.region)}"${L.crowded ? ' data-crowded="1"' : ""}>
       <clipPath id="mu-band-${esc(slug)}"><rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}"
         width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="${BAND.radius}"/></clipPath>
       <rect class="plate" x="${bx.toFixed(1)}" y="${by.toFixed(1)}"
         width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" rx="${BAND.radius}"
         ><title>${esc(b.region)} — ${b.members.length} record${b.members.length === 1 ? "" : "s"} this map keeps here rather than as points</title></rect>
       <g class="hatch" clip-path="url(#mu-band-${esc(slug)})">${hatch}</g>
-      <text class="bname" x="${(bx + BAND.pad).toFixed(1)}" y="${(by + BAND.pad + 9).toFixed(1)}">${esc(b.region)}</text>
+      ${bandBox(b.members.length, b.region).lines.map((line, li) =>
+        `<text class="bname" x="${(bx + BAND.pad).toFixed(1)}"
+          y="${(by + BAND.pad + 9 + li * BAND.nameH).toFixed(1)}">${esc(line)}</text>`).join("")}
       ${chips}</g>`;
   }
 
