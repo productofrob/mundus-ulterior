@@ -2750,10 +2750,24 @@ function renderRegionProvenance(region) {
     ${chainRow("on the map", `${drawn.length} draw${drawn.length === 1 ? "s" : ""} as ${drawn.length === 1 ? "a point" : "points"}`)}
     ${chainRow("in this band", `${band.members.length} the map cannot draw as points`)}
     ${chainRow("anchor", band.anchor
-        ? `${band.anchor[1].toFixed(2)}, ${band.anchor[0].toFixed(2)} — the centre of the box holding
-           this region's ${band.findspots} cached findspot${band.findspots === 1 ? "" : "s"}`
+        ? (band.anchorKind === "declared"
+            ? `${band.anchor[1].toFixed(2)}, ${band.anchor[0].toFixed(2)} — <b>declared, not derived</b>`
+            : `${band.anchor[1].toFixed(2)}, ${band.anchor[0].toFixed(2)} — the centre of the box holding
+               this region's ${band.findspots} cached findspot${band.findspots === 1 ? "" : "s"}`)
         : "none — this region has no cached findspot, so the map has nowhere to put its band")}
+    ${band.anchorKind === "declared"
+        ? chainRow("the derivation", band.derived
+            ? `${band.derived[1].toFixed(2)}, ${band.derived[0].toFixed(2)} — what this region's
+               ${band.findspots} cached findspot${band.findspots === 1 ? "" : "s"} would have given,
+               and what this band is NOT placed on`
+            : "nothing — this region has no cached findspot to derive from")
+        : ""}
   </div>`;
+  if (band.anchorKind === "declared")
+    out += `<div class="warnbox warn"><strong>This band's position was declared by a person.</strong>
+      Every other band on this map is placed by derivation from cached gazetteer ids; this one is not,
+      and it is labelled here rather than left to look like the others.
+      <div class="dormant stack">${esc(band.declared.why.replace(/\s+/g, " ").trim())}</div></div>`;
   const L = layoutBands(mapWindow()).find(o => o.band.region === region);
   if (L && L.crowded)
     out += `<div class="warnbox warn"><strong>No room at its anchor.</strong> Every position this
@@ -3215,6 +3229,48 @@ BAND.nameCharW = BAND.namePx * BAND.nameRatio;
  * `viewPlaces` names it on screen — the empty-state discipline RULING 90 gave
  * the panel, applied to the map.
  * ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ *
+ * A DECLARED ANCHOR, AND WHY THERE IS EXACTLY ONE.
+ *
+ * Every other band on this map is placed by derivation and the whole design
+ * rests on that. This one is placed by a person, and the ONLY thing that keeps
+ * that honest is that the page says so — in the band's own panel, in the words
+ * "declared, not derived", beside the derived position it overrules. A declared
+ * anchor that looked like a derived one would be the single worst thing this
+ * file could contain, because the reader has no way to tell them apart.
+ *
+ * RULING 87's pattern: the declaration STATES THE CLAIM IT RESTS ON, and a
+ * guard re-derives what can be re-derived — that the region exists in the
+ * corpus, that the reason is present, and that the panel tells the truth about
+ * which kind of anchor it is.
+ *
+ * WHY THIS ONE IS DECLARED, and it is a defect in the derivation rather than a
+ * disagreement with it: a band's anchor is the centre of the box holding its
+ * region's cached findspots, and Southeast Asia has exactly ONE cached findspot.
+ * The box holding one point is that point, and the centre of a point is not a
+ * regional centre — it is Óc Eo. The derivation is not wrong here so much as
+ * unable to run.
+ *
+ * THIS DECLARATION IS EXPECTED TO BECOME UNNECESSARY. Five of the six Southeast
+ * Asian records the GeoNames rescope will place are findspots — Palembang twice,
+ * the Cham coast twice, Kanchanaburi once — and once they are cached the derived
+ * anchor moves south on its own. The day it does, this entry should be deleted
+ * and the band left to derive, and the note below is what tells the next reader
+ * that removing it is the intended end state rather than a regression.
+ * ------------------------------------------------------------------ */
+const REGION_ANCHOR = {
+  "Southeast Asia": {
+    point: [107.5, -1.5],
+    why: `Declared 2026-09-10. This corpus's Southeast Asian records run from
+      Kanchanaburi through the Cham coast to Srivijaya at Palembang, and the derived
+      anchor is Óc Eo only because Óc Eo is the region's single cached findspot — the
+      box holding one point is that point. The band is placed between Sumatra and
+      Borneo, where the records actually spread to. It is a judgement about this
+      region's reach and not a coordinate taken from any source, which is why it is
+      declared here and labelled as declared on screen.`,
+  },
+};
+
 function regionBands() {
   const homeless = new Map();
   for (const [id, rec] of Object.entries(D.corpus)) {
@@ -3246,12 +3302,18 @@ function regionBands() {
   const out = [];
   for (const [region, members] of homeless) {
     const ps = pts.get(region) || [];
-    const anchor = ps.length
+    /* BOTH ARE KEPT, ALWAYS. The derived anchor is not discarded when a
+       declaration overrules it — the panel prints the one it is not using, so a
+       reader can see what the corpus would have said. */
+    const derived = ps.length
       ? [(Math.min(...ps.map(q => q[0])) + Math.max(...ps.map(q => q[0]))) / 2,
          (Math.min(...ps.map(q => q[1])) + Math.max(...ps.map(q => q[1]))) / 2]
       : null;
+    const dec = REGION_ANCHOR[region] || null;
     members.sort((a, b) => a.title.localeCompare(b.title));
-    out.push({ region, members, anchor, findspots: ps.length });
+    out.push({ region, members, derived, findspots: ps.length,
+               declared: dec, anchor: dec ? dec.point : derived,
+               anchorKind: dec ? "declared" : "derived" });
   }
   /* Biggest first, so when two bands want the same corner it is the region with
      most to say that keeps the position its findspots earned. Stated, and not
@@ -3400,6 +3462,17 @@ function mapBase() {
   for (const g of groups) {
     if (g.kind === "pin") { lons.push(g.resolved.point[0]); lats.push(g.resolved.point[1]); }
     else { const [a, b, c, d] = g.resolved.bbox; lons.push(a, c); lats.push(b, d); }
+  }
+  /* THE WINDOW FITS EVERYTHING THE MAP DRAWS, and a band anchor is now one of
+     those things. It was cached coordinates alone, which was correct while the
+     map drew nothing else — and the moment an anchor sat outside the window the
+     band could not be placed at all and fell to the crowded fallback with no
+     explanation available. A declared anchor between Sumatra and Borneo is
+     three degrees south of anything this corpus has cached, so without this the
+     declaration above would silently do nothing. */
+  for (const b of regionBands()) {
+    if (!b.anchor) continue;
+    lons.push(b.anchor[0]); lats.push(b.anchor[1]);
   }
   const pad = 3;
   const lonMin = Math.min(...lons) - pad, lonMax = Math.max(...lons) + pad;
@@ -3663,6 +3736,15 @@ function buildMap() {
 }
 
 function mapLegend() {
+  /* THE LEGEND MAKES THE SAME CLAIM THE PANEL DOES, so it has to be true in the
+     same way. It said flatly that a band's position is the centre of that
+     region's own cached findspots, and the moment one band was placed by
+     declaration that sentence was false on the busiest surface on the page —
+     the stale-pointer defect RULING 90 exists to catch, and the second time
+     this block has walked into it. Derived from `regionBands()` now, so a
+     declaration that is added or removed rewrites this sentence with it. */
+  const declaredBands = regionBands().filter(b => b.anchorKind === "declared");
+  const one = declaredBands.length === 1;
   return `<div class="maplegend">
     <span class="item"><svg class="swatch" width="14" height="14"><circle class="pt" cx="7" cy="7" r="4"/></svg>stated / identified — a specific place</span>
     <span class="item"><svg class="swatch" width="14" height="14"><circle class="ct" cx="7" cy="7" r="4"/></svg>a contested identification is among the placements here</span>
@@ -3671,7 +3753,10 @@ function mapLegend() {
     <span class="item"><svg class="swatch" width="22" height="10"><line class="lnw" x1="1" y1="5" x2="21" y2="5"/></svg>waypoint — on the way; no order recorded among waypoints</span>
     <span class="item"><svg class="swatch" width="26" height="14"><rect class="bnd" x="1" y="2" width="24" height="10" rx="2"/><rect class="bchip" x="5" y="6" width="4" height="4"/><rect class="bchip" x="11" y="6" width="4" height="4"/><rect class="bchip" x="17" y="6" width="4" height="4"/></svg>a region band, and one square per record — where this map keeps
       the records it cannot draw as points. Its POSITION is the centre of that region's own cached
-      findspots; its SIZE is how many records are in it and is not a claim about territory. A band is
+      findspots${declaredBands.length
+        ? ` — except ${esc(listOf(declaredBands.map(b => b.region)))}, ${one ? "whose position was" : "whose positions were"}
+           declared by a person and ${one ? "says" : "say"} so when you click ${one ? "it" : "them"}`
+        : ""}; its SIZE is how many records are in it and is not a claim about territory. A band is
       not a boundary: these seven regions are this project's categories, not anyone's published ones</span>
     ${D.coastline ? `<span class="item note">Coastline: ${esc(D.coastline.source)}
       ${esc(D.coastline.scale)}, ${esc(D.coastline.terms)}, retrieved ${esc(D.coastline.retrieved)} —

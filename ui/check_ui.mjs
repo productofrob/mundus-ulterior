@@ -131,7 +131,8 @@ try {
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
     " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger,"
-    + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance, layoutBands };",
+    + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance, layoutBands,"
+    + " REGION_ANCHOR, mapLegend };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
 } catch (e) {
@@ -151,7 +152,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
         langName, placeLedger,
         regionBands, bandLedger, bandBox, BAND, renderRegionProvenance,
-        layoutBands } = sandbox.__api;
+        layoutBands, REGION_ANCHOR, mapLegend } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
 let rendered = 0, panels = 0;
@@ -1012,19 +1013,37 @@ if (D.coastline && D.coastline.polygons) {
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
-/* ---- GUARD 55. A band's position is derived from that region's own cached
-   FINDSPOTS, and from nothing else.
+/* ---- GUARD 55. A band is placed EITHER by derivation from its own region's
+   cached findspots, OR by a declaration that says so on screen.
 
-   This is the guard the whole design rests on. The anchor is recomputed here
-   from `P.docs` independently of the page, so a later block cannot swap
-   findspots for subject places, widen it to "any placement", or type a
-   coordinate in — all three of which would still render a band that looks
-   right. The findspot rule is not a detail: a record's SUBJECT places are
-   mostly outside its own region, so an anchor taken over all placements puts
-   East Asia's band in Mesopotamia.
+   RULING 88's test for re-pointing a guard is that the new claim is at least as
+   strong as the old one. The old claim was "every band derives its position
+   from its own region's cached findspots". That claim is KEPT, unchanged, for
+   every band that is not declared — the anchor is recomputed here from `P.docs`
+   independently of the page, so a later block still cannot swap findspots for
+   subject places, widen it to "any placement", or type a coordinate in.
 
-   AND THE NULL CASE. A region with no cached findspot has no anchor and must
-   not be drawn at somebody's guess — it is asserted absent from the SVG. ---- */
+   FOUR OBLIGATIONS ARE ADDED for the declared one, and they are the price of
+   being allowed to declare at all:
+
+     1  the region a declaration names EXISTS in the corpus — a typo'd region
+        key would otherwise sit in the file doing nothing, forever
+     2  the declaration carries a REASON, and it is not empty
+     3  the band's own panel says "declared, not derived" IN THOSE WORDS, and
+        prints the reason
+     4  the panel ALSO prints the derived position the declaration overrules, so
+        a reader can see what the corpus would have said
+
+   (3) and (4) are the whole safeguard. A declared anchor that rendered like a
+   derived one would be the worst thing this file could contain: every other
+   position on this map traces to a cached gazetteer id, and a reader has no way
+   to tell a judgement from a derivation unless the page says which it is.
+
+   AND A DECLARED ANCHOR HAS TO BE INSIDE THE MAP'S OWN WINDOW. `mapBase` fits
+   the window to the coordinates the map draws, and band anchors were not among
+   them until this block — an anchor outside the window cannot be placed at all
+   and falls silently to the crowded fallback, which is a declaration that does
+   nothing while appearing to do something. ---- */
 {
   const want = new Map();
   for (const entries of Object.values(P.docs || {}))
@@ -1042,30 +1061,62 @@ if (D.coastline && D.coastline.polygons) {
     (Math.min(...ps.map(q => q[0])) + Math.max(...ps.map(q => q[0]))) / 2,
     (Math.min(...ps.map(q => q[1])) + Math.max(...ps.map(q => q[1]))) / 2];
   const svg = buildMap();
+  const view = mapWindow();
   const problems = [];
-  let checked = 0;
+  let derivedN = 0, declaredN = 0;
+
+  // (1) a declaration naming a region the corpus does not have does nothing.
+  const regions = new Set(Object.values(D.corpus).map(r => r.region));
+  for (const region of Object.keys(REGION_ANCHOR)) {
+    if (!regions.has(region))
+      problems.push(`REGION_ANCHOR declares "${region}", which is not a region in this corpus`);
+    const why = (REGION_ANCHOR[region] || {}).why;
+    if (!why || !why.trim()) problems.push(`${region}: declared with no reason given`);
+  }
+
   for (const b of regionBands()) {
     const ps = want.get(b.region);
-    if (!ps) {
-      if (b.anchor) problems.push(`${b.region}: anchored with no cached findspot of its own`);
-      if (svg.includes(`data-region="${b.region}"`))
-        problems.push(`${b.region}: drawn on the map with nothing to anchor it to`);
-      continue;
+    // The DERIVATION is checked for every band, declared or not — a declaration
+    // overrules where the band is drawn and never what the corpus would say.
+    if (ps) {
+      const [wx, wy] = centre(ps);
+      if (!b.derived || Math.abs(b.derived[0] - wx) > 1e-9 || Math.abs(b.derived[1] - wy) > 1e-9)
+        problems.push(`${b.region}: derived anchor ${b.derived} is not the centre of its findspots ${[wx, wy]}`);
+      if (b.findspots !== ps.length)
+        problems.push(`${b.region}: says ${b.findspots} findspots, derives ${ps.length}`);
+    } else if (b.derived) {
+      problems.push(`${b.region}: a derived anchor with no cached findspot of its own`);
     }
-    const [wx, wy] = centre(ps);
-    if (!b.anchor) { problems.push(`${b.region}: has findspots and no anchor`); continue; }
-    if (Math.abs(b.anchor[0] - wx) > 1e-9 || Math.abs(b.anchor[1] - wy) > 1e-9)
-      problems.push(`${b.region}: anchor ${b.anchor} is not the centre of its findspots ${[wx, wy]}`);
-    if (b.findspots !== ps.length)
-      problems.push(`${b.region}: says ${b.findspots} findspots, derives ${ps.length}`);
-    checked++;
+
+    if (b.anchorKind === "declared") {
+      declaredN++;
+      const panel = renderRegionProvenance(b.region);
+      if (b.anchor !== b.declared.point)
+        problems.push(`${b.region}: declared, and not drawn on the declared point`);
+      if (!/declared, not derived/.test(panel))
+        problems.push(`${b.region}: declared, and its panel does not say so`);
+      if (!panel.includes(b.declared.why.replace(/\s+/g, " ").trim().slice(0, 40)))
+        problems.push(`${b.region}: declared, and its panel does not print the reason`);
+      if (b.derived && !panel.includes(b.derived[1].toFixed(2)))
+        problems.push(`${b.region}: declared, and its panel does not print the derivation it overrules`);
+      if (!mapLegend().includes(b.region))
+        problems.push(`${b.region}: declared, and the legend still says every band's position is derived`);
+      if (view && (b.anchor[0] < view.lonMin || b.anchor[0] > view.lonMax
+                || b.anchor[1] < view.latMin || b.anchor[1] > view.latMax))
+        problems.push(`${b.region}: declared at ${b.anchor}, which is outside the map's own window`);
+    } else {
+      derivedN++;
+      if (ps && b.anchor !== b.derived)
+        problems.push(`${b.region}: not declared, and not placed on its derivation`);
+    }
   }
+
   /* AND A BAND THAT COULD NOT SIT ON ITS ANCHOR SAYS SO. `layoutBands` gives up
      after two rings and clamps to the anchor rather than walking out of the
      region, so a crowded band overlaps the markers it could not avoid — which a
      reader can see and cannot explain. The panel explains it, and this is what
      stops the explanation being dropped the next time the panel is rewritten. */
-  const laid = layoutBands(mapWindow());
+  const laid = layoutBands(view);
   let crowded = 0;
   for (const o of laid) {
     if (!o.drawn || !o.crowded) continue;
@@ -1076,8 +1127,9 @@ if (D.coastline && D.coastline.polygons) {
       problems.push(`${o.band.region}: crowded, and its own panel does not say so`);
   }
   note(problems.length === 0,
-       `every band is anchored on its own region's cached findspots and nothing else `
-       + `(${checked} bands, ${crowded} with no room at the anchor and saying so)`
+       `every band is placed on its own region's cached findspots, or on a declaration that says so `
+       + `on screen (${derivedN} derived, ${declaredN} declared, `
+       + `${crowded} with no room at the anchor and saying so)`
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
