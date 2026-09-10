@@ -467,7 +467,7 @@
      in the script. Deliberately not built from --good/--warn/--bad, in either
      theme. */
   /* `.provbox` dressed the second axis's box on the quotation panel and went
-     with it (RULING 88). The axis is rendered on Data & Sources, in the same
+     with it (RULING 88). The axis is rendered on the Methodology tab, in the same
      `.chain` rows the rest of that cross-tabulation uses. */
   .axis2 {
     display: flex; gap: var(--s-6); flex-wrap: wrap; margin: var(--s-3) 0 2px;
@@ -1098,7 +1098,7 @@
     <button class="tab" role="tab" data-view="home"      aria-selected="true">Home</button>
     <button class="tab" role="tab" data-view="questions" aria-selected="false">Questions</button>
     <button class="tab" role="tab" data-view="map"       aria-selected="false">Map &amp; Sources</button>
-    <button class="tab" role="tab" data-view="data"      aria-selected="false">Data &amp; Sources</button>
+    <button class="tab" role="tab" data-view="data"      aria-selected="false">Methodology</button>
   </div>
 </header>
 <div class="bandwrap">
@@ -1443,7 +1443,7 @@ function railPartition() {
 /* ------------------------------------------------------------------ *
  * THE TAB NAMES, DECLARED ONCE.
  *
- * The page talks about its own tabs — on Home, on Data & Sources, in the
+ * The page talks about its own tabs — on Home, on the Methodology tab, in the
  * chain figure's link, in two tooltips — and every one of those sentences used
  * to TYPE the name. That is the same defect as a typed count, in words instead
  * of digits, and it had already happened: `viewAbout` said "the Places tab"
@@ -1464,7 +1464,7 @@ const TABS = {
   home:      "Home",
   questions: "Questions",
   map:       "Map & Sources",
-  data:      "Data & Sources",
+  data:      "Methodology",
 };
 
 let state = {
@@ -2244,7 +2244,7 @@ function renderPassageProvenance(run, marker) {
 
      So the panel now shows a language and a region for those 16 runs WITHOUT
      saying they came from the record rather than from the run. Nothing on the
-     page says it yet. Owed to the Data & Sources tab, alongside the two
+     page says it yet. Owed to the Methodology tab, alongside the two
      withheld failures and the second axis, and it should be stated there in the
      same commit that states them. */
 
@@ -2620,7 +2620,7 @@ function introSection() {
      2 and refused 9" and "what the failures say" — are gone from here. Both
      survive where they were born and are not lost with them: the contested
      coordinate is a full card on the Map tab, with both lists and every name
-     clickable, and the two audits are the first two cards on Data & Sources.
+     clickable, and the two audits are the first two cards on Methodology.
 
      `contestedCoordinate()` and `spanCrossTab()` are NOT removed. The design
      block lifted them out of those two views so the front section could state a
@@ -2663,7 +2663,7 @@ function viewQuestions() {
      failures, and it is gone. That obligation is not discharged by deleting the
      sentence: Home says "the failures are kept ... a system that only displays
      its successes is not evidence of anything", and until the count is stated on
-     the Data & Sources tab the page is one claim short of that. Recorded rather
+     the Methodology tab the page is one claim short of that. Recorded rather
      than left to be noticed. */
   const rail = railPartition();
   const qbtn = q => `<button class="qbtn" data-question="${esc(q)}"
