@@ -1025,8 +1025,21 @@
     }
     .statstrip::-webkit-scrollbar { display: none; }
     .statstrip > span { white-space: nowrap; flex: none; }
-    .tabs { overflow-x: auto; scrollbar-width: none; }
-    .tabs::-webkit-scrollbar { display: none; }
+    /* THE ROW WRAPS; THE LABELS DO NOT. UI_DESIGN_START.md section 6 refused
+       tab labels wrapping INSIDE their own boxes, which is a different thing
+       and is still refused by `white-space: nowrap` on `.tab`.
+
+       This bar used to scroll sideways, and that fitted while the third tab
+       said "Map": measured at 390px, 358px of track in 358px of room, exactly.
+       "Map & Sources" makes the track 430px, so the bar ran 72px off the end
+       and "Data & Sources" arrived clipped, reachable only by a finger-drag
+       nothing on screen advertised. Two lines cost about 40px of height on the
+       one width where this block has already given back seven hundred.
+
+       `row-gap` is what stops the two lines touching; the tabs sit on a 1px
+       overlap with the panel edge below them, so a wrapped row needs its own
+       vertical rhythm rather than the horizontal gap alone. */
+    .tabs { flex-wrap: wrap; row-gap: var(--s-1); }
     .tab { padding: var(--s-3) var(--s-4); font-size: var(--t-s); }
     /* the question list after the answer, not before it */
     .cols .rail { order: 3; }
@@ -4096,7 +4109,14 @@ document.addEventListener("click", ev => {
        nearly two thousand pixels, so `"nearest"` brought its BOTTOM edge to the
        fold and landed the reader at the end of the answer they had just asked
        for. Same choice, and the same reason, as FINDING 102's fix. */
-    const el = document.getElementById("panel");
+    const inner = document.getElementById("panel");
+    /* The WRAPPER, not the inner box, so the heading that says which panel this
+       is arrives with it. Scrolling `#panel` to the top of the viewport put its
+       own "Place" / "Provenance" eyebrow 27px above the fold — measured, once
+       the wrapped tab row pushed the phone layout down far enough for this
+       branch to start firing at all. `closest` is absent from the harness's
+       thin DOM, hence the fallback. */
+    const el = inner && (inner.closest && inner.closest(".panel") || inner);
     const box = el && el.getBoundingClientRect && el.getBoundingClientRect();
     if (box && el.scrollIntoView && (box.bottom < 40 || box.top > window.innerHeight - 40))
       el.scrollIntoView({ block: "start" });
