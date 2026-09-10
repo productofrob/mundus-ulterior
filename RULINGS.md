@@ -61,7 +61,34 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 90. The next free finding is 106.**
+**The next free ruling number is 91. The next free finding is 107.**
+
+> **UPDATED 2026-09-10, in the Map block.** **Ruling 90**: a panel's empty state
+> belongs to the TAB, and no tab borrows another's. One string served the
+> Questions tab's Provenance box and the Map tab's Place box; the Questions
+> block trimmed it correctly for that tab and the clause naming *a point, a
+> shaded region or a line* went with it, leaving the Map tab instructing a
+> visitor to click things it does not have. It is a TABLE now, and guard 49
+> re-derives it: each entry declares the KINDS its tab can select, and the guard
+> renders each view with nothing selected and compares that declaration against
+> what the view's own markup emits. A view with no entry says so on screen
+> rather than borrowing its neighbour's sentence. Verified red four ways.
+>
+> **FINDING 106**, found by using the page and then measured rather than
+> asserted: **the map never shows what is selected.** `ui/index.html` styles
+> `.pin.hl`, `.pin.contested.hl`, `.extent.hl` and `.edge.hl` in four rules, and
+> `classList.add` is called twice in the whole file — both times with
+> `"dragging"`. Nothing ever adds `hl`. The screenshot of the Map tab before
+> clicking a pin and the screenshot after are byte-for-byte the same file. This
+> is RULING 85's argument in reverse: dead STYLING for a feature that was never
+> wired, and unlike a dead handler it fails silently. **Open, not fixed** — it is
+> the first of the further Map edits Rob has asked for.
+>
+> Also in this block: **UI_QUESTIONS_START.md §3A is fixed** — the Map tab's
+> panel is a column beside the map rather than a card 7,306 pixels below the
+> fold — with guard 48, and `ui/measure_map.mjs` is the instrument those figures
+> come from. `UI_MAP_PREDICTIONS.md` was committed before a line of `ui/` was
+> edited and is scored, not amended.
 
 > **UPDATED 2026-09-09, at the close of the same session.** **Ruling 89**: a
 > record's note on the page shows the curator's words about the SOURCE and
