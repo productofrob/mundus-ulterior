@@ -61,7 +61,28 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 91. The next free finding is 108.**
+**The next free ruling number is 91. The next free finding is 109.**
+
+> **FINDING 108, 2026-09-10.** **The map's mark sizes are authored in a unit
+> whose meaning on screen depends on the layout, so any layout change resizes
+> every one of them silently, and no guard can see it.** `buildMap` draws into a
+> 900-unit viewBox rendered at `width: 100%` of whatever column it is given, so
+> one authored radius is a different number of CSS pixels at every width — and
+> the label size is not just type, it is the geometry the collision solver
+> clears room in.
+>
+> Seen twice in one session. Widening the map from a column to the full width
+> took the scale 1.18x to 1.64x, and with it the dots from 24.7 to 34.5 CSS px
+> and the labels from 16.5 to 23 — larger than the answer type on the Questions
+> tab — with no edit to a single mark value. Both times it was caught by
+> re-running the instrument, and **guard 50 cannot catch it**: the harness has
+> no layout engine, so it can only assert that the stylesheet and the script
+> agree about the number, never what the number becomes on screen.
+>
+> **The rule this leaves: any change to the Map tab's LAYOUT is a change to its
+> MARK SIZES, and `ui/measure_map.mjs` is run after both.** The mark figures in
+> `MARK`'s own comment are true of the layout in force when they were written
+> and of no other.
 
 > **FINDING 107, 2026-09-10.** The Claude desktop app writes every file
 > delivered to the chat into a **`Claude outputs/` folder inside the connected
