@@ -61,7 +61,21 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 91. The next free finding is 107.**
+**The next free ruling number is 91. The next free finding is 108.**
+
+> **FINDING 107, 2026-09-10.** The Claude desktop app writes every file
+> delivered to the chat into a **`Claude outputs/` folder inside the connected
+> project folder** — which on this project is the repository root. It had been
+> sitting there untracked, and this session moved it out and said so. **That was
+> wrong, and the correction is the useful half:** it is not a leftover from an
+> earlier session, it reappears the moment the next file is delivered. Twenty
+> minutes after the move, four screenshots put it back.
+>
+> The cost is not the folder, it is that `git status --short` stops reading
+> clean — and this project's corpus procedures use "expect: clean" as a real
+> precondition. It is in `.gitignore` now rather than fought; the screenshots
+> and documents this project has accumulated in it live beside the repository,
+> in `../Claude outputs/`.
 
 > **UPDATED 2026-09-10, in the Map block.** **Ruling 90**: a panel's empty state
 > belongs to the TAB, and no tab borrows another's. One string served the

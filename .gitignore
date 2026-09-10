@@ -35,3 +35,15 @@ _to_delete/
 # result document, not in the repository root. Ignored so `git status --short`
 # reads clean before a corpus change, where "expect: clean" has to mean it.
 commit-*.txt
+
+# FINDING 107. The Claude desktop app writes every file delivered to the chat
+# into a "Claude outputs/" folder inside whichever project folder the session is
+# connected to -- which here is the repository root. It is NOT a leftover from
+# an earlier session: it reappears the moment a file is delivered, so moving it
+# out is a chore that never finishes and `git status --short` stops reading
+# clean before a corpus change, where "expect: clean" has to mean it.
+#
+# Ignored rather than fought. Anything worth keeping in it is a screenshot or a
+# document that belongs beside the project, not inside the repository, and the
+# ones this project has accumulated are in ../Claude outputs/.
+Claude outputs/
