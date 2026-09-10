@@ -59,7 +59,7 @@
                          label has its own token below, because it is the one
                          piece of type on this page whose size is also a
                          GEOMETRY, solved against in the label collider. */
-    --map-label: 10px;  /* MUST equal MAP_LABEL_PX in the script — guard 50. */
+    --map-label: 14px;  /* MUST equal MAP_LABEL_PX in the script — guard 50. */
     --t-2xs: 11px;    /* eyebrows, tags */
     --t-xs:  11.5px;  /* apparatus meta */
     --t-s:   13px;
@@ -88,7 +88,6 @@
     --shadow-1: 0 1px 2px rgba(33,32,28,.05);
     --shadow-2: 0 2px 4px rgba(33,32,28,.05), 0 12px 28px rgba(33,32,28,.07);
 
-    --guide-max: 46vh;  /* the Guide band's ceiling — see `.guide` below */
     --shell-max: 1560px;
     --rail-left: 268px;
     --rail-right: 400px;
@@ -339,7 +338,7 @@
   .cols.cols-half       { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--s-6); }
   .cols.cols-single     { grid-template-columns: minmax(0, 104ch); }
 
-  /* ---------- THE GUIDE BOX, AND WHY IT IS WHERE IT IS ----------
+  /* ---------- THE MAP TAB'S COLUMNS ----------
      UI_QUESTIONS_START.md section 3A was the largest known defect on this page:
      the box that answers a click on the map sat in the tab's BOTTOM `.cols`,
      below thirteen cards and the whole region grid. Measured on
@@ -348,36 +347,23 @@
      and 16,464 below it on a 390px phone. The visitor clicks and nothing
      appears to happen.
 
-     3A first fixed that by making it a COLUMN beside the map. It is a BAND
-     ACROSS THE TOP now, directly above the map and the full width of the tab.
-     The map gets every pixel of the width for it — 1,058 rendered pixels as a
-     column, 1,480 as a band — and the box that explains the map is the thing
-     immediately above the map rather than something off to one side.
+     THE MAP IS THE LEFT COLUMN AND THE GUIDE IS THE RIGHT ONE. That was 3A's
+     answer, and it is the answer again: a full-width map with the Guide as a
+     band above it was tried and read worse, because the box that explains a
+     selection belongs BESIDE the thing you selected, where both are on screen
+     at once, rather than above it where reading one means scrolling the other
+     away.
 
-     THE CLAIM IS UNCHANGED AND SO IS ITS GUARD. Guard 48 asserted map, then
-     panel, then grid; it asserts GUIDE, then map, then grid. Same three
-     landmarks, same relation, same defect refused — the box that answers a
-     click is adjacent to the map and is never at the foot of the tab. Which
-     SIDE it is adjacent on is a design decision; being adjacent at all is what
-     3A ruled.
-
-     IT IS CAPPED AND IT SCROLLS. A record panel runs to nearly two thousand
-     pixels, and a band that tall above the map would push the map off the
-     screen entirely — the defect inverted. `--guide-max` is the ceiling; the
-     box scrolls inside it and the map stays where the reader left it.
-
-     NOT STICKY. `.panel` is sticky because a side rail should hold its place as
-     a reader scrolls past it. A full-width band pinned to the top of the
-     viewport would sit ON the map, covering the thing it describes. */
-  .guide { position: static; margin-bottom: var(--s-5); }
-  .guide .panel-inner { max-height: var(--guide-max); }
-  /* THE BAND IS FULL WIDTH; ITS TEXT IS NOT. Everything this panel renders was
-     written for a 400px rail, and at 1,480px the source characters in a
-     `.fieldtext` would set at something like 240 characters to the line, which
-     is unreadable in a way that has nothing to do with the type size. The band
-     takes the width; each block inside it keeps the reading measure the rest of
-     the page uses (`.cols-single` is the same 104ch). */
-  .guide .panel-inner > * { max-width: 104ch; }
+     THE GUIDE SPANS BOTH ROWS. Its grid AREA runs the height of the whole tab —
+     row 1 is the map, row 2 is everything under it — which is what lets
+     `position: sticky` hold it on screen past the map and all the way down the
+     gap lists and the region grid. Every one of those is clickable and every
+     one fills this same box, so a Guide that was sticky beside the MAP alone
+     would only have moved the defect further down the page. */
+  .cols.mapcols          { grid-template-columns: minmax(0,1fr) var(--rail-right); }
+  .mapcols > .mapcol     { grid-column: 1; grid-row: 1; min-width: 0; }
+  .mapcols > .rail-right { grid-column: 2; grid-row: 1 / span 2; }
+  .mapcols > .mapbelow   { grid-column: 1; grid-row: 2; min-width: 0; }
 
   @media (max-width: 1240px) {
     .cols { grid-template-columns: var(--rail-left) minmax(0,1fr); }
@@ -385,6 +371,16 @@
   }
   @media (max-width: 860px) {
     .cols, .cols.cols-half { grid-template-columns: 1fr; }
+    /* The tab stacks map -> Guide -> everything else. Explicit, because
+       `.cols.mapcols` outranks the bare `.cols` above it and a two-column grid
+       left standing at 390px is exactly the sideways scroll section 6 fixed. */
+    .cols.mapcols { grid-template-columns: 1fr; }
+    .mapcols > .mapcol,
+    .mapcols > .rail-right,
+    .mapcols > .mapbelow { grid-column: 1; grid-row: auto; }
+    .mapcols > .mapcol     { order: 1; }
+    .mapcols > .rail-right { order: 2; }
+    .mapcols > .mapbelow   { order: 3; }
   }
 
   .rail h2, .panel h2 {
@@ -664,10 +660,10 @@
   }
   .mapsvg .extent:hover, .mapsvg .extent.hl { fill-opacity: .2; stroke-opacity: .9; }
   .mapsvg .pin circle.dot { fill: var(--accent); stroke: var(--card); stroke-width: 1.3; cursor: pointer; }
-  .mapsvg .pin:hover circle.dot, .mapsvg .pin.hl circle.dot { fill: var(--ink); r: 8.5; }
+  .mapsvg .pin:hover circle.dot, .mapsvg .pin.hl circle.dot { fill: var(--ink); r: 12; }
   .mapsvg .pin.contested circle.dot { fill: var(--card); stroke: var(--warn); stroke-width: 2; stroke-dasharray: 2 1.4; }
   .mapsvg .pin.contested:hover circle.dot, .mapsvg .pin.contested.hl circle.dot { fill: var(--warn-bg); }
-  .mapsvg .pin text.n { font: 700 8.5px var(--font-sans); fill: var(--on-accent); pointer-events: none; text-anchor: middle; }
+  .mapsvg .pin text.n { font: 700 12px var(--font-sans); fill: var(--on-accent); pointer-events: none; text-anchor: middle; }
   .mapsvg .pin.contested text.n { fill: var(--warn); }
   /* THE ONE PIECE OF TYPE ON THIS PAGE THAT IS ALSO A GEOMETRY. `buildMap`
      drops any label that would collide with one already placed, and it solves
@@ -1056,11 +1052,6 @@
     .cols .rail-right { order: 2; }
     .panel { position: static; }
     .panel-inner { max-height: none; }
-    /* ...but the Guide band keeps its ceiling, and needs one here more than
-       anywhere: at 390px a record panel is nearly two thousand pixels and it
-       sits directly above the map. Without this the map leaves the screen the
-       moment anything is clicked. */
-    .guide .panel-inner { max-height: var(--guide-max); }
     .card { padding: var(--s-5); border-radius: var(--r-md); }
     .intro h2 { max-width: none; }
     .intro .claim { font-size: var(--t-base); }
@@ -2882,19 +2873,21 @@ const MAP_MAX_ZOOM = 60;
  * and no expression can be shared between the two. That is the BANNER pattern —
  * declared twice, and guard 50 asserts the two agree.
  * ------------------------------------------------------------------ */
-const MAP_LABEL_PX = 10;
+const MAP_LABEL_PX = 14;
 const MARK = {
-  dot:      5.7,          // a pin holding one placement
-  dotMulti: 7.5,          // a pin several placements share; it carries a numeral
-  numeral:  2.6,          // baseline nudge that centres that numeral in the dot
-  hit:      8,            // half the obstacle box a marker shows the collider
-  gap:      2,            // clearance the collider keeps between two labels
+  dot:      8,            // a pin holding one placement
+  dotMulti: 10.5,         // a pin several placements share; it carries a numeral
+  numeral:  3.6,          // baseline nudge that centres that numeral in the dot
+  hit:      11,           // half the obstacle box a marker shows the collider
+  gap:      3,            // clearance the collider keeps between two labels
   charW:    MAP_LABEL_PX * 0.56,   // mean glyph width of the sans stack
   lineH:    MAP_LABEL_PX * 1.2,
-  off:      11.5,         // a side label's distance from the pin's centre.
-                          // 9.5 left it 2 units clear of a 7.5 dot, which was
-                          // the old ratio and read as a touch once the
-                          // full-width map drew it at 1.64x. Seen at Roma.
+  off:      14.5,         // a side label's distance from the pin's centre —
+                          // FOUR units clear of `dotMulti`, not the two and a
+                          // half this carried before. A label touching the pin
+                          // it names was visible at Roma the moment the map was
+                          // drawn larger, and the tight ratio had been here all
+                          // along; it was the scale that made it legible.
   mid:      MAP_LABEL_PX * 0.35,   // baseline nudge that centres it on the dot
 };
 
@@ -3387,36 +3380,38 @@ function viewPlaces() {
     </div>`;
   }).join("");
 
-  /* THE GUIDE COMES FIRST, THEN THE MAP, THEN EVERYTHING ELSE — and that order
-     is asserted rather than left to a reader of this function. Guard 48 reads
-     this view's own markup and fails if `id="panel"` stops appearing before
-     `class="maparea"`, or if either stops appearing before `class="regiongrid"`.
-     The stylesheet comment on `.guide` is the argument; this is the order it
-     needs.
+  /* THE MAP IS THE FIRST CHILD AND THE GUIDE IS THE SECOND, and that order is
+     asserted rather than left to a reader of this function: guard 48 reads this
+     view's own markup and fails if `id="panel"` stops appearing between
+     `class="maparea"` and `class="regiongrid"`. The stylesheet comment on
+     `.mapcols` is the argument; this is the order it needs.
 
-     THERE ARE NO COLUMNS ON THIS TAB ANY MORE. Everything is full width and in
-     reading order, which is why every `data-*` check on it still passes and why
-     the phone needs no ordering rules of its own. */
+     Everything below the map is in `.mapbelow`, in the order it has always been
+     in, which is why every `data-*` check on this tab still passes. */
   return `<div>
     ${hashNotice()}
+    <div class="cols mapcols">
+      <div class="mapcol">${mapCard}</div>
 
-    <div class="panel guide"><h2>Guide</h2>
-      <div class="panel-inner" id="panel">${renderPanel()}</div></div>
+      <div class="rail-right panel"><h2>Guide</h2>
+        <div class="panel-inner" id="panel">${renderPanel()}</div></div>
 
-    ${mapCard}
-    ${notice}
-    ${contestedCard}
-    ${focusCard}
-    ${allGapCards}
-    <div class="placards">
-      <div class="card placard"><h3>edges named in the text, not drawn on the map
-        (${partialGapEdges.length} of ${L.edgesTotal})</h3>
-        ${edgeGapRows || `<p class="empty">none</p>`}</div>
-      <div class="card placard"><h3>not yet placed</h3>${unconsideredRows || `<p class="empty">none</p>`}</div>
-      <div class="card placard"><h3>declared unplaceable</h3>${unplaceableRows || `<p class="empty">none</p>`}</div>
+      <div class="mapbelow">
+        ${notice}
+        ${contestedCard}
+        ${focusCard}
+        ${allGapCards}
+        <div class="placards">
+          <div class="card placard"><h3>edges named in the text, not drawn on the map
+            (${partialGapEdges.length} of ${L.edgesTotal})</h3>
+            ${edgeGapRows || `<p class="empty">none</p>`}</div>
+          <div class="card placard"><h3>not yet placed</h3>${unconsideredRows || `<p class="empty">none</p>`}</div>
+          <div class="card placard"><h3>declared unplaceable</h3>${unplaceableRows || `<p class="empty">none</p>`}</div>
+        </div>
+        <h2 class="eyebrow">All ${Object.keys(D.corpus).length} records, by region</h2>
+        <div class="regiongrid">${regionCards()}</div>
+      </div>
     </div>
-    <h2 class="eyebrow">All ${Object.keys(D.corpus).length} records, by region</h2>
-    <div class="regiongrid">${regionCards()}</div>
   </div>`;
 }
 

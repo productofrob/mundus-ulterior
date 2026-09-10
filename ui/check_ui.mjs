@@ -624,24 +624,27 @@ if (D.coastline && D.coastline.polygons) {
 {
   const html = viewPlaces();
   const at = needle => html.indexOf(needle);
-  const guide = at(`id="panel"`);
   const map   = at(`class="maparea"`);
+  const guide = at(`id="panel"`);
   const grid  = at(`class="regiongrid"`);
-  const found = guide >= 0 && map >= 0 && grid >= 0;
-  /* RE-POINTED, NOT RELAXED. This read map < panel < grid while the box was a
-     column beside the map. The box is a full-width band ABOVE the map now, so
-     it reads guide < map < grid: the same three landmarks, the same relation,
-     and the same defect refused — the box that answers a click is adjacent to
-     the map and is never at the foot of the tab. RULING 88's test for moving a
-     guard is whether the new surface carries the same claim, and this is the
-     same claim about the same two elements in the other order.
+  const found = map >= 0 && guide >= 0 && grid >= 0;
+  /* RE-POINTED TWICE NOW, AND RELAXED NEITHER TIME. It read map < panel < grid
+     while the Guide was the right-hand column; guide < map < grid while the
+     Guide was a band above a full-width map; and map < guide < grid again now
+     the columns are back. Three arrangements, one claim, unchanged in all of
+     them: THE BOX THAT ANSWERS A CLICK IS ADJACENT TO THE MAP AND IS NEVER AT
+     THE FOOT OF THE TAB. Which side it is adjacent on is a design decision;
+     being adjacent at all is what section 3A ruled.
 
-     It was seen RED for free on the way: the restructure landed first and this
-     line reported `288 < 87 < 71231` before it was touched. */
-  note(found && guide < map && map < grid,
-       `the ${TABS.map} tab renders the Guide, then the map, then the record grid` +
-       (found ? ` (${guide} < ${map} < ${grid})`
-              : ` — a landmark is missing: guide ${guide}, map ${map}, grid ${grid}`));
+     Both re-pointings were seen RED for free, because the restructure landed
+     before the guard was touched each time — `288 < 87 < 71231` going one way
+     and `35180 < 73 < 71067` coming back. A guard that goes red on a change it
+     is supposed to notice, before anybody edits it, is the cheapest evidence
+     there is that it was watching. */
+  note(found && map < guide && guide < grid,
+       `the ${TABS.map} tab renders the map, then the Guide, then the record grid` +
+       (found ? ` (${map} < ${guide} < ${grid})`
+              : ` — a landmark is missing: map ${map}, guide ${guide}, grid ${grid}`));
 }
 
 /* ---- GUARD 49. Every tab that renders a panel has its own empty state, and
