@@ -2432,18 +2432,71 @@ function renderEdgeProvenance(idx) {
   return out;
 }
 
+/* ------------------------------------------------------------------ *
+ * THE EMPTY STATE BELONGS TO THE TAB. RULING 90.
+ *
+ * One string served two tabs. This panel is the Questions tab's Provenance box
+ * AND the Map tab's Place box, and one sentence was the empty state of both —
+ * so when the clause naming *a point, a shaded region or a line* came off it in
+ * the Questions block, the Map tab was left opening with a panel instructing a
+ * visitor to click things that tab does not have. The comment left in its place
+ * said exactly that, and this is the entry that answers it.
+ *
+ * A TABLE, AND A GUARD THAT SAYS THE TABLE COVERS EVERYTHING. The same shape as
+ * SPAN_STATES and PROVENANCE, and for the same reason: the failure worth
+ * guarding is not a badly written sentence, it is a view that quietly starts
+ * using another view's. So each entry DECLARES the kinds of thing its tab can
+ * select, `SELECT_ATTR` says which attribute each kind needs in the markup for
+ * a selection of that kind to be possible at all, and guard 49 re-derives the
+ * declaration from the view's own rendered HTML.
+ *
+ * That is the difference between this and a sentence somebody proof-read: a
+ * tab that gains a clickable kind and does not mention it goes RED, and so does
+ * a tab whose sentence advertises something it cannot select — which is the
+ * exact defect this table was written to close.
+ * ------------------------------------------------------------------ */
+const PANEL_EMPTY = {
+  questions: {
+    selects: ["quote", "passage"],
+    html: `<p class="empty">Click a highlighted quotation, a citation marker, or a source
+      card. Every quotation on this page resolves to a range of characters in a named field
+      of a named file, and this panel is where you see those characters.</p>`,
+  },
+  map: {
+    selects: ["group", "place", "edge", "record"],
+    html: `<p class="empty">Click a point, a shaded region or a line on the map — or any
+      record or place named in the lists below. Nothing here is a hand-placed coordinate:
+      this panel names the cached gazetteer id a point came from, the record that named it,
+      and, where a placement is not drawn, the reason it is not.</p>`,
+  },
+};
+
+/* The attribute a view has to emit for a selection of each kind to be reachable
+   at all. Read straight off the click handler at the foot of this file, and
+   guard 49 is what keeps the two agreeing. */
+const SELECT_ATTR = {
+  quote:   "data-span",
+  passage: "data-marker",
+  record:  "data-record",
+  group:   "data-group",
+  place:   "data-place",
+  edge:    "data-edge",
+};
+
 function renderPanel() {
   const sel = state.selection;
   if (!sel) {
-    /* NOTE FOR WHOEVER EDITS THIS NEXT: one string, two tabs. This panel is the
-       Questions tab's Provenance box AND the Map tab's Place box, and this is
-       the empty state of both. The sentence naming a point, a shaded region and
-       a line was here because the Map tab has no other instruction — it is worth
-       knowing that it went, and that the Map tab now opens with a panel that
-       describes clicking things it does not have. */
-    return `<p class="empty">Click a highlighted quotation, a citation marker, or a source.
-      Every quotation resolves to its corresponding range in a given source. This panel
-      shows specific details of each highlight when clicked.</p>`;
+    const e = PANEL_EMPTY[state.view];
+    /* NO FALL-THROUGH, and this is the whole point of the table. A view with no
+       empty state of its own says so — visibly, on screen — rather than
+       borrowing the other tab's sentence, which is how this defect happened the
+       first time and how it would happen again silently. Same shape as
+       `unknownstate` in SPAN_STATES: guard 49 fails on it too, so nobody has to
+       be looking at the right tab on the right day. */
+    if (!e) return `<p class="empty">This view has no empty state of its own
+      (<code>${esc(state.view)}</code>), so nothing is described here rather than the wrong
+      thing being described.</p>`;
+    return e.html;
   }
   if (sel.kind === "record")  return renderRecordProvenance(sel.docId);
   if (sel.kind === "place")   return renderPlaceProvenance(sel.key);

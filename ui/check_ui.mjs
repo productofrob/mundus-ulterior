@@ -128,7 +128,7 @@ try {
     " buildMap, mapState, mapWindow, mapBase, viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES," +
-    " SPAN_STATES, PROVENANCE, langName, placeLedger };",
+    " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
 } catch (e) {
@@ -144,7 +144,8 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         viewHome, viewQuestions, viewPlaces, viewAbout,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
         railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES,
-        SPAN_STATES, PROVENANCE, langName, placeLedger } = sandbox.__api;
+        SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
+        langName, placeLedger } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
 let rendered = 0, panels = 0;
@@ -630,6 +631,85 @@ if (D.coastline && D.coastline.polygons) {
        `the Map tab renders the map, then its panel, then the record grid` +
        (found ? ` (${map} < ${panel} < ${grid})`
               : ` — a landmark is missing: map ${map}, panel ${panel}, grid ${grid}`));
+}
+
+/* ---- GUARD 49. Every tab that renders a panel has its own empty state, and
+   the kinds it advertises are the kinds it can actually select. RULING 90.
+
+   ONE STRING SERVED TWO TABS. The Questions block trimmed it for the Questions
+   tab — correctly, for that tab — and the clause naming *a point, a shaded
+   region or a line* went with it, leaving the Map tab telling a visitor to
+   click things it does not have. Nothing caught that, because every guard on
+   this page asserted the panel RENDERED, and it did.
+
+   So this is not a proof-read. It is the SPAN_STATES / PROVENANCE shape: a
+   table, and a guard that re-derives the table from the archive — here, from
+   the view's own rendered markup. Three claims, and each one is a different
+   way for the same defect to come back:
+
+     1  a view that renders a panel and declares no empty state
+     2  a view whose declared kinds are not the kinds its markup can select —
+        either it advertises a click it cannot answer, or it has GAINED a
+        clickable kind and still describes the old set
+     3  two views printing the same sentence, which is the original defect
+        exactly
+
+   Rendered with `selection` null and `intro` true, because that is the state
+   the sentence describes: a visitor who has just arrived and clicked nothing.
+   ---- */
+{
+  /* BY NAME, and the same reason as the render check above: a view missing from
+     this list is a view whose empty state nobody checks. Add the fifth the day
+     it exists. */
+  const VIEWS = [["questions", viewQuestions], ["map", viewPlaces],
+                 ["home", viewHome], ["data", viewAbout]];
+  const saved = { view: state.view, selection: state.selection, intro: state.intro };
+  const problems = [];
+  const withPanel = [];
+  const seen = new Map();
+
+  for (const [name, fn] of VIEWS) {
+    state.view = name; state.selection = null; state.intro = true;
+    let html;
+    try { html = fn(); }
+    catch (e) { problems.push(`${name} threw: ${e.message}`); continue; }
+    if (!html.includes(`id="panel"`)) continue;
+    withPanel.push(name);
+
+    const entry = PANEL_EMPTY[name];
+    if (!entry) { problems.push(`${name} renders a panel and declares no empty state`); continue; }
+
+    // 1. the view prints its OWN declared sentence, verbatim.
+    if (!html.includes(entry.html))
+      problems.push(`${name}'s panel does not hold the sentence PANEL_EMPTY declares for it`);
+
+    // 3. and nobody else's.
+    const prior = seen.get(entry.html);
+    if (prior) problems.push(`${name} and ${prior} print the same empty state`);
+    seen.set(entry.html, name);
+
+    // 2. declared kinds === kinds this view's markup can actually select.
+    const declared = [...entry.selects].sort();
+    const present = Object.entries(SELECT_ATTR)
+      .filter(([, attr]) => html.includes(`${attr}="`))
+      .map(([kind]) => kind).sort();
+    const missing = declared.filter(k => !present.includes(k));
+    const extra   = present.filter(k => !declared.includes(k));
+    if (missing.length)
+      problems.push(`${name} advertises ${missing.join(", ")} and its markup emits no such thing`);
+    if (extra.length)
+      problems.push(`${name} can select ${extra.join(", ")} and its empty state does not say so`);
+  }
+
+  Object.assign(state, saved);
+  const undeclared = Object.keys(PANEL_EMPTY).filter(v => !withPanel.includes(v));
+  if (undeclared.length)
+    problems.push(`PANEL_EMPTY declares ${undeclared.join(", ")}, which render no panel`);
+
+  note(problems.length === 0,
+       `every tab with a panel has its own empty state, naming what that tab can select` +
+       ` (${withPanel.map(v => `${v}: ${PANEL_EMPTY[v] ? PANEL_EMPTY[v].selects.length : 0}`).join(", ")})` +
+       (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
 /* ---- 2e. FINDING 98: every span state renders DELIBERATELY ----
