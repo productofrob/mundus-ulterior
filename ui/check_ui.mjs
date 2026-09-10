@@ -624,14 +624,24 @@ if (D.coastline && D.coastline.polygons) {
 {
   const html = viewPlaces();
   const at = needle => html.indexOf(needle);
+  const guide = at(`id="panel"`);
   const map   = at(`class="maparea"`);
-  const panel = at(`id="panel"`);
   const grid  = at(`class="regiongrid"`);
-  const found = map >= 0 && panel >= 0 && grid >= 0;
-  note(found && map < panel && panel < grid,
-       `the Map tab renders the map, then its panel, then the record grid` +
-       (found ? ` (${map} < ${panel} < ${grid})`
-              : ` — a landmark is missing: map ${map}, panel ${panel}, grid ${grid}`));
+  const found = guide >= 0 && map >= 0 && grid >= 0;
+  /* RE-POINTED, NOT RELAXED. This read map < panel < grid while the box was a
+     column beside the map. The box is a full-width band ABOVE the map now, so
+     it reads guide < map < grid: the same three landmarks, the same relation,
+     and the same defect refused — the box that answers a click is adjacent to
+     the map and is never at the foot of the tab. RULING 88's test for moving a
+     guard is whether the new surface carries the same claim, and this is the
+     same claim about the same two elements in the other order.
+
+     It was seen RED for free on the way: the restructure landed first and this
+     line reported `288 < 87 < 71231` before it was touched. */
+  note(found && guide < map && map < grid,
+       `the ${TABS.map} tab renders the Guide, then the map, then the record grid` +
+       (found ? ` (${guide} < ${map} < ${grid})`
+              : ` — a landmark is missing: guide ${guide}, map ${map}, grid ${grid}`));
 }
 
 /* ---- GUARD 49. Every tab that renders a panel has its own empty state, and

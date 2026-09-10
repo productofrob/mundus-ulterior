@@ -49,7 +49,9 @@ const PROBE = () => {
     map:        y(".maparea"),
     mapH:       h(".maparea"),
     svgH:       h(".mapsvg"),
-    panel:      y(".rail-right.panel"),
+    // `.panel.guide` on this tab since the Guide became a band above the
+    // map; still `.rail-right.panel` on the Questions tab.
+    panel:      y(".panel"),
     regiongrid: y(".regiongrid"),
     pins:       document.querySelectorAll(".mapsvg .pin").length,
     extents:    document.querySelectorAll(".mapsvg .extent").length,
@@ -63,7 +65,7 @@ const CLICK_PROBE = () => {
   const pin = document.querySelector(".mapsvg .pin");
   if (!pin) return { clicked: false };
   pin.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-  const r = document.querySelector(".rail-right.panel").getBoundingClientRect();
+  const r = document.querySelector(".panel").getBoundingClientRect();
   return {
     clicked: true,
     panelTop: Math.round(r.top),
