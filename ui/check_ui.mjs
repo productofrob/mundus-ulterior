@@ -1054,8 +1054,12 @@ if (D.coastline && D.coastline.polygons) {
       if (!g) continue;
       const xy = g.kind === "pin" ? g.resolved.point
         : [(g.resolved.bbox[0] + g.resolved.bbox[2]) / 2, (g.resolved.bbox[1] + g.resolved.bbox[3]) / 2];
-      if (!want.has(region)) want.set(region, []);
-      want.get(region).push(xy);
+      /* KEYED BY CACHE_KEY, so a site three records share counts once. The
+         page counts distinct sites and the harness counted placements, and this
+         guard went red on the difference — which is what an independent
+         re-derivation is for. */
+      if (!want.has(region)) want.set(region, new Map());
+      want.get(region).set(e.cache_key, xy);
     }
   const centre = ps => [
     (Math.min(...ps.map(q => q[0])) + Math.max(...ps.map(q => q[0]))) / 2,
@@ -1075,7 +1079,7 @@ if (D.coastline && D.coastline.polygons) {
   }
 
   for (const b of regionBands()) {
-    const ps = want.get(b.region);
+    const ps = want.has(b.region) ? [...want.get(b.region).values()] : null;
     // The DERIVATION is checked for every band, declared or not — a declaration
     // overrules where the band is drawn and never what the corpus would say.
     if (ps) {
@@ -1092,7 +1096,18 @@ if (D.coastline && D.coastline.polygons) {
       declaredN++;
       const panel = renderRegionProvenance(b.region);
       if (b.anchor !== b.declared.point)
-        problems.push(`${b.region}: declared, and not drawn on the declared point`);
+        problems.push(`${b.region}: declared, and its anchor is not the declared point`);
+      /* AND IT IS DRAWN THERE. The anchor being right while the placer moved
+         the band somewhere else is exactly the defect this caught: a
+         declaration that gets nudged is not a declaration. */
+      const laidHere = layoutBands(view).find(o => o.band.region === b.region);
+      if (laidHere && laidHere.drawn && view) {
+        const cx = (b.anchor[0] - view.lonMin) / (view.lonMax - view.lonMin) * view.W;
+        const cy = view.H - (b.anchor[1] - view.latMin) / (view.latMax - view.latMin) * view.H;
+        if (Math.abs(laidHere.x + laidHere.w / 2 - cx) > 0.5
+         || Math.abs(laidHere.y + laidHere.h / 2 - cy) > 0.5)
+          problems.push(`${b.region}: declared, and the placer moved the band off the declared point`);
+      }
       if (!/declared, not derived/.test(panel))
         problems.push(`${b.region}: declared, and its panel does not say so`);
       if (!panel.includes(b.declared.why.replace(/\s+/g, " ").trim().slice(0, 40)))

@@ -2770,10 +2770,13 @@ function renderRegionProvenance(region) {
       <div class="dormant stack">${esc(band.declared.why.replace(/\s+/g, " ").trim())}</div></div>`;
   const L = layoutBands(mapWindow()).find(o => o.band.region === region);
   if (L && L.crowded)
-    out += `<div class="warnbox warn"><strong>No room at its anchor.</strong> Every position this
-      placer tried around ${esc(region)}'s own findspots is inside a cluster of markers, so the band is
-      drawn as near to the anchor as the map allowed and overlaps them. The anchor above is still the
-      derived one — it is the BAND that moved, not the figure.</div>`;
+    out += `<div class="warnbox warn"><strong>No room at its anchor.</strong> ${band.anchorKind === "declared"
+      ? `This band is drawn exactly where it was declared, and that position overlaps markers already on
+         the map. A declared position is used as declared — the placer does not move it — so this is the
+         note that says the overlap is there, for whoever wants to declare a different point.`
+      : `Every position tried around ${esc(region)}'s own findspots is inside a cluster of markers, so the
+         band is drawn on the anchor itself and overlaps them. The anchor above is still the derived one —
+         it is the BAND that could not get clear of it.`}</div>`;
   out += `<div class="dormant">A band is where this map KEEPS these records; it is not where they
     are, and its edges are not a border. Its width is the number of squares in it. The seven regions
     are this project's own categories rather than anyone's published boundaries, so no region layer is
@@ -3259,6 +3262,16 @@ BAND.nameCharW = BAND.namePx * BAND.nameRatio;
  * that removing it is the intended end state rather than a regression.
  * ------------------------------------------------------------------ */
 const REGION_ANCHOR = {
+  "South Asia": {
+    point: [79.0, 22.0],
+    why: `Declared 2026-09-10. South Asia has ONE distinct cached findspot —
+      Muziris, on the Kerala coast — so the box holding this region's findspots is a
+      point on the south-western shore, and the band derived from it drifts out over
+      the Indian Ocean. This corpus's South Asian material is the Periplus coast, the
+      Konkan market-towns, the Ganges and a Sanskrit astronomer, and central India is
+      where that spread has its middle. A judgement about the region's reach, not a
+      coordinate from any source.`,
+  },
   "Southeast Asia": {
     point: [107.5, -1.5],
     why: `Declared 2026-09-10. This corpus's Southeast Asian records run from
@@ -3296,12 +3309,18 @@ function regionBands() {
       const region = (D.corpus[e.doc_id] || {}).region;
       const g = region && groupsByKey.get(e.cache_key);
       if (!g) continue;
-      if (!pts.has(region)) pts.set(region, []);
-      pts.get(region).push(groupXY(g));
+      /* DISTINCT SITES, NOT PLACEMENTS. Three records name Óc Eo as their
+         findspot, and counting placements made the panel say Southeast Asia had
+         "3 cached findspots" when it has one cached site named three times. The
+         box holding them is a point either way, so the anchor never moved — but
+         the sentence explaining the anchor was wrong about why it was there,
+         which is the harder defect to notice. */
+      if (!pts.has(region)) pts.set(region, new Map());
+      pts.get(region).set(g.cache_key, groupXY(g));
     }
   const out = [];
   for (const [region, members] of homeless) {
-    const ps = pts.get(region) || [];
+    const ps = [...(pts.get(region) || new Map()).values()];
     /* BOTH ARE KEPT, ALWAYS. The derived anchor is not discarded when a
        declaration overrules it — the panel prints the one it is not using, so a
        reader can see what the corpus would have said. */
@@ -3417,6 +3436,18 @@ function layoutBands(view) {
     const box = bandBox(b.members.length, b.region);
     const w = box.w, h = box.h;
     const ax = x(b.anchor[0]), ay = y(b.anchor[1]);
+    /* A DECLARED POSITION IS USED AS DECLARED, and the placer does not get a
+       vote. It had one, and the result was that both declared bands drifted off
+       the points a person had chosen for them — South Asia's declared centre in
+       India collides with the Ganges marker by nine units, so the spiral moved
+       it to Rajasthan, and the whole reason for declaring a position is that
+       somebody looked at the map and decided where the band belongs. A
+       declaration that gets nudged is not a declaration.
+
+       It is still checked for overlap, and marked `crowded` if it has one, so
+       the panel says so and whoever declared it can move it. That is the
+       feedback a person needs; silently relocating their choice is not. */
+    const isDeclared = b.anchorKind === "declared";
     /* THE STEP, MEASURED. Four settings were tried and the drift of every band
        from its own anchor was counted, because "does it look right" is not a
        number and this is a placer:
@@ -3430,22 +3461,47 @@ function layoutBands(view) {
        The second is taken. */
     const step = { x: w * 0.35 + BAND.clear, y: h * 0.75 + BAND.clear };
     let bx = null, by = null, crowded = false;
+    const overlaps = (tx, ty) => {
+      const hits = q => tx < q.x + q.w + BAND.clear && tx + w + BAND.clear > q.x
+                     && ty < q.y + q.h + BAND.clear && ty + h + BAND.clear > q.y;
+      return out.some(o => o.drawn && hits(o)) || markerBoxes.some(hits);
+    };
+    if (isDeclared) {
+      bx = ax - w / 2;
+      by = ay - h / 2;
+      crowded = overlaps(bx, by);
+      out.push({ band: b, drawn: true, x: bx, y: by, w, h, crowded });
+      continue;
+    }
     for (const [dx, dy] of DIRS) {
       const tx = ax - w / 2 + dx * step.x;
       const ty = ay - h / 2 + dy * step.y;
       if (tx < 2 || tx + w > W - 2 || ty < 2 || ty + h > H - 2) continue;
-      const hits = q => tx < q.x + q.w + BAND.clear && tx + w + BAND.clear > q.x
-                     && ty < q.y + q.h + BAND.clear && ty + h + BAND.clear > q.y;
-      if (out.some(o => o.drawn && hits(o)) || markerBoxes.some(hits)) continue;
+      if (overlaps(tx, ty)) continue;
       bx = tx; by = ty; break;
     }
     if (bx === null) {
-      /* Nowhere clear anywhere on the canvas. Clamped to the anchor rather than
-         dropped — a band that vanishes takes its records off the map, which is
-         the whole defect this exists to fix — and marked, so the band's own
-         panel can say it and a guard can check that it did. */
-      bx = Math.max(2, Math.min(W - w - 2, ax - w / 2));
-      by = Math.max(2, Math.min(H - h - 2, ay - h / 2));
+      /* Nowhere clear. CENTRED ON THE ANCHOR, AND NOT CLAMPED TO THE CANVAS.
+         The first version clamped, on the reasoning that a band which goes off
+         screen takes its records with it — and that reasoning produced the
+         worst defect this design has had. Zoom in twice and EVERY band's anchor
+         leaves the window, so every band was pinned to whichever border it had
+         been pushed against: Scandinavia's in the corner of a view of the Gulf,
+         Sub-Saharan Africa's and Arabia's stacked on the left edge, each one
+         sitting on geography it has no relation to.
+
+         A band's position is the ONLY thing about it derived from the corpus,
+         and clamping silently replaced that derivation with "wherever the edge
+         is". A pin whose coordinate is outside the window is drawn outside the
+         window and clipped; a band is now treated exactly the same way, because
+         it is making the same kind of claim about where it is. Off-screen and
+         honest beats on-screen and wrong — and nothing is lost, because every
+         record in a band is also in the region grid below and reachable there.
+
+         Found by Rob, on a zoomed map, which is the third time on this project
+         that the sharpest defect was found by looking rather than by a check. */
+      bx = ax - w / 2;
+      by = ay - h / 2;
       crowded = true;
     }
     out.push({ band: b, drawn: true, x: bx, y: by, w, h, crowded });
@@ -3469,10 +3525,21 @@ function mapBase() {
      band could not be placed at all and fell to the crowded fallback with no
      explanation available. A declared anchor between Sumatra and Borneo is
      three degrees south of anything this corpus has cached, so without this the
-     declaration above would silently do nothing. */
+     declaration above would silently do nothing.
+
+     AND A BAND HAS EXTENT WHERE A POINT DOES NOT, which is why the anchors get
+     a wider margin than the coordinates do. The general `pad` of 3 degrees is
+     generous around a dot and is not enough around a plate: Southeast Asia's
+     band is 59 viewBox units tall, its anchor sat 3 degrees above the bottom
+     edge, and the bottom row of its squares was clipped off the canvas. The
+     band's height in degrees depends on the window this is computing, so this
+     does not try to solve it exactly — it takes a margin comfortably larger
+     than the tallest band this corpus can produce and moves on. */
+  const BAND_PAD = 7;
   for (const b of regionBands()) {
     if (!b.anchor) continue;
-    lons.push(b.anchor[0]); lats.push(b.anchor[1]);
+    lons.push(b.anchor[0] - BAND_PAD, b.anchor[0] + BAND_PAD);
+    lats.push(b.anchor[1] - BAND_PAD, b.anchor[1] + BAND_PAD);
   }
   const pad = 3;
   const lonMin = Math.min(...lons) - pad, lonMax = Math.max(...lons) + pad;
