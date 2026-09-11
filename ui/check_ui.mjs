@@ -1580,6 +1580,19 @@ if (D.coastline && D.coastline.polygons) {
     stale.push(`the GeoNames-backlog sentence says five, unconsidered is ${(P.unconsidered||[]).length}`);
   if (/two of the seven literary records/.test(html))
     stale.push("the 'two of the seven literary records' sentence is a literal from 24 records");
+  /* And the contested-coordinate card's closing sentence, which read "the same
+     coordinate is right for TWO of these placements" beside a figure that was
+     derived. It happened to be true, and it was a typed count wearing letters
+     instead of digits — which is why nothing above caught it and why it sat
+     there through four blocks. Both figures come from `contestedCoordinate()`
+     now, and this is the literal, hunted the way this guard hunts the others. */
+  /* `\s+` and not a space, because this page's template strings wrap and the
+     rendered HTML carries the newline and its indentation. The first version of
+     this line matched a single space, stayed GREEN when the defect was put back,
+     and was reading its own assumption rather than the page — the same mistake
+     as the `[\s\S]` that a template literal ate in guard 56. */
+  if (/right\s+for\s+(two|three|four|five|six|seven|eight|nine|ten)\s+of\s+these\s+placements/i.test(html))
+    stale.push("the contested-coordinate card spells its count out instead of deriving it");
   note(stale.length === 0,
        `no view prints a record count that disagrees with the bundle (${n} records)` +
        (stale.length ? ` — ${stale.join("; ")}` : ""));

@@ -3233,12 +3233,24 @@ function hashNotice() {
     title="dismiss">×</button></div>`;
 }
 
-function regionCards() {
-  const cited = new Map();
-  for (const run of D.runs)
-    for (const p of run.passages || [])
-      cited.set(p.doc_id, (cited.get(p.doc_id) || 0) + 1);
+/* THE RETRIEVAL COUNT IS GONE FROM THESE ROWS, and this comment is its
+   headstone. Every record carried a third clause — `retrieved in 8 runs`, or
+   `never retrieved` — and the `cited` map over all 685 archived runs existed to
+   compute it and for nothing else, so it went with it. RULING 85: a binding
+   nothing reads is the stylesheet-class problem in variable form.
 
+   It is the same argument the run picker's own headstone makes further up this
+   file. How often the retriever happened to pull a record is a fact about the
+   RETRIEVER, not about the source, and this grid is the corpus's table of
+   contents: 54 records, what language each is in, and what kind of thing it is.
+   A reader counting runs per record is being handed the archive's internals in
+   the one place that should simply say what the project holds.
+
+   Nothing is lost that the page does not say better elsewhere. Whether a record
+   was ever retrieved, and how often, is what the Questions tab is: every
+   archived run, every passage it pulled, and the source cards that say `quoted`
+   or `consulted` on the answer that used them. */
+function regionCards() {
   const regions = new Map();
   for (const [id, rec] of Object.entries(D.corpus)) {
     const r = rec.region || "Unplaced";
@@ -3248,15 +3260,11 @@ function regionCards() {
 
   return [...regions.entries()].sort().map(([region, recs]) => {
     const rows = recs.sort((a, b) => (a[1].title || "").localeCompare(b[1].title || ""))
-      .map(([id, rec]) => {
-        const n = cited.get(id) || 0;
-        return `<div class="rec" data-record="${esc(id)}">
+      .map(([id, rec]) => `<div class="rec" data-record="${esc(id)}">
           <div class="rec-title">${esc(rec.title)}</div>
           <div class="rec-meta">${esc((rec.language_code || []).map(langName).join(", "))}
-            · ${esc(rec.source_type || "")}
-            · ${n ? `retrieved in ${n} run${n === 1 ? "" : "s"}` : "never retrieved"}</div>
-        </div>`;
-      }).join("");
+            · ${esc(rec.source_type || "")}</div>
+        </div>`).join("");
     return `<div class="card region"><h3>${esc(region)}</h3>
       <div class="count">${recs.length} record${recs.length === 1 ? "" : "s"}</div>${rows}</div>`;
   }).join("");
