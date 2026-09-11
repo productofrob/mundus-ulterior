@@ -2735,10 +2735,50 @@ function renderEdgeProvenance(idx) {
     ${chainRow("relation", esc(ROLE_DESC[e.role] || ""))}
   </div>`;
   if (!e.drawable) out += `<div class="warnbox warn"><strong>Not drawn.</strong> ${esc(e.gap_reason || "")}</div>`;
-  out += `<div class="sect"><h3>the two places</h3>
-    <div class="rec" data-place="${esc(e.from_key)}"><div class="rec-title">${esc(e.from_name)}</div></div>
-    <div class="rec" data-place="${esc(e.to_key)}"><div class="rec-title">${esc(e.to_name)}</div></div>
-    </div>`;
+
+  /* WHAT THE MAP IS SHOWING YOU ABOUT THIS EDGE, said rather than left to be
+     inferred from a highlight. An undrawn edge marks the end that HAS a
+     coordinate and the square where the record is kept; it does not join them,
+     and this paragraph is why. */
+  const ends = [e.from_key, e.to_key].map(k => placeByKey.get(k));
+  const placed = ends.filter(pl => pl && pl.cache_key);
+  /* WHETHER THIS RECORD HAS A SQUARE AT ALL, asked rather than assumed. The
+     first version of this paragraph said "the only thing marked is the square
+     where this map keeps the record" for every edge with no resolving end — and
+     a record that is drawn as points elsewhere HAS no square, so for those the
+     page was describing a mark that is not on screen. Found by clicking one. */
+  const hasChip = !((P.docs || {})[e.doc_id] || []).some(x => x.kind !== "gap");
+  const WHY = `<b>No line is drawn, and that is deliberate.</b> Both ends of every edge in this
+    corpus sit inside a single record, and a region band belongs to the RECORD rather than to the
+    place — so drawing this edge to a band would say the place at its far end is in that region,
+    which is the identification these records refuse in their own notes.`;
+  if (!e.drawable) {
+    out += `<div class="sect"><h3>what is marked on the map</h3><div class="dormant">` + (
+      placed.length && hasChip
+        ? `The ${placed.length === 1 ? "end that resolves" : "ends that resolve"} to a cached coordinate
+           ${placed.length === 1 ? "is" : "are"} marked, and so is the square where this map keeps the
+           record. ${WHY}`
+      : placed.length
+        ? `The ${placed.length === 1 ? "end that resolves" : "ends that resolve"} to a cached coordinate
+           ${placed.length === 1 ? "is" : "are"} marked. The other names a place this corpus took no id
+           for, so nothing marks it. ${WHY}`
+      : hasChip
+        ? `Neither end resolves to a cached coordinate, so the only thing marked is the square where
+           this map keeps the record that names them both — a fact about the record, not about either
+           place. ${WHY}`
+        : `<b>Nothing on the map marks this edge.</b> Neither end resolves to a cached coordinate, and
+           this record is drawn as points elsewhere rather than kept in a band, so there is no square
+           for it either. It is reachable here, and from both places listed below. ${WHY}`
+    ) + `</div></div>`;
+  }
+
+  out += `<div class="sect"><h3>the two places</h3>` +
+    [[e.from_key, e.from_name], [e.to_key, e.to_name]].map(([key, name]) => {
+      const pl = placeByKey.get(key);
+      return `<div class="rec" data-place="${esc(key)}"><div class="rec-title">${esc(name)}</div>
+        <div class="rec-meta">${pl && pl.cache_key ? "on the map" : "no cached coordinate — not drawn"}</div>
+      </div>`;
+    }).join("") + `</div>`;
   return out;
 }
 
@@ -2885,7 +2925,37 @@ function markMap() {
     return pl && pl.cache_key ? `[data-group="${q(pl.cache_key)}"]` : null;
   };
   if (sel.kind === "group")  want.push(`[data-group="${q(sel.cacheKey)}"]`);
-  if (sel.kind === "edge")   want.push(`[data-edge="${q(sel.idx)}"]`);
+  if (sel.kind === "edge") {
+    want.push(`[data-edge="${q(sel.idx)}"]`);
+    /* AN EDGE MARKS BOTH ITS ENDS, AND IT IS THE ONLY MARK THE THIRTY UNDRAWN
+       ONES GET.
+       These are NOT drawn to the region bands, and the reason is in the data
+       rather than in taste: all 49 edges in this corpus have BOTH ENDS INSIDE
+       ONE RECORD, and a band is keyed to the record's region. Drawing
+       `eastasia-05`'s Da Qin end to the East Asia band would put Rome in East
+       Asia — the mirror of the refusal the corpus makes when it declines to
+       plot an empire as a town, and the map contradicting its own best
+       sentence. Thirteen of the thirty would have collapsed to zero length
+       inside a single plate as well.
+       MARKING IS A WEAKER CLAIM THAN DRAWING, and that is exactly why it is the
+       honest one. It says "here is the end that has a coordinate, and here is
+       where the map keeps the record that names the other one". It draws no
+       line between them and asserts no route. */
+    const e = (P.edges || [])[sel.idx];
+    let unplaced = false;
+    for (const key of e ? [e.from_key, e.to_key] : []) {
+      const g = groupOf(key);
+      if (g) { if (!want.includes(g)) want.push(g); continue; }
+      unplaced = true;
+    }
+    // Only when an end could not be marked, and only where the map actually
+    // keeps this record — a chip exists for a record with no drawn point at
+    // all. A record that IS drawn has already been marked by its other end.
+    if (unplaced && e) {
+      const chip = `.band .chip[data-record="${q(e.doc_id)}"]`;
+      if (!want.includes(chip)) want.push(chip);
+    }
+  }
   if (sel.kind === "region") want.push(`.band[data-region="${q(sel.region)}"] .plate`);
   if (sel.kind === "place")  { const g = groupOf(sel.key); if (g) want.push(g); }
   if (sel.kind === "record") {
@@ -4255,6 +4325,13 @@ function viewPlaces() {
         <div class="placards">
           <div class="card placard"><h3>edges named in the text, not drawn on the map
             (${partialGapEdges.length} of ${L.edgesTotal})</h3>
+            <p class="rec-meta">These are not drawn to the region bands, and the reason is in the
+            corpus rather than in the design: <b>both ends of every edge here sit inside one
+            record</b>, and a band belongs to the record rather than to the place. An edge drawn to
+            its record's band would put the place at its far end in that region — for the Chinese
+            histories that means putting Rome in East Asia, which is the identification those records
+            refuse in their own notes. Click a row: the end that has a coordinate is marked, and so is
+            the square where the map keeps the record. No line is drawn between them.</p>
             ${edgeGapRows || `<p class="empty">none</p>`}</div>
           <div class="card placard"><h3>declared unplaceable — considered, and kept on the map anyway</h3>
             <p class="rec-meta">No placement is possible and none is invented. The record is still a

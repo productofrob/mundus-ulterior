@@ -484,10 +484,44 @@ catch (e) { note(false, `the home view threw: ${e.message}`); }
         edgeProblems.push(`edge ${i} is not listed on the panel for ${pl.cache_key}`);
     }
   }
+  /* AND AN UNDRAWN EDGE SAYS WHAT THE MAP IS SHOWING ABOUT IT.
+     These are deliberately not drawn to the region bands — both ends of every
+     edge in this corpus sit inside ONE record, and a band belongs to the record
+     rather than to the place, so an edge drawn to its own band would put Rome in
+     East Asia. A decision that rests on the corpus has to be visible as one, so
+     each panel names both ends, says which of them the map can mark, and prints
+     the curator's own refusal. The middle clause is the one worth guarding: it
+     is the sentence a later block would quietly drop while leaving the list. */
+  for (const [e, i] of (P.edges || []).map((e, i) => [e, i]).filter(([e]) => !e.drawable)) {
+    const panel = renderEdgeProvenance(i);
+    for (const key of [e.from_key, e.to_key])
+      if (!panel.includes(`data-place="${key}"`))
+        edgeProblems.push(`undrawn edge ${i}: its panel does not offer the endpoint ${key}`);
+    if (!/what is marked on the map/.test(panel))
+      edgeProblems.push(`undrawn edge ${i}: its panel does not say what the map marks`);
+    /* AND IT DESCRIBES THE MARKS THAT EXIST. Re-derived here, because the first
+       version of that paragraph promised "the square where this map keeps the
+       record" for every edge with no resolving end — and a record drawn as
+       points elsewhere has no square, so the page described a mark that was not
+       on screen. Two predicates decide which sentence is true, and this checks
+       the page chose by them. */
+    const all = Object.values(P.docs || {}).flat();
+    const ends = [e.from_key, e.to_key].map(k => all.find(x => x.key === k));
+    const anyPlaced = ends.some(pl => pl && pl.cache_key);
+    const hasChip = !((P.docs || {})[e.doc_id] || []).some(x => x.kind !== "gap");
+    if (!anyPlaced && !hasChip && !/Nothing on the map marks this edge/.test(panel))
+      edgeProblems.push(`undrawn edge ${i}: nothing marks it and its panel does not say so`);
+    if (!hasChip && /the square where this map keeps the record/.test(panel))
+      edgeProblems.push(`undrawn edge ${i}: its panel promises a square this record does not have`);
+    const reason = (e.gap_reason || "").trim();
+    if (reason && !panel.includes(reason.slice(0, 60)))
+      edgeProblems.push(`undrawn edge ${i}: its panel does not carry the curator's own reason`);
+  }
   note(edgeProblems.length === 0,
        `every drawable edge (${drawableEdges.length}) is drawn, presents a `
        + `${hitDecl ? hitDecl[1] : "?"}-unit target against a ${drawn ? drawn[1] : "?"}-unit line, `
-       + `and is listed on the panel of both points it joins`
+       + `and is listed on the panel of both points it joins; every undrawn edge `
+       + `(${(P.edges || []).filter(e => !e.drawable).length}) names both ends and says what the map marks`
        + (edgeProblems.length ? ` — ${edgeProblems.slice(0, 4).join("; ")}` : ""));
 
   for (const g of P.groups || []) {
