@@ -345,6 +345,16 @@
      a handler nobody can test — RULING 85. */
   .cols.cols-half       { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--s-6); }
   .cols.cols-single     { grid-template-columns: minmax(0, 104ch); }
+  /* METHODOLOGY'S COLUMNS. The main column and a Guide, and deliberately NOT
+     `.mapcols`: that grid exists to span the Guide across two rows so it stays
+     sticky past the map, and this tab has no map and no second row. The Guide is
+     written FIRST in the markup and placed second by the grid, because a panel
+     that answers a click belongs beside the thing you clicked at desktop width
+     and ABOVE it on a phone — which is the same order, and the same reason, as
+     `.mapcols` further down. */
+  .cols.cols-panel      { grid-template-columns: minmax(0,1fr) var(--rail-right); }
+  .cols.cols-panel > .rail-right { grid-column: 2; grid-row: 1; }
+  .cols.cols-panel > div:not(.rail-right) { grid-column: 1; grid-row: 1; min-width: 0; }
 
   /* ---------- THE MAP TAB'S COLUMNS ----------
      UI_QUESTIONS_START.md section 3A was the largest known defect on this page:
@@ -376,6 +386,11 @@
   @media (max-width: 1240px) {
     .cols { grid-template-columns: var(--rail-left) minmax(0,1fr); }
     .rail-right { grid-column: 1 / -1; }
+    /* ...except this one, which is only ever two columns and has no left rail
+       to give the space back to. Without this the bare `.rail-right` rule above
+       wins and the Guide spans the full width with the cards underneath it. */
+    .cols.cols-panel { grid-template-columns: minmax(0,1fr) var(--rail-right); }
+    .cols.cols-panel > .rail-right { grid-column: 2; }
   }
   @media (max-width: 860px) {
     .cols, .cols.cols-half { grid-template-columns: 1fr; }
@@ -383,6 +398,20 @@
        `.cols.mapcols` outranks the bare `.cols` above it and a two-column grid
        left standing at 390px is exactly the sideways scroll section 6 fixed. */
     .cols.mapcols { grid-template-columns: 1fr; }
+    /* One column on a phone, AND THE ORDER HAS TO BE SET EXPLICITLY. Measured
+       before it was believed: with `grid-row: auto` alone the bare
+       `.cols .rail-right { order: 2 }` rule above still applied, the content
+       column defaulted to `order: 0`, and the Guide landed 15,615 pixels down
+       the page — behind every card on the tab. That is UI_QUESTIONS_START.md's
+       section 3A defect exactly, reintroduced on a different tab: click a name
+       and the box that answers you is nowhere near the screen.
+       Guide first, as on the map tab, where it sits under the thing you clicked
+       rather than under everything. `select()` scrolls it into view besides. */
+    .cols.cols-panel { grid-template-columns: 1fr; }
+    .cols.cols-panel > .rail-right,
+    .cols.cols-panel > div:not(.rail-right) { grid-column: 1; grid-row: auto; }
+    .cols.cols-panel > .rail-right { order: 1; }
+    .cols.cols-panel > div:not(.rail-right) { order: 2; }
     .mapcols > .mapcol,
     .mapcols > .rail-right,
     .mapcols > .mapbelow { grid-column: 1; grid-row: auto; }
@@ -2819,9 +2848,28 @@ const PANEL_EMPTY = {
        is still clickable in every gap list on the tab. The sentence is what a
        visitor reads; this is what the guard re-derives, and the two answer
        different questions. */
-    selects: ["group", "place", "edge", "record", "region"],
+    /* `place` came off this list when the gap lists moved to ${TABS.data}: a
+       placement is still reachable HERE, but only through this panel itself —
+       open a point and click one of its placements — and `selects` is the list
+       of kinds this VIEW'S MARKUP can select. Guard 49 re-derives it from the
+       markup, so leaving it declared would have been the page advertising a
+       click it can no longer answer. */
+    selects: ["group", "edge", "record", "region"],
     html: `<p class="empty">Click a point, a shaded region, a line or a region band on the
-      map, or any record. This box will then display detailed information about your selection.</p>`,
+      map, or any record below it. This box will then display detailed information about your
+      selection.</p>`,
+  },
+  /* THE METHODOLOGY TAB'S OWN SENTENCE, and it has to be its own: RULING 90
+     exists because one string served two tabs and went stale on one of them.
+     This tab selects placements and records and edges — the things in the
+     geography cards — and it cannot select a point, an extent or a band,
+     because it has no map. So it does not offer to. */
+  data: {
+    selects: ["place", "record", "edge"],
+    html: `<p class="empty">Click any name in the cards on this tab — a place a record
+      names, a record itself, or one of the edges the map does not draw. This box will then show
+      what that thing rests on: the gazetteer id, if there is one, and the note that took it or
+      refused it.</p>`,
   },
 };
 
@@ -3649,6 +3697,19 @@ function layoutBands(view) {
   return out;
 }
 
+/* THE NAME THE MAP DRAWS FOR A PLACE, and it is out here rather than inside
+   `buildMap` because prose elsewhere on the tab now points at a label and has to
+   name the SAME string the map actually paints. Pleiades titles carry scholarly
+   apparatus a map cannot use: query marks ("Mandagara?"), slashed alternates
+   ("Adane/Athenae/Eudaimon Arabia") and administrative suffixes. The full string
+   is always one click away in the panel; on the map the first name is what a
+   reader needs. One derivation, two printers — the same argument the note on
+   `contestedCoordinate()` makes about figures. */
+function mapLabelName(t) {
+  const s = String(t).replace(/\s*\([^)]*\)\s*$/, "").split("/")[0].replace(/\?$/, "").trim();
+  return s.length > 18 ? s.slice(0, 17) + "…" : s;
+}
+
 function mapBase() {
   if (mapState.base !== null) return mapState.base;
   const groups = P.groups || [];
@@ -3889,14 +3950,7 @@ function buildMap() {
                       bx < p.x + p.w + GAP && bx + bw + GAP > p.x &&
                       by < p.y + (p.h || LINE_H) + 1 && by + LINE_H + 1 > p.y);
 
-  // Pleiades titles carry scholarly apparatus a map cannot use: query marks
-  // ("Mandagara?"), slashed alternates ("Adane/Athenae/Eudaimon Arabia"), and
-  // administrative suffixes. The full string is always one click away in the
-  // panel; on the map the first name is what a reader needs.
-  const shortTitle = t => {
-    let s = String(t).replace(/\s*\([^)]*\)\s*$/, "").split("/")[0].replace(/\?$/, "").trim();
-    return s.length > 18 ? s.slice(0, 17) + "…" : s;
-  };
+  const shortTitle = mapLabelName;
 
   // Busiest nodes first, then regions, so that when the Konkan runs out of room
   // it is Muziris and Barygaza that keep their names, not whichever market-town
@@ -4157,7 +4211,7 @@ function spanCrossTab() {
   };
 }
 
-function viewPlaces() {
+function geographyCards() {
   /* `stats` and `allEntries` went with the ledger: both were read only by the
      notice that is now on the Methodology tab, and a binding nothing reads is
      the stylesheet-class problem in variable form — RULING 85. */
@@ -4179,25 +4233,68 @@ function viewPlaces() {
      derivation, two places that print it. */
   const contestedId = contestedCoordinate();
 
+  /* THE FIGURES THIS CARD NEEDS, DERIVED. `crossRefs` is the one that is easy
+     to miss and is the best thing in the card: some of the refusals name a
+     record that DOES take the id and say what makes the two different, which is
+     the corpus checking itself in public. Counted rather than claimed, so the
+     sentence goes away by itself if the notes stop doing it. */
+  const CC = contestedId && (() => {
+    const takers = new Set(contestedId.group.members.map(m => m.doc_id));
+    const regions = new Set(contestedId.refused.map(e => (D.corpus[e.doc_id] || {}).region).filter(Boolean));
+    return {
+      taken: contestedId.group.members.length,
+      refused: contestedId.refused.length,
+      total: contestedId.group.members.length + contestedId.refused.length,
+      regions: regions.size,
+      allRegions: new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean)).size,
+      crossRefs: contestedId.refused.filter(e =>
+        [...takers].some(id => String(e.note || "").includes(id))).length,
+    };
+  })();
+
+  /* REWRITTEN because a reader could not follow it, which is the only test that
+     matters for a paragraph. It said this was "the id this corpus disagrees with
+     itself about most", and then that "the marker you can see on the map above
+     is the first group; the second is not on the map at all".
+
+     Both halves were wrong in the same direction. `group` is this file's word
+     for a cached coordinate and means nothing to a visitor; and the corpus is
+     not disagreeing with itself at all — it is applying ONE RULE, the same way,
+     eleven times. A record takes this id when its text names the place. It
+     refuses it when the same word means a state, a people, an office, or an
+     adjective inside a compound. That rule is the sharpest thing this corpus's
+     geography has to say and the card was burying it under its own vocabulary.
+
+     It also printed the word "two" into the closing sentence, which is a typed
+     count in letters rather than digits and is the exact defect the UI block
+     spent an hour removing. Every figure here is derived now. */
   const contestedCard = contestedId ? `<div class="card">
     <h3 class="eyebrow">
-      one coordinate, taken ${contestedId.group.members.length} time${contestedId.group.members.length === 1 ? "" : "s"}
-      and refused ${contestedId.refused.length}</h3>
+      one gazetteer id, named ${CC.total} times and used ${CC.taken}</h3>
     <p class="cardlead"><strong>${esc(contestedId.group.resolved.title)}
-      (<code>${esc(contestedId.key)}</code>)</strong> is the id this corpus disagrees with itself about
-      most. ${contestedId.group.members.length} placement${contestedId.group.members.length === 1 ? " takes" : "s take"} it
-      and ${contestedId.refused.length} name it in a note in order to refuse it. The marker you can see on
-      the map above is the first group; the second is not on the map at all, and this is the card that
-      says so.</p>
+      (<code>${esc(contestedId.key)}</code>)</strong> is a single entry in the gazetteer, and
+      ${CC.total} placements in this corpus name it. <b>${CC.taken} use it. The other ${CC.refused}
+      name it in their own notes in order to say they are not using it</b> — in records from
+      ${CC.regions} of the ${CC.allRegions} regions.</p>
+    <p class="cardlead tight">That is one rule applied, not a corpus contradicting itself. A record
+      takes this id when its text names <em>the place</em>. It refuses it when the same word means
+      something that is not a place — a state, a people, an office, or an adjective inside a compound
+      word.${CC.crossRefs ? ` ${CC.crossRefs} of the refusals name a record that does take it, and say
+      what makes the two different.` : ""}</p>
+    <p class="cardlead tight">On the map above, the ${CC.taken} that use it are the single marker
+      named ${esc(mapLabelName(contestedId.group.resolved.title))}${CC.taken > 1
+        ? ` carrying a <b>${CC.taken}</b> — one point, because they are all the same place`
+        : ""}. The ${CC.refused} that refuse it are drawn nowhere at all, and this card is where they
+      are counted.</p>
     <div class="cols cols-half">
-      <div><h3 class="eyebrow sm">taken — drawn on the map</h3>
+      <div><h3 class="eyebrow sm">used — the text names the place</h3>
         ${contestedId.group.members.map(m => {
           const rec = D.corpus[m.doc_id];
           return `<div class="rec" data-place="${esc(m.key)}">
             <div class="rec-title">${esc(m.name)}</div>
             <div class="rec-meta">${esc(rec ? rec.title : m.doc_id)}</div></div>`;
         }).join("")}</div>
-      <div><h3 class="eyebrow sm">named in a note, and refused</h3>
+      <div><h3 class="eyebrow sm">refused — the text means something else</h3>
         ${contestedId.refused.map(e => {
           const rec = D.corpus[e.doc_id];
           return `<div class="rec" data-place="${esc(e.key)}">
@@ -4207,9 +4304,9 @@ function viewPlaces() {
     </div>
     <div class="dormant stack">Each refusal has its own reason and this page does not
       summarise them into one — open a name to read the note that refused it. What can be said without
-      reading any of them is arithmetic: the same coordinate is right for two of these placements and
-      wrong for ${contestedId.refused.length}, and a map that drew all of them would be asserting an
-      identification this corpus declined ${contestedId.refused.length} times.</div>
+      reading any of them is arithmetic: the same coordinate is right for ${CC.taken} of these
+      placements and wrong for ${CC.refused}, and a map that drew all ${CC.total} would be asserting
+      an identification this corpus declined ${CC.refused} times.</div>
   </div>` : "";
 
   const focusCard = L.focusGaps.length ? `<div class="card">
@@ -4239,17 +4336,6 @@ function viewPlaces() {
         <div class="why">${esc(why)}</div></div>`;
     }).join("")}
   </div>` : "";
-
-  const mapCard = `<div class="maparea">
-    <div class="mapbar">
-      <button class="mapbtn" data-zoom="in"    title="zoom in">+</button>
-      <button class="mapbtn" data-zoom="out"   title="zoom out">−</button>
-      <button class="mapbtn" data-zoom="reset" title="back to the full extent">Reset</button>
-      <span class="maphint">scroll to zoom · drag to pan</span>
-      <span class="mapzoom" id="mapzoom"></span>
-    </div>
-    <div id="mapholder">${buildMap()}</div>
-    ${mapLegend()}</div>`;
 
   /* This was one card per document, which was proportionate when three
      records had no drawable geometry and is a wall of twenty-one cards now.
@@ -4300,14 +4386,66 @@ function viewPlaces() {
     </div>`;
   }).join("");
 
-  /* THE MAP IS THE FIRST CHILD AND THE GUIDE IS THE SECOND, and that order is
-     asserted rather than left to a reader of this function: guard 48 reads this
-     view's own markup and fails if `id="panel"` stops appearing between
-     `class="maparea"` and `class="regiongrid"`. The stylesheet comment on
-     `.mapcols` is the argument; this is the order it needs.
+  /* THE FIVE CARDS, RETURNED AS ONE STRING, and they are no longer on the map
+     tab. Rob moved them to Methodology, which is where this project explains
+     its sources, its runs and how the map is made — and all five are about how
+     the map is MADE rather than about what it shows. The Map tab is the map,
+     the Guide beside it, and the records underneath.
 
-     Everything below the map is in `.mapbelow`, in the order it has always been
-     in, which is why every `data-*` check on this tab still passes. */
+     EVERY ONE OF THEM POINTED AT "THE MAP ABOVE", and there is no map above
+     them now. That is the exact defect RULING 90 exists to catch, and it caught
+     three stale pointers the last time this apparatus moved tabs. Each sentence
+     is re-pointed to name the tab it now refers to, and the tab is read from
+     `TABS` rather than typed. */
+  return `
+    ${contestedCard}
+    ${focusCard}
+    ${allGapCards}
+    <div class="placards">
+      <div class="card placard"><h3>edges named in the text, not drawn on the map
+        (${partialGapEdges.length} of ${L.edgesTotal})</h3>
+        <p class="rec-meta">These are not drawn to the region bands, and the reason is in the
+        corpus rather than in the design: <b>both ends of every edge here sit inside one
+        record</b>, and a band belongs to the record rather than to the place. An edge drawn to
+        its record's band would put the place at its far end in that region — for the Chinese
+        histories that means putting Rome in East Asia, which is the identification those records
+        refuse in their own notes. Click a row and this tab's own Guide explains it; on the
+        ${esc(TABS.map)} tab the end that has a coordinate is marked, and so is the square where
+        the map keeps the record. No line is drawn between them.</p>
+        ${edgeGapRows || `<p class="empty">none</p>`}</div>
+      <div class="card placard"><h3>declared unplaceable — considered, and kept on the map anyway</h3>
+        <p class="rec-meta">No placement is possible and none is invented. The record is still a
+        square in its region's band on the ${esc(TABS.map)} tab, because which region a record
+        BELONGS TO is a fact the corpus declares about the record and not a claim about where
+        anything was found.</p>
+        ${unplaceableRows || `<p class="empty">none</p>`}</div>
+    </div>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * THE MAP TAB, AND IT IS NOW THE MAP.
+ *
+ * The map, the Guide beside it, and all ${"${Object.keys(D.corpus).length}"} records underneath.
+ * The five cards of geographical apparatus that used to stand between the map
+ * and the record grid are on Methodology — see `geographyCards()`.
+ *
+ * GUARD 48 STILL READS THIS VIEW'S MARKUP and fails if `id="panel"` stops
+ * appearing between `class="maparea"` and `class="regiongrid"`. Both are still
+ * here and the order is unchanged; what is gone is everything that stood
+ * between them.
+ * ------------------------------------------------------------------ */
+function viewPlaces() {
+  const mapCard = `<div class="maparea">
+    <div class="mapbar">
+      <button class="mapbtn" data-zoom="in"    title="zoom in">+</button>
+      <button class="mapbtn" data-zoom="out"   title="zoom out">−</button>
+      <button class="mapbtn" data-zoom="reset" title="back to the full extent">Reset</button>
+      <span class="maphint">scroll to zoom · drag to pan</span>
+      <span class="mapzoom" id="mapzoom"></span>
+    </div>
+    <div id="mapholder">${buildMap()}</div>
+    ${mapLegend()}</div>`;
+
   return `<div>
     ${hashNotice()}
     <div class="cols mapcols">
@@ -4319,26 +4457,6 @@ function viewPlaces() {
         <div class="panel-inner" id="panel">${renderPanel()}</div></div>
 
       <div class="mapbelow">
-        ${contestedCard}
-        ${focusCard}
-        ${allGapCards}
-        <div class="placards">
-          <div class="card placard"><h3>edges named in the text, not drawn on the map
-            (${partialGapEdges.length} of ${L.edgesTotal})</h3>
-            <p class="rec-meta">These are not drawn to the region bands, and the reason is in the
-            corpus rather than in the design: <b>both ends of every edge here sit inside one
-            record</b>, and a band belongs to the record rather than to the place. An edge drawn to
-            its record's band would put the place at its far end in that region — for the Chinese
-            histories that means putting Rome in East Asia, which is the identification those records
-            refuse in their own notes. Click a row: the end that has a coordinate is marked, and so is
-            the square where the map keeps the record. No line is drawn between them.</p>
-            ${edgeGapRows || `<p class="empty">none</p>`}</div>
-          <div class="card placard"><h3>declared unplaceable — considered, and kept on the map anyway</h3>
-            <p class="rec-meta">No placement is possible and none is invented. The record is still a
-            square in its region's band, because which region a record BELONGS TO is a fact the corpus
-            declares about the record and not a claim about where anything was found.</p>
-            ${unplaceableRows || `<p class="empty">none</p>`}</div>
-        </div>
         <h2 class="eyebrow">All ${Object.keys(D.corpus).length} records, by region</h2>
         <div class="regiongrid">${regionCards()}</div>
       </div>
@@ -4545,7 +4663,24 @@ function viewAbout() {
       run${p.runs === 1 ? "" : "s"}</b>${p.provenance ? ` · corpus provenance
       <code>${esc(p.provenance)}</code>` : ""}</div></div>`).join("");
 
-  return `${hashNotice()}<div class="cols cols-single">
+  /* METHODOLOGY HAS ITS OWN GUIDE NOW, and it had to.
+     The five cards of geographical apparatus that moved here are built entirely
+     around clicking a name: about seventy rows between them, each one opening
+     the placement it refers to, the id that was refused, and the note that
+     refused it. Moving them to a tab with no panel would have left every one of
+     those rows inert — the cards would have read the same and done nothing,
+     which is the worst of the three outcomes and the hardest to notice.
+
+     So this tab takes the same right-hand sticky column the other two use:
+     `.rail-right.panel`, `panelNav` and `renderPanel`, unchanged. What is new is
+     one sentence — `PANEL_EMPTY.data` — because guard 49 requires a view that
+     renders a panel to declare its own empty state AND to advertise exactly the
+     kinds its own markup can select. That is the check doing its job. */
+  return `${hashNotice()}<div class="cols cols-panel">
+    <div class="rail-right panel">
+      <div class="panelhead"><h2>Guide</h2>
+        <div class="panelnav" id="panelnav">${panelNav()}</div></div>
+      <div class="panel-inner" id="panel">${renderPanel()}</div></div>
     <div>
     <div class="card">
       <h3>Citations checked against the corpus, just now</h3>
@@ -4635,6 +4770,8 @@ function viewAbout() {
       counts against itself, not in front of the thing it is counting.</p>
       ${placeNotice()}
     </div>
+
+    ${geographyCards()}
 
     <div class="card">
       <h3>What this page does not show</h3>
