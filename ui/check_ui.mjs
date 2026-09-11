@@ -431,11 +431,64 @@ catch (e) { note(false, `the home view threw: ${e.message}`); }
        `every cached point/extent (${(P.groups||[]).length}) is drawn on the map` +
        (missingGroups.length ? ` — missing: ${missingGroups.slice(0,5).map(g=>g.cache_key).join(", ")}` : ""));
 
+  /* AND EVERY ONE OF THEM IS BIG ENOUGH TO CLICK.
+     An SVG stroke is hit-tested at the width it is drawn, and an edge is drawn
+     at 1.4 viewBox units — thinner than a cursor hotspot. Every edge on this map
+     was clickable in principle and unhittable in practice from A5 until Rob
+     reported that mousing over one did not select it, and NO CHECK HERE COULD
+     SEE IT: this guard asserted the edge was in the markup, and it was.
+
+     So the claim is widened rather than a second guard added beside it. An edge
+     is drawn AND it presents a target: a `.hit` line in the same group, reading
+     `--edge-hit` from the stylesheet, several times the visible stroke. The
+     failure this catches is silent and looks fine in the source — drop the hit
+     line, or let the token drift down to the drawn width, and the map looks
+     identical and stops responding. */
   const drawableEdges = (P.edges || []).map((e, i) => [e, i]).filter(([e]) => e.drawable);
-  const missingEdges = drawableEdges.filter(([, i]) => !svg.includes(`data-edge="${i}"`));
-  note(missingEdges.length === 0,
-       `every drawable edge (${drawableEdges.length}) is drawn on the map` +
-       (missingEdges.length ? ` — missing index ${missingEdges.slice(0,5).map(([,i])=>i).join(", ")}` : ""));
+  const edgeProblems = [];
+  for (const [, i] of drawableEdges) {
+    if (!svg.includes(`data-edge="${i}"`)) { edgeProblems.push(`edge ${i} is not drawn`); continue; }
+    const at = svg.indexOf(`data-edge="${i}"`);
+    const chunk = svg.slice(at, at + 400);
+    if (!/class="hit"/.test(chunk)) edgeProblems.push(`edge ${i} has no hit line`);
+  }
+  const hitDecl = html.match(/--edge-hit:\s*([\d.]+)/);
+  const hitRule = html.match(/\.mapsvg \.edge \.hit \{[\s\S]*?\}/);
+  const lnRule  = html.match(/\.mapsvg \.edge \.ln \{[\s\S]*?\}/);
+  if (!hitDecl) edgeProblems.push("the stylesheet declares no --edge-hit");
+  if (!hitRule) edgeProblems.push("no `.mapsvg .edge .hit` rule found");
+  else if (!hitRule[0].includes("var(--edge-hit)"))
+    edgeProblems.push("`.mapsvg .edge .hit` does not take its width from var(--edge-hit)");
+  else if (!/pointer-events:\s*stroke/.test(hitRule[0]))
+    edgeProblems.push("`.mapsvg .edge .hit` does not take pointer events on its stroke");
+  const drawn = lnRule && lnRule[0].match(/stroke-width:\s*([\d.]+)/);
+  if (!drawn) edgeProblems.push("`.mapsvg .edge .ln` declares no stroke-width");
+  else if (hitDecl && Number(hitDecl[1]) < Number(drawn[1]) * 4)
+    edgeProblems.push(`--edge-hit is ${hitDecl[1]} against a drawn ${drawn[1]} — not a target`);
+  if (lnRule && !/pointer-events:\s*none/.test(lnRule[0]))
+    edgeProblems.push("`.mapsvg .edge .ln` still takes pointer events, so the hit line is not the target");
+  /* AND A TARGET IS NOT ENOUGH, because six of these edges have no length to
+     give one. Coloe → Adulis is 3.9 viewBox units between dots of radius 8 and
+     10.5: the line is underneath its own endpoints, and no hit width reaches
+     something that is covered. Two more are identical Ganges → Muziris edges
+     from different records drawn on top of each other.
+     So the claim this guard really wants to make is REACHABILITY, not hit
+     width: every drawable edge is listed on the panel of BOTH points it joins,
+     and a point is always a pin and always clickable. That is checkable here,
+     where a pixel is not. */
+  for (const [e, i] of drawableEdges) {
+    for (const key of [e.from_key, e.to_key]) {
+      const pl = (Object.values(P.docs || {}).flat()).find(x => x.key === key);
+      if (!pl || !pl.cache_key) { edgeProblems.push(`edge ${i}: endpoint ${key} has no group`); continue; }
+      if (!renderGroupProvenance(pl.cache_key).includes(`data-edge="${i}"`))
+        edgeProblems.push(`edge ${i} is not listed on the panel for ${pl.cache_key}`);
+    }
+  }
+  note(edgeProblems.length === 0,
+       `every drawable edge (${drawableEdges.length}) is drawn, presents a `
+       + `${hitDecl ? hitDecl[1] : "?"}-unit target against a ${drawn ? drawn[1] : "?"}-unit line, `
+       + `and is listed on the panel of both points it joins`
+       + (edgeProblems.length ? ` — ${edgeProblems.slice(0, 4).join("; ")}` : ""));
 
   for (const g of P.groups || []) {
     try { renderGroupProvenance(g.cache_key); }

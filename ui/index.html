@@ -60,6 +60,11 @@
                          piece of type on this page whose size is also a
                          GEOMETRY, solved against in the label collider. */
     --map-label: 14px;  /* MUST equal MAP_LABEL_PX in the script — guard 50. */
+    --edge-hit: 9;      /* viewBox units, and NOT px: an SVG stroke-width is in
+                           the coordinate system the mark is authored in, like
+                           everything in `MARK`. The invisible width an edge
+                           presents to the pointer — guard 19 checks this rule is
+                           read and that it stays several times the drawn line. */
     --band-label: 11px; /* MUST equal BAND.namePx in the script — same reason,
                            one shape over: a band's name is type AND geometry,
                            because the plate is sized to hold it. */
@@ -663,9 +668,34 @@
   .mapsvg .sea { fill: var(--map-sea); }
   .mapsvg .grat { stroke: var(--map-grat); stroke-width: 1; }
   .mapsvg .land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: .8; stroke-linejoin: round; }
-  .mapsvg .edge { fill: none; stroke: var(--accent); stroke-opacity: .42; stroke-width: 1.4; }
-  .mapsvg .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .34; }
-  .mapsvg .edge:hover, .mapsvg .edge.hl { stroke-opacity: .9; stroke-width: 2.2; cursor: pointer; }
+  /* ---------- AN EDGE IS A HAIRLINE AND A HAIRLINE IS NOT A CLICK TARGET ----
+     An SVG stroke is hit-tested at the width it is drawn, and these are drawn
+     at 1.4 viewBox units — about 1.7 CSS pixels at 1600px and half a pixel on a
+     phone. Every edge on this map has been clickable in principle and unhittable
+     in practice since A5: the pointer has to land inside a line thinner than the
+     cursor's own hotspot. Reported by Rob, who could not select one.
+
+     The same problem the marks had, and the same answer the marks got — except
+     that a line cannot simply be drawn thicker without becoming a different
+     mark. So each edge is a GROUP of two lines: an invisible `.hit` carrying the
+     click and the hover, and a visible `.ln` carrying none. The visible line
+     keeps the weight it was designed with and the target is as wide as a finger.
+
+     `--edge-hit` is in viewBox units, like `MARK`, and guard 19 asserts the rule
+     below reads it and that it is several times the visible stroke — a hit line
+     that quietly shrank back to the drawn width would restore the defect with
+     nothing on screen looking different. */
+  .mapsvg .edge { cursor: pointer; }
+  .mapsvg .edge .hit {
+    fill: none; stroke: transparent; stroke-width: var(--edge-hit);
+    stroke-linecap: round; pointer-events: stroke;
+  }
+  .mapsvg .edge .ln {
+    fill: none; stroke: var(--accent); stroke-opacity: .42; stroke-width: 1.4;
+    pointer-events: none;
+  }
+  .mapsvg .edge.waypoint .ln { stroke-dasharray: 1 3; stroke-opacity: .34; }
+  .mapsvg .edge:hover .ln, .mapsvg .edge.hl .ln { stroke-opacity: .9; stroke-width: 2.2; }
   /* GROUND IS TOLD APART BY SHAPE. A `regional` claim is a shaded area and is
      never a pin; a `contested` identification is drawn disputed. Neither
      borrows --good/--warn/--bad as a gradient, because "stated on a Greek port
@@ -845,8 +875,12 @@
   .mapthumb .sea { fill: var(--map-sea); }
   .mapthumb .grat { stroke: var(--map-grat); stroke-width: 1; }
   .mapthumb .land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: .8; stroke-linejoin: round; }
-  .mapthumb .edge { fill: none; stroke: var(--accent); stroke-opacity: .34; stroke-width: 1.2; }
-  .mapthumb .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .24; }
+  /* No hit line on a surface where nothing is clickable: `pointer-events: none`
+     already covers it, and a 9-unit transparent stroke on a 430px thumbnail is
+     markup doing nothing. Same argument as `.lbl` and `.band` below. */
+  .mapthumb .edge .hit { display: none; }
+  .mapthumb .edge .ln { fill: none; stroke: var(--accent); stroke-opacity: .34; stroke-width: 1.2; }
+  .mapthumb .edge.waypoint .ln { stroke-dasharray: 1 3; stroke-opacity: .24; }
   .mapthumb .extent { fill: var(--accent); fill-opacity: .09; stroke: var(--accent);
                       stroke-opacity: .42; stroke-dasharray: 3 2; }
   /* THE THUMBNAILS KEEP THE SMALL DOT, and this is the one place the mark
@@ -1028,8 +1062,9 @@
   .homemap .sea { fill: var(--map-sea); }
   .homemap .grat { stroke: var(--map-grat); stroke-width: 1; }
   .homemap .land { fill: var(--map-land); stroke: var(--map-coast); stroke-width: .8; stroke-linejoin: round; }
-  .homemap .edge { fill: none; stroke: var(--accent); stroke-opacity: .34; stroke-width: 1.2; }
-  .homemap .edge.waypoint { stroke-dasharray: 1 3; stroke-opacity: .24; }
+  .homemap .edge .hit { display: none; }
+  .homemap .edge .ln { fill: none; stroke: var(--accent); stroke-opacity: .34; stroke-width: 1.2; }
+  .homemap .edge.waypoint .ln { stroke-dasharray: 1 3; stroke-opacity: .24; }
   .homemap .extent { fill: var(--accent); fill-opacity: .09; stroke: var(--accent);
                      stroke-opacity: .42; stroke-dasharray: 3 2; }
   /* Same override, same reason as `.mapthumb` above — this one is 320px. */
@@ -2639,6 +2674,41 @@ function renderGroupProvenance(cacheKey) {
       ground, not one shared pin's.</div>`;
   }
 
+  /* EVERY EDGE THAT TOUCHES THIS POINT, AND THIS IS THE ONLY WAY SOME OF THEM
+     CAN BE REACHED AT ALL.
+     Widening the click target fixed the edges that had length to spare and
+     could not fix the ones that have none. Measured at the default view:
+     Coloe → Adulis is 3.9 viewBox units long and the two dots it connects have
+     radii of 8 and 10.5, so the line is not merely hard to hit — it is entirely
+     underneath its own endpoints, along with five others under ten units. Two
+     more are a pair of IDENTICAL Ganges → Muziris edges from different records,
+     drawn on top of each other, so one of them can never be the thing the
+     pointer finds.
+     Zooming separates them, and a reader should not have to discover that. An
+     endpoint is always a pin and a pin is always clickable, so every edge is
+     listed on the panel of both places it joins — the same argument the label
+     collider makes when it drops a name: nothing is lost, because the thing is
+     one click away somewhere that cannot run out of room. */
+  const touching = (P.edges || [])
+    .map((e, idx) => ({ e, idx }))
+    .filter(({ e }) => {
+      const a = placeByKey.get(e.from_key), z = placeByKey.get(e.to_key);
+      return (a && a.cache_key === cacheKey) || (z && z.cache_key === cacheKey);
+    });
+  if (touching.length) {
+    const shortName = s => String(s).split(/[—–]/)[0].trim();
+    out += `<div class="sect"><h3>edges through this point (${touching.length})</h3>` +
+      touching.map(({ e, idx }) => {
+        const rec = D.corpus[e.doc_id];
+        return `<div class="rec" data-edge="${esc(idx)}">
+          <div class="rec-title">${esc(shortName(e.from_name))} → ${esc(shortName(e.to_name))}
+            <span class="ground-tag">${esc(e.role)}</span>
+            ${e.drawable ? "" : `<span class="ground-tag contested spaced">not drawn</span>`}</div>
+          <div class="rec-meta">${esc(rec ? rec.title : e.doc_id)}</div>
+        </div>`;
+      }).join("") + `</div>`;
+  }
+
   out += `<div class="sect"><h3>placements at this point</h3>` +
     g.members.map(m => {
       const rec = D.corpus[m.doc_id];
@@ -3673,9 +3743,17 @@ function buildMap() {
     const ga = a && groupsByKey.get(a.cache_key), gb = b && groupsByKey.get(b.cache_key);
     if (!ga || !gb) return;
     const [ax, ay] = groupXY(ga), [bx, by] = groupXY(gb);
-    svg += `<line class="edge${e.role === "waypoint" ? " waypoint" : ""}" data-edge="${idx}"
-      x1="${x(ax).toFixed(1)}" y1="${y(ay).toFixed(1)}" x2="${x(bx).toFixed(1)}" y2="${y(by).toFixed(1)}">
-      <title>${esc(e.from_name)} → ${esc(e.to_name)} (${esc(e.role)})</title></line>`;
+    /* TWO LINES, AND ONLY ONE OF THEM IS VISIBLE. The `.hit` line is what the
+       pointer meets; the `.ln` line is what the reader sees and it takes no
+       pointer events at all. A stroke is hit-tested at the width it is drawn,
+       and 1.4 viewBox units is thinner than a cursor hotspot — see the note on
+       `.mapsvg .edge` in the stylesheet. The coordinates are written once and
+       used twice so the two can never describe different lines. */
+    const seg = `x1="${x(ax).toFixed(1)}" y1="${y(ay).toFixed(1)}"`
+              + ` x2="${x(bx).toFixed(1)}" y2="${y(by).toFixed(1)}"`;
+    svg += `<g class="edge${e.role === "waypoint" ? " waypoint" : ""}" data-edge="${idx}">
+      <line class="hit" ${seg}/><line class="ln" ${seg}/>
+      <title>${esc(e.from_name)} → ${esc(e.to_name)} (${esc(e.role)})</title></g>`;
   });
 
   // regional extents next — shaded areas, never a marker glyph
@@ -3822,14 +3900,17 @@ function mapLegend() {
       the records it cannot draw as points. Its POSITION is the centre of that region's own cached
       findspots${declaredBands.length
         ? ` — except ${esc(listOf(declaredBands.map(b => b.region)))}, ${one ? "whose position was" : "whose positions were"}
-           declared by a person and ${one ? "says" : "say"} so when you click ${one ? "it" : "them"}`
-        : ""}; its SIZE is how many records are in it and is not a claim about territory. A band is
-      not a boundary: these seven regions are this project's categories, not anyone's published ones</span>
+           manually curated`
+        : ""}; its SIZE is how many records are in it and is not a claim about specific territory. A band
+      is not a boundary: these seven regions are this project's categories and not derived from prior
+      publications</span>
     ${D.coastline ? `<span class="item note">Coastline: ${esc(D.coastline.source)}
       ${esc(D.coastline.scale)}, ${esc(D.coastline.terms)}, retrieved ${esc(D.coastline.retrieved)} —
       a modern reference frame, not evidence, and no ancient shoreline</span>` : ""}
     <span class="item note">Labels are dropped where they would collide —
       every point is clickable and every name is listed below</span>
+    <span class="item note">Some edges join places closer together than the points that draw them,
+      so they have no length to click — every edge is listed on the panel of both points it joins</span>
   </div>`;
 }
 
