@@ -64,7 +64,30 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 95. The next free finding is 117.**
+**The next free ruling number is 95. The next free finding is 118.**
+
+> **FINDING 117, 2026-09-12, at the close of the Methodology block.** **A
+> prediction specific enough to be designed around stops being a forecast and
+> becomes an instruction — and is refuted by preventing the failure it names.**
+>
+> `UI_METHODOLOGY_PREDICTIONS.md` §6, the one written not to flatter the block,
+> said the first version of the address work would break something the harness
+> could not see, and named the mechanism exactly: `applyHash`'s `record`, `place`
+> and `edge` branches all set `state.view = "map"` unconditionally, so a new
+> branch that forgets its own view produces a link that is correct in the source,
+> green in every check, and lands the reader on the wrong tab.
+>
+> **It did not break.** Naming it in writing beforehand is what made guard 61 —
+> the round-trip check, closing a hole open since RULING 84 — get written
+> ALONGSIDE the router instead of after it, which is the one ordering in which
+> that failure cannot ship. The break was then demonstrated deliberately and goes
+> red exactly as described.
+>
+> **Scored REFUTED, and the refutation is the most useful line in that document.**
+> The lesson is not to write vaguer predictions; it is that the value of the
+> practice is not in being right. Recorded so that the next block reads §6 before
+> writing its own unkind prediction, and does not read a refutation as a reason to
+> hedge.
 
 > **FINDING 116, 2026-09-12.** **A commit message written to its own
 > correctly-named file is not a commit.** The Guide's home button —
