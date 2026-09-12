@@ -116,6 +116,55 @@ the Home chain figure and the harness's run count all read that array, and the
 two withheld questions remain resolvable by URL — unlisted, never unreachable.
 Making a live archived run unreachable to tidy a rail is deleting evidence.
 
+## AMENDMENT 1, 2026-09-12 — **THE LINE IS NOT ON THE RAIL, AND IT WAS NEVER A
+## LINE. THE DEBT IS DISCHARGED ON THE METHODOLOGY TAB.**
+
+**This ruling was declared and then not kept, for two blocks.** The counted line
+existed when the ruling was written; the Questions block rebuilt the rail and
+removed it — correctly for that tab — and recorded the obligation in a comment in
+`viewQuestions` rather than discharging it. A debt recorded in a comment is a debt
+no reader of the page can see, and the Map and regions blocks both deferred it
+again. For two blocks this page withheld two failures and said so nowhere.
+
+**WHERE.** On the Methodology tab, in `questionAudit()`, and not back on the rail.
+The rail's own rule stands and is the reason: a visitor's first click should not
+land on a question this corpus cannot answer. The two failures belong beside the
+other things this project counts against itself — the citation audits and the
+geography ledger — and not beside the questions they are not in.
+
+**WHAT — AND THIS IS THE PART THE ORIGINAL RULING ALREADY REQUIRED.** The clause
+above says the line *"says how many and what kind"*. **A count alone was never
+compliant with this ruling**, and reading it as "two failures, counted" is how the
+obligation came to look dischargeable by a single number. So the amendment states
+plainly what the ruling implied:
+
+```
+NAMED        each withheld question appears, in its own words
+CLASSIFIED   each says which KIND of failure it is, and the kind is DERIVED
+             from the archive rather than declared beside the question
+NO FALL-THROUGH   a question that is neither known shape renders as
+             `unclassified` and says the page has no description for it — the
+             SPAN_STATES discipline, not a nearest-match
+REACHABLE    each carries a control that opens it on the Questions tab, because
+             "still resolvable by URL" is only true for a reader who knows the
+             slug
+```
+
+**The two kinds are not two of a thing.** One is a question declared ANSWERABLE
+that every archived run refused — a system declining where the project expected
+an answer. The other is a question the system answered every time and never
+quoted a source for. The second is the worse shape, and a page that prints
+*"2 failures"* has told a reader neither of those things. That is the same
+collapse this project refuses in `unrecorded` folded into `unchanged`, in a
+`regional` claim falling back to a pin, and in a span state borrowing the nearest
+branch that has a colour.
+
+**Guard 58 re-derives every part of it** — which question, which kind, and every
+figure printed beside it — from the archive rather than from the page's own
+classifier, and asserts Home's promise carries the same count from the same
+derivation. Verified red three ways: the kind branches swapped, one of the two
+failures dropped from the card, and Home's count removed.
+
 ---
 
 # FINDING 102 — **A QUESTION CLICKED FROM THE FOOT OF THE RAIL PUT THE ANSWER

@@ -555,6 +555,18 @@
     font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-faint);
     margin-top: var(--s-1); line-height: var(--lh-snug);
   }
+  /* A row in the two audits on the Methodology tab. Shaped like `.focusrow` and
+     deliberately NOT clickable: a focus row opens the placement it names, and
+     these name a question that lives on another tab and is reached by the button
+     inside the row. A row that looks clickable and is not is the affordance
+     version of a handler nobody can reach — RULING 85, one layer out. */
+  .auditrow { border-top: var(--rule) solid var(--line-soft); padding: var(--s-4) 0; }
+  .auditrow .why {
+    font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-soft);
+    margin-top: var(--s-2); line-height: var(--lh-snug);
+  }
+  .auditrow .why b { color: var(--ink); }
+  .auditrow .go { margin-top: var(--s-2); }
 
   .marker {
     font-family: var(--font-sans); font-size: var(--t-2xs); font-weight: 700;
@@ -1628,6 +1640,149 @@ const TABS = {
 };
 
 /* ------------------------------------------------------------------ *
+ * THE TWO FAILURES THE RAIL WITHHOLDS, AND WHICH KIND EACH ONE IS.
+ * RULING 86, AMENDED — and the amendment is the whole of this block.
+ *
+ * `railPartition` has returned `withheld` since RULING 86 and NOTHING HAS EVER
+ * PRINTED IT. The rail counted the two in a line at its foot; the Questions
+ * block removed that line when it rebuilt the rail — correctly for that tab —
+ * and recorded the debt in `viewQuestions` rather than discharging it. Home says
+ * "the failures are kept ... a system that only displays its successes is not
+ * evidence of anything", and for two blocks this page has withheld two failures
+ * and said so nowhere at all.
+ *
+ * A COUNT IS NOT ENOUGH, AND THAT IS THE AMENDMENT. "2 failures" is the shape of
+ * sentence this project refuses everywhere else: `unrecorded` folded into
+ * `unchanged`, a `regional` claim falling back to a pin, a span state falling
+ * through to the nearest branch that happens to have a colour. These two are not
+ * two of a kind. One is a question the project declared ANSWERABLE and the
+ * system declined every single time. The other is a question the system answered
+ * every single time and never quoted a source for. Different failures, different
+ * causes, and the second is the one this whole page exists to catch — a refusal
+ * is a system declining, and an answer with no quotation is prose this project
+ * cannot check.
+ *
+ * THE KIND IS DERIVED AND THERE IS NO FALL-THROUGH. A question that is neither
+ * shape renders as unclassified and says so, exactly as SPAN_STATES renders a
+ * state it does not know rather than borrowing a neighbour's colour. The day the
+ * archive grows a third kind of failure, this page says there is one it cannot
+ * describe instead of describing it wrongly.
+ * ------------------------------------------------------------------ */
+const WITHHELD_KINDS = {
+  refused_throughout: {
+    label: "every archived run of it refused",
+    gloss: `The project declared this question answerable before any run was made, and the
+            system declined it every time. That is not one of the correct refusals — those
+            are declared <code>correctly_refusable</code> in advance and grouped under their
+            own heading on the ${TABS.questions} tab. This one the corpus was expected to
+            answer.`,
+  },
+  never_quotes: {
+    label: "answered every time, and never quoted anything",
+    gloss: `The system produced an answer on every run and claimed not one character span
+            across all of them. Nothing here refused; there is simply no quotation to
+            resolve, so there is nothing this page could show you and nothing it could
+            check. <b>This is the worse of the two shapes</b> — and that is a claim about
+            the shapes rather than about how many failures there happen to be. A refusal is
+            a system declining; an answer with no quotation is prose of exactly the kind the
+            rest of this page exists to make checkable.`,
+  },
+  unclassified: {
+    label: "withheld, and this page cannot say why",
+    gloss: `This question has no showable run and is neither refused throughout nor
+            silent throughout. The page does not have a description for that shape, and
+            says so rather than choosing the nearest one that does.`,
+  },
+};
+
+/* One derivation, two printers — the card on the Methodology tab and Home's own
+   sentence — because two derivations of one figure is how a page ends up
+   disagreeing with itself. Every field here is counted from the archive. */
+function withheldFailures() {
+  return railPartition().withheld.map(q => {
+    const runs = byQuestion.get(q) || [];
+    const refused = runs.filter(r => r.refused).length;
+    const spans = runs.reduce((n, r) => n + (r.grounding?.quote_spans || []).length, 0);
+    const c = caseOf.get(q) || {};
+    const kind = runs.length && refused === runs.length ? "refused_throughout"
+               : runs.length && spans === 0              ? "never_quotes"
+               : "unclassified";
+    return {
+      q, kind, id: c.id || null,
+      region: c.region || UNDECLARED_REGION,
+      behaviour: c.expected_behaviour || null,
+      runs: runs.length, refused, spans,
+      grounded: runs.filter(r => r.grounded).length,
+      versions: new Set(runs.map(r => r.prompt_version).filter(Boolean)).size,
+    };
+  });
+}
+
+/* ------------------------------------------------------------------ *
+ * THE RUNS RECONSTRUCTED FROM A PARTIAL ARCHIVE.
+ *
+ * `partial_passages` is a flag the archive DECLARES, and it is read here rather
+ * than inferred: a run carrying it was rebuilt from `answers` and
+ * `answer_citations`, and its passage records never held a language. The page
+ * then shows `p.lang || rec.language_code[0]` — the record's language standing
+ * in for the run's — and until now said nothing about the substitution on either
+ * surface.
+ *
+ * Checked rather than assumed: the declared flag and the observable symptom —
+ * every passage of the run carrying no language — are the same 16 runs. The flag
+ * is what this page reads, because a symptom that happens to coincide today is
+ * not a fact the archive is asserting.
+ * ------------------------------------------------------------------ */
+const isPartialRun = run => !!(run && run.partial_passages);
+
+function partialArchive() {
+  const runs = D.runs.filter(isPartialRun);
+  const qs = new Map();
+  for (const r of runs) qs.set(r.question, (qs.get(r.question) || 0) + 1);
+  return {
+    runs: runs.length,
+    total: D.runs.length,
+    questions: [...qs.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])),
+  };
+}
+
+/* ------------------------------------------------------------------ *
+ * THE QUESTION THIS ARCHIVE HAS TRIED HARDEST AND ANSWERS WORST — DERIVED,
+ * NEVER NAMED. FINDING 115.
+ *
+ * The closing card on this tab said, in prose: "one question, on Aksumite
+ * trade, has failed to produce a grounded answer in every attempt under four
+ * different prompts". Measured at the time that sentence was found: 39 runs
+ * under FIVE prompt versions, 34 of them grounded, 2 of them showable. Two of
+ * its four claims had gone stale as the archive grew, and no guard on this page
+ * can read a sentence.
+ *
+ * So the sentence is DERIVED now, the way `contestedCoordinate()` is: this is
+ * whichever question in the rail has the smallest share of showable runs, and
+ * the paragraph goes away by itself if the archive stops having one. Only
+ * questions that ARE in the rail are considered — a question with no showable
+ * run at all is a withheld failure and has its own card above.
+ * ------------------------------------------------------------------ */
+function hardestQuestion() {
+  let best = null;
+  for (const q of QUESTIONS) {
+    const runs = byQuestion.get(q) || [];
+    const showable = showableRuns(q).length;
+    if (!runs.length || !showable) continue;
+    const ratio = showable / runs.length;
+    if (best && !(ratio < best.ratio || (ratio === best.ratio && runs.length > best.runs))) continue;
+    best = {
+      q, ratio, showable, runs: runs.length,
+      refused: runs.filter(r => r.refused).length,
+      grounded: runs.filter(r => r.grounded).length,
+      versions: new Set(runs.map(r => r.prompt_version).filter(Boolean)).size,
+      region: (caseOf.get(q) || {}).region || UNDECLARED_REGION,
+    };
+  }
+  return best;
+}
+
+/* ------------------------------------------------------------------ *
  * THE TRAIL: back and forward over the things you have opened.
  *
  * A reader following the geography clicks a point, then a placement inside it,
@@ -2500,18 +2655,23 @@ function renderPassageProvenance(run, marker) {
   const rec = D.corpus[p.doc_id];
   let out = `<p class="prov-q">${esc(rec ? rec.title : p.doc_id)}</p>`;
 
-  /* THE PARTIAL-ARCHIVE BOX IS GONE FROM HERE, AND IT LEAVES A DEBT.
-     It said: this run was reconstructed from a partial archive, so its passage
-     records carry no language, region or citation, and those fields are shown
-     from the seed record rather than invented. That is true of 16 of the 685
-     archived runs, across 5 questions, and the substitution still happens two
-     lines below — `p.lang || rec.language_code[0]`, and `rec.region`.
+  /* THE PARTIAL-ARCHIVE SUBSTITUTION, AND THE DEBT IS PAID HERE AND ON THE
+     METHODOLOGY TAB IN THE SAME COMMIT.
 
-     So the panel now shows a language and a region for those 16 runs WITHOUT
-     saying they came from the record rather than from the run. Nothing on the
-     page says it yet. Owed to the Methodology tab, alongside the two
-     withheld failures and the second axis, and it should be stated there in the
-     same commit that states them. */
+     The box that said this was removed two blocks ago and the substitution was
+     not: `p.lang || rec.language_code[0]` two lines below shows the RECORD's
+     language when the run has none, and for a run rebuilt from a partial archive
+     the run never had one. The panel was making a substitution it did not
+     mention — which is the same defect as a `regional` claim falling back to a
+     pin, one apparatus over.
+
+     `partial_passages` is DECLARED by the archive and is read here rather than
+     inferred from the absence of a language. The arithmetic — how many runs,
+     across how many questions — is on the Methodology tab, where the rest of
+     what this project counts against itself lives; this is the label at the
+     point of use, because a sentence on another tab does not stop this panel
+     substituting silently. */
+  const fromPartial = isPartialRun(run);
 
   /* `similarity` and `file` are gone from this panel. The cosine went from the
      source cards for the same reason it goes from here — it is a fact about the
@@ -2526,7 +2686,8 @@ function renderPassageProvenance(run, marker) {
      the same reason. */
   out += `<div class="chain">
     ${chainRow("region", esc(rec ? rec.region : "—"))}
-    ${chainRow("language", esc(langName(p.lang || (rec && rec.language_code && rec.language_code[0]))))}
+    ${chainRow("language", esc(langName(p.lang || (rec && rec.language_code && rec.language_code[0])))
+        + (fromPartial ? ` <span class="ground-tag contested spaced">from the record</span>` : ""))}
     ${chainRow("kind", esc(rec ? rec.source_type : null))}
     ${chainRow("date", esc(rec ? rec.date : null))}
     ${chainRow("findspot", esc(rec ? rec.findspot : null))}
@@ -2534,6 +2695,15 @@ function renderPassageProvenance(run, marker) {
     ${chainRow("citation", rec && rec.citation
         ? `<a href="${esc(rec.citation)}" target="_blank" rel="noopener">${esc(rec.citation)}</a>` : null)}
   </div>`;
+
+  if (fromPartial) out += `<div class="dormant stack" data-partial="1">
+    <strong>This run was rebuilt from a partial archive.</strong> Its rows in
+    <code>answers</code> and <code>answer_citations</code> survived and its passage records
+    did not, so the passage above carries no language of its own and the one shown is the
+    seed record's — marked, rather than presented as something this run recorded. The
+    character offsets are unaffected: they were archived with the citation, and they resolve
+    exactly as every other run's do. The ${esc(TABS.data)} tab counts how many runs and how
+    many questions this is true of.</div>`;
 
   if (rec && rec.fields) {
     const txt = rec.fields[p.source_field];
@@ -3157,12 +3327,14 @@ function viewQuestions() {
      reading seven questions in it, not after. It is the only place on the rail
      that explains a group, and it is the group that needs explaining.
 
-     RULING 86 ALSO OWED A COUNTED LINE HERE, for the questions withheld as
-     failures, and it is gone. That obligation is not discharged by deleting the
-     sentence: Home says "the failures are kept ... a system that only displays
-     its successes is not evidence of anything", and until the count is stated on
-     the Methodology tab the page is one claim short of that. Recorded rather
-     than left to be noticed. */
+     RULING 86 OWED A COUNTED LINE HERE, AND THE DEBT IS DISCHARGED — on the
+     Methodology tab rather than on this rail, by `questionAudit()`, which names
+     both withheld failures and says which KIND each one is. RULING 86's
+     amendment is that a count was never enough: the two are different failures
+     with different causes, and "2 failures" is the same shape of sentence as
+     `unrecorded` folded into `unchanged`. The rail keeps its own rule — a
+     visitor's first click should not land on a question this corpus cannot
+     answer — and Home's promise is kept where a reader can act on it. */
   const rail = railPartition();
   const qbtn = q => `<button class="qbtn" data-question="${esc(q)}"
       aria-current="${q === state.question}">${esc(q)}</button>`;
@@ -4626,6 +4798,7 @@ function chainFigure() {
 
 function viewHome() {
   const regions = [...new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean))].sort();
+  const withheld = withheldFailures();
 
   return `${hashNotice()}<div class="cols cols-single">
     <div>
@@ -4682,9 +4855,18 @@ function viewHome() {
       standard account of Rome's further world is assembled from Greek and Latin authors describing
       it; the sources here are largely not those. A Sabaic inscription, a Chinese dynastic history
       and a Tamil poem answer an English question in their own words.</p>
+      <!-- THE PROMISE, AND IT IS NOW KEPT RATHER THAN MADE. This sentence named
+           three kinds of failure and the page showed three; the two questions
+           the rail withholds were counted nowhere and named nowhere, for two
+           blocks, which made this the one sentence on the tab that the rest of
+           the page did not support. The fourth clause is derived — FINDING 113
+           — and it points at the card that does the work rather than doing it
+           twice. -->
       <p><strong>The failures are kept.</strong> Refusals, citations that no longer resolve and
-      places the map will not draw are counted and shown, because a system that only displays its
-      successes is not evidence of anything.</p>
+      places the map will not draw are counted and shown — and so are the ${withheld.length}
+      question${withheld.length === 1 ? "" : "s"} this page keeps off its own question list,
+      named on the ${esc(TABS.data)} tab with what went wrong in each rather than counted and
+      left anonymous. A system that only displays its successes is not evidence of anything.</p>
     </div>
 
     <div class="card">
@@ -4704,6 +4886,91 @@ function viewHome() {
     </div>
 
     </div></div>`;
+}
+
+/* ------------------------------------------------------------------ *
+ * THE QUESTIONS THIS PAGE WITHHOLDS, AND THE RUNS IT REBUILT.
+ *
+ * Two debts, paid in one place because they are the same promise. Home says
+ * "the failures are kept ... a system that only displays its successes is not
+ * evidence of anything", and the page was keeping two failures off every list
+ * and substituting a record's language for a run's without saying so. Both were
+ * recorded in comments — in `viewQuestions` and in `renderPassageProvenance` —
+ * and a debt recorded in a comment is a debt nobody reading the page can see.
+ *
+ * EVERY FIGURE IS DERIVED. Not one count below is typed, in digits or in
+ * letters, which is FINDING 113's rule and the reason `railPartition`,
+ * `withheldFailures` and `partialArchive` hand back data rather than markup.
+ * ------------------------------------------------------------------ */
+function questionAudit() {
+  const rail = railPartition();
+  const W = withheldFailures();
+  const PA = partialArchive();
+  const listed = rail.regions.reduce((n, [, qs]) => n + qs.length, 0);
+
+  const failureRows = W.map(w => {
+    const k = WITHHELD_KINDS[w.kind] || WITHHELD_KINDS.unclassified;
+    return `<div class="auditrow" data-withheld="${esc(w.kind)}" data-runs="${w.runs}"
+      data-refused="${w.refused}" data-spans="${w.spans}">
+      <div class="rec-title">${esc(w.q)}</div>
+      <div class="rec-meta">${esc(w.region)} · declared
+        <code>${esc(w.behaviour || "nothing")}</code> · ${w.runs} archived
+        run${w.runs === 1 ? "" : "s"}, ${w.refused} refused, ${w.spans} character
+        span${w.spans === 1 ? "" : "s"} claimed</div>
+      <div class="why"><b>${k.label}.</b> ${k.gloss.replace(/\s+/g, " ").trim()}</div>
+      <button class="go" data-goto="question" data-q="${esc(w.q)}">read it on the
+        ${esc(TABS.questions)} tab &rarr;</button>
+    </div>`;
+  }).join("");
+
+  /* MACHINE-READABLE, for the same reason the geography ledger's cells are:
+     a guard that can only assert the card RENDERED is the guard FINDING 105
+     slipped past. Every figure printed in prose below is also an attribute here,
+     and guard 58 re-derives each one from the archive rather than from the
+     functions that produced them. */
+  const failures = `<div class="card" data-withheld-count="${W.length}"
+      data-rail-listed="${listed}" data-rail-refusals="${rail.refusals.length}">
+    <h3>The questions this page will not put in front of you</h3>
+    <p class="cardlead">${QUESTIONS.length} questions have been asked of this corpus and
+      archived. <b>${listed}</b> are listed on the ${esc(TABS.questions)} tab under
+      ${rail.regions.length} regions, because at least one archived run of each answers
+      with a quotation that still resolves. <b>${rail.refusals.length}</b> are grouped
+      there as questions this project declared <code>correctly_refusable</code> before any
+      run was made — those are not failures, and they are the strongest evidence on this
+      page that a retrieval system can decline.</p>
+    <p class="cardlead tight"><strong>${W.length} questions are on neither list, and they
+      are failures.</strong> They are not deleted and they are not hidden: each is still
+      archived, still addressable, and named here with what went wrong — which is a
+      different claim from counting them, and the reason this card exists rather than a
+      line saying how many there are.</p>
+    ${failureRows || `<p class="empty">none — every archived question is either listed or
+      declared correctly refusable</p>`}
+    <div class="dormant stack">Why they are not in the rail: a visitor's first click
+      should not land on a question this corpus cannot answer. Why they are here: the
+      ${esc(TABS.home)} tab promises the failures are kept, and a rail that drops them in
+      silence makes that sentence false one tab away.</div>
+  </div>`;
+
+  const partial = `<div class="card" data-partial-runs="${PA.runs}"
+      data-partial-questions="${PA.questions.length}" data-partial-total="${PA.total}">
+    <h3>The runs this archive had to rebuild, and what the panel substitutes</h3>
+    <p class="cardlead"><b>${PA.runs}</b> of the ${PA.total} archived runs, across
+      <b>${PA.questions.length}</b> questions, were reconstructed from a partial archive —
+      the rows in <code>answers</code> and <code>answer_citations</code> survived and the
+      passage records did not.</p>
+    <p class="cardlead tight">Those passage records carry <b>no language of their own</b>.
+      The provenance panel shows one anyway, taken from the seed record the passage came
+      from, because the alternative is a blank where a reader expects a fact — and until
+      now it did that silently. It says so on the panel now, on every one of these runs.
+      The character offsets are unaffected: they were archived with the citation, not with
+      the passage, and they resolve exactly as every other run's do.</p>
+    ${PA.questions.map(([q, n]) => `<div class="gapdoc">
+      <div class="doct">${esc(q)}
+        <span class="rec-meta inline">· ${n} run${n === 1 ? "" : "s"}</span></div>
+    </div>`).join("")}
+  </div>`;
+
+  return failures + partial;
 }
 
 function viewAbout() {
@@ -4822,6 +5089,8 @@ function viewAbout() {
       })()}
     </div>
 
+    ${questionAudit()}
+
     <div class="card">
       <h3>What the map draws, and what it will not</h3>
       <p class="cardlead">Moved here from the ${esc(TABS.map)} tab, where it stood above the map:
@@ -4845,10 +5114,27 @@ function viewAbout() {
       at request time would be the one thing on this page nobody had scored, sitting in the same type
       as ${Object.values(D.span_audit||{}).reduce((n,v)=>n+(v||0),0)} citations that have been.
       The translation-confidence machinery is visible but dormant, because every non-English passage
-      in this corpus already has a published English translation. And one question, on Aksumite
-      trade, has failed to produce a grounded answer in every attempt under four different prompts,
-      with the answer sitting in its own evidence in English. That is unexplained, and it is here
-      rather than hidden.</p>
+      in this corpus already has a published English translation.</p>
+      ${(() => {
+        /* FINDING 115. This paragraph used to say, in typed prose, that "one question, on
+           Aksumite trade, has failed to produce a grounded answer in every attempt under
+           four different prompts". The archive grew past it: that question has 39 runs
+           under FIVE prompt versions and 34 of them grounded. The claim was true once and
+           nothing could see that it had stopped being true, because no guard on this page
+           can read a sentence. So it is derived, and it names whichever question is worst
+           rather than the one that was worst on the day it was written. */
+        const H = hardestQuestion();
+        if (!H) return "";
+        return `<p class="prose-soft" data-hardest-runs="${H.runs}"
+          data-hardest-showable="${H.showable}" data-hardest-refused="${H.refused}"
+          data-hardest-versions="${H.versions}"><strong>And one question is answered far worse
+          than any other.</strong> <em>${esc(H.q)}</em> has ${H.runs} archived runs under ${H.versions}
+          prompt version${H.versions === 1 ? "" : "s"}, of which ${H.refused} refused and
+          <b>${H.showable}</b> produce an answer this page can show you. It is listed on the
+          ${esc(TABS.questions)} tab like any other, because ${H.showable} is not none, and its
+          declared region is ${esc(H.region)}. Why it is this one is not explained here, and it
+          is here rather than hidden.</p>`;
+      })()}
     </div>
     </div></div>`;
 }
@@ -5358,6 +5644,20 @@ document.addEventListener("click", ev => {
   const go = ev.target.closest(".go");
   if (go) {
     state.intro = false;
+    /* A WITHHELD FAILURE IS STILL ADDRESSABLE, and this is what makes that true
+       for a reader rather than only for a URL. `QUESTIONS` is deliberately
+       unfiltered — the comment above it says so — so a question the rail does
+       not list still resolves at `#q/<slug>`; without this button the only way
+       to reach one would be to know its slug. The trail is cleared because a
+       tab change starts a new one, exactly as the tab buttons do. */
+    if (go.dataset.goto === "question") {
+      const q = go.dataset.q;
+      if (!byQuestion.has(q)) return;
+      state.view = "questions"; state.question = q;
+      state.runIndex = null; state.selection = null;
+      clearTrail();
+      return render();
+    }
     if (go.dataset.goto === "chain") {
       const c = chainExample();
       if (!c) return;

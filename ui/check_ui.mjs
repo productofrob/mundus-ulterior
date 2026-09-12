@@ -132,7 +132,9 @@ try {
     " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice, homeSelection," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger,"
     + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance, layoutBands,"
-    + " REGION_ANCHOR, mapLegend };",
+    + " REGION_ANCHOR, mapLegend,"
+    + " withheldFailures, WITHHELD_KINDS, partialArchive, isPartialRun, hardestQuestion,"
+    + " questionAudit };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
 } catch (e) {
@@ -153,7 +155,9 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
         langName, placeLedger,
         regionBands, bandLedger, bandBox, BAND, renderRegionProvenance,
-        layoutBands, REGION_ANCHOR, mapLegend } = sandbox.__api;
+        layoutBands, REGION_ANCHOR, mapLegend,
+        withheldFailures, WITHHELD_KINDS, partialArchive, isPartialRun,
+        hardestQuestion, questionAudit } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
 let rendered = 0, panels = 0;
@@ -1401,6 +1405,204 @@ if (D.coastline && D.coastline.polygons) {
   }
   note(problems.length === 0,
        `all ${all.length} records reach the map — ${drawnIds.size} as points, ${chips.size} as squares in a band`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 58. THE TWO WITHHELD FAILURES ARE NAMED, AND EACH ONE SAYS WHICH
+   KIND OF FAILURE IT IS. RULING 86, AMENDED.
+
+   `railPartition` has returned `withheld` since RULING 86 and nothing printed
+   it for two blocks, while the Home tab promised "the failures are kept". The
+   debt was recorded in a comment, and a comment is not something a reader of
+   the page can see.
+
+   WHAT THIS GUARDS IS NOT THE COUNT. A count was the old obligation and the
+   amendment is that a count is not enough: these are two different failures
+   with different causes, and "2 failures" is the same shape of sentence as
+   `unrecorded` folded into `unchanged`. So the assertions are:
+
+     1  every question the rail withholds is NAMED in the tab's markup
+     2  the KIND each one is tagged with is re-derived HERE, from the archive,
+        and not by calling the page's own classifier — FINDING 112 is what
+        happens when a guard recomputes from the thing it is checking
+     3  every figure printed beside a failure is the archive's figure
+     4  no kind falls through: a tag with no entry in WITHHELD_KINDS is a
+        failure, the same way an unknown span state is
+     5  Home's own sentence carries the same count, because it is the same
+        derivation printed twice ---- */
+{
+  const html = viewAbout();
+  const home = viewHome();
+  const rail = railPartition();
+  const problems = [];
+
+  /* Derived here, deliberately not from `withheldFailures()`. */
+  const expect = new Map();
+  for (const q of rail.withheld) {
+    const runs = byQuestion.get(q) || [];
+    const refused = runs.filter(r => r.refused).length;
+    const spans = runs.reduce((n, r) => n + (r.grounding?.quote_spans || []).length, 0);
+    expect.set(q, {
+      runs: runs.length, refused, spans,
+      kind: runs.length && refused === runs.length ? "refused_throughout"
+          : runs.length && spans === 0             ? "never_quotes"
+          : "unclassified",
+    });
+  }
+
+  const esc = s => String(s).replace(/[&<>"]/g,
+    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const rows = [...html.matchAll(
+    /data-withheld="([^"]+)"\s+data-runs="(\d+)"\s*\n?\s*data-refused="(\d+)" data-spans="(\d+)">\s*\n?\s*<div class="rec-title">([\s\S]*?)<\/div>/g)];
+
+  if (rows.length !== rail.withheld.length)
+    problems.push(`the rail withholds ${rail.withheld.length} question(s) and the tab shows ${rows.length}`);
+
+  for (const [, kind, runs, refused, spans, title] of rows) {
+    const q = [...expect.keys()].find(k => esc(k) === title.trim());
+    if (!q) { problems.push(`a withheld row names a question the rail does not withhold: ${title.trim().slice(0, 40)}`); continue; }
+    const e = expect.get(q);
+    if (kind !== e.kind) problems.push(`${q.slice(0, 30)}… is tagged ${kind}, the archive says ${e.kind}`);
+    if (Number(runs) !== e.runs) problems.push(`${q.slice(0, 30)}… prints ${runs} runs, the archive holds ${e.runs}`);
+    if (Number(refused) !== e.refused) problems.push(`${q.slice(0, 30)}… prints ${refused} refused, the archive holds ${e.refused}`);
+    if (Number(spans) !== e.spans) problems.push(`${q.slice(0, 30)}… prints ${spans} spans, the archive holds ${e.spans}`);
+    if (!WITHHELD_KINDS[kind]) problems.push(`${kind} has no entry in WITHHELD_KINDS`);
+    else if (!html.includes(WITHHELD_KINDS[kind].label))
+      problems.push(`${kind}'s label is not on the page`);
+  }
+
+  const m = html.match(/data-withheld-count="(\d+)"/);
+  if (!m) problems.push("the withheld count is not machine-readable on the tab");
+  else if (Number(m[1]) !== rail.withheld.length)
+    problems.push(`the card prints ${m[1]} withheld, the rail withholds ${rail.withheld.length}`);
+
+  /* 5. Home says it too, from the same derivation. A sentence promising the
+     failures are kept, on a tab that names none of them, is the defect this
+     whole guard exists for. */
+  if (!/The failures are kept/.test(home))
+    problems.push("Home no longer makes the promise this card keeps");
+  /* `\s+` and not a space. This page's template strings wrap, so the rendered
+     sentence carries a newline and its indentation between the figure and the
+     word after it — the same assumption the 2g literal made and the same way it
+     was wrong. Written this way first because that mistake is on the record
+     twice already. */
+  else if (!new RegExp(`so are the ${rail.withheld.length}\\s+questions?`).test(home))
+    problems.push("Home's promise does not carry the withheld count the card derives");
+
+  note(problems.length === 0,
+       `every question the rail withholds is named on ${TABS.data}, with its kind re-derived `
+       + `(${[...expect.values()].map(e => e.kind).join(", ") || "none"})`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 59. THE PARTIAL-ARCHIVE SUBSTITUTION IS COUNTED ON THE TAB AND
+   LABELLED AT THE POINT OF USE.
+
+   `renderPassageProvenance` shows `p.lang || rec.language_code[0]`, so a run
+   whose passage records were lost shows the RECORD's language and said nothing
+   about it. Stating the arithmetic on Methodology is half the fix: a sentence on
+   another tab does not stop the panel substituting silently, so the label on the
+   panel is asserted here too, and asserted NOT to appear on a run that is not
+   partial — a label on every panel is a label that means nothing. ---- */
+{
+  const problems = [];
+  const partialRuns = D.runs.filter(r => r.partial_passages);
+  const qs = new Set(partialRuns.map(r => r.question));
+  const PA = partialArchive();
+  if (PA.runs !== partialRuns.length)
+    problems.push(`partialArchive counts ${PA.runs} runs, the archive declares ${partialRuns.length}`);
+  if (PA.questions.length !== qs.size)
+    problems.push(`partialArchive counts ${PA.questions.length} questions, the archive declares ${qs.size}`);
+
+  const html = viewAbout();
+  for (const [attr, want] of [["data-partial-runs", partialRuns.length],
+                              ["data-partial-questions", qs.size],
+                              ["data-partial-total", D.runs.length]]) {
+    const m = html.match(new RegExp(`${attr}="(\\d+)"`));
+    if (!m) problems.push(`${attr} is not machine-readable on the tab`);
+    else if (Number(m[1]) !== want) problems.push(`${attr} prints ${m[1]}, derives ${want}`);
+  }
+
+  /* The label, at the point of use, on a run that has the flag and on one that
+     does not. */
+  const withFlag = partialRuns.find(r => (r.passages || []).length);
+  const without = D.runs.find(r => !r.partial_passages && (r.passages || []).length);
+  if (!withFlag) problems.push("no partial run carries a passage to label");
+  else {
+    const panel = renderPassageProvenance(withFlag, withFlag.passages[0].marker);
+    if (!/data-partial="1"/.test(panel))
+      problems.push("a partial run's passage panel does not say the language came from the record");
+    if (!isPartialRun(withFlag)) problems.push("isPartialRun disagrees with the archive's own flag");
+  }
+  if (without) {
+    const panel = renderPassageProvenance(without, without.passages[0].marker);
+    if (/data-partial="1"/.test(panel))
+      problems.push("an ordinary run's passage panel claims a substitution it did not make");
+  }
+
+  note(problems.length === 0,
+       `the runs rebuilt from a partial archive are counted on ${TABS.data} and labelled on `
+       + `their own panels (${partialRuns.length} runs across ${qs.size} questions)`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 60. THE CLOSING PARAGRAPH'S FIGURES ARE DERIVED. FINDING 115.
+
+   It said, in typed prose, that "one question, on Aksumite trade, has failed to
+   produce a grounded answer in every attempt under four different prompts". The
+   archive grew: 39 runs, FIVE prompt versions, 34 of them grounded. Two of its
+   four claims had gone stale and nothing could see it, because guard 2g hunts
+   numeric literals it was told about and no guard on this page can read a
+   sentence.
+
+   So the sentence names whichever question in the rail has the smallest share of
+   showable runs, and this re-derives that question INDEPENDENTLY — the same
+   separation `placeLedger` and guard 53 have. The old literals are hunted too,
+   the way 2g hunts the ones that were wrong before. ---- */
+{
+  const problems = [];
+  let best = null;
+  for (const q of QUESTIONS) {
+    const runs = byQuestion.get(q) || [];
+    const showable = showableRuns(q).length;
+    if (!runs.length || !showable) continue;
+    const ratio = showable / runs.length;
+    if (best && !(ratio < best.ratio || (ratio === best.ratio && runs.length > best.runs))) continue;
+    best = { q, ratio, showable, runs: runs.length,
+             refused: runs.filter(r => r.refused).length,
+             versions: new Set(runs.map(r => r.prompt_version).filter(Boolean)).size };
+  }
+  const H = hardestQuestion();
+  const html = viewAbout();
+
+  if (!best) problems.push("no question in the rail has a showable run");
+  else if (!H) problems.push("the page derives no hardest question and the archive has one");
+  else {
+    if (H.q !== best.q) problems.push(`the page names ${H.q.slice(0, 30)}…, the archive says ${best.q.slice(0, 30)}…`);
+    for (const [attr, want] of [["data-hardest-runs", best.runs],
+                                ["data-hardest-showable", best.showable],
+                                ["data-hardest-refused", best.refused],
+                                ["data-hardest-versions", best.versions]]) {
+      const m = html.match(new RegExp(`${attr}="(\\d+)"`));
+      if (!m) problems.push(`${attr} is not machine-readable on the tab`);
+      else if (Number(m[1]) !== want) problems.push(`${attr} prints ${m[1]}, derives ${want}`);
+    }
+    if (showableRuns(best.q).length === 0)
+      problems.push("the sentence names a question with no showable run — that is a withheld failure, not this");
+  }
+
+  /* The literals that were there, hunted. `\s+` and not a space: this page's
+     template strings wrap, and the first version of the 2g literal matched a
+     single space and was reading its own assumption. */
+  if (/under\s+(two|three|four|five|six|seven|eight|nine|ten)\s+different\s+prompts/i.test(html))
+    problems.push("the closing paragraph spells its prompt-version count out instead of deriving it");
+  if (/on\s+Aksumite\s+trade/i.test(html))
+    problems.push("the closing paragraph names its question in prose instead of deriving it");
+
+  note(problems.length === 0,
+       `the closing paragraph names whichever question the archive answers worst, and every `
+       + `figure in it is re-derived`
+       + (best ? ` (${best.showable} of ${best.runs} showable, ${best.versions} prompt versions)` : "")
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
