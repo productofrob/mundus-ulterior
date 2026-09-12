@@ -113,3 +113,51 @@ seen from two sides.
 **Found by reading `ui/index.html` whole at the open of the block** — the fifth
 block running in which that read has found a real defect — and measured before it
 was believed.
+
+---
+
+# FINDING 116 — **a commit message written to its own correctly-named file is not
+# a commit. The Guide's home button sat uncommitted in the working tree for a
+# day, while two documents described it as shipped.**
+
+Found at the open of this block, by reading `git status --short` after two
+commits of its own and seeing two files it had not touched:
+
+```
+ M ui/check_ui.mjs
+ M ui/index.html
+```
+
+92 inserted lines across the two, identical under `--ignore-all-space`, and
+`git stash list` empty. The diff is **the Guide's home button**: `homeSelection()`,
+the three-control `panelNav()`, the `data-home` branch in the click handler, and
+guard 52's extension to cover all of it. `commit-ui-guide-home.txt` is sitting in
+the repository root, written, complete, and ending *"`node ui/check_ui.mjs` is
+GREEN at 57."* **The commit was never made.**
+
+**RULING 93 was satisfied and it was not enough.** The message went to its own
+topic-named file, nothing overwrote it, and it names what it changed — every
+clause of the rule that FINDING 114 produced. What the rule does not cover is the
+step after it: while the bridge shell is down the session cannot run `git`, so a
+commit is an instruction a person carries out, and **nothing on either side
+checks that it was**. The session writes the files and the message and has no way
+to see the commit that did not happen.
+
+**Two documents already describe this work as shipped.**
+`UI_MAP_REGIONS_RESULT.md` §3 lists *"52 extended to cover the Guide's home
+button"* among the four existing guards the block strengthened, and
+`UI_METHODOLOGY_START.md` §2 tells the next thread the tab has *"`panelNav` with
+home / back / forward"*. Both are true of the working tree and of no commit. **A
+result document scoring a change the repository does not contain is the
+bookkeeping failure FINDING 114 named, arriving through a different door.**
+
+**And the harness could not have caught it, because the harness reads the working
+tree.** 57 checks were green all morning — against these modified files. So were
+both baselines in `UI_METHODOLOGY_PREDICTIONS.md` §0: they were measured on a
+page whose home button is not in any commit, which is recorded here rather than
+reconciled away, and the predictions are not amended.
+
+**What follows from it:** after handing a commit to the host, the next
+instruction starts with `git status --short` and the answer is read rather than
+assumed. `git log --oneline` says what was committed; only `git status` says what
+was not.

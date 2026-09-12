@@ -64,7 +64,31 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 95. The next free finding is 116.**
+**The next free ruling number is 95. The next free finding is 117.**
+
+> **FINDING 116, 2026-09-12.** **A commit message written to its own
+> correctly-named file is not a commit.** The Guide's home button —
+> `homeSelection()`, the three-control `panelNav()`, the `data-home` branch, and
+> guard 52's extension covering all of it — sat uncommitted in the working tree
+> for a day, 92 inserted lines across `ui/index.html` and `ui/check_ui.mjs`, with
+> `commit-ui-guide-home.txt` written and complete in the repository root. Found
+> by reading `git status --short` rather than `git log`.
+>
+> **RULING 93 was satisfied and it was not enough.** The rule covers how a
+> message is written; it does not cover the step after it. While the bridge shell
+> is down the session cannot run `git`, so a commit is an instruction a person
+> carries out, and nothing on either side checked that it was. **Two documents
+> already described the work as shipped** — `UI_MAP_REGIONS_RESULT.md` §3 counts
+> guard 52's extension among the four guards that block strengthened, and
+> `UI_METHODOLOGY_START.md` §2 tells the next thread the tab has home / back /
+> forward — both true of the working tree and of no commit. That is FINDING 114's
+> bookkeeping failure arriving through a different door.
+>
+> **The harness cannot catch it**: it reads the working tree, so 57 checks were
+> green against these files all along. **After handing a commit to the host, the
+> next instruction starts with `git status --short`, and the answer is read
+> rather than assumed.** `git log` says what was committed; only `git status`
+> says what was not.
 
 > **THE METHODOLOGY BLOCK, 2026-09-12, same day, before it edited `ui/`.** It
 > used **ruling 94** (a selection is addressed under the tab it was made on:
