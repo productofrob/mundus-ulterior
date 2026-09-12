@@ -1688,12 +1688,44 @@ const canStep = delta => {
   return state.trailAt >= 0 && to >= 0 && to < state.trail.length;
 };
 
+/* HOME: back to the Guide's own sentence, WITHOUT throwing the trail away.
+ *
+ * The obvious implementation is `clearTrail()` and a null selection, and it is
+ * wrong in a way a reader would feel immediately: pressing home would destroy
+ * the record of everything they had opened, so the back button beside it would
+ * go dead at the same moment. Home is not "start again", it is "put this down".
+ *
+ * So the trail is untouched and the index moves ONE PAST THE END. That is what
+ * makes BACK return to the thing you were just looking at rather than the one
+ * before it, and it is exactly how a browser treats a new page at the end of its
+ * history: `canStep(1)` is false there, `canStep(-1)` is true, and a new
+ * selection made from home appends instead of branching, because
+ * `pushSelection` slices to `trailAt + 1` and that is now the whole trail.
+ *
+ * RULING 84 still holds and this is the test of it: home writes
+ * `state.selection` and nothing else reads the trail to decide what is on
+ * screen. Returns whether it moved, like `stepSelection`, so the caller can
+ * tell "there was nothing to put down" from "we put it down". */
+function homeSelection() {
+  if (state.selection == null) return false;
+  state.selection = null;
+  state.trailAt = state.trail.length;
+  return true;
+}
+
+/* THREE CONTROLS NOW, and home is first because it is where the panel starts:
+   the row reads home, back, forward, left to right, in the order a reader would
+   walk them. All three are `.mapbtn`, and all three are DISABLED AND STILL
+   DRAWN when they have nothing to do — the argument the stylesheet makes about
+   a control that vanishes reading as a glitch. */
 function panelNav() {
-  const btn = (delta, glyph, title) =>
-    `<button class="mapbtn" data-trail="${delta}"${canStep(delta) ? "" : " disabled"}
+  const btn = (attr, on, glyph, title) =>
+    `<button class="mapbtn" ${attr}${on ? "" : " disabled"}
       title="${esc(title)}" aria-label="${esc(title)}">${glyph}</button>`;
-  return btn(-1, "&larr;", "back to the previous thing you opened")
-       + btn(1, "&rarr;", "forward again");
+  return btn(`data-home="1"`, state.selection != null, "&#8962;",
+             "back to the start, keeping what you have opened")
+       + btn(`data-trail="-1"`, canStep(-1), "&larr;", "back to the previous thing you opened")
+       + btn(`data-trail="1"`, canStep(1), "&rarr;", "forward again");
 }
 
 let state = {
@@ -5206,6 +5238,15 @@ document.addEventListener("click", ev => {
      half a trail button fell through to `mapZoomBy(1 / 1.6)` — pressing back
      would have zoomed the map out. Caught by reading this handler before
      writing the branch, which is the reason the whole file gets read. */
+  /* Home before the trail buttons, and it carries its own attribute rather
+     than a `data-trail` sentinel: a delta that means "not a delta" is the kind
+     of overloading the zoom branch below was bitten by. */
+  const homeBtn = ev.target.closest("[data-home]");
+  if (homeBtn) {
+    if (homeSelection()) repaintPanel();
+    return;
+  }
+
   const trailBtn = ev.target.closest("[data-trail]");
   if (trailBtn) {
     if (stepSelection(Number(trailBtn.dataset.trail))) repaintPanel();

@@ -129,7 +129,7 @@ try {
     " viewHome, viewQuestions, viewPlaces, viewAbout," +
     " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
-    " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice," +
+    " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice, homeSelection," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger,"
     + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance, layoutBands,"
     + " REGION_ANCHOR, mapLegend };",
@@ -149,6 +149,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
         railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS,
         pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice,
+        homeSelection,
         SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel,
         langName, placeLedger,
         regionBands, bandLedger, bandBox, BAND, renderRegionProvenance,
@@ -950,9 +951,15 @@ if (D.coastline && D.coastline.polygons) {
   };
 
   clearTrail();
+  /* SET EXPLICITLY, because the row now has a third control whose enabled state
+     is a fact about the SELECTION rather than about the trail, and this guard
+     would otherwise be asserting against whatever the previous check happened to
+     leave on screen. */
+  state.selection = null;
   if (canStep(-1) || canStep(1)) problems.push("an empty trail offers a step");
-  if (!/disabled/.test(panelNav()) || panelNav().match(/disabled/g).length !== 2)
-    problems.push("an empty trail does not draw both buttons disabled");
+  if ((panelNav().match(/disabled/g) || []).length !== 3)
+    problems.push("an empty trail with nothing selected does not draw all three buttons disabled");
+  if (homeSelection() !== false) problems.push("home reported a move with nothing selected");
 
   [A, B, C].forEach(pushSelection);
   if (state.trail.length !== 3) problems.push(`three pushes made ${state.trail.length} entries`);
@@ -993,6 +1000,43 @@ if (D.coastline && D.coastline.polygons) {
   is(state.trail[2], D, "the new selection is not the newest entry");
   if (canStep(1)) problems.push("a new selection left a forward step available");
   is(state.selection, B, "pushing a selection changed what is on screen by itself");
+
+  /* ---- HOME. Back to the Guide's own sentence, and NOT a reset.
+     The claim worth guarding is the one the obvious implementation gets wrong:
+     `clearTrail()` plus a null selection would put the panel back AND kill the
+     back button in the same press, throwing away the record of everything the
+     reader had opened. Home puts the selection down and leaves the trail whole,
+     with the index one past the end, so BACK returns to the thing you were just
+     looking at rather than the one before it. Every assertion here is about a
+     VALUE after a sequence of moves, like the rest of this guard. */
+  clearTrail();
+  state.selection = null;
+  [A, B, C].forEach(pushSelection);
+  /* `pushSelection` records a selection; it does not MAKE one — the click
+     handler's `select()` does both, in that order. So this mirrors `select()`
+     rather than assuming the push put something on screen, which is the same
+     distinction the last assertion in the block above is about. */
+  state.selection = C;
+  const trailBefore = state.trail.length;
+
+  if (homeSelection() !== true) problems.push("home reported no move with something selected");
+  is(state.selection, null, "home did not put the selection down");
+  if (state.trail.length !== trailBefore)
+    problems.push(`home changed the trail from ${trailBefore} entries to ${state.trail.length}`);
+  if (!canStep(-1)) problems.push("home left no way back to what was open");
+  if (canStep(1)) problems.push("home left a forward step available");
+  if ((panelNav().match(/disabled/g) || []).length !== 2)
+    problems.push("at home with a trail behind it, exactly two buttons should be disabled");
+
+  stepSelection(-1);
+  is(state.selection, C, "back from home did not return to the thing last opened");
+
+  // ...and a new selection made FROM home appends rather than branching.
+  homeSelection();
+  pushSelection(D);
+  if (state.trail.length !== trailBefore + 1)
+    problems.push(`a selection made from home left ${state.trail.length} entries, not ${trailBefore + 1}`);
+  is(state.trail[state.trail.length - 1], D, "the selection made from home is not the newest entry");
 
   Object.assign(state, { selection: saved.sel, trail: saved.trail, trailAt: saved.at });
 
