@@ -41,6 +41,9 @@ section anywhere — they exist only as one-line entries in a numbered list in
 83          UI_RULINGS.md             full text, "# RULING N" heading
 84          UI_DESIGN_RULINGS.md      full text, "# RULING N" heading
 85-89       UI_QUESTIONS_RULINGS.md   full text, "# RULING N" headings
+90          RULINGS.md                full text, in the 2026-09-10 note below
+91-93       UI_MAP_REGIONS_RULINGS.md full text, "# RULING N" headings
+94          UI_METHODOLOGY_RULINGS.md full text, "# RULING N" headings
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -61,7 +64,66 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 91. The next free finding is 109.**
+**The next free ruling number is 95. The next free finding is 116.**
+
+> **THE METHODOLOGY BLOCK, 2026-09-12, same day, before it edited `ui/`.** It
+> used **ruling 94** (a selection is addressed under the tab it was made on:
+> `#data/place/…`, `#data/record/…`, `#data/edge/…`, with the bare `#place/…`,
+> `#record/…`, `#point/…` and `#edge/…` forms UNTOUCHED and still opening the Map
+> tab, because they are addresses this project has handed out) and **FINDING
+> 115** (the Methodology tab's closing paragraph says one question "failed to
+> produce a grounded answer in every attempt under four different prompts"; the
+> archive holds 39 runs of it under FIVE prompt versions, 34 of them grounded and
+> 2 showable — a typed prose claim that went stale as the archive grew, on a page
+> where no guard can read a sentence. FINDING 105's shape on a third surface, and
+> the third time a person reading the page found one). Both are declared in
+> `UI_METHODOLOGY_RULINGS.md` and carried back here in the same sitting, which is
+> the practice the 2026-09-07 correction below exists to enforce.
+
+> **UPDATED BY THE METHODOLOGY BLOCK, 2026-09-12, AS ITS FIRST ACT.** This line
+> read *"The next free ruling number is 91. The next free finding is 109."* and
+> was correct for two blocks, because **the regions block closed owing the
+> register everything it had decided.** `UI_MAP_REGIONS_RESULT.md` §8 lists nine
+> candidates and says so in its own words: *"Nothing was assigned"*. They are
+> assigned now, before a line of this block's code was written, and the full text
+> is in `UI_MAP_REGIONS_RULINGS.md`:
+>
+> ```
+> RULING  91  a band's position derives from its region's own cached FINDSPOTS
+>             and from nothing else; a DECLARED anchor is permitted and must say
+>             "declared, not derived" on screen, print the derivation it
+>             overrules, name its reason, be named in the legend, and be drawn on
+>             the declared point. Guard 55.
+> RULING  92  edges are never drawn to a region band: both ends of every edge in
+>             this corpus sit inside ONE record, and a band belongs to the record
+>             rather than to the place. Marking, not drawing. Guard 19.
+> RULING  93  one commit message per commit, in its own `commit-<topic>.txt`, and
+>             the instruction handed to the host names EVERY file it touches.
+>
+> FINDING 109  an SVG `<pattern>`'s contents do not take their paint from this
+>              page's classes — every computed style said white and the paint was
+>              solid black
+> FINDING 110  a band clamped to the canvas edge replaces its derivation with
+>              "wherever the edge is", silently, at every zoom level
+> FINDING 111  a stroke is hit-tested at the width it is drawn, and six edges in
+>              this corpus are shorter than the marks at their own ends
+> FINDING 112  a guard that recomputes from the constant it is checking agrees
+>              with itself
+> FINDING 113  a typed count in letters passes a guard that hunts digits
+> FINDING 114  three rounds of work collapsed into one commit because every
+>              message was written to one reusable filename
+> ```
+>
+> **The original sentence is quoted rather than deleted, for the reason the
+> 2026-09-07 correction below gives** — and this time the drift was not one
+> number but nine, held outside the register for two blocks in a result document
+> that correctly said it was holding them. A candidate list in a result document
+> is not a register entry: nothing reads it when the next session needs a number.
+>
+> **Two of the regions block's own promises were scored REFUTED** (it authored two
+> coordinates and it rebuilt the Methodology tab), and RULING 91 is written as the
+> rule the authored coordinates now live under rather than as permission for
+> having authored them. The refutations stand.
 
 > **THE MAP BLOCK CLOSED 2026-09-10**, thirteen commits, 47 checks to 53.
 > `UI_MAP_PREDICTIONS.md` was committed before a line of `ui/` was edited and is
