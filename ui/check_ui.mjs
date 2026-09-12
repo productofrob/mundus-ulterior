@@ -134,7 +134,7 @@ try {
     + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance, layoutBands,"
     + " REGION_ANCHOR, mapLegend,"
     + " withheldFailures, WITHHELD_KINDS, partialArchive, isPartialRun, hardestQuestion,"
-    + " questionAudit };",
+    + " questionAudit, DATA_ROUTE, hashOf, applyHash };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
 } catch (e) {
@@ -157,7 +157,8 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         regionBands, bandLedger, bandBox, BAND, renderRegionProvenance,
         layoutBands, REGION_ANCHOR, mapLegend,
         withheldFailures, WITHHELD_KINDS, partialArchive, isPartialRun,
-        hardestQuestion, questionAudit } = sandbox.__api;
+        hardestQuestion, questionAudit,
+        DATA_ROUTE, hashOf, applyHash } = sandbox.__api;
 
 /* ---- 2. every run renders without throwing ---- */
 let rendered = 0, panels = 0;
@@ -1603,6 +1604,111 @@ if (D.coastline && D.coastline.polygons) {
        `the closing paragraph names whichever question the archive answers worst, and every `
        + `figure in it is re-derived`
        + (best ? ` (${best.showable} of ${best.runs} showable, ${best.versions} prompt versions)` : "")
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
+/* ---- GUARD 61. A SELECTION MADE ON METHODOLOGY IS IN THE ADDRESS BAR, AND
+   THE ADDRESSES THIS PROJECT ALREADY HANDED OUT STILL MEAN WHAT THEY MEANT.
+   RULING 94.
+
+   NOTHING IN THIS FILE HAS EVER ASSERTED THAT A HASH ROUND-TRIPS. Guard 49 reads
+   markup, guard 52 reads a value after a sequence of moves, and the router has
+   been checked by nobody since RULING 84 built it. That is the hole this guard
+   closes, and it is the specific failure `UI_METHODOLOGY_PREDICTIONS.md` §6 was
+   written expecting: `applyHash`'s `record`, `place` and `edge` branches all set
+   `state.view = "map"` unconditionally, so a new branch that forgets to set its
+   own view produces a link that looks entirely correct in the source, is green
+   in every other check here, and lands the reader on the wrong tab.
+
+   Five claims:
+
+     1  the kinds the ROUTER handles are the kinds PANEL_EMPTY.data DECLARES —
+        the two lists are the same declaration and guard 49 checks the other
+        half of it against the markup
+     2  every one of those kinds ROUND-TRIPS: a real selection written to an
+        address and read back is the same selection, on the same view
+     3  the BARE forms still open the Map tab, unchanged
+     4  an address this tab cannot resolve SAYS SO and does not fall back
+     5  `#data` alone is still the tab, with nothing selected ---- */
+{
+  const saved = { view: state.view, selection: state.selection,
+                  intro: state.intro, hashError: state.hashError,
+                  question: state.question, runIndex: state.runIndex };
+  const problems = [];
+
+  const routed = Object.keys(DATA_ROUTE).sort();
+  const declared = [...PANEL_EMPTY.data.selects].sort();
+  if (routed.join(",") !== declared.join(","))
+    problems.push(`the router handles ${routed.join(", ")} and PANEL_EMPTY.data declares `
+      + `${declared.join(", ")} — the same list is declared twice and they disagree`);
+
+  /* A real instance of each kind, taken from the bundle rather than invented:
+     an address built from a made-up id proves the string format and nothing
+     about whether the page can find the thing again. */
+  const anyPlace = Object.values(P.docs || {}).flat()[0];
+  const anyRecord = Object.keys(D.corpus)[0];
+  const anyEdge = (P.edges || []).length ? 0 : null;
+  const cases = [
+    ["place", anyPlace && { kind: "place", key: anyPlace.key }],
+    ["record", anyRecord && { kind: "record", docId: anyRecord }],
+    ["edge", anyEdge != null && { kind: "edge", idx: anyEdge }],
+  ];
+
+  for (const [kind, sel] of cases) {
+    if (!sel) { problems.push(`the bundle holds nothing of kind ${kind} to address`); continue; }
+    state.view = "data"; state.selection = sel; state.hashError = null;
+    const h = hashOf(state);
+    if (!h.startsWith(`#data/${kind}/`))
+      problems.push(`a ${kind} selected on ${TABS.data} writes ${h}, not a #data address`);
+    state.view = "home"; state.selection = null;
+    const err = applyHash(h);
+    if (err) problems.push(`${h} did not resolve: ${err}`);
+    else if (state.view !== "data")
+      problems.push(`${h} resolved onto the ${state.view} tab instead of ${TABS.data}`);
+    else if (JSON.stringify(state.selection) !== JSON.stringify(sel))
+      problems.push(`${h} read back as ${JSON.stringify(state.selection)}, not ${JSON.stringify(sel)}`);
+  }
+
+  /* 3. The bare forms, which are the promise RULING 84 made and this ruling
+     refuses to break: they are what other people's links hold. */
+  for (const [h, wantKind] of [
+    [`#place/${encodeURIComponent(anyPlace ? anyPlace.key : "")}`, "place"],
+    [`#record/${encodeURIComponent(anyRecord || "")}`, "record"],
+    [`#edge/0`, "edge"],
+  ]) {
+    state.view = "data"; state.selection = null; state.hashError = null;
+    const err = applyHash(h);
+    if (err) problems.push(`${h} stopped resolving: ${err}`);
+    else if (state.view !== "map")
+      problems.push(`${h} now opens the ${state.view} tab — it has always opened the map`);
+    else if (!state.selection || state.selection.kind !== wantKind)
+      problems.push(`${h} no longer selects a ${wantKind}`);
+  }
+
+  /* 4 and 5. */
+  const miss = [
+    [`#data/place/not-a-real-placement-key`, "an unresolvable placement"],
+    [`#data/record/not-a-real-record`, "an unresolvable record"],
+    [`#data/edge/99999`, "an edge that does not exist"],
+    [`#data/point/anything`, "a kind this tab does not route"],
+  ];
+  for (const [h, what] of miss) {
+    state.view = "home"; state.selection = null; state.hashError = null;
+    const err = applyHash(h);
+    if (!err || typeof err !== "string" || !err.trim())
+      problems.push(`${what} (${h}) resolved silently instead of saying so`);
+    if (state.selection)
+      problems.push(`${what} (${h}) left a selection on screen`);
+  }
+  state.view = "home"; state.selection = null; state.hashError = null;
+  if (applyHash("#data") !== null) problems.push("#data alone no longer resolves");
+  if (state.view !== "data" || state.selection !== null)
+    problems.push("#data alone does not open the tab with nothing selected");
+
+  Object.assign(state, saved);
+  note(problems.length === 0,
+       `every kind ${TABS.data} can select round-trips through the address bar, and the bare `
+       + `forms still open the map (${routed.join(", ")})`
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 

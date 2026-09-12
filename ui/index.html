@@ -1935,6 +1935,52 @@ const runStamp = r => String(r.timestamp || "").replace(/[-:]/g, "").replace(/\.
 
 const questionBySlug = new Map(QUESTIONS.map(q => [slugOf(q), q]));
 
+/* ------------------------------------------------------------------ *
+ * THE METHODOLOGY TAB'S OWN ADDRESS SPACE. RULING 94.
+ *
+ * `hashOf` returned `#data` for this view and nothing more, for every one of the
+ * hundred-odd clickable rows the regions block moved onto it. A reader who
+ * opened a refused placement and copied the link handed over a link to the TAB
+ * and not to the thing — and the placement was not unaddressable, it was
+ * addressable as `#place/…`, which resolves onto the Map tab. A different
+ * question, in a different apparatus, with a different Guide. That is RULING
+ * 84's own objection in its own words.
+ *
+ * THE BARE FORMS ARE NOT TOUCHED. `#place/…`, `#record/…`, `#point/…` and
+ * `#edge/…` keep meaning exactly what they have meant since RULING 84, because
+ * they are addresses this project has handed out and the one promise a hash
+ * scheme makes is that a link keeps meaning what it meant. This tab's selections
+ * live under this tab's prefix instead.
+ *
+ * AND THE KINDS ARE DECLARED ONCE. `PANEL_EMPTY.data.selects` already declares
+ * what this tab can select and guard 49 re-derives that declaration from the
+ * view's own markup; this table is the router's side of the SAME list, and guard
+ * 61 asserts the two agree and that every kind in it survives a round trip —
+ * written to an address and read back to the same selection on the same view.
+ * The `--map-label` pattern, one axis over: declared twice, checked once, and
+ * never recomputed from itself (FINDING 112).
+ * ------------------------------------------------------------------ */
+const DATA_ROUTE = {
+  place: {
+    seg:  sel => encodeURIComponent(sel.key),
+    read: seg => placeByKey.has(seg) ? { kind: "place", key: seg } : null,
+    miss: seg => `no placement with the key ${seg} on the ${TABS.data} tab`,
+  },
+  record: {
+    seg:  sel => encodeURIComponent(sel.docId),
+    read: seg => D.corpus[seg] ? { kind: "record", docId: seg } : null,
+    miss: seg => `no record with the id ${seg} on the ${TABS.data} tab`,
+  },
+  edge: {
+    seg:  sel => String(sel.idx),
+    read: seg => {
+      const i = Number(seg);
+      return Number.isInteger(i) && (P.edges || [])[i] ? { kind: "edge", idx: i } : null;
+    },
+    miss: seg => `no edge numbered ${seg} on the ${TABS.data} tab`,
+  },
+};
+
 function hashOf(s) {
   if (s.view === "home") return "#";
   if (s.view === "map") {
@@ -1945,7 +1991,11 @@ function hashOf(s) {
     if (sel && sel.kind === "record") return `#record/${encodeURIComponent(sel.docId)}`;
     return "#map";
   }
-  if (s.view === "data") return "#data";
+  if (s.view === "data") {
+    const sel = s.selection;
+    const r = sel && DATA_ROUTE[sel.kind];
+    return r ? `#data/${sel.kind}/${r.seg(sel)}` : "#data";
+  }
   if (s.intro && s.selection == null && s.runIndex == null) return "#questions";
   const runs = byQuestion.get(s.question) || [];
   const run = runs[s.runIndex == null ? defaultRunIndex(runs) : Math.min(s.runIndex, runs.length - 1)];
@@ -1977,7 +2027,20 @@ function applyHash(raw) {
   if (seg[0] === "questions") { state.view = "questions"; state.intro = true;
                                 state.runIndex = null; return null; }
   if (seg[0] === "map")       { state.view = "map";  return null; }
-  if (seg[0] === "data")      { state.view = "data"; return null; }
+  /* RULING 94. `#data` alone is the tab; `#data/<kind>/<id>` is one thing
+     selected ON it. A kind this tab does not route says so rather than falling
+     back to the tab with nothing open — the same rule as every other branch
+     here, and the reason RULING 84 exists. */
+  if (seg[0] === "data") {
+    state.view = "data";
+    if (seg.length === 1) return null;
+    const r = DATA_ROUTE[seg[1]];
+    if (!r) return `nothing on the ${TABS.data} tab is addressed as ${seg[1]}`;
+    const sel = r.read(seg[2]);
+    if (!sel) return r.miss(seg[2]);
+    state.selection = sel;
+    return null;
+  }
 
   if (seg[0] === "record") {
     if (!D.corpus[seg[1]]) return `no record with the id ${seg[1]}`;
