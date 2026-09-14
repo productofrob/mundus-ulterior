@@ -15,28 +15,64 @@
   "why_unread_is_the_default_and_not_a_guess": "Thirty-eight of forty records enter this file as `unread`, and the temptation to fill them from the prose already in citation_original is the whole reason the file exists. FINDING 69 was produced by two licence claims that were WRONG in opposite directions in a single session -- one recorded reachability as a licence, one verified a licence against the wrong object. A column populated from those same sentences would inherit both errors and print them as a table. An unread cell is a debt with a name; a guessed cell is a finding waiting.",
   "records": {
     "africa-01-ezana-stone": {
-      "position": "unread",
-      "region": "Sub-Saharan Africa"
+      "position": "all_rights_reserved",
+      "region": "Sub-Saharan Africa",
+      "licence": null,
+      "stated_verbatim": "Copyright © 2026 Πρώτο Θέμα",
+      "read_off": "https://en.protothema.gr/2021/09/08/the-ezana-stone-of-aksum-a-trilingual-monument-similar-to-the-rosetta-stone/",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "The record's cited URL redirects to this dated path, and read_off records the URL AS REACHED. Searched 2026-09-14: `creative commons` 0, creativecommons anchors 0, `all rights reserved` 0, `licen[cs]e` 0.\n\nA BARE COPYRIGHT LINE, taken as all_rights_reserved on the precedent southasia-07-bm-claudius-aureus set with '© 2026 The Trustees of the British Museum'. Five cells in this block turn on that reading and they move together if it is ever revisited: this one, the three British Museum cells, and persia-05-abnun.\n\nTHE SITE'S OWN `TERM OF USE` PAGE WAS OPENED AND CARRIES NO REUSE TERMS -- 6,166 characters, `intellectual property` 0, `reproduc` 0, `licen[cs]e` 0, and its one `copyright` hit is this same footer line; most of what it renders is a cookie-consent panel. The substantive terms may live on the Greek parent site protothema.gr, which is a DIFFERENT HOST from the one this record cites and was deliberately not read into this cell."
     },
     "africa-02-aksumite-coin": {
-      "position": "unread",
-      "region": "Sub-Saharan Africa"
+      "position": "all_rights_reserved",
+      "region": "Sub-Saharan Africa",
+      "licence": null,
+      "stated_verbatim": "© 2026 The Trustees of the British Museum",
+      "read_off": "https://www.britishmuseum.org/collection/object/C_1915-0108-81",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THE OBJECT PAGE PAINTS NO RIGHTS LINE AT ALL. The quoted sentence is in this page's own document and renders at ZERO HEIGHT -- the collection app takes the whole viewport, the site footer measures 0px and the document does not scroll -- so a visitor reading this page sees no rights statement. Measured on all four British Museum objects on 2026-09-14; FINDING 122. Searched the same day for `Creative Commons`, `CC BY`, `CC0` and any anchor href containing `creativecommons`: ZERO of each, in the full HTML and not only the visible text.\n\nTHE IMAGE IS A SEPARATE OBJECT UNDER A SEPARATE AND OPEN LICENCE, recorded here rather than as the position because THIS RECORD TAKES NO IMAGE -- RULING 96. The `Use this image` control navigates to britishmuseum.org/collection/image/597606001, which states: 'This image can be shared under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) license.' and gives the credit to be used as '© The Trustees of the British Museum. Shared under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) licence.' Read by Rob on 2026-09-14. Rob ruled the same day that images are NOT added to records and that this licence is captured verbatim here. Mundus Ulterior is non-commercial, so the NC condition is met if an image is ever taken.\n\nFOUR OBJECT PAGES AND FOUR IMAGE PAGES READ, four distinct image ids, all four image pages identical. Stated as a measured four-of-four and NOT as a rule about the Museum: britishmuseum.org/terms-use/copyright-and-permissions says 'The Creative Commons licence does not apply to everything on our website. Content that is published under the Creative Commons licence will be marked with the following logo', and no object page carries the marking.\n\nThe record takes the catalogue description only -- 278 characters of English prose, original_text_note: 'British Museum catalogue description used as the artefact record.'"
     },
     "africa-03-periplus-adulis": {
-      "position": "unread",
-      "region": "Sub-Saharan Africa"
+      "position": "open_licence_stated",
+      "region": "Sub-Saharan Africa",
+      "licence": "Creative Commons Αναφορά Δημιουργού-Παρόμοια Διανομή 4.0 (CC BY-SA 4.0)",
+      "stated_verbatim": "Όλα τα κείμενα είναι διαθέσιμα υπό την Άδεια Creative Commons Αναφορά Δημιουργού-Παρόμοια Διανομή 4.0· μπορεί να ισχύουν πρόσθετοι όροι. Δείτε τους Όρους Χρήσης για λεπτομέρειες.",
+      "read_off": "https://el.wikisource.org/wiki/Περίπλους_της_Ερυθράς_Θαλάσσης",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "ONE OBJECT, THREE CELLS, and that is stated rather than left to look like three independent verifications: africa-03-periplus-adulis, arabia-01-periplus and southasia-02-periplus-muziris all cite this same page, one reading answers all three, and each cell carries its own read_off, read_by and read_on. The practice scandinavia-07-rycksta-grikkium established.\n\nTHE 'PUBLIC DOMAIN' IN citation_original IS NOT THIS POSITION AND DOES NOT CONTRADICT IT. All three records carry '(ed. C. Müller, Geographi Graeci Minores I, Paris 1855; public domain)'. That is a true statement about the EDITION; the page states a licence about the TRANSCRIPTION. The page was searched for a public-domain banner on 2026-09-14: zero matches for `public domain` or `κοινό κτήμα`, so this is open_licence_stated and not two_positions_stated.\n\nTHE HEDGE IS PART OF THE QUOTATION. 'μπορεί να ισχύουν πρόσθετοι όροι' -- additional terms may apply -- is the source qualifying its own licence and is quoted rather than trimmed. Greek is what el.wikisource serves and is quoted as the position; Rob confirmed the Greek string on 2026-09-14 and separately rendered it into English BY MACHINE TRANSLATION ON DEMAND as 'All text is available under the Creative Commons Attribution-ShareAlike 4.0 License'. THE ENGLISH IS NOT THE SITE'S and is recorded here as a translation, not as a second stated position."
     },
     "africa-04-silko-talmis": {
-      "position": "unread",
-      "region": "Sub-Saharan Africa"
+      "position": "all_rights_reserved",
+      "region": "Sub-Saharan Africa",
+      "licence": null,
+      "stated_verbatim": "I agree to use this website only for personal study and not to make copies except for my personal use under “Fair Use” principles of Copyright law.",
+      "read_off": "https://epigraphy.packhum.org/",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "READ OFF THE SITE ROOT, NOT THE OBJECT PAGE, AND THAT IS THE FINDING. The object pages at epigraphy.packhum.org/text/219058 and /text/219054 state nothing whatever: searched 2026-09-14, `copyright` 0, `©` 0, `licen[cs]e` 0, `creative commons` 0, `all rights reserved` 0, `terms of use` 0, creativecommons anchors 0, and the page's entire link set is Regions / OGIS / Search Help / Contact Us / All Regions / By Reference / Bibliography. The model searched only those object pages and proposed states_no_terms; ROB FOUND THE GATE ON THE SITE ROOT. FINDING 120.\n\nTHE GATE IS NOT ENFORCED ON DEEP LINKS -- both curator and model reached the inscriptions directly without passing it -- and PHI calls it 'this License' in its own words while naming no standard licence. Recorded as all_rights_reserved on Rob's ruling of 2026-09-14, which is the more conservative of the two candidate positions: the vocabulary entry for this position pulls RULING 74's four conditions in IN FULL, and 'personal study only' is a term a public web portal does not satisfy. That question is RULING 74's and is flagged here rather than decided.\n\nRead in the desktop app's own browser pane; Claude in Chrome refuses this domain outright.\n\nTHE OBJECT THIS CELL IS FOR: https://epigraphy.packhum.org/text/219058"
     },
     "africa-05-adulis-throne": {
-      "position": "unread",
-      "region": "Sub-Saharan Africa"
+      "position": "all_rights_reserved",
+      "region": "Sub-Saharan Africa",
+      "licence": null,
+      "stated_verbatim": "I agree to use this website only for personal study and not to make copies except for my personal use under “Fair Use” principles of Copyright law.",
+      "read_off": "https://epigraphy.packhum.org/",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "READ OFF THE SITE ROOT, NOT THE OBJECT PAGE, AND THAT IS THE FINDING. The object pages at epigraphy.packhum.org/text/219058 and /text/219054 state nothing whatever: searched 2026-09-14, `copyright` 0, `©` 0, `licen[cs]e` 0, `creative commons` 0, `all rights reserved` 0, `terms of use` 0, creativecommons anchors 0, and the page's entire link set is Regions / OGIS / Search Help / Contact Us / All Regions / By Reference / Bibliography. The model searched only those object pages and proposed states_no_terms; ROB FOUND THE GATE ON THE SITE ROOT. FINDING 120.\n\nTHE GATE IS NOT ENFORCED ON DEEP LINKS -- both curator and model reached the inscriptions directly without passing it -- and PHI calls it 'this License' in its own words while naming no standard licence. Recorded as all_rights_reserved on Rob's ruling of 2026-09-14, which is the more conservative of the two candidate positions: the vocabulary entry for this position pulls RULING 74's four conditions in IN FULL, and 'personal study only' is a term a public web portal does not satisfy. That question is RULING 74's and is flagged here rather than decided.\n\nRead in the desktop app's own browser pane; Claude in Chrome refuses this domain outright.\n\nTHE OBJECT THIS CELL IS FOR: https://epigraphy.packhum.org/text/219054"
     },
     "arabia-01-periplus": {
-      "position": "unread",
-      "region": "Arabia"
+      "position": "open_licence_stated",
+      "region": "Arabia",
+      "licence": "Creative Commons Αναφορά Δημιουργού-Παρόμοια Διανομή 4.0 (CC BY-SA 4.0)",
+      "stated_verbatim": "Όλα τα κείμενα είναι διαθέσιμα υπό την Άδεια Creative Commons Αναφορά Δημιουργού-Παρόμοια Διανομή 4.0· μπορεί να ισχύουν πρόσθετοι όροι. Δείτε τους Όρους Χρήσης για λεπτομέρειες.",
+      "read_off": "https://el.wikisource.org/wiki/Περίπλους_της_Ερυθράς_Θαλάσσης",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "ONE OBJECT, THREE CELLS, and that is stated rather than left to look like three independent verifications: africa-03-periplus-adulis, arabia-01-periplus and southasia-02-periplus-muziris all cite this same page, one reading answers all three, and each cell carries its own read_off, read_by and read_on. The practice scandinavia-07-rycksta-grikkium established.\n\nTHE 'PUBLIC DOMAIN' IN citation_original IS NOT THIS POSITION AND DOES NOT CONTRADICT IT. All three records carry '(ed. C. Müller, Geographi Graeci Minores I, Paris 1855; public domain)'. That is a true statement about the EDITION; the page states a licence about the TRANSCRIPTION. The page was searched for a public-domain banner on 2026-09-14: zero matches for `public domain` or `κοινό κτήμα`, so this is open_licence_stated and not two_positions_stated.\n\nTHE HEDGE IS PART OF THE QUOTATION. 'μπορεί να ισχύουν πρόσθετοι όροι' -- additional terms may apply -- is the source qualifying its own licence and is quoted rather than trimmed. Greek is what el.wikisource serves and is quoted as the position; Rob confirmed the Greek string on 2026-09-14 and separately rendered it into English BY MACHINE TRANSLATION ON DEMAND as 'All text is available under the Creative Commons Attribution-ShareAlike 4.0 License'. THE ENGLISH IS NOT THE SITE'S and is recorded here as a translation, not as a second stated position."
     },
     "arabia-02-palmyrene-tariff": {
       "position": "unread",
@@ -79,52 +115,119 @@
       "region": "East Asia"
     },
     "eastasia-03-hwangnam-glass": {
-      "position": "unread",
-      "region": "East Asia"
+      "position": "all_rights_reserved",
+      "region": "East Asia",
+      "licence": null,
+      "stated_verbatim": "© 2025 Korea Heritage Service. All rights reserved",
+      "read_off": "https://www.heritage.go.kr/heri/cul/culSelectDetail.do?pageNo=1_1_1_1&VdkVgwKey=11,01930000,11",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "The same page's meta tag carries 'COPYRIGHT(C) 2000~CULTURAL HERITAGE ADMINISTRATION. ALL RIGHTS RESERVED.' -- the agency's former name, saying the same thing.\n\n공공누리 / KOGL APPEARS ON THIS PAGE EXACTLY ONCE, AS THE LABEL OF A SEARCH-FILTER DROPDOWN (전체 / 제1유형 / 제2유형) for finding OTHER records by licence type. It is a facet, not a mark on this object. A licence-signal matcher would have returned it and proposed an open licence off a <select> element; this is the other half of FINDING 121 and the clearest argument in the block against ever letting a triage pass write a cell.\n\nTHE AGENCY'S OWN COPYRIGHT POLICY CONFIRMS THE READING, and has the same MARKED-OR-NOT structure as the British Museum's. khs.go.kr/html/HtmlPage.do?pg=/guide/copyright.jsp states that works the Service holds all economic rights in, or has consent for, 부착하고 있으며 -- CARRY the KOGL mark -- and may be freely used; and that 공공누리가 부착되지 않은 자료 (materials NOT carrying the mark) require 사전에 협의, PRIOR CONSULTATION with the public-works manager before use. This object carries no mark. Read by Rob and by the model on 2026-09-14. The policy also defines an AI 유형 for AI-training data, which reaches nothing here because nothing here is marked."
     },
     "eastasia-04-jingjiao-stele": {
-      "position": "unread",
-      "region": "East Asia"
+      "position": "permission_stated_no_licence",
+      "region": "East Asia",
+      "licence": null,
+      "stated_verbatim": "Available for non-commercial use when distributed with this header intact.",
+      "read_off": "https://raw.githubusercontent.com/cbeta-org/xml-p5/master/T/T54/T54n2144.xml",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CBETA, CC BY-NC-SA.' The file names no licence at all: searched 2026-09-14 over all 12,621 characters, `creative commons` 0, `CC BY` 0, the word `licen[cs]e` 0 -- confirmed independently by Rob on the untranslated file. What it carries instead is the sentence quoted here, inside its own TEI <publicationStmt><availability> at about line 36.\n\nA RAW GITHUB PATH SERVES A FILE, NOT A PAGE. CBETA does publish under CC BY-NC-SA elsewhere and the repository has a LICENSE file; the record quotes the FILE, and a repository is not an object -- FINDING 87 through a door nobody had watched. The seventh position applies exactly as scandinavia-06-tjurko-bracteate defined it: reuse permitted in the source's own words, no licence named.\n\nSAME SHAPE AS southasia-01-akananuru-149, curated half a world away: reuse granted on condition the header travels with the file."
     },
     "eastasia-05-liangshu-qin-lun": {
-      "position": "unread",
-      "region": "East Asia"
+      "position": "states_no_terms",
+      "region": "East Asia",
+      "licence": null,
+      "read_off": "https://raw.githubusercontent.com/kanripo/KR2a0018/master/KR2a0018_054.txt",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first."
     },
     "eastasia-06-cefu-yuangui": {
-      "position": "unread",
-      "region": "East Asia"
+      "position": "states_no_terms",
+      "region": "East Asia",
+      "licence": null,
+      "read_off": "https://raw.githubusercontent.com/kanripo/KR3k0013/master/KR3k0013_970.txt",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first."
     },
     "eastasia-07-tang-huiyao": {
-      "position": "unread",
-      "region": "East Asia"
+      "position": "states_no_terms",
+      "region": "East Asia",
+      "licence": null,
+      "read_off": "https://raw.githubusercontent.com/kanripo/KR2m0002/master/KR2m0002_099.txt",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first.\n\nTHIS CELL COVERS THE KANRIPO FILE ONLY. citation_original names a SECOND WITNESS at zh.wikisource.org/wiki/唐會要/卷099 carrying the same 24 country lemmas. zh.wikisource is bucket D -- documented as cache-only -- and was not read by this block, so nothing here speaks for it."
     },
     "persia-01-skz": {
-      "position": "unread",
-      "region": "Persia"
+      "position": "all_rights_reserved",
+      "region": "Persia",
+      "licence": null,
+      "stated_verbatim": "Parthian Sources Online All rights reserved.",
+      "read_off": "https://parthiansources.com/texts/skz/",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THE SITE STATES ONE SENTENCE, SITE-WIDE, AND NOTHING ELSE. Searched 2026-09-14: `creative commons` 0, creativecommons anchors 0, `licen[cs]e` 0, and NO `©` CHARACTER ANYWHERE -- the string is quoted exactly as it renders, without a copyright symbol. The `copyright` hit in the raw HTML is the CSS class on the wrapping div, not a word on the page.\n\nAfter the epigraphy.packhum.org gate, the site's only other rights-adjacent page, parthiansources.com/about/, was opened and adds nothing (1,029 characters, no terms). Each record's own page was opened separately rather than inherited, and Rob confirmed the footer on both -- worth stating because a WordPress 404 on this site serves the same theme footer, so a mistyped URL would have produced a reading of nothing that looked like a reading."
     },
     "persia-02-silver-plate": {
-      "position": "unread",
-      "region": "Persia"
+      "position": "all_rights_reserved",
+      "region": "Persia",
+      "licence": null,
+      "stated_verbatim": "© 2026 The Trustees of the British Museum",
+      "read_off": "https://www.britishmuseum.org/collection/object/W_1908-1118-1",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THE OBJECT PAGE PAINTS NO RIGHTS LINE AT ALL. The quoted sentence is in this page's own document and renders at ZERO HEIGHT -- the collection app takes the whole viewport, the site footer measures 0px and the document does not scroll -- so a visitor reading this page sees no rights statement. Measured on all four British Museum objects on 2026-09-14; FINDING 122. Searched the same day for `Creative Commons`, `CC BY`, `CC0` and any anchor href containing `creativecommons`: ZERO of each, in the full HTML and not only the visible text.\n\nTHE IMAGE IS A SEPARATE OBJECT UNDER A SEPARATE AND OPEN LICENCE, recorded here rather than as the position because THIS RECORD TAKES NO IMAGE -- RULING 96. The `Use this image` control navigates to britishmuseum.org/collection/image/585075001, which states: 'This image can be shared under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) license.' and gives the credit to be used as '© The Trustees of the British Museum. Shared under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) licence.' Read by Rob on 2026-09-14. Rob ruled the same day that images are NOT added to records and that this licence is captured verbatim here. Mundus Ulterior is non-commercial, so the NC condition is met if an image is ever taken.\n\nFOUR OBJECT PAGES AND FOUR IMAGE PAGES READ, four distinct image ids, all four image pages identical. Stated as a measured four-of-four and NOT as a rule about the Museum: britishmuseum.org/terms-use/copyright-and-permissions says 'The Creative Commons licence does not apply to everything on our website. Content that is published under the Creative Commons licence will be marked with the following logo', and no object page carries the marking.\n\nThe record takes the catalogue description only, and says so: 'This is the British Museum's own catalogue description, used here as the original record field since the object is a visual/archaeological artefact rather than a text.'"
     },
     "persia-03-coin": {
-      "position": "unread",
-      "region": "Persia"
+      "position": "all_rights_reserved",
+      "region": "Persia",
+      "licence": null,
+      "stated_verbatim": "© 2026 The Trustees of the British Museum",
+      "read_off": "https://www.britishmuseum.org/collection/object/C_1843-0620-5",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THE OBJECT PAGE PAINTS NO RIGHTS LINE AT ALL. The quoted sentence is in this page's own document and renders at ZERO HEIGHT -- the collection app takes the whole viewport, the site footer measures 0px and the document does not scroll -- so a visitor reading this page sees no rights statement. Measured on all four British Museum objects on 2026-09-14; FINDING 122. Searched the same day for `Creative Commons`, `CC BY`, `CC0` and any anchor href containing `creativecommons`: ZERO of each, in the full HTML and not only the visible text.\n\nTHE IMAGE IS A SEPARATE OBJECT UNDER A SEPARATE AND OPEN LICENCE, recorded here rather than as the position because THIS RECORD TAKES NO IMAGE -- RULING 96. The `Use this image` control navigates to britishmuseum.org/collection/image/1282499001, which states: 'This image can be shared under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) license.' and gives the credit to be used as '© The Trustees of the British Museum. Shared under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) licence.' Read by Rob on 2026-09-14. Rob ruled the same day that images are NOT added to records and that this licence is captured verbatim here. Mundus Ulterior is non-commercial, so the NC condition is met if an image is ever taken.\n\nFOUR OBJECT PAGES AND FOUR IMAGE PAGES READ, four distinct image ids, all four image pages identical. Stated as a measured four-of-four and NOT as a rule about the Museum: britishmuseum.org/terms-use/copyright-and-permissions says 'The Creative Commons licence does not apply to everything on our website. Content that is published under the Creative Commons licence will be marked with the following logo', and no object page carries the marking.\n\nThe record takes the catalogue description only; original_text_note adds 'no reference translation applicable (numismatic object)'."
     },
     "persia-04-bronze-heracles": {
-      "position": "unread",
-      "region": "Persia"
+      "position": "all_rights_reserved",
+      "region": "Persia",
+      "licence": null,
+      "stated_verbatim": "Parthian Sources Online All rights reserved.",
+      "read_off": "https://parthiansources.com/texts/bhm/bhm-parthian-text/",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "THE SITE STATES ONE SENTENCE, SITE-WIDE, AND NOTHING ELSE. Searched 2026-09-14: `creative commons` 0, creativecommons anchors 0, `licen[cs]e` 0, and NO `©` CHARACTER ANYWHERE -- the string is quoted exactly as it renders, without a copyright symbol. The `copyright` hit in the raw HTML is the CSS class on the wrapping div, not a word on the page.\n\nAfter the epigraphy.packhum.org gate, the site's only other rights-adjacent page, parthiansources.com/about/, was opened and adds nothing (1,029 characters, no terms). Each record's own page was opened separately rather than inherited, and Rob confirmed the footer on both -- worth stating because a WordPress 404 on this site serves the same theme footer, so a mistyped URL would have produced a reading of nothing that looked like a reading.\n\nThe record cites this URL as http://; it redirects to https://, and read_off records the URL AS REACHED."
     },
     "persia-05-abnun": {
-      "position": "unread",
-      "region": "Persia"
+      "position": "all_rights_reserved",
+      "region": "Persia",
+      "licence": null,
+      "stated_verbatim": "Privacy Notice | © 2026 UC Regents",
+      "read_off": "https://sites.uci.edu/sasanika/abnun-inscription/",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "READ OFF THE OBJECT, NOT OFF THE POLICY THE RECORD POINTS AT. citation_original contains the string https://uci.edu/copyright/ -- part of a correction naming where the terms live -- so this record's COMPUTED rights target resolved to a university policy page rather than to the text. That pointer defect is FINDING 119 and is not fixed here: §5 puts record edits outside this thread.\n\nTHE CORRECTION ALREADY IN THE RECORD IS CONFIRMED AND STRENGTHENED. F5_PART3_START.md said 'Sasanika states no licence, no terms of use and no citation guidance anywhere on its site -- checked'. False: there is a copyright line on the object page itself, and on sites.uci.edu/sasanika/ that line IS A HYPERLINK whose href is https://uci.edu/copyright/. The object does not merely sit under a policy; it points at one.\n\nTHE LINKED POLICY, read 2026-09-14 and quoted here rather than in the position because it is not the object: 'Copyright © 2005-2025 The Regents of the University of California. All rights reserved. To request permission to use material from a UCI website, or if you believe material is in violation of a copyright, please contact the email address given as responsible for that site.' Object and policy agree; the reading is still the object's."
     },
     "scandinavia-01-hoby-treasure": {
-      "position": "unread",
-      "region": "Scandinavia"
+      "position": "states_no_terms",
+      "region": "Scandinavia",
+      "licence": null,
+      "read_off": "https://en.natmus.dk/historical-knowledge/denmark/prehistoric-period-until-1050-ad/the-early-iron-age/the-chieftains-grave-from-hoby/",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "No stated_verbatim, because the position may not carry a quotation and there is nothing to quote. SEARCHED AT THE SITE ROOT AND NOT ONLY AT THE OBJECT, after the epigraphy.packhum.org gate showed that an object page's silence does not establish a site's -- FINDING 120. On 2026-09-14: the object page, en.natmus.dk root, /shortcuts/privacy-policy/ (14,245 characters) and /digital-collections/ all return `copyright` 0, `©` 0, `licen[cs]e` 0, `creative commons` 0, `ophavsret` 0. The privacy policy's two `rights` hits are GDPR data-subject rights. There is no terms page and no copyright page in the site's link set.\n\nTHE RAW HTML DISAGREES WITH THE RENDERED PAGE AND THE RENDERED PAGE IS RIGHT. Counting raw HTML returns `copyright` 2 and `licence` 1 on both object pages, ENTIRELY from an invisible TYPO3 comment: 'TYPO3 is a free open source Content Management Framework ... licensed under GNU/GPL. TYPO3 is copyright 1998-2019 of Kasper Skaarhoj.' That is the content management system's own licence, not the museum's position on its text -- the same species as seasia-08-pong-tuk-lamp's Joomla template credit, and half of FINDING 121.\n\nSEARCHED AND REJECTED: pure.kb.dk, the Royal Danish Library's research portal, carries an all-rights-reserved footer on an organisation page for Nationalmuseet. Different host, different publisher, cited by neither record -- it is not this source speaking. Recorded so that finding it later is not mistaken for finding something this pass missed.\n\nRead in the desktop app's own browser pane; Claude in Chrome refuses this domain outright. The site announces it has been superseded by www.nationalmuseet.dk, which is a citation-durability risk for a later thread and not a rights matter."
     },
     "scandinavia-02-gudme-hoard": {
-      "position": "unread",
-      "region": "Scandinavia"
+      "position": "states_no_terms",
+      "region": "Scandinavia",
+      "licence": null,
+      "read_off": "https://en.natmus.dk/historical-knowledge/denmark/prehistoric-period-until-1050-ad/the-late-iron-age/gudme-gold-gods-and-people/the-roman-connection/",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "No stated_verbatim, because the position may not carry a quotation and there is nothing to quote. SEARCHED AT THE SITE ROOT AND NOT ONLY AT THE OBJECT, after the epigraphy.packhum.org gate showed that an object page's silence does not establish a site's -- FINDING 120. On 2026-09-14: the object page, en.natmus.dk root, /shortcuts/privacy-policy/ (14,245 characters) and /digital-collections/ all return `copyright` 0, `©` 0, `licen[cs]e` 0, `creative commons` 0, `ophavsret` 0. The privacy policy's two `rights` hits are GDPR data-subject rights. There is no terms page and no copyright page in the site's link set.\n\nTHE RAW HTML DISAGREES WITH THE RENDERED PAGE AND THE RENDERED PAGE IS RIGHT. Counting raw HTML returns `copyright` 2 and `licence` 1 on both object pages, ENTIRELY from an invisible TYPO3 comment: 'TYPO3 is a free open source Content Management Framework ... licensed under GNU/GPL. TYPO3 is copyright 1998-2019 of Kasper Skaarhoj.' That is the content management system's own licence, not the museum's position on its text -- the same species as seasia-08-pong-tuk-lamp's Joomla template credit, and half of FINDING 121.\n\nSEARCHED AND REJECTED: pure.kb.dk, the Royal Danish Library's research portal, carries an all-rights-reserved footer on an organisation page for Nationalmuseet. Different host, different publisher, cited by neither record -- it is not this source speaking. Recorded so that finding it later is not mistaken for finding something this pass missed.\n\nRead in the desktop app's own browser pane; Claude in Chrome refuses this domain outright. The site announces it has been superseded by www.nationalmuseet.dk, which is a citation-durability risk for a later thread and not a rights matter."
     },
     "scandinavia-03-vimose": {
       "position": "unread",
@@ -147,16 +250,28 @@
       "region": "Southeast Asia"
     },
     "seasia-03-khao-sam-kaeo": {
-      "position": "unread",
-      "region": "Southeast Asia"
+      "position": "open_licence_stated",
+      "region": "Southeast Asia",
+      "licence": "Creative Commons Attribution-Non Commercial 4.0 International Licence",
+      "stated_verbatim": "© 2022 The Author(s). This is an open-access article distributed under the terms of the Creative Commons Attribution-Non Commercial 4.0 International Licence",
+      "read_off": "https://real.mtak.hu/141407/1/11_HoppalK_DissArch_2021_v01.pdf",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "READ OFF THE PDF BY THE CURATOR. The model could not render it -- the browser tab froze and the capture timed out after 30 seconds -- so this is the one cell in the block where the curator read the object and the model could not.\n\nTHE OBJECT AND THE PAGE THAT SERVES IT STATE DIFFERENT VERSIONS. The repository item page at real.mtak.hu/141407/ states 'Text 11_HoppalK_DissArch_2021_v01.pdf Available under License Creative Commons Attribution Non-commercial.' with NO VERSION PRINTED and an anchor to creativecommons.org/licenses/by-nc/3.0/. The article itself says 4.0 and names THE AUTHORS as rights holders, which the repository page does not mention. The object's statement is the position; the repository's metadata is recorded here as differing from it. Had this cell closed on the model's reading it would have recorded 3.0 over a document that says 4.0 -- the clearest single vindication in this block of opening the object."
     },
     "seasia-04-dong-yen-chau": {
       "position": "unread",
       "region": "Southeast Asia"
     },
     "seasia-05-my-son-b6": {
-      "position": "unread",
-      "region": "Southeast Asia"
+      "position": "open_licence_stated",
+      "region": "Southeast Asia",
+      "licence": "Creative Commons Attribution 3.0 Unported License",
+      "stated_verbatim": "C. 87 Stela from Mỹ Sơn B6: Copyright (c) 2012 by Arlo Griffiths. Licensed under a Creative Commons Attribution 3.0 Unported License.",
+      "read_off": "https://isaw.nyu.edu/publications/inscriptions/campa/inscriptions/C0087.html",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "The object states its own licence in its own text and marks it twice with rel=\"license\", both anchors pointing at creativecommons.org/licenses/by/3.0/deed.en_US.\n\nFIRST OF ONLY TWO CLEAN CORROBORATIONS IN THIS BLOCK. The record's notes announce it as 'THE FIRST RECORD IN THIS CORPUS UNDER AN EXPLICIT OPEN LICENCE' and the object agrees, on the version as well as the licence -- checked character by character after seasia-03-khao-sam-kaeo turned out to be 3.0 on the metadata and 4.0 on the object.\n\nNames an individual author, Arlo Griffiths, as the copyright holder rather than an institution. The site root was NOT hunted for terms: FINDING 120 applies to silences, and this object speaks."
     },
     "seasia-06-kedukan-bukit": {
       "position": "unread",
@@ -167,24 +282,47 @@
       "region": "Southeast Asia"
     },
     "southasia-01-akananuru-149": {
-      "position": "unread",
-      "region": "South Asia"
+      "position": "permission_stated_no_licence",
+      "region": "South Asia",
+      "licence": null,
+      "stated_verbatim": "© Project Madurai, 1998-2006 .\nProject Madurai is an open, voluntary, worldwide initiative devoted to preparation\nof electronic texts of tamil literary works and to distribute them free on the Internet.\nDetails of Project Madurai are available at the website\nhttp://www.projectmadurai.org/\nYou are welcome to freely distribute this file, provided this header page is kept intact.",
+      "read_off": "https://www.projectmadurai.org/pm_etexts/utf8/pmuni0229.html",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "ONE POSITION AND NOT TWO, ruled by Rob on 2026-09-14. A copyright assertion and an explicit permission in one block: one says who holds the rights, the other says what may be done, and they COMPOSE. persia-06-shahrestaniha is the precedent for the other reading and there the two sentences CONTRADICTED -- 'use of the data of this site with mentioning the source is unrestricted' five lines from 'All Rights Reserved'. Nothing contradicts here. `creative commons` 0, creativecommons anchors 0.\n\nTHE SITE'S FAQ IS NOT A TERM OF USE AND IS NOT THE POSITION. projectmadurai.org/faq.html#3.3 states 'Project Madurai strictly adheres to copyright standards. All the works in the collection are either from public-domain (after a certain period of their creation, currently ca. 75 years after the lifespan of the author) or with due consent from the respective authors.' Found by Rob on 2026-09-14. That describes how the collection was BUILT, not what a reader may do -- unlike epigraphy.packhum.org's gate, which is a condition imposed on the reader. It does establish that the © line covers the ELECTRONIC EDITION and that the Sangam-era poem beneath it is out of copyright on the site's own test, which is africa-07-cosmas-sasu's situation: RULING 74's conditions are not invoked by the underlying work.\n\nSAME SHAPE AS eastasia-04-jingjiao-stele's CBETA header: reuse granted on condition the header travels with the file, no licence named."
     },
     "southasia-02-periplus-muziris": {
-      "position": "unread",
-      "region": "South Asia"
+      "position": "open_licence_stated",
+      "region": "South Asia",
+      "licence": "Creative Commons Αναφορά Δημιουργού-Παρόμοια Διανομή 4.0 (CC BY-SA 4.0)",
+      "stated_verbatim": "Όλα τα κείμενα είναι διαθέσιμα υπό την Άδεια Creative Commons Αναφορά Δημιουργού-Παρόμοια Διανομή 4.0· μπορεί να ισχύουν πρόσθετοι όροι. Δείτε τους Όρους Χρήσης για λεπτομέρειες.",
+      "read_off": "https://el.wikisource.org/wiki/Περίπλους_της_Ερυθράς_Θαλάσσης",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "ONE OBJECT, THREE CELLS, and that is stated rather than left to look like three independent verifications: africa-03-periplus-adulis, arabia-01-periplus and southasia-02-periplus-muziris all cite this same page, one reading answers all three, and each cell carries its own read_off, read_by and read_on. The practice scandinavia-07-rycksta-grikkium established.\n\nTHE 'PUBLIC DOMAIN' IN citation_original IS NOT THIS POSITION AND DOES NOT CONTRADICT IT. All three records carry '(ed. C. Müller, Geographi Graeci Minores I, Paris 1855; public domain)'. That is a true statement about the EDITION; the page states a licence about the TRANSCRIPTION. The page was searched for a public-domain banner on 2026-09-14: zero matches for `public domain` or `κοινό κτήμα`, so this is open_licence_stated and not two_positions_stated.\n\nTHE HEDGE IS PART OF THE QUOTATION. 'μπορεί να ισχύουν πρόσθετοι όροι' -- additional terms may apply -- is the source qualifying its own licence and is quoted rather than trimmed. Greek is what el.wikisource serves and is quoted as the position; Rob confirmed the Greek string on 2026-09-14 and separately rendered it into English BY MACHINE TRANSLATION ON DEMAND as 'All text is available under the Creative Commons Attribution-ShareAlike 4.0 License'. THE ENGLISH IS NOT THE SITE'S and is recorded here as a translation, not as a second stated position."
     },
     "southasia-03-muziris-papyrus": {
-      "position": "unread",
-      "region": "South Asia"
+      "position": "open_licence_stated",
+      "region": "South Asia",
+      "licence": "Creative Commons Attribution 3.0 License",
+      "stated_verbatim": "© Duke Databank of Documentary Papyri. This work is licensed under a Creative Commons Attribution 3.0 License.",
+      "read_off": "https://papyri.info/editions/sb/18/13167",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "The record cites papyri.info/ddbdp/sb;18;13167, which redirects to this path; read_off records the URL AS REACHED. Two rel=\"license\" elements, both pointing at creativecommons.org/licenses/by/3.0/.\n\nSECOND AND LAST CLEAN CORROBORATION IN THIS BLOCK. citation_original says '(DDbDP, CC BY 3.0)' and the object agrees, licence and version both.\n\nTHIS CELL COVERS THE GREEK ONLY -- RULING 96. The record uses two sources: the Greek transcription from DDbDP, and the English translation from attalus.org, which is the record's `citation` and was not read by this block. eastasia-08-songshi-fulin is the same case and the ruling now settles both: the cell records the position on the material the record's quoted text comes from."
     },
     "southasia-04-pattanam": {
       "position": "unread",
       "region": "South Asia"
     },
     "southasia-05-brihatsamhita": {
-      "position": "unread",
-      "region": "South Asia"
+      "position": "states_no_terms",
+      "region": "South Asia",
+      "licence": null,
+      "read_off": "https://www.wisdomlib.org/hinduism/book/brihat-samhita-sanskrit/d/doc1218183.html",
+      "read_on": "2026-09-14",
+      "read_by": "curator_and_model",
+      "note": "No stated_verbatim, because the position may not carry a quotation and there is nothing to quote. THE OBJECT WAS REACHED: the page serves a Cloudflare 'verifying you are not a bot' panel which RESOLVES ON ITS OWN after a few seconds, and NO CHALLENGE WAS ANSWERED. That distinction is §4's trap and it is why this is states_no_terms and not unread.\n\nSEARCHED AT THE SITE AND NOT ONLY AT THE OBJECT, after FINDING 120. On 2026-09-14 the object page (41,823 characters of HTML), wisdomlib.org root, /m/about.html and /m/privacy-policy.html all return `copyright` 0, `©` 0, `licen[cs]e` 0, `creative commons` 0, `terms of use` 0, `all rights reserved` 0. The site's entire footer link set is About / Contact / contact form / privacy policy / Patreon: there is no terms page and no copyright page to find. Confirmed independently by Rob.\n\nA CORRECTION TO THE RECORD'S OWN PROSE. citation_original says wisdomlib 'states that it is ‘free to read online’ and offers nothing further'. The characterisation is right in substance -- no licence -- and the quoted sentence is NOT ON THE SITE: `free to read` returns 0 on the object page, the root, the about page and the privacy policy. Same species as persia-05-abnun's corrected prose, and smaller, which is how FINDING 69 started."
     },
     "persia-06-shahrestaniha": {
       "position": "two_positions_stated",
@@ -287,7 +425,7 @@
       "read_off": "https://www.britishmuseum.org/collection/object/C_1898-0803-11",
       "read_on": "2026-09-06",
       "read_by": "model",
-      "note": "THE FLATTERING READING WAS AVAILABLE AND IS REFUSED. britishmuseum.org/terms-use/copyright-and-permissions says the Museum \"increasingly intend[s] to release content on our website under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) licence\" and, immediately after, that \"The Creative Commons licence does not apply to everything on our website. Content that is published under the Creative Commons licence will be marked with the following logo\". THE MARKING WAS LOOKED FOR ON THIS PAGE AND IS NOT THERE: the rendered document was searched on 2026-09-06 for `Creative Commons`, for `CC BY`, and for any anchor href containing `creativecommons` -- zero of each, in the full HTML and not only the visible text. One copyright line and no badge, so the site-level intent is not asserted over this record.\n\nSECOND CELL IN THIS TRANCHE WHERE THE ADVERTISED READING WAS WRONG, AND IN THE OPPOSITE DIRECTION TO THE FIRST. arabia-08-walters-marib-pediment's object page advertises CC0 over material that is not the text this corpus takes (FINDING 87); this page advertises nothing and a site-level licence exists that does not reach it. FINDING 69 came from two licence claims wrong in opposite directions in one session, which is why the column records the direction of each rather than an average.\n\nCOUNTED, NOT GATED. all_rights_reserved is a statement about what the source said and not a verdict on whether 183 characters of catalogue description may be quoted in a research corpus."
+      "note": "THE FLATTERING READING WAS AVAILABLE AND IS REFUSED. britishmuseum.org/terms-use/copyright-and-permissions says the Museum \"increasingly intend[s] to release content on our website under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) licence\" and, immediately after, that \"The Creative Commons licence does not apply to everything on our website. Content that is published under the Creative Commons licence will be marked with the following logo\". THE MARKING WAS LOOKED FOR ON THIS PAGE AND IS NOT THERE: the rendered document was searched on 2026-09-06 for `Creative Commons`, for `CC BY`, and for any anchor href containing `creativecommons` -- zero of each, in the full HTML and not only the visible text. One copyright line and no badge, so the site-level intent is not asserted over this record.\n\nSECOND CELL IN THIS TRANCHE WHERE THE ADVERTISED READING WAS WRONG, AND IN THE OPPOSITE DIRECTION TO THE FIRST. arabia-08-walters-marib-pediment's object page advertises CC0 over material that is not the text this corpus takes (FINDING 87); this page advertises nothing and a site-level licence exists that does not reach it. FINDING 69 came from two licence claims wrong in opposite directions in one session, which is why the column records the direction of each rather than an average.\n\nCOUNTED, NOT GATED. all_rights_reserved is a statement about what the source said and not a verdict on whether 183 characters of catalogue description may be quoted in a research corpus.\n\nAMENDED 2026-09-14, IN THE RIGHTS VALIDATION BLOCK'S CONFIRMATION PASS. The position is unchanged and the note above stands: the marking is not on the object page. What was missing is the capture the other three British Museum cells now carry. This object's `Use this image` control navigates to britishmuseum.org/collection/image/657464001, which states: 'This image can be shared under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) license.' That is a separate object under a separate licence and is not this record's position -- RULING 96 -- but it is recorded so that all four British Museum cells are written to one standard. Read by Rob on 2026-09-14. This page's footer also renders at ZERO HEIGHT like the other three (FINDING 122), so the quoted copyright line is in the document and never painted on it."
     },
     "seasia-08-pong-tuk-lamp": {
       "position": "states_no_terms",
