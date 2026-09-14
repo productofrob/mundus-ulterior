@@ -45,6 +45,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 91-93       UI_MAP_REGIONS_RULINGS.md full text, "# RULING N" headings
 94          UI_METHODOLOGY_RULINGS.md full text, "# RULING N" headings
 95          RIGHTS_VALIDATION_RULINGS.md  full text, "# RULING N" heading
+96          RIGHTS_VALIDATION_RULINGS.md  full text, "# RULING N" heading
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -65,7 +66,25 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 96. The next free finding is 119.**
+**The next free ruling number is 97. The next free finding is 123.**
+
+> **UPDATED BY THE RIGHTS VALIDATION BLOCK'S CONFIRMATION PASS, 2026-09-14.**
+> This line read *"The next free ruling number is 96. The next free finding is
+> 119."* and was correct when it was written, four hours earlier in the same
+> block. The confirmation pass then used **RULING 96** (the cell records the
+> position on the material the record's quoted text comes from; positions on
+> other components, locations or formats are quoted in the note and never in
+> the position -- declared because it had four instances and was about to get a
+> fifth), **FINDING 120** (an object page's silence does not establish a
+> source's silence: the model searched only object pages, and the curator found
+> a licence gate on epigraphy.packhum.org's site root that moved two cells),
+> **FINDING 121** (two licence signals on two hosts, both false -- a KOGL
+> search-filter label and a TYPO3 boilerplate comment -- which is why the
+> triage script may propose a sentence and may never write a cell), and
+> **FINDING 122** (a source can state its rights in a document and render them
+> at zero height: all four British Museum object pages do). All four are
+> declared in `RIGHTS_VALIDATION_RULINGS.md` and carried back here in the same
+> commit.
 
 > **UPDATED BY THE RIGHTS VALIDATION BLOCK, 2026-09-14.** This line read *"The
 > next free ruling number is 95. The next free finding is 118."* and was correct
