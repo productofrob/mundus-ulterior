@@ -44,6 +44,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 90          RULINGS.md                full text, in the 2026-09-10 note below
 91-93       UI_MAP_REGIONS_RULINGS.md full text, "# RULING N" headings
 94          UI_METHODOLOGY_RULINGS.md full text, "# RULING N" headings
+95          RIGHTS_VALIDATION_RULINGS.md  full text, "# RULING N" heading
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -64,7 +65,20 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 95. The next free finding is 118.**
+**The next free ruling number is 96. The next free finding is 119.**
+
+> **UPDATED BY THE RIGHTS VALIDATION BLOCK, 2026-09-14.** This line read *"The
+> next free ruling number is 95. The next free finding is 118."* and was correct
+> when it was written. The block used **RULING 95** (an archived capture is the
+> page as captured: the position is read off the captured page, `read_off`
+> carries the full Wayback URL with its timestamp, archive.org's injected
+> toolbar and its own terms of use are not the source speaking, and a capture
+> that will not render is `unread` rather than `states_no_terms`) and **FINDING
+> 118** (`RIGHTS_VALIDATION_START.md` §2 buckets 36 of the 38 unread records —
+> `scandinavia-03-vimose` and `southasia-04-pattanam` fall out because a
+> worklist grouped by host has nowhere to put a host that is not a source).
+> Both are declared in `RIGHTS_VALIDATION_RULINGS.md` and carried back here in
+> the same commit, which is the practice the corrections below exist to enforce.
 
 > **FINDING 117, 2026-09-12, at the close of the Methodology block.** **A
 > prediction specific enough to be designed around stops being a forecast and
