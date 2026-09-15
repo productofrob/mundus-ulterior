@@ -1,0 +1,138 @@
+<!-- =====================================================================
+     THE ARCHITECTURE FIGURE — Methodology tab.
+
+     ONE FIGURE, ONE CLAIM: everything that produces an answer happens
+     before a visitor arrives, and the only thing that happens when they
+     arrive is the checking — against the same files the answer was built
+     from. Every other component is left out on purpose.
+
+     NO NEW COLOURS. It reads --ink, --ink-soft, --ink-faint, --paper-deep,
+     --line, --accent-soft and --accent-line off :root, so it themes with
+     the page and a palette change reaches it without an edit here. The one
+     accented element is the read-time band, because that is the element
+     the figure exists to argue about.
+
+     NO SCRIPT, NO IMAGE, NO EXTERNAL REFERENCE. Native shapes and text
+     only; the arrowhead is a <marker> resolved against an id in the same
+     fragment.
+
+     THE SCROLL WRAPPER IS LOAD-BEARING. A four-stage horizontal flow
+     scaled to a 390px viewport puts its labels at about 4px. `.af-scroll`
+     plus `min-width` on the svg holds the type at a readable size and lets
+     the figure scroll sideways on a phone instead.
+     ===================================================================== -->
+
+<!-- ---------- 1. CSS: add to the stylesheet in ui/index.html ---------- -->
+<style>
+  .archfig            { margin: var(--s-5, 20px) 0; }
+  .archfig .af-scroll { overflow-x: auto; }
+  .archfig svg        { display: block; min-width: 880px; max-width: 100%; height: auto; }
+
+  .archfig .af-box rect      { fill: var(--paper-deep); stroke: var(--line); stroke-width: 1; }
+  .archfig .af-box-live rect { fill: var(--accent-soft); stroke: var(--accent-line); }
+
+  .archfig .af-title   { font-family: var(--font-serif); font-size: var(--t-m, 14.5px);
+                         fill: var(--ink); text-anchor: middle; }
+  .archfig .af-sub     { font-family: var(--font-sans); font-size: var(--t-xs, 11.5px);
+                         fill: var(--ink-soft); text-anchor: middle; }
+  .archfig .af-note    { font-family: var(--font-sans); font-size: var(--t-2xs, 11px);
+                         fill: var(--ink-faint); text-anchor: middle; }
+
+  /* These two are CSS rules and not SVG attributes on purpose: a stylesheet
+     rule beats a presentation attribute, and the first version of this figure
+     set text-anchor inline and had two labels struck through by their own
+     arrows because .af-note's `middle` won. */
+  .archfig .af-note.af-start { text-anchor: start; }
+  .archfig .af-note.af-end   { text-anchor: end; }
+
+  .archfig .af-eyebrow { font-family: var(--font-sans); font-size: var(--t-2xs, 11px);
+                         fill: var(--ink-faint); text-transform: uppercase;
+                         letter-spacing: .11em; }
+  .archfig .af-line    { stroke: var(--ink-faint); stroke-width: 1.25; fill: none; }
+
+  .archfig figcaption  { font-family: var(--font-sans); font-size: var(--t-s, 13px);
+                         color: var(--ink-soft); max-width: 68ch; line-height: 1.5;
+                         margin-top: var(--s-3, 12px); }
+</style>
+
+<!-- ---------- 2. MARKUP ---------- -->
+<figure class="archfig">
+<div class="af-scroll">
+<svg viewBox="0 0 1000 336" role="img"
+     aria-label="Everything that produces an answer happens before you open the page: sources become records, records are split into passages and indexed, and a question produces a stored answer. When you open the page, that stored answer is replayed and every quotation in it is re-checked against the same source files.">
+  <defs>
+    <marker id="af-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint, #8a857c)"/>
+    </marker>
+  </defs>
+
+  <!-- lane A — built in advance -->
+  <text x="16" y="22" class="af-eyebrow">Pre-built before a page is opened</text>
+
+  <g class="af-box">
+    <rect x="16" y="36" width="164" height="92" rx="3"/>
+    <text x="98" y="66" class="af-title">Sources</text>
+    <text x="98" y="88" class="af-sub">museums, archives,</text>
+    <text x="98" y="104" class="af-sub">scholarly editions</text>
+  </g>
+
+  <g class="af-box">
+    <rect x="284" y="36" width="164" height="92" rx="3"/>
+    <text x="366" y="62" class="af-title">Records</text>
+    <text x="366" y="82" class="af-sub">the original text, an</text>
+    <text x="366" y="97" class="af-sub">English translation,</text>
+    <text x="366" y="112" class="af-sub">citations, reuse terms</text>
+  </g>
+
+  <g class="af-box">
+    <rect x="552" y="36" width="164" height="92" rx="3"/>
+    <text x="634" y="66" class="af-title">Searchable index</text>
+    <text x="634" y="88" class="af-sub">passages stored by</text>
+    <text x="634" y="104" class="af-sub">meaning, not keyword</text>
+  </g>
+
+  <g class="af-box">
+    <rect x="820" y="36" width="164" height="92" rx="3"/>
+    <text x="902" y="62" class="af-title">Stored answers</text>
+    <text x="902" y="82" class="af-sub">a citation on every</text>
+    <text x="902" y="97" class="af-sub">claim, kept whether</text>
+    <text x="902" y="112" class="af-sub">they passed or failed</text>
+  </g>
+
+  <line x1="184" y1="82" x2="276" y2="82" class="af-line" marker-end="url(#af-arrow)"/>
+  <text x="230" y="70" class="af-note">curated,</text>
+  <text x="230" y="103" class="af-note">terms recorded</text>
+
+  <line x1="452" y1="82" x2="544" y2="82" class="af-line" marker-end="url(#af-arrow)"/>
+  <text x="498" y="70" class="af-note">split into</text>
+  <text x="498" y="103" class="af-note">passages</text>
+
+  <line x1="720" y1="82" x2="812" y2="82" class="af-line" marker-end="url(#af-arrow)"/>
+  <text x="766" y="70" class="af-note">a question</text>
+  <text x="766" y="103" class="af-note">finds passages</text>
+
+  <!-- the two inputs that meet at read time -->
+  <line x1="366" y1="132" x2="366" y2="228" class="af-line" marker-end="url(#af-arrow)"/>
+  <text x="380" y="172" class="af-note af-start">compared against</text>
+  <text x="380" y="188" class="af-note af-start">the same files</text>
+
+  <line x1="902" y1="132" x2="902" y2="228" class="af-line" marker-end="url(#af-arrow)"/>
+  <text x="888" y="172" class="af-note af-end">the stored answer</text>
+  <text x="888" y="188" class="af-note af-end">is replayed</text>
+
+  <!-- lane B — read time -->
+  <text x="16" y="226" class="af-eyebrow">When you open this page</text>
+
+  <g class="af-box af-box-live">
+    <rect x="16" y="236" width="968" height="84" rx="3"/>
+    <text x="500" y="268" class="af-title">No answers are generated on the fly. The stored answer is replayed,</text>
+    <text x="500" y="292" class="af-title">and every quotation in it is re-checked against the source text as it stands today.</text>
+    <text x="500" y="311" class="af-sub">Each quotation is shown with the result of that check, including the ones that fail.</text>
+  </g>
+</svg>
+</div>
+<figcaption>Every answer was produced, scored, and stored prior to opening. Page
+opening replays the answer and re-runs quotation checks against the sources the
+answer was built from.</figcaption>
+</figure>
