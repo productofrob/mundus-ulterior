@@ -13,6 +13,8 @@
     "unread": "NOBODY HAS READ THIS SOURCE'S RIGHTS POSITION SINCE FINDING 69. Not a state of the source: a state of this project's knowledge of it. FINDING 69, F5 Part 3: 'Every other licence claim in this repository is now suspect until re-read.' This is that sentence made countable."
   },
   "why_unread_is_the_default_and_not_a_guess": "Thirty-eight of forty records enter this file as `unread`, and the temptation to fill them from the prose already in citation_original is the whole reason the file exists. FINDING 69 was produced by two licence claims that were WRONG in opposite directions in a single session -- one recorded reachability as a licence, one verified a licence against the wrong object. A column populated from those same sentences would inherit both errors and print them as a table. An unread cell is a debt with a name; a guessed cell is a finding waiting.",
+  "why_contradicts_record_prose_is_a_FIELD_and_not_a_sentence": "`contradicts_record_prose: true` marks a cell whose reading contradicted a licence claim the record itself was already carrying. It is DECLARED by the reader, never matched out of `note`: counting these by scanning prose is the same defect this file refuses in why_it_is_not_DERIVED_from_citation_original, one field over. Added 2026-09-15 so the Methodology page can derive the figure instead of typing it -- the four it marks were found by the rights validation block on 2026-09-14 and each cell's own note says what the source actually states. A cell without the key has not been judged either way.",
+  "why_unread_carries_a_reason": "An unread cell is a debt with a name, and until now the name was only in RIGHTS_VALIDATION_START.md. `unread_reason` puts it in the data so the count and the breakdown come from one place. Three values, and they are not degrees of the same thing: `source_not_established` -- the record cites no citation_original, so there is no object to read a position off, which is a CITATION defect and not a rights one; `host_refuses` -- the host is on record as refusing automated and manual access alike; `archived_capture` -- the target is a web.archive.org capture, and RULING 95 says the object is the page as captured rather than the archive's own terms. NOTE THAT NOTHING CHECKS THIS FIELD: check_rights returns early on `unread`, so a missing or wrong reason is invisible to ingest.verify. A guard is owed.",
   "records": {
     "africa-01-ezana-stone": {
       "position": "all_rights_reserved",
@@ -76,15 +78,18 @@
     },
     "arabia-02-palmyrene-tariff": {
       "position": "unread",
-      "region": "Arabia"
+      "region": "Arabia",
+      "unread_reason": "source_not_established"
     },
     "arabia-03-jsnab17": {
       "position": "unread",
-      "region": "Arabia"
+      "region": "Arabia",
+      "unread_reason": "source_not_established"
     },
     "arabia-04-jabal-dabub": {
       "position": "unread",
-      "region": "Arabia"
+      "region": "Arabia",
+      "unread_reason": "source_not_established"
     },
     "arabia-05-ruwafa": {
       "position": "open_licence_stated",
@@ -108,11 +113,13 @@
     },
     "eastasia-01-weilue": {
       "position": "unread",
-      "region": "East Asia"
+      "region": "East Asia",
+      "unread_reason": "host_refuses"
     },
     "eastasia-02-hou-hanshu": {
       "position": "unread",
-      "region": "East Asia"
+      "region": "East Asia",
+      "unread_reason": "host_refuses"
     },
     "eastasia-03-hwangnam-glass": {
       "position": "all_rights_reserved",
@@ -132,7 +139,8 @@
       "read_off": "https://raw.githubusercontent.com/cbeta-org/xml-p5/master/T/T54/T54n2144.xml",
       "read_on": "2026-09-14",
       "read_by": "curator_and_model",
-      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CBETA, CC BY-NC-SA.' The file names no licence at all: searched 2026-09-14 over all 12,621 characters, `creative commons` 0, `CC BY` 0, the word `licen[cs]e` 0 -- confirmed independently by Rob on the untranslated file. What it carries instead is the sentence quoted here, inside its own TEI <publicationStmt><availability> at about line 36.\n\nA RAW GITHUB PATH SERVES A FILE, NOT A PAGE. CBETA does publish under CC BY-NC-SA elsewhere and the repository has a LICENSE file; the record quotes the FILE, and a repository is not an object -- FINDING 87 through a door nobody had watched. The seventh position applies exactly as scandinavia-06-tjurko-bracteate defined it: reuse permitted in the source's own words, no licence named.\n\nSAME SHAPE AS southasia-01-akananuru-149, curated half a world away: reuse granted on condition the header travels with the file."
+      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CBETA, CC BY-NC-SA.' The file names no licence at all: searched 2026-09-14 over all 12,621 characters, `creative commons` 0, `CC BY` 0, the word `licen[cs]e` 0 -- confirmed independently by Rob on the untranslated file. What it carries instead is the sentence quoted here, inside its own TEI <publicationStmt><availability> at about line 36.\n\nA RAW GITHUB PATH SERVES A FILE, NOT A PAGE. CBETA does publish under CC BY-NC-SA elsewhere and the repository has a LICENSE file; the record quotes the FILE, and a repository is not an object -- FINDING 87 through a door nobody had watched. The seventh position applies exactly as scandinavia-06-tjurko-bracteate defined it: reuse permitted in the source's own words, no licence named.\n\nSAME SHAPE AS southasia-01-akananuru-149, curated half a world away: reuse granted on condition the header travels with the file.",
+      "contradicts_record_prose": true
     },
     "eastasia-05-liangshu-qin-lun": {
       "position": "states_no_terms",
@@ -141,7 +149,8 @@
       "read_off": "https://raw.githubusercontent.com/kanripo/KR2a0018/master/KR2a0018_054.txt",
       "read_on": "2026-09-14",
       "read_by": "curator_and_model",
-      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first."
+      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first.",
+      "contradicts_record_prose": true
     },
     "eastasia-06-cefu-yuangui": {
       "position": "states_no_terms",
@@ -150,7 +159,8 @@
       "read_off": "https://raw.githubusercontent.com/kanripo/KR3k0013/master/KR3k0013_970.txt",
       "read_on": "2026-09-14",
       "read_by": "curator_and_model",
-      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first."
+      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first.",
+      "contradicts_record_prose": true
     },
     "eastasia-07-tang-huiyao": {
       "position": "states_no_terms",
@@ -159,7 +169,8 @@
       "read_off": "https://raw.githubusercontent.com/kanripo/KR2m0002/master/KR2m0002_099.txt",
       "read_on": "2026-09-14",
       "read_by": "curator_and_model",
-      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first.\n\nTHIS CELL COVERS THE KANRIPO FILE ONLY. citation_original names a SECOND WITNESS at zh.wikisource.org/wiki/唐會要/卷099 carrying the same 24 country lemmas. zh.wikisource is bucket D -- documented as cache-only -- and was not read by this block, so nothing here speaks for it."
+      "note": "THIS CONTRADICTS THE RECORD'S OWN PROSE. citation_original says 'Licence: CC BY-SA 4.0.' The file states nothing. Searched 2026-09-14 over the whole file: `creative` 0, `licen[cs]e` 0, `CC BY` 0, `copyright` 0, `©` 0, and the CJK terms 版權 / 著作權 / 授權 0 -- confirmed independently by Rob on the UNTRANSLATED file, after he caught that an earlier check had been run over a machine-translated view.\n\nNo stated_verbatim, because the position may not carry a quotation and there is nothing to quote. The whole header is five mandoku lines -- mode, TITLE, DATE, ID, BASEEDITION, JUAN -- and then the text.\n\nTHE LICENCE IS NOT FALSE ABOUT KANRIPO; IT IS ABSENT FROM THE OBJECT. Kanripo's repository carries CC BY-SA 4.0 in a LICENSE file, which is a different object. Taking it would be deriving this object's position from its container -- the same move refused across the four British Museum siblings in this block. Each of the three Kanripo files was opened separately rather than inherited from the first.\n\nTHIS CELL COVERS THE KANRIPO FILE ONLY. citation_original names a SECOND WITNESS at zh.wikisource.org/wiki/唐會要/卷099 carrying the same 24 country lemmas. zh.wikisource is bucket D -- documented as cache-only -- and was not read by this block, so nothing here speaks for it.",
+      "contradicts_record_prose": true
     },
     "persia-01-skz": {
       "position": "all_rights_reserved",
@@ -231,23 +242,28 @@
     },
     "scandinavia-03-vimose": {
       "position": "unread",
-      "region": "Scandinavia"
+      "region": "Scandinavia",
+      "unread_reason": "archived_capture"
     },
     "scandinavia-04-illerup-adal": {
       "position": "unread",
-      "region": "Scandinavia"
+      "region": "Scandinavia",
+      "unread_reason": "source_not_established"
     },
     "scandinavia-05-thorsberg-chape": {
       "position": "unread",
-      "region": "Scandinavia"
+      "region": "Scandinavia",
+      "unread_reason": "source_not_established"
     },
     "seasia-01-oc-eo-medallion": {
       "position": "unread",
-      "region": "Southeast Asia"
+      "region": "Southeast Asia",
+      "unread_reason": "host_refuses"
     },
     "seasia-02-oc-eo-site": {
       "position": "unread",
-      "region": "Southeast Asia"
+      "region": "Southeast Asia",
+      "unread_reason": "source_not_established"
     },
     "seasia-03-khao-sam-kaeo": {
       "position": "open_licence_stated",
@@ -261,7 +277,8 @@
     },
     "seasia-04-dong-yen-chau": {
       "position": "unread",
-      "region": "Southeast Asia"
+      "region": "Southeast Asia",
+      "unread_reason": "source_not_established"
     },
     "seasia-05-my-son-b6": {
       "position": "open_licence_stated",
@@ -275,11 +292,13 @@
     },
     "seasia-06-kedukan-bukit": {
       "position": "unread",
-      "region": "Southeast Asia"
+      "region": "Southeast Asia",
+      "unread_reason": "source_not_established"
     },
     "seasia-07-talang-tuo": {
       "position": "unread",
-      "region": "Southeast Asia"
+      "region": "Southeast Asia",
+      "unread_reason": "source_not_established"
     },
     "southasia-01-akananuru-149": {
       "position": "permission_stated_no_licence",
@@ -313,7 +332,8 @@
     },
     "southasia-04-pattanam": {
       "position": "unread",
-      "region": "South Asia"
+      "region": "South Asia",
+      "unread_reason": "archived_capture"
     },
     "southasia-05-brihatsamhita": {
       "position": "states_no_terms",
