@@ -496,6 +496,31 @@ MUTATIONS: list[tuple[str, list[tuple[str, str]]]] = [
              '            counts[position] += 0'),
         ],
     ),
+    # The two declared rights fields, UI_LOOSE_ENDS_START.md item C,
+    # 2026-09-16. Five clauses, five mutations, none of them owed.
+    (
+        'an unread cell may carry no unread_reason',
+        [('            if reason is None:', '            if False:')],
+    ),
+    (
+        'an unread_reason outside the vocabulary is admitted',
+        [('            elif reason not in UNREAD_REASONS:',
+          '            elif False:')],
+    ),
+    (
+        'an unread cell may declare a contradiction it never read',
+        [('            if "contradicts_record_prose" in cell:',
+          '            if False:')],
+    ),
+    (
+        'a read cell may keep its unread_reason',
+        [('        if "unread_reason" in cell:', '        if False:')],
+    ),
+    (
+        'contradicts_record_prose may be any value at all',
+        [('                and not isinstance(cell["contradicts_record_prose"], bool)):',
+          '                and False):')],
+    ),
     # ---------------------------------------------------------------
     # W3, ruling 80. Six refusal clauses, a curation gate and the two
     # classifier constants FINDINGS 82 and 86 lived in. Fourteen mutations,
@@ -680,6 +705,15 @@ EXPECTED = [
     'position IS that the source says two things that do not agree',
     'GUARD summarise_rights counts each position and omits the ones with no '
     "records, so an `unread` total cannot hide in a table of zeroes",
+    # The two declared rights fields, item C. In the order of the mutations.
+    'GUARD `unread` with no unread_reason is refused -- an unread cell is a '
+    'debt with a name',
+    'GUARD an unread_reason outside the vocabulary is refused',
+    'GUARD `unread` carrying contradicts_record_prose is refused -- a '
+    'contradiction is what a reading found',
+    'GUARD a read cell still carrying unread_reason is refused, which is the '
+    'unread / states_no_terms collapse',
+    'GUARD contradicts_record_prose that is not a boolean is refused',
     "GUARD a record with no original_text_lang is REFUSED",
     "GUARD a record with no reference_translation_lang is refused even when the field is empty -- a missing key declares nothing",
     "GUARD null declared over a field holding text is REFUSED",
@@ -729,8 +763,17 @@ UNMUTATED_BY_DESIGN = (
     'has to quote its permission -- a source that permits reuse in '
     'prose and names no licence is neither open_licence_stated nor '
     'states_no_terms',
-    'GUARD `unread` needs nothing else, because it is a statement '
-    "about this project's knowledge and not about the source",
+    'GUARD `unread` with unread_reason source_not_established needs '
+    "nothing else, because it is a statement about this project's "
+    'knowledge and not about the source',
+    'GUARD `unread` with unread_reason host_refuses needs nothing '
+    "else, because it is a statement about this project's knowledge "
+    'and not about the source',
+    'GUARD `unread` with unread_reason archived_capture needs nothing '
+    "else, because it is a statement about this project's knowledge "
+    'and not about the source',
+    'GUARD a read cell declaring contradicts_record_prose true passes',
+    'GUARD a read cell declaring contradicts_record_prose false passes',
     'GUARD a complete all_rights_reserved cell passes',
     'GUARD a complete open_licence_stated cell passes',
     'GUARD a complete permission_stated_no_licence cell passes',

@@ -1131,6 +1131,20 @@ RIGHTS_POSITIONS_REQUIRING_A_QUOTATION = (
 
 _RIGHTS_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
+# WHY A CELL IS UNREAD. Declared in data/corpus_rights.json on 2026-09-15 and
+# guarded here on 2026-09-16 (UI_LOOSE_ENDS_START.md item C); for one day the
+# file's own header said nothing checked it. Three values, and they are not
+# degrees of one thing: no object to read (a CITATION defect), a host on record
+# as refusing access, and a web.archive.org capture (RULING 95). The field is
+# what keeps `unread` -- the object could not be opened -- from being collapsed
+# into `states_no_terms` -- the object was opened and said nothing.
+# RIGHTS_VALIDATION_START.md section 4 names that collapse as the likeliest lie.
+UNREAD_REASONS = (
+    "source_not_established",
+    "host_refuses",
+    "archived_capture",
+)
+
 
 def check_rights(rights: "dict", corpus_ids: "set[str]") -> "list[str]":
     """The rights column against the corpus on disk. Returns problems.
@@ -1174,8 +1188,40 @@ def check_rights(rights: "dict", corpus_ids: "set[str]") -> "list[str]":
                 f"{list(RIGHTS_POSITIONS)}"
             )
             continue
+        # The two DECLARED fields, checked against the schema and never
+        # against today's cells, so a correct next reading cannot turn it red.
         if position == "unread":
+            reason = cell.get("unread_reason")
+            if reason is None:
+                problems.append(
+                    f"{where}: unread with no unread_reason. An unread cell is "
+                    f"a debt with a name, and one from {list(UNREAD_REASONS)}"
+                )
+            elif reason not in UNREAD_REASONS:
+                problems.append(
+                    f"{where}: unread_reason {reason!r} is not one of "
+                    f"{list(UNREAD_REASONS)}"
+                )
+            if "contradicts_record_prose" in cell:
+                problems.append(
+                    f"{where}: unread carries contradicts_record_prose. A "
+                    f"contradiction is what a reading found, and this cell "
+                    f"records no reading"
+                )
             continue
+        if "unread_reason" in cell:
+            problems.append(
+                f"{where}: position {position!r} still carries unread_reason. "
+                f"A reading was made, so the cell is not unread for any reason"
+            )
+        if ("contradicts_record_prose" in cell
+                and not isinstance(cell["contradicts_record_prose"], bool)):
+            problems.append(
+                f"{where}: contradicts_record_prose is "
+                f"{cell['contradicts_record_prose']!r}, not true or false. It "
+                f"is DECLARED by the reader; an absent key means not judged, "
+                f"and any other value is a judgement nobody can read"
+            )
 
         # Every position other than `unread` is a READING, and a reading with
         # nobody's name and no date on it is the claim FINDING 69 found wrong

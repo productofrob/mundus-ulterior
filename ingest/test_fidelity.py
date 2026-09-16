@@ -37,6 +37,7 @@ from .fidelity import (
     check_allocation,
     check_delivery,
     check_rights,
+    UNREAD_REASONS,
     summarise_rights,
     PARAPHRASE_FLAG_LIFTED,
     PARAPHRASE_ID_HINTS,
@@ -1119,6 +1120,8 @@ def fired(problems: "list[str]", *needles: str) -> bool:
 READ = {"read_off": "https://example.invalid/record", "read_on": "2026-09-06",
         "read_by": "curator"}
 
+UNREAD = {"position": "unread", "unread_reason": "source_not_established"}
+
 
 def test_rights_column():
     """Ruling 74's third condition, made readable. F6, 2026-09-06.
@@ -1158,14 +1161,42 @@ def test_rights_column():
     )
 
     def one(cell):
-        return check_rights(_rights(**{"a-01": cell, "a-02": {"position": "unread"}}),
-                            corpus)
+        return check_rights(_rights(**{"a-01": cell, "a-02": UNREAD}), corpus)
 
     expect(fired(one({"position": "probably_fine"}), "is not one of"),
            "GUARD a rights position outside the vocabulary is refused")
-    expect(not one({"position": "unread"}),
-           "GUARD `unread` needs nothing else, because it is a statement about "
-           "this project's knowledge and not about the source")
+    for reason in UNREAD_REASONS:
+        expect(not one({"position": "unread", "unread_reason": reason}),
+               f"GUARD `unread` with unread_reason {reason} needs nothing "
+               f"else, because it is a statement about this project's "
+               f"knowledge and not about the source")
+
+    # The two declared fields. UI_LOOSE_ENDS_START.md item C, 2026-09-16.
+    expect(fired(one({"position": "unread"}), "no unread_reason"),
+           "GUARD `unread` with no unread_reason is refused -- an unread cell "
+           "is a debt with a name")
+    expect(fired(one({"position": "unread", "unread_reason": "not_got_to_it"}),
+                 "unread_reason", "is not one of"),
+           "GUARD an unread_reason outside the vocabulary is refused")
+    expect(fired(one({"position": "unread", "unread_reason": "host_refuses",
+                      "contradicts_record_prose": True}),
+                 "unread carries contradicts_record_prose"),
+           "GUARD `unread` carrying contradicts_record_prose is refused -- a "
+           "contradiction is what a reading found")
+    expect(fired(one(dict(READ, position="states_no_terms",
+                          unread_reason="host_refuses")),
+                 "still carries unread_reason"),
+           "GUARD a read cell still carrying unread_reason is refused, which is "
+           "the unread / states_no_terms collapse")
+    expect(fired(one(dict(READ, position="states_no_terms",
+                          contradicts_record_prose="yes")),
+                 "not true or false"),
+           "GUARD contradicts_record_prose that is not a boolean is refused")
+    for value in (True, False):
+        expect(not one(dict(READ, position="states_no_terms",
+                            contradicts_record_prose=value)),
+               f"GUARD a read cell declaring contradicts_record_prose "
+               f"{str(value).lower()} passes")
 
     # Every position that asserts what a source SAID has to quote it.
     for position in RIGHTS_POSITIONS_REQUIRING_A_QUOTATION:
