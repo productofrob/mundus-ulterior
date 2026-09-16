@@ -18,6 +18,17 @@ model_list:
   # case failed hardest exactly there. That is a statement about one model tier
   # and it had never been tested against another.
   #
+  # IT HAS SINCE BEEN, FOR OLD TAMIL (corrected 2026-09-16, UI Loose Ends item D).
+  # The same day, `--only-lang oty --attempt-all --model chat-strong` drew every
+  # Old Tamil row again: every chat-strong attempt was admitted, and most of
+  # chat-default's were held. RULING 23a records it; the per-attempt `chat_model`
+  # column in eval/gold/query_renderings.json is the evidence. The other six
+  # languages have one draw each, on chat-default. UI_LOOSE_ENDS_START.md read
+  # the sentence above as current and scoped a run that had already been made.
+  #
+  # --attempt-all WRITES THE FROZEN FILE unless --out names another path, and
+  # every ranking run records that file's hash (ruling 19). Pass --out.
+  #
   # NOT a replacement for chat-default. Part 6's translations and Part 7's
   # answers were measured on haiku and repointing their alias would silently
   # make every archived number incomparable. This is a second alias, used only
