@@ -1607,29 +1607,29 @@ if (D.coastline && D.coastline.polygons) {
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
-/* ---- GUARD 61. A SELECTION MADE ON METHODOLOGY IS IN THE ADDRESS BAR, AND
-   THE ADDRESSES THIS PROJECT ALREADY HANDED OUT STILL MEAN WHAT THEY MEANT.
-   RULING 94.
+/* ---- GUARD 61. THE GUIDE LEFT METHODOLOGY, AND THE ADDRESSES THIS PROJECT
+   ALREADY HANDED OUT STILL MEAN WHAT THEY MEANT. RULING 94, AMENDED 2026-09-21.
 
-   NOTHING IN THIS FILE HAS EVER ASSERTED THAT A HASH ROUND-TRIPS. Guard 49 reads
-   markup, guard 52 reads a value after a sequence of moves, and the router has
-   been checked by nobody since RULING 84 built it. That is the hole this guard
-   closes, and it is the specific failure `UI_METHODOLOGY_PREDICTIONS.md` §6 was
-   written expecting: `applyHash`'s `record`, `place` and `edge` branches all set
-   `state.view = "map"` unconditionally, so a new branch that forgets to set its
-   own view produces a link that looks entirely correct in the source, is green
-   in every other check here, and lands the reader on the wrong tab.
+   NOTHING IN THIS FILE HAD EVER ASSERTED THAT A HASH ROUND-TRIPS before this
+   guard was written. It now has a second job: the Methodology tab no longer
+   renders a panel, so every `#data/<kind>/<id>` address handed out while it did
+   has to keep opening the same thing — on the tab that can still show it. The
+   failure this catches is a row in an evidence panel that looks clickable and
+   does nothing, which is the defect the tab's own comment warned about when the
+   geography cards moved here.
 
-   Five claims:
+   RULING 88: the guard moves with the thing it guards and gets no weaker.
 
-     1  the kinds the ROUTER handles are the kinds PANEL_EMPTY.data DECLARES —
-        the two lists are the same declaration and guard 49 checks the other
-        half of it against the markup
-     2  every one of those kinds ROUND-TRIPS: a real selection written to an
-        address and read back is the same selection, on the same view
-     3  the BARE forms still open the Map tab, unchanged
-     4  an address this tab cannot resolve SAYS SO and does not fall back
-     5  `#data` alone is still the tab, with nothing selected ---- */
+   Six claims:
+
+     1  Methodology renders NO panel, and declares none
+     2  every kind the router handles still resolves, and lands on the map with
+        the same selection — the addresses already handed out
+     3  every one of those selections ROUND-TRIPS from the map: written to an
+        address and read back, it is the same selection on the same view
+     4  the BARE forms still open the Map tab, unchanged
+     5  an address this project cannot resolve SAYS SO and selects nothing
+     6  `#data` alone is still the tab, with nothing selected ---- */
 {
   const saved = { view: state.view, selection: state.selection,
                   intro: state.intro, hashError: state.hashError,
@@ -1637,10 +1637,13 @@ if (D.coastline && D.coastline.polygons) {
   const problems = [];
 
   const routed = Object.keys(DATA_ROUTE).sort();
-  const declared = [...PANEL_EMPTY.data.selects].sort();
-  if (routed.join(",") !== declared.join(","))
-    problems.push(`the router handles ${routed.join(", ")} and PANEL_EMPTY.data declares `
-      + `${declared.join(", ")} — the same list is declared twice and they disagree`);
+
+  /* 1. The tab has no Guide. Both halves: the markup, and the declaration guard
+     49 reads — a declared panel nobody renders is the same defect one layer up. */
+  if (viewAbout().includes(`id="panel"`))
+    problems.push(`the ${TABS.data} tab renders a panel again`);
+  if (PANEL_EMPTY.data)
+    problems.push(`PANEL_EMPTY still declares an empty state for ${TABS.data}`);
 
   /* A real instance of each kind, taken from the bundle rather than invented:
      an address built from a made-up id proves the string format and nothing
@@ -1656,20 +1659,30 @@ if (D.coastline && D.coastline.polygons) {
 
   for (const [kind, sel] of cases) {
     if (!sel) { problems.push(`the bundle holds nothing of kind ${kind} to address`); continue; }
-    state.view = "data"; state.selection = sel; state.hashError = null;
+
+    /* 2. The address as it was handed out, when the panel was still here. */
+    const legacy = `#data/${kind}/${DATA_ROUTE[kind].seg(sel)}`;
+    state.view = "home"; state.selection = null; state.hashError = null;
+    const errLegacy = applyHash(legacy);
+    if (errLegacy) problems.push(`${legacy} stopped resolving: ${errLegacy}`);
+    else if (state.view !== "map")
+      problems.push(`${legacy} opened the ${state.view} tab — the panel that answers it is on ${TABS.map}`);
+    else if (JSON.stringify(state.selection) !== JSON.stringify(sel))
+      problems.push(`${legacy} read back as ${JSON.stringify(state.selection)}, not ${JSON.stringify(sel)}`);
+
+    /* 3. And the address the page writes for that selection now. */
+    state.view = "map"; state.selection = sel; state.hashError = null;
     const h = hashOf(state);
-    if (!h.startsWith(`#data/${kind}/`))
-      problems.push(`a ${kind} selected on ${TABS.data} writes ${h}, not a #data address`);
     state.view = "home"; state.selection = null;
     const err = applyHash(h);
     if (err) problems.push(`${h} did not resolve: ${err}`);
-    else if (state.view !== "data")
-      problems.push(`${h} resolved onto the ${state.view} tab instead of ${TABS.data}`);
+    else if (state.view !== "map")
+      problems.push(`${h} resolved onto the ${state.view} tab instead of ${TABS.map}`);
     else if (JSON.stringify(state.selection) !== JSON.stringify(sel))
       problems.push(`${h} read back as ${JSON.stringify(state.selection)}, not ${JSON.stringify(sel)}`);
   }
 
-  /* 3. The bare forms, which are the promise RULING 84 made and this ruling
+  /* 4. The bare forms, which are the promise RULING 84 made and this ruling
      refuses to break: they are what other people's links hold. */
   for (const [h, wantKind] of [
     [`#place/${encodeURIComponent(anyPlace ? anyPlace.key : "")}`, "place"],
@@ -1685,7 +1698,7 @@ if (D.coastline && D.coastline.polygons) {
       problems.push(`${h} no longer selects a ${wantKind}`);
   }
 
-  /* 4 and 5. */
+  /* 5 and 6. */
   const miss = [
     [`#data/place/not-a-real-placement-key`, "an unresolvable placement"],
     [`#data/record/not-a-real-record`, "an unresolvable record"],
@@ -1707,8 +1720,8 @@ if (D.coastline && D.coastline.polygons) {
 
   Object.assign(state, saved);
   note(problems.length === 0,
-       `every kind ${TABS.data} can select round-trips through the address bar, and the bare `
-       + `forms still open the map (${routed.join(", ")})`
+       `${TABS.data} renders no panel, every address it used to answer still opens the same `
+       + `thing on ${TABS.map}, and the bare forms are unchanged (${routed.join(", ")})`
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 

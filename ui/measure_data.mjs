@@ -69,10 +69,15 @@ const WIDTHS = [
  * figure for this was "roughly seventy" against an actual 117. This constant is
  * why the next one will not have to be corrected the same way.
  */
-const CONTENT = ".cols.cols-panel > div:not(.rail-right)";
+/* THE CONTENT COLUMN, AND IT CHANGED SHAPE ON 2026-09-21. The Guide left this
+ * tab, so the column is no longer "the half of `.cols-panel` that is not the
+ * rail" — it is the tab's own body. The old selector is kept as a fallback so
+ * this instrument reports a number rather than timing out if it is ever pointed
+ * at a build from before the change. */
+const CONTENT = ".mth-body, .cols.cols-panel > div:not(.rail-right)";
 
 const PROBE = () => {
-  const CONTENT = ".cols.cols-panel > div:not(.rail-right)";
+  const CONTENT = document.querySelector(".mth-body") ? ".mth-body" : ".cols.cols-panel > div:not(.rail-right)";
   const y = sel => {
     const el = document.querySelector(sel);
     if (!el) return null;
@@ -103,10 +108,16 @@ const PROBE = () => {
   return {
     page:      Math.round(document.documentElement.scrollHeight),
     notice:    y(".hashnotice"),
+    /* No Guide on this tab since 2026-09-21. Measured anyway, and expected to
+       be null: an instrument that stops looking is an instrument that cannot
+       see the panel come back. */
     guide:     y(".rail-right.panel"),
     guideH:    h(".rail-right.panel"),
     guideBody: h("#panel"),
     empty:     !!document.querySelector("#panel .empty"),
+    sections:  n(`${CONTENT} section.mth`),
+    secnavH:   h(".secnav"),
+    evidence:  n(`${CONTENT} details.evidence`),
     placards:  y(".placards"),
     placardsH: h(".placards"),
     cards,
@@ -116,22 +127,27 @@ const PROBE = () => {
   };
 };
 
-/* Click the first row of each kind and ask two questions the tab has never been
-   asked. One: does the address bar carry the selection, which is RULING 94 and
-   guard 61 read from the outside. Two: HOW TALL DOES THE GUIDE GET — the empty
-   state is 238 pixels and a record panel runs to twenty rows, and
-   `UI_METHODOLOGY_RESULT.md` §6 named that as a thing no figure in that block
-   could see. It can be seen from here. */
+/* Click the first row of each kind and ask two questions. One: does the address
+   bar carry the selection, which is RULING 94 and guard 61 read from the
+   outside. Two: HOW TALL IS THE GUIDE THE CLICK LANDS IN — since 2026-09-21 the
+   click leaves this tab for ${TABS.map}, so what is measured is the panel the
+   reader actually arrives at, and `view` records which tab that was. A click
+   that opens nothing reports `clicked: false`, which is the inert-row failure
+   this tab's own comment warned about. */
 const CLICK_PROBE = kind => {
-  const CONTENT = ".cols.cols-panel > div:not(.rail-right)";
+  const CONTENT = document.querySelector(".mth-body") ? ".mth-body" : ".cols.cols-panel > div:not(.rail-right)";
   const row = document.querySelector(`${CONTENT} [data-${kind}]`);
   if (!row) return { kind, clicked: false };
   row.dispatchEvent(new MouseEvent("click", { bubbles: true }));
   const panel = document.querySelector(".rail-right.panel");
+  if (!panel) return { kind, clicked: true, landed: false, hash: location.hash || "(none)" };
   const r = panel.getBoundingClientRect();
+  const tab = document.querySelector('.tab[aria-selected="true"]');
   return {
     kind,
     clicked: true,
+    landed: true,
+    view: tab ? tab.textContent.trim() : "(unknown)",
     hash: location.hash || "(none)",
     guideH: Math.round(r.height),
     overflows: Math.max(0, Math.round(r.height) - window.innerHeight),
@@ -149,7 +165,7 @@ const out = [];
 for (const w of WIDTHS) {
   const page = await browser.newPage({ viewport: { width: w.width, height: w.height } });
   await page.goto(url + "#data", { waitUntil: "load" });
-  await page.waitForSelector(".cols.cols-panel", { timeout: 30000 });
+  await page.waitForSelector(".mth-body, .cols.cols-panel", { timeout: 30000 });
   await page.waitForTimeout(300);
   const m = await page.evaluate(PROBE);
   const clicks = [];
@@ -157,7 +173,7 @@ for (const w of WIDTHS) {
     /* Each kind gets a clean page: a click leaves the Guide filled and the hash
        set, and the next kind's figures would inherit both. */
     await page.goto(url + "#data", { waitUntil: "load" });
-    await page.waitForSelector(".cols.cols-panel", { timeout: 30000 });
+    await page.waitForSelector(".mth-body, .cols.cols-panel", { timeout: 30000 });
     await page.waitForTimeout(200);
     clicks.push(await page.evaluate(CLICK_PROBE, kind));
   }
@@ -174,7 +190,8 @@ console.log("width     page  notice   guide  guideH  panelH   place/record/edge"
 for (const r of out)
   console.log(`${r.width} ${pad(r.page, 8)} ${pad(r.notice, 7)} ${pad(r.guide, 7)} `
     + `${pad(r.guideH, 7)} ${pad(r.guideBody, 7)}   ${r.place}/${r.record}/${r.edge}`
-    + `  (${r.place + r.record + r.edge} rows, guide ${r.empty ? "empty" : "FILLED — why?"})`);
+    + `  (${r.place + r.record + r.edge} rows, ${r.sections} sections, ${r.evidence} evidence panels,`
+    + ` secnav ${r.secnavH}px, guide ${r.guide === null ? "not on this tab" : (r.empty ? "empty" : "FILLED — why?")})`);
 
 for (const r of out) {
   console.log(`\n--- the cards at ${r.width.trim()}, in document order — top / own height ---`);
@@ -194,7 +211,7 @@ console.log("\nclick the first row of each kind — does the address carry it, "
 for (const r of out) {
   for (const c of r.clicks) {
     if (!c.clicked) { console.log(`${r.width}  ${c.kind.padEnd(6)} NO ROW OF THIS KIND ON THE TAB`); continue; }
-    console.log(`${r.width}  ${c.kind.padEnd(6)} ${clip(c.hash, 46)} guide ${pad(c.guideH, 5)}px`
+    console.log(`${r.width}  ${c.kind.padEnd(6)} ${clip(c.hash, 46)} ${(c.view || "-").padEnd(14)} guide ${pad(c.guideH, 5)}px`
       + ` · ${c.blocks} block(s) · `
       + (c.overflows ? `${c.overflows}px TALLER THAN THE VIEWPORT` : "fits the viewport")
       + (c.filled ? "" : " · PANEL STILL EMPTY"));
