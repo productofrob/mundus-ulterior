@@ -76,7 +76,12 @@
     --t-l:   18.5px;  /* the answer itself */
     --t-xl:  21px;
     --t-2xl: 27px;
-    --t-3xl: clamp(27px, 3.2vw, 38px);   /* the front section, and only that */
+    /* The front section, and only that. Taken down from
+       clamp(27px, 3.2vw, 38px) on 2026-09-22: once the intro stopped being
+       held to 28ch the heading set on fewer, much longer lines, and at 38px it
+       overpowered the claim beneath it. About a tenth off the desktop end;
+       the phone end barely moves, because it was not the problem. */
+    --t-3xl: clamp(25px, 2.9vw, 34px);
 
     --lh-tight: 1.25;
     --lh-snug:  1.45;
@@ -294,13 +299,18 @@
    * helpers the tabs use, so this section changes itself when the corpus does.
    * ------------------------------------------------------------------ */
   .intro { margin-bottom: var(--s-7); }
+  /* THE INTRO RUNS THE FULL WIDTH. Rob, 2026-09-22, and the same call as
+     Home's cards. The heading was held to 28ch and the claim under it to 62ch,
+     while the rule beneath them both ran the whole width of the shell — so the
+     block read as a narrow column with a full-width line drawn under it, and
+     the eye went to the gap rather than the words. */
   .intro h2 {
     font-size: var(--t-3xl); line-height: 1.1; letter-spacing: -.012em;
-    margin: 0 0 var(--s-4); max-width: 28ch;
+    margin: 0 0 var(--s-4);
   }
   .intro .claim {
     font-size: var(--t-l); line-height: var(--lh-snug); color: var(--ink-soft);
-    margin: 0 0 var(--s-6); max-width: 62ch;
+    margin: 0 0 var(--s-6);
   }
   .intro .claim strong { color: var(--ink); font-weight: 600; }
   .figrow {
@@ -1255,7 +1265,6 @@
     .panel { position: static; }
     .panel-inner { max-height: none; }
     .card { padding: var(--s-5); border-radius: var(--r-md); }
-    .intro h2 { max-width: none; }
     .intro .claim { font-size: var(--t-base); }
     .figrow { gap: var(--s-4); grid-template-columns: repeat(auto-fit, minmax(128px,1fr)); }
     .regiongrid, .placards { grid-template-columns: 1fr; }
