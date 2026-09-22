@@ -55,6 +55,7 @@ REPO = Path(__file__).resolve().parent.parent
 RUNS_DIR = REPO / "eval" / "answer_runs"
 CORPUS_DIR = REPO / "data" / "seed_corpus"
 GOLD_DIR = REPO / "eval" / "gold"
+RANKING_DIR = REPO / "eval" / "ranking_runs"
 GAZETTEER_PATH = REPO / "data" / "gazetteer.json"
 OUT = Path(__file__).resolve().parent / "data.js"
 # DEBT ROW 7, FINDING 74. `data.js` is one line of ~9.5MB, so every rebuild is
@@ -622,13 +623,13 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
     if _same_characters(found.casefold(), quote.casefold()):
         if recorded == "case_folded":
             return {"state": "case_folded", "found": found,
-                    "why": "differs from the quotation only in letter case, and "
-                           "the span records match='case_folded' — the offset is "
-                           "right and so is its label"}
+                    "why": "differs from the quotation only in letter case, and the "
+                           "answer recorded it as such — the character positions are "
+                           "right and so is the label"}
         return {"state": "case_only", "found": found,
-                "why": f"differs from the quotation only in letter case; "
-                       f"cite.py matched case-insensitively but recorded "
-                       f"match={recorded!r}"}
+                "why": f"differs from the quotation only in letter case; the checker "
+                       f"matched it without regard to case but recorded the match as "
+                       f"{recorded!r} — a labelling fault, shown as it was claimed"}
 
     # FINDING 42. The verifier was stricter than the matcher it verifies, and
     # it failed into the loudest category it has. `collapse` is IMPORTED from
@@ -643,29 +644,28 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
     collapsed_found, collapsed_quote = collapse(found), collapse(quote)
     if _same_characters(collapsed_found, collapsed_quote):
         return {"state": "whitespace_only", "found": found,
-                "why": "the characters at this offset are the quoted characters "
-                       "once runs of whitespace are collapsed - the archive and "
-                       "the record disagree about a line break, and cite.py "
-                       "matches on collapsed text by design, so the offset and "
-                       "its label are both right"}
+                "why": "the characters at these positions are the quoted characters "
+                       "once repeated spaces and line breaks are treated as one - the "
+                       "stored answer and the record disagree about a line break, which "
+                       "the checker allows by design, so the positions and the label "
+                       "are both right"}
     if _same_characters(collapsed_found.casefold(), collapsed_quote.casefold()):
         return {"state": "whitespace_only", "found": found,
-                "why": f"the characters at this offset are the quoted characters "
-                       f"once runs of whitespace are collapsed AND letter case is "
-                       f"folded; the span records match={recorded!r}. The offset "
-                       f"is right; read the label with the case branch above in "
-                       f"hand"}
+                "why": f"the characters at these positions are the quoted characters "
+                       f"once spacing and letter case are both set aside; the answer "
+                       f"recorded the match as {recorded!r}. The positions are right; "
+                       f"read the label alongside the letter-case rows above"}
 
     at = text.find(quote)
     if at < 0 and quote:
         at = text.casefold().find(quote.casefold())
     if at >= 0:
         return {"state": "moved", "found": found, "now_at": [at, at + len(quote)],
-                "why": "the seed record was edited after this run was archived; "
-                       "the quotation is still in the field, at a different offset"}
+                "why": "the record was edited after this answer was stored; the "
+                       "quotation is still in the same field, at a different position"}
     return {"state": "absent", "found": found,
-            "why": "the quotation is not in this field of the seed record as it "
-                   "stands today"}
+            "why": "the quotation is not in this field of the record as it stands "
+                   "today"}
 
 
 # D1. THREE states, and the third is the point. `moved` and `absent` say a
@@ -842,6 +842,111 @@ def build_manifest(bundle: dict, data_js: bytes, buckets: dict,
         } if coast else None,
         "gold": {name: _digest(obj)
                  for name, obj in sorted((bundle.get("gold") or {}).items())},
+        "retrieval": ({
+            "run": (bundle.get("retrieval") or {}).get("run"),
+            "pairs": len((bundle.get("retrieval") or {}).get("pairs") or []),
+            "series": len((bundle.get("retrieval") or {}).get("series") or []),
+            "runs_excluded": (bundle.get("retrieval") or {}).get("runs_excluded"),
+            "sha256": _digest(bundle.get("retrieval")),
+        } if bundle.get("retrieval") else None),
+    }
+
+
+def load_retrieval(ranking_dir: Path) -> dict[str, Any] | None:
+    """The retrieval check, split by the language of the source it looks for.
+
+    THE PAGE SAID NOBODY REPORTED THIS, AND NOBODY DID. `run_ranking_check.py`
+    prints one total and a cohort breakdown; the decline that mattered was in
+    neither, and it took a split by language to see it at all. Every figure
+    here is re-derived from the archived runs rather than copied out of a
+    result document.
+
+    ONLY COMPARABLE RUNS GO IN THE SERIES. A run with `collapsed` or
+    `reranked` set used the two search improvements that were built, used and
+    then dropped (FINDING 93). Its numbers cannot sit in the same series as the
+    runs the archived answers were produced under, so they are EXCLUDED AND
+    COUNTED rather than quietly averaged in.
+
+    The language table comes from the newest comparable run that searched the
+    padded index, because that is the hardest condition this project has
+    measured and the one the page's claims are about.
+    """
+    if not ranking_dir.is_dir():
+        return None
+    runs = []
+    for path in sorted(ranking_dir.glob("*.json")):
+        try:
+            run = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(run, dict) or not run.get("pairs"):
+            continue
+        run["_file"] = path.name
+        runs.append(run)
+    if not runs:
+        return None
+
+    def comparable(run: dict) -> bool:
+        return not run.get("collapsed") and not run.get("reranked")
+
+    usable = [r for r in runs if comparable(r)]
+    excluded = len(runs) - len(usable)
+    if not usable:
+        return None
+
+    padded = [r for r in usable if "distractor" in str(r.get("view", ""))]
+    latest = max(padded or usable, key=lambda r: str(r.get("timestamp", "")))
+
+    def found(pair: dict) -> bool:
+        return bool(pair.get("recall_at_6"))
+
+    # The series: one row per comparable run, English and non-English kept
+    # apart, because the total moved far less than either half did.
+    series = []
+    for run in sorted(usable, key=lambda r: str(r.get("timestamp", ""))):
+        pairs = run.get("pairs") or []
+        eng = [p for p in pairs if (p.get("expect_lang") or "") == "en"]
+        oth = [p for p in pairs if (p.get("expect_lang") or "") != "en"]
+        series.append({
+            "timestamp": run.get("timestamp"),
+            "view": run.get("view"),
+            "index_chunks": run.get("index_chunks"),
+            "pairs": len(pairs),
+            "english": {"pairs": len(eng), "found": sum(1 for p in eng if found(p))},
+            "other": {"pairs": len(oth), "found": sum(1 for p in oth if found(p))},
+        })
+
+    # The rows the page aggregates by language. Kept per pair, not per language,
+    # so the page and its guard can derive the same table from the same rows
+    # without either of them being the other's source.
+    rows = []
+    for pair in latest.get("pairs") or []:
+        rows.append({
+            "id": pair.get("id"),
+            "region": pair.get("region"),
+            "expect_lang": pair.get("expect_lang"),
+            "expect_doc": pair.get("expect_doc"),
+            "query_lang": pair.get("query_lang"),
+            "rank": pair.get("rank"),
+            "found_at_6": found(pair),
+            "gap_vs_other_doc": pair.get("gap_vs_other_doc"),
+        })
+
+    return {
+        "note": "Derived from the archived ranking runs by ui/build_ui_data.py. "
+                "Runs that used the collapse or rerank experiments are excluded "
+                "from the series and counted separately.",
+        "run": {
+            "file": latest.get("_file"),
+            "timestamp": latest.get("timestamp"),
+            "view": latest.get("view"),
+            "index_chunks": latest.get("index_chunks"),
+            "search_k": latest.get("search_k"),
+            "query_embedding_model": latest.get("query_embedding_model"),
+        },
+        "pairs": rows,
+        "series": series,
+        "runs_excluded": excluded,
     }
 
 
@@ -870,6 +975,7 @@ def main(argv: list[str] | None = None) -> int:
         f"{ps['documents_declared_unplaceable']} declared unplaceable"
     )
     coastline = load_coastline(REPO / "data")
+    retrieval = load_retrieval(RANKING_DIR)
     if coastline is None:
         print(
             "\nnote: no coastline snapshot in data/ — the Places map will draw "
@@ -981,6 +1087,9 @@ def main(argv: list[str] | None = None) -> int:
         # A5 addendum: the map's backdrop. None if the snapshot is absent, and
         # the page degrades to a graticule rather than failing.
         "coastline": coastline,
+        # The retrieval check split by the language of the source, which is the
+        # one measure that was moving while nothing reported it.
+        "retrieval": retrieval,
     }
 
     # FINDING 101, and FINDING 52's rule applied where it had not reached:

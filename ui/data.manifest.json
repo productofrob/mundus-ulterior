@@ -1,9 +1,9 @@
 {
   "_": "Generated beside ui/data.js by ui/build_ui_data.py. Never edited by hand, and never read as truth: check_ui.mjs re-derives every figure below from data.js itself and fails on disagreement. It exists so a change to a 9.5MB single-line file can be reviewed (debt row 7, FINDING 74).",
-  "generated": "2026-09-08T08:29:05+00:00",
+  "generated": "2026-09-22T13:08:36+00:00",
   "data_js": {
-    "bytes": 9768354,
-    "sha256": "97e61cc58845bcc0f482061852e708bddf8c0b53ceb808c8c8660e758be67465"
+    "bytes": 9782002,
+    "sha256": "74d5d3fbccebb997545bafecafba4fb924c7c8bd925ebfb568501fc7a15e80d6"
   },
   "corpus": {
     "records": 54,
@@ -88,7 +88,7 @@
       "p7-answer-v4": 15
     },
     "with_corpus_version": 608,
-    "sha256": "d9dbebd1f6b56ccfe903bb694fd97698f6e432bd06e73517ecf87d7b24ef17d8"
+    "sha256": "7b37569a7f06a2335435eabb9aed6e1065d8c89d2a7e06c9bde528d0c68f7bae"
   },
   "spans": {
     "claimed": 1289,
@@ -104,7 +104,7 @@
       "changed": 1121,
       "unrecorded": 168
     },
-    "sha256": "1e2566a4ddb7d66cd4b7125ac7b0369ecdd5a1053c0df68ff439d27504225bb3"
+    "sha256": "d43eaa0360593946c6f6fe26e3b271f27151d3ec7c2baa03f3cd8a5a0ef84ac6"
   },
   "places": {
     "stats": {
@@ -139,5 +139,19 @@
     "answer_cases": "0a2a3af453f5bbad3d288cf96ccc2e93a50bc32f86cea1d314ad973ec999cae6",
     "confidence_profiles": "dae245200b3f916a54e1f10657cddd4ae77c4a9133033ec9af91f5922e2d039e",
     "floor": "9eeed1193cfd5a1df35d2ddfa25063e6f1c2649ba8c5a09ef544c175b990a344"
+  },
+  "retrieval": {
+    "run": {
+      "file": "20260906T170622+0000-retrievable_chunks_with_distractors.json",
+      "timestamp": "20260906T170622+0000",
+      "view": "retrievable_chunks_with_distractors",
+      "index_chunks": 561,
+      "search_k": 561,
+      "query_embedding_model": "voyage/voyage-3.5"
+    },
+    "pairs": 44,
+    "series": 17,
+    "runs_excluded": 17,
+    "sha256": "258b15138404fcd4e7f02c7787438b60be14482903acf03d9ecdba22406489e1"
   }
 }

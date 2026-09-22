@@ -1725,6 +1725,92 @@ if (D.coastline && D.coastline.polygons) {
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
+/* ---- GUARD 62. THE RETRIEVAL TABLE IS RE-DERIVED, AND THE RUNS IT LEAVES OUT
+   STAY OUT. RULED 2026-09-22.
+
+   The tab says, twice, that the fall in non-English retrieval went unreported.
+   It is reported now, so the table that reports it needs the separation every
+   other derived figure on this page has: the view builds the table with
+   `retrievalByLanguage`, and this builds it again from the bundle's own
+   per-pair rows and compares the two, cell by cell.
+
+   THREE CLAIMS:
+
+     1  every language in the archive is a row, with the questions and the hits
+        the archive holds — and no row exists that the archive does not
+     2  the series prints one row per comparable run, with both halves right
+     3  the runs that used the collapse and rerank experiments are COUNTED and
+        excluded. A run with either flag inside the series would raise the
+        figure this table exists to report, which is the quiet direction. ---- */
+{
+  const problems = [];
+  const R = D.retrieval;
+  const html = viewAbout();
+
+  if (!R || !(R.pairs || []).length) {
+    problems.push("the bundle carries no retrieval rows and the tab claims to report them");
+  } else {
+    /* Derived here, deliberately not by calling the page's own function. */
+    const by = new Map();
+    for (const pair of R.pairs) {
+      const code = pair.expect_lang || "";
+      const row = by.get(code) || { n: 0, found: 0 };
+      row.n++;
+      if (pair.found_at_6) row.found++;
+      by.set(code, row);
+    }
+
+    for (const [code, want] of by) {
+      const m = html.match(new RegExp(`data-lang="${code}" data-lang-pairs="(\\d+)" data-lang-found="(\\d+)"`));
+      if (!m) { problems.push(`${code} is in the archive and not on the tab`); continue; }
+      if (Number(m[1]) !== want.n)
+        problems.push(`${code} prints ${m[1]} question(s), the archive holds ${want.n}`);
+      if (Number(m[2]) !== want.found)
+        problems.push(`${code} prints ${m[2]} found, the archive holds ${want.found}`);
+    }
+    for (const m of html.matchAll(/data-lang="([^"]*)"/g))
+      if (!by.has(m[1])) problems.push(`the tab prints a row for ${m[1]}, which the archive does not hold`);
+
+    const eng = by.get("en") || { n: 0, found: 0 };
+    let otherFound = 0;
+    for (const [code, row] of by) if (code !== "en") otherFound += row.found;
+    for (const [attr, want] of [["data-retrieval-pairs", R.pairs.length],
+                                ["data-retrieval-english", eng.found],
+                                ["data-retrieval-other", otherFound],
+                                ["data-retrieval-series", (R.series || []).length],
+                                ["data-retrieval-excluded", R.runs_excluded || 0]]) {
+      const m = html.match(new RegExp(`${attr}="(\\d+)"`));
+      if (!m) problems.push(`${attr} is not machine-readable on the tab`);
+      else if (Number(m[1]) !== want) problems.push(`${attr} prints ${m[1]}, derives ${want}`);
+    }
+
+    for (const sr of R.series || []) {
+      /* BY RUN, not by size: two runs here searched the same number of
+         passages, and a row addressed by size reads whichever came first. */
+      /* The timestamps carry a `+0000` offset, and `+` is a quantifier: a run
+         id goes into a pattern escaped, or every row reads as missing. */
+      const runId = String(sr.timestamp).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const m = html.match(new RegExp(`data-series-run="${runId}"\\s+data-series-chunks="(\\d+)"`
+        + `\\s+data-series-eng="(\\d+)"\\s+data-series-oth="(\\d+)"`));
+      if (!m) { problems.push(`the run of ${sr.timestamp} is not in the series`); continue; }
+      if (Number(m[1]) !== sr.index_chunks)
+        problems.push(`the run of ${sr.timestamp} prints ${m[1]} passages, the archive says ${sr.index_chunks}`);
+      if (Number(m[2]) !== sr.english.found || Number(m[3]) !== sr.other.found)
+        problems.push(`the run of ${sr.timestamp} prints ${m[2]}/${m[3]}, `
+          + `the archive holds ${sr.english.found}/${sr.other.found}`);
+    }
+
+    if (!(R.runs_excluded > 0))
+      problems.push("no run is excluded — the collapse and rerank runs are archived and one should be");
+  }
+
+  note(problems.length === 0,
+       `retrieval is reported by the language of the source, re-derived from the archive `
+       + `(${R ? (R.pairs || []).length : 0} questions, ${R ? (R.series || []).length : 0} comparable runs, `
+       + `${R ? R.runs_excluded : 0} excluded)`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
 /* ---- 2e. FINDING 98: every span state renders DELIBERATELY ----
  *
  * `whitespace_only` reached neither renderer. It fell through the class chain

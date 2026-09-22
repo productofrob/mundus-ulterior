@@ -25,7 +25,6 @@ Language, checked against the script. Each passage carries the language a curato
 Original and translation stay separate. A source's own words and its published English translation become separate passages, each marked as belonging to the same record, rather than being merged. When an answer is written, the two are paired again. Keeping them apart is what makes it possible to test whether the source-language text can be found on its own, without the English answering for it.
 Numeric representation. Each passage is converted into a list of numbers (embeddings, which carry meaning rather than its spelling). Passages about similar subjects end up close together even without shared characters, which allows an English question to reach a Chinese passage. Embeddings are produced by a commercial model (Voyage AI's voyage-3.5) reached through a single internal gateway, so the model can be changed in one place.
 Places. Geographic coordinates are not written into a source record. Where a source names a specific place, the record stores that place's identifier in a published gazetteer (a reference list of places, each with a stable identifier and usually a location). A single component resolves identifiers into points, reading from a dated snapshot of the gazetteer. Identifiers are never written from memory, by a person or by a model.
-[EVIDENCE: the sources as passages — language, role and whether each is searchable; the place table with every gazetteer identifier and how it was arrived at]
 
 4. Building the retrieval system
 Heading: How questions find their passage
@@ -34,7 +33,6 @@ Why it works across scripts. The model (voyage-3.5) that produces those represen
 How that claim is tested. For some of the test questions, English translations are removed from the pool of candidates before the test runs; the rest are tested with the translations still in place. With the English available, an English question finds the English, which proves nothing about the source-language text. With it removed, the question either reaches the original or it does not.
 Early tests reported both whether the correct source was found and whether its non-English text was reachable. The second figure was lower. Padding the collection with plausible but irrelevant English material made no difference to the results at any size tested. The fall in non-English results came later, as more real sources were added: English-language targets held steady while non-English targets were found less often.
 Nothing is generated while you read. Every answer on this site was produced in advance and is replayed from storage, then re-checked against the current sources. Live answers, which are beyond this project’s scope, would need to be evaluated each time and for every question and answer.
-[EVIDENCE: the retrieval test set, source by source, with position and margin; the cross-script probes; the rejected experiment]
 
 5. Building the harness
 Heading: The rules, and the checks that enforce them
@@ -45,7 +43,6 @@ Practices.
 * Checks are seen to fail first. A new check is deliberately broken before it is trusted. This has repeatedly found the fault in the check rather than the code.
 * No figure is typed into the page. Counts are computed from the stored data, in digits and in words alike.
 The limit. Numbers are recomputed on every build and cannot go stale. The sentences around them are typed once and never re-checked, so a sentence can stop being true while the number beside it stays correct. Where a sentence can be generated from the data instead, it now is.
-[EVIDENCE: the test suites and what each covers; the rulings register with its recorded gaps]
 
 6. Quality tests
 Heading: What is tested, and how
@@ -61,7 +58,7 @@ Retrieval is scored against known ‘good question-and-source pairs’: whether 
 Translation is checked by translating a passage into English, translating that English back in a separate request that never sees the original, and comparing closeness of wording and closeness of meaning. Thresholds are set where no observed case falls near the line. Only the pass mark for prose has been set that way so far; the others are provisional.
 Places. No specific place is accepted unless it resolves through a dated snapshot of a published gazetteer. Nothing invents a point, matches on similar names, or substitutes a regional centre; every failure stops the process.
 No model judges another model's output. Every assertion in the scoring is a fact about text: this string appears, this identifier is among the cited sources. An uncalibrated model with no rubric marking another model's work could be wrong in the same direction and agree with it.
-[EVIDENCE: the citation check, both axes, case by case; the retrieval and translation test sets with per-case results; the place audit]
+[EVIDENCE: the citation check, both axes, case by case]
 
 7. Creating the portal
 Heading: How the portal was built
@@ -76,8 +73,8 @@ The reference copy of this site, the version kept in the project repository and 
 8. Limitations, gaps and failures
 Heading: Limitations and failures
 Retrieval is tested against questions whose correct source is already known. For English sources, the system has found the correct source in almost every test run. The exception is the record of a carved gemstone from Khao Sam Kaeo in Thailand, which has never been found. For original language sources, results got worse as the collection grew. Of all the languages tested, Old Tamil performed worst at every stage run on the project's standard model, claude-haiku-4-5. The stronger model, claude-sonnet-5, has been tested only on rewriting questions into Old Tamil, and it succeeded every time. When an English question is searched, the Old Tamil passage it should find ranks far below where it should. When a question already written in Old Tamil is searched, the passage ranks first, but with the weakest similarity score of any script tested. In the round-trip translation test on the standard model, some attempts came back in the wrong script entirely; the stronger model has not been tested on translation. When the standard model rewrote the test questions into the collection's languages, almost every rejected rewrite was in Old Tamil: the model wrote in other South Asian scripts instead, such as Devanagari, Malayalam, Sinhala or Bengali. Why this happens has not been established. Nothing reported these results separately by language, so the decline went unnoticed for several rounds of work.
-[EVIDENCE: retrieval results by language and collection size]
 The site lists the questions it holds answers for. A few are held back. Those are named here with what went wrong, because a question that never produced an answer is a different problem from one that produced answers without ever quoting a source. The page also names whichever question is currently answered worst.
+[EVIDENCE: every test question by the language of the source, and the same questions as the collection grew]
 [EVIDENCE: the withheld questions with their failure kinds; the worst-answered question with its figures]
 The map leaves out more than it shows. When a source names a region rather than a town, the map shades that region's area instead of placing a point. When it names a people, an office or an empire, that is recorded and no position is drawn; the record still appears on the map as a square in its region's band. The Chinese records naming Rome, the sources closest to the point of this project, cannot place Rome on the map. The names they use (Da Qin, and later Fulin) describe a state and its people rather than a city, and for at least one record the published translators disagree about which country is meant; drawing a single point would claim more than the texts say. Most of these records appear on the map only as squares in the East Asia band.
 [EVIDENCE: identifiers named but not used; passages organised around an unplaceable place; records considered with nothing drawable; connections named in the text but not drawn; the record declared unplaceable]
@@ -90,7 +87,7 @@ What the project decided it could not do. An expansion to a much larger collecti
 
 9. Ideas for future development
 Heading: Ideas for taking ‘Mundus Ulterior’ to new levels
-Report results by language. Nothing currently reports retrieval separately by the language of the source, so the one measure that has been moving cannot be watched as the collection changes. Building that is a small job, and until it exists every change to the collection is made without being able to see its main effect.
+Report results by language as the test runs. The evidence under Limitations is derived here, on this page, from the archived runs; the test itself still prints a single total, so the one measure that has been moving is invisible at the moment a change is made. Moving that split into the test is a small job, and it is what would let the next change to the collection be judged while it is being made.
 Add more sources, in the languages that fail. More material in the languages where retrieval is weakest remains the obvious improvement, but the last expansion made those results worse. The likely cause is that each new source adds passages, including English translations, which compete with original-language targets for the top positions. That would need to be addressed before the corpus grows further, so that adding sources does not undo the gain.
 Adding Roman Imperial sources. Most of what is here is the view from outside the empire, although some sources, such as the Periplus and the writings of Cosmas Indicopleustes, were written inside it. The complement is a deliberate set of Roman and Eastern Roman (Byzantine) sources about these same regions, set beside them: the same objects, routes and embassies, described from both ends. Two accounts that disagree are better evidence than either alone. The site can already show several sources in one answer, but a view built for comparing them side by side would be new work.
 A longer span. The current window runs from the founding of the Roman Empire in 27 BC to the sack of Constantinople in 1204 AD. An earlier window would cover potential Roman Republic connections and a later window would follow the Eastern Roman relationships ending with the Ottoman conquest in 1453.
