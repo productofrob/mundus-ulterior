@@ -1,4 +1,4 @@
-# Rulings register — 1 to 52, and 80 to 82. **53 to 79 ARE NOT INDEXED
+# Rulings register — 1 to 52, and 80 to 98. **53 to 79 ARE NOT INDEXED
 # HERE**, and the note under the table says why.
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
@@ -46,6 +46,9 @@ section anywhere — they exist only as one-line entries in a numbered list in
 94          UI_METHODOLOGY_RULINGS.md full text, "# RULING N" headings
 95          RIGHTS_VALIDATION_RULINGS.md  full text, "# RULING N" heading
 96          RIGHTS_VALIDATION_RULINGS.md  full text, "# RULING N" heading
+97          ui/index.html:1461        full text, in the block comment above
+                                      LANG_REFERENCED_NOT_HELD. No rulings file
+98          DEPLOY_RULINGS.md         full text, "# RULING N" heading
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -66,7 +69,22 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 97. The next free finding is 123.**
+**The next free ruling number is 99. The next free finding is 125.**
+
+> **UPDATED BY THE DEPLOY BLOCK, 2026-09-22.** This line read *"The next free
+> ruling number is 97. The next free finding is 123."* Its ruling half had gone
+> stale the same day: **RULING 97** (languages a record references rather than
+> holds are declared per record and kept out of Home's language sentence, which
+> is how Danish, French, and Vietnamese left it) was taken during the Home text
+> work and written up only in `ui/index.html`, never carried here.
+> `DEPLOY_START.md` §7 caught it. The deploy block then declared **RULING 98**
+> (a source whose stated terms restrict use to personal study is not the source
+> of any text the public portal carries; africa-04 and africa-05 are re-sourced
+> from OGIS), **FINDING 123** (635 of 1,227 "resolved" spans do not hold their
+> quote exactly, measured earlier and handed over without a number), and
+> **FINDING 124** (the American-spelling sweep missed visible page copy and could
+> not reach record prose). All three are in `DEPLOY_RULINGS.md`. The title line
+> of this file read "80 to 82" and is corrected to "80 to 98" in the same commit.
 
 > **UPDATED BY THE RIGHTS VALIDATION BLOCK'S CONFIRMATION PASS, 2026-09-14.**
 > This line read *"The next free ruling number is 96. The next free finding is
