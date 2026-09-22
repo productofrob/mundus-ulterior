@@ -127,13 +127,14 @@ try {
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
     " buildMap, mapState, mapWindow, mapBase, MARK, MAP_LABEL_PX," +
     " viewHome, viewQuestions, viewPlaces, viewAbout," +
-    " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample," +
+    " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample, CHAIN_EXAMPLE," +
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
     " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice, homeSelection," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger,"
     + " regionBands, bandLedger, bandBox, BAND, renderRegionProvenance, layoutBands,"
     + " REGION_ANCHOR, mapLegend,"
     + " withheldFailures, WITHHELD_KINDS, partialArchive, isPartialRun, hardestQuestion,"
+    + " corpusLanguages, LANG_REFERENCED_NOT_HELD,"
     + " questionAudit, DATA_ROUTE, hashOf, applyHash };",
     sandbox, { filename: "index.html<script>" });
   note(true, "the page's script parses and runs to completion");
@@ -148,7 +149,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderRecordProvenance, renderPlaceProvenance, renderGroupProvenance,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase, MARK, MAP_LABEL_PX,
         viewHome, viewQuestions, viewPlaces, viewAbout,
-        BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample,
+        BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample, CHAIN_EXAMPLE,
         railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS,
         pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice,
         homeSelection,
@@ -156,6 +157,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         langName, placeLedger,
         regionBands, bandLedger, bandBox, BAND, renderRegionProvenance,
         layoutBands, REGION_ANCHOR, mapLegend,
+        corpusLanguages, LANG_REFERENCED_NOT_HELD,
         withheldFailures, WITHHELD_KINDS, partialArchive, isPartialRun,
         hardestQuestion, questionAudit,
         DATA_ROUTE, hashOf, applyHash } = sandbox.__api;
@@ -339,6 +341,33 @@ catch (e) { note(false, `the home view threw: ${e.message}`); }
                     `characters (${JSON.stringify(c.onDisk.slice(0, 40))} vs ` +
                     `${JSON.stringify(c.span.quote.slice(0, 40))})`);
     if (!c.rec.file) problems.push("the record names no file");
+    /* THE DECLARED EXAMPLE IS THE ONE DRAWN. `chainExample` falls back rather
+       than returning nothing, which is right for the reader and silent for
+       everyone else — this is the half that makes the fallback reportable. */
+    if (!c.declared)
+      problems.push(`the figure fell back to ${c.q.slice(0, 40)}… / ${c.span.doc_id}, ` +
+                    `and the declared example is ${CHAIN_EXAMPLE.question.slice(0, 40)}… / ` +
+                    `${CHAIN_EXAMPLE.doc_id}`);
+    /* THE SOURCE'S OWN WORDS ARE DECLARED AS OFFSETS, so they can go stale the
+       way a masthead specimen can: re-curate the record and the range slides
+       onto different lines, or off the end of the field, and the card would
+       show the wrong poem in the right script with nothing to say so. Guard 2c
+       makes exactly this check for the masthead; this is the same check for the
+       one place the page sets source text in live type. */
+    const o = CHAIN_EXAMPLE.original;
+    const field = c.rec.fields?.[o.field];
+    if (field == null)
+      problems.push(`the declared source field ${o.field} is not on the record`);
+    else if (o.end > field.length)
+      problems.push(`the declared source range [${o.start}:${o.end}] runs past ${o.field} ` +
+                    `(${field.length} characters)`);
+    else if (!c.sourceWords || c.sourceWords !== field.slice(o.start, o.end))
+      problems.push("the source text drawn is not the characters at the declared offsets");
+    else if (!/[\u0B80-\u0BFF]/.test(c.sourceWords))
+      problems.push("the declared source range no longer holds Tamil script");
+    else if (o.must_contain && !c.sourceWords.includes(o.must_contain))
+      problems.push(`the declared source range no longer contains ${o.must_contain} — ` +
+                    `the offsets have slid onto other lines of the poem`);
     note(problems.length === 0,
          `the chain figure draws a quotation that still resolves ` +
          `(${c.rec.file}:${c.span.source_field}[${c.span.abs_start}:${c.span.abs_end}])` +
@@ -2000,6 +2029,73 @@ if (D.coastline && D.coastline.polygons) {
            + `, ${blank.length} blank`
          : `every record note shown is a verbatim excerpt of that record's own note `
            + `(${frags} fragments across ${shown} of ${Object.keys(D.corpus).length} records)`);
+}
+
+/* ---- GUARD 63. THE LANGUAGE SENTENCE NAMES ONLY LANGUAGES THE CORPUS HOLDS.
+   S4, and RULING 97's declaration checked.
+
+   Home said the corpus's sources are in Danish, French and Vietnamese. No text
+   in any of the three is anywhere in the corpus: those three records hold an
+   English summary, and their own `language_note` says so. `language_code` was
+   carrying two different facts under one name — the language of a text held,
+   and the language of the scholarship pointed at — and the sentence read the
+   union.
+
+   THIS RE-DERIVES THE SENTENCE FROM THE CORPUS AND THE DECLARATION, NOT BY
+   CALLING `corpusLanguages`. FINDING 112 is what happens when a guard
+   recomputes from the thing it is checking, so the expected set is built here
+   and the page's rendered sentence is read back out of the markup.
+
+   Three failures are worth telling apart, so they are asserted separately:
+     1  a declared pair names a record or a code that no longer exists — the
+        declaration has drifted from the corpus and is silently suppressing
+        nothing, or worse, still suppressing a language that moved
+     2  a code is declared referenced-not-held by EVERY record that carries it,
+        yet still reaches the sentence
+     3  a code no record references is missing from the sentence — the
+        declaration is over-reaching, which is the failure that matters most,
+        because it makes the corpus look smaller than it is ---- */
+{
+  const problems = [];
+
+  /* 1. the declaration still matches the corpus it describes. */
+  for (const [docId, codes] of Object.entries(LANG_REFERENCED_NOT_HELD)) {
+    const rec = D.corpus[docId];
+    if (!rec) { problems.push(`${docId} is declared referenced-not-held and is not in the corpus`); continue; }
+    for (const c of codes)
+      if (!(rec.language_code || []).includes(c))
+        problems.push(`${docId} is declared to reference ${c} and no longer declares it at all`);
+  }
+
+  /* 2 and 3. the set the sentence should name, built here from scratch. */
+  const held = new Set();
+  for (const [docId, rec] of Object.entries(D.corpus)) {
+    const referenced = new Set(LANG_REFERENCED_NOT_HELD[docId] || []);
+    for (const c of rec.language_code || [])
+      if (c !== "en" && !referenced.has(c)) held.add(c);
+  }
+  const expect = [...held].map(langName).sort();
+  const suppressed = [...new Set(Object.values(LANG_REFERENCED_NOT_HELD).flat())]
+    .filter(c => !held.has(c)).map(langName).sort();
+
+  const home = viewHome();
+  const m = home.match(/Sources are in ([^.]+)\./);
+  if (!m) problems.push("Home no longer carries a 'Sources are in ...' sentence");
+  else {
+    const named = m[1].replace(/\s+/g, " ").replace(/,? and English$/, "")
+      .split(/,\s*/).map(x => x.trim()).filter(Boolean);
+    for (const want of expect)
+      if (!named.includes(want)) problems.push(`${want} is held by a record and is not in the sentence`);
+    for (const got of named)
+      if (!expect.includes(got)) problems.push(`the sentence names ${got}, which no record holds`);
+    if (!/,\s*and English\.?$/.test(m[1].replace(/\s+/g, " ") + "."))
+      problems.push("the sentence does not close with ', and English'");
+  }
+
+  note(problems.length === 0,
+       `the language sentence names the ${expect.length} language(s) the corpus holds, and none `
+       + `it only references (${suppressed.join(", ") || "none suppressed"})`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
 /* ---- 2g. no count on this page is written down ----

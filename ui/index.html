@@ -42,8 +42,8 @@
    *
    * THREE THINGS IN HERE ARE ARGUMENTS AND NOT STYLE, and each is marked
    * where it sits (UI_DESIGN_START.md section 5):
-   *   - `ground` is told apart by SHAPE, never by colour
-   *   - D1's second axis is told apart by LABEL, never by colour
+   *   - `ground` is told apart by SHAPE, never by color
+   *   - D1's second axis is told apart by LABEL, never by color
    *   - the first axis IS an ordering and is the one place a ramp is honest
    * A dark theme is where the instinct to unify every accent into one ramp is
    * loudest. It is refused here in both themes, deliberately.
@@ -344,7 +344,17 @@
      in reading order. A class no element carries is the stylesheet's version of
      a handler nobody can test — RULING 85. */
   .cols.cols-half       { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: var(--s-6); }
-  .cols.cols-single     { grid-template-columns: minmax(0, 104ch); }
+  /* HOME'S CARDS FILL THE SHELL. Rob, 2026-09-22. They were capped at 104ch
+     while the chain figure beside them ran the full width of `main`, so every
+     card on the tab stopped about 300px short of the figure under it and the
+     tab read as a narrow column with one wide thing stuck in the middle. The
+     cap is gone; `cols-single` now means ONE column, not one NARROW column.
+     The chain figure is untouched — it was already full width, which is why it
+     sits outside this grid at all. THE COST IS LINE LENGTH: Home's prose is now
+     set across the whole card. If it reads too long, the fix is a measure on
+     `.card p`, not the cap coming back, because the cap also shrank the map and
+     the cards' own furniture. */
+  .cols.cols-single     { grid-template-columns: minmax(0, 1fr); }
   /* METHODOLOGY'S COLUMNS. The main column and a Guide, and deliberately NOT
      `.mapcols`: that grid exists to span the Guide across two rows so it stays
      sticky past the map, and this tab has no map and no second row. The Guide is
@@ -502,7 +512,7 @@
   }
 
   /* THE FIRST AXIS, and it is an ordering — the one axis on this page where a
-     colour ramp is honest. It says whether the claim still holds. */
+     color ramp is honest. It says whether the claim still holds. */
   mark.q {
     background: var(--mark); border-bottom: 1.5px solid var(--mark-edge);
     padding: 1px 0; cursor: pointer; border-radius: 2px; color: inherit;
@@ -510,13 +520,13 @@
   mark.q:hover { background: var(--mark-hover); }
   mark.q.unresolved { background: var(--mark-bad); border-bottom-color: var(--bad); }
   mark.q.caseonly  { background: var(--mark-warn); border-bottom-color: var(--warn); }
-  /* FINDING 98. `whitespace_only` is neither a broken claim nor a labelling
+  /* FINDING 98. `whitespace_only` is neither a broken claim nor a labeling
      defect, so it is neither red nor amber — a dotted underline on the plain
      highlight, which reads as "there is something to say here" and not as
      "this failed". */
   mark.q.whitespace { background: var(--mark); border-bottom-style: dotted; border-bottom-width: 2px; }
   /* A state added to classify_span and not to SPAN_STATES lands here and is
-     visibly unstyled-on-purpose, rather than borrowing a neighbour's colour. */
+     visibly unstyled-on-purpose, rather than borrowing a neighbor's color. */
   mark.q.unknownstate { background: var(--mark-unknown); border-bottom-color: var(--edge-unknown); }
 
   /* D1's second axis. A CATEGORY, not a severity — see the PROVENANCE comment
@@ -1045,7 +1055,7 @@
      it, which is now the fourth time on this project that was the instrument
      that worked.
      So the ink is baked black and the dark theme inverts it. That is the one
-     thing on this page whose colour is not a token, and it is here rather than
+     thing on this page whose color is not a token, and it is here rather than
      silently broken. */
   .spec .glyph { display: block; opacity: .78; }
   .spec:hover .glyph { opacity: 1; }
@@ -1070,6 +1080,31 @@
      rather than the row scrolling sideways: this is an explanation, and an
      explanation the reader has to drag is not one. */
   .chaincard .chainlead { margin: 0 0 var(--s-5); }
+  /* THE SOURCE'S OWN SCRIPT, IN LIVE TYPE. The masthead bakes its specimens
+     into images because a visitor with no Tamil font sees a row of boxes, and
+     that trade is still the right one THERE: those specimens are decorative,
+     fixed, and generated at build time. This one is read out of the record at
+     render time, so an image is not available to it without a build step, and
+     the page loads nothing from outside — no webfont is coming. So: a system
+     stack that covers Tamil on Windows, macOS and Linux, `lang` declared so a
+     screen reader and the browser's own fallback both know what this is, and
+     `translate="no"` so a page translator leaves the source text alone. */
+  .csrc {
+    font-family: "Nirmala UI", "Tamil Sangam MN", "Tamil MN", "Noto Sans Tamil",
+                 "Latha", var(--font-serif);
+    /* SET SMALLER THAN THE LATIN AROUND IT, ON PURPOSE. Tamil carries its
+       vowel signs above and below the line, so a Tamil glyph at the same
+       font-size occupies noticeably more vertical space than a Latin one and
+       runs wider; at `--t-base` these four lines wrapped to eight and made
+       step 2 twice the height of the other three. `--t-s` with a tight leading
+       puts the block back inside the step's own measure. It is a SPECIMEN
+       here — the reader is meant to see that the source is in its own script,
+       not to read the poem — so it is sized to sit beside the record title
+       rather than to lead the card. */
+    font-size: var(--t-s); line-height: var(--lh-snug);
+    margin: var(--s-2) 0; white-space: pre-line;
+    color: var(--ink-soft);
+  }
   .chainfig {
     display: grid; gap: var(--s-3);
     grid-template-columns: 1fr auto 1fr auto 1fr auto 1.4fr;
@@ -1398,7 +1433,7 @@ const LANGS = {
   xpr:"Parthian", xna:"Nabataean Aramaic", xsa:"Sabaic", "gmq-pro":"Proto-Norse",
   gez:"Ge'ez", arc:"Aramaic", la:"Latin", da:"Danish",
   // Added in the UI block. The corpus carries twenty codes and this table
-  // carried twelve, so a Middle Persian passage was labelled `pal` on screen.
+  // carried twelve, so a Middle Persian passage was labeled `pal` on screen.
   // Each name is the ISO 639-3 name for the code, confirmed against the record
   // that carries it rather than read off the code alone.
   pal:"Middle Persian", san:"Sanskrit", ocm:"Old Cham", omy:"Old Malay",
@@ -1413,14 +1448,64 @@ const langName = c => LANGS[c] || c || "unknown";
    cannot go stale the way "Ancient Greek, Literary Chinese, Old Tamil,
    Parthian, Nabataean Aramaic, Sabaic, Proto-Norse and English" did between
    24 records and 54. */
+/* ------------------------------------------------------------------ *
+ * LANGUAGES A RECORD REFERENCES RATHER THAN HOLDS. RULING 97.
+ *
+ * S4. Home said "Sources are in ... Danish, French ... Vietnamese", and the
+ * corpus holds NO TEXT IN ANY OF THE THREE. Those records carry an English
+ * summary and say so themselves:
+ *
+ *   scandinavia-02-gudme-hoard   "English-language version used here; Danish
+ *                                 original also available at the same institution"
+ *   scandinavia-04-illerup-adal  "no inscribed regional-language text associated
+ *                                 with this find"
+ *   seasia-02-oc-eo-site         "English summary used here for the seed record"
+ *
+ * `language_code` conflates two different facts: the language of a text the
+ * record HOLDS, and the language of the scholarship or institution the record
+ * POINTS AT. Korean and Latin stay, because those records do hold their own
+ * words — the Gyeongju ewer carries its Korean heritage-registry title and both
+ * coin records carry their Latin legends. Danish, French and Vietnamese are
+ * held by nothing.
+ *
+ * DECLARED PER RECORD, NOT AS A LIST OF LANGUAGES, and that is the whole point
+ * of the shape. A blocklist of three language names would be a typed list
+ * wearing a constant's clothes, and it would go on suppressing Danish on the
+ * day a record finally carries some. This says which RECORD references which
+ * code, so a language returns to the sentence the moment any record holds it.
+ *
+ * W3_DECLARE_DONT_INFER is the precedent: "a language is being INFERRED where
+ * it should be DECLARED." Guard 63 re-derives the sentence from this and the
+ * corpus, independently, the way guard 53 re-derives the geography ledger.
+ *
+ * THE PROPER FIX IS IN THE RECORDS, and it is not this. A record should say
+ * which of its declared languages it holds text in; that changes records, and
+ * therefore fingerprints, which is the record pass S9-S18. Until then this is
+ * the declaration, in one place, checked.
+ * ------------------------------------------------------------------ */
+const LANG_REFERENCED_NOT_HELD = {
+  "scandinavia-02-gudme-hoard": ["da"],
+  "scandinavia-04-illerup-adal": ["da"],
+  "seasia-02-oc-eo-site":       ["vi", "fr"],
+};
+
 function corpusLanguages() {
   const codes = new Set();
-  for (const rec of Object.values(D.corpus))
-    for (const c of rec.language_code || []) codes.add(c);
-  return [...codes].filter(c => c !== "en").map(langName).sort();
+  for (const [id, rec] of Object.entries(D.corpus)) {
+    const referenced = new Set(LANG_REFERENCED_NOT_HELD[id] || []);
+    for (const c of rec.language_code || [])
+      if (c !== "en" && !referenced.has(c)) codes.add(c);
+  }
+  return [...codes].map(langName).sort();
 }
+/* SERIAL COMMA. Rob's rule for the portal's prose, and the derived lists have
+   to obey it too or a sentence's own list disagrees with the sentence around
+   it — which is exactly what Scope did, appending ", and English" outside a
+   listOf that joined with a bare " and ". Two items take no comma; three or
+   more do. */
 const listOf = xs => xs.length < 2 ? (xs[0] || "")
-  : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1];
+  : xs.length === 2 ? xs.join(" and ")
+  : xs.slice(0, -1).join(", ") + ", and " + xs[xs.length - 1];
 
 /* ------------------------------------------------------------------ *
  * Phase 2, A5: places, grounds and the network subject_places implies.
@@ -1431,7 +1516,7 @@ const listOf = xs => xs.length < 2 ? (xs[0] || "")
  * "stated on a Greek port and regional on a Chinese polity are different
  * kinds of claim, not different strengths of one" (PROGRESS.md, A5 trap 3) —
  * which is why grounds are told apart below by shape (pin vs. shaded extent)
- * and by an explicit "contested" flag, never by a colour gradient the way
+ * and by an explicit "contested" flag, never by a color gradient the way
  * `--good/--warn/--bad` reads elsewhere on this page. Reusing that palette
  * for `ground` would assert an ordering this project has explicitly refused.
  * ------------------------------------------------------------------ */
@@ -1441,7 +1526,7 @@ const GROUND_DESC = {
   regional:   "only the region is known — drawn as an area, never a pin",
 };
 const ROLE_DESC = {
-  focus:       "the place the passage is organised around",
+  focus:       "the place the passage is organized around",
   source:      "goods, people or knowledge reach the focus from here",
   destination: "they leave the focus for here",
   waypoint:    "on the way, named as such — order among waypoints is not recorded",
@@ -1476,7 +1561,7 @@ for (const entries of Object.values(P.docs || {}))
    so this SEARCHES the record's own fields for the place's name rather than
    reading an offset someone recorded. It is exactly the kind of match
    `cite.py` warns about elsewhere on this page (see `.caseonly`): plausible,
-   not asserted as an exact citation. Labelled as a search result, not a
+   not asserted as an exact citation. Labeled as a search result, not a
    citation, for the same reason. */
 function cleanPlaceName(name) {
   return String(name || "")
@@ -1533,7 +1618,7 @@ const QUESTIONS = [...byQuestion.keys()];
  * if it has at least one. Nine of the thirty-three do not — and SEVEN OF THOSE
  * NINE ARE QUESTIONS `gold.answer_cases` DECLARES `correctly_refusable`: the
  * system refused them because refusing was right. Those seven are not failures
- * and are not deleted; they are grouped and labelled as what they are, which is
+ * and are not deleted; they are grouped and labeled as what they are, which is
  * the strongest evidence on this page that a retrieval system can decline.
  *
  * The remaining two are failures — one `answerable` question every run of which
@@ -1695,7 +1780,7 @@ function railPartition() {
  * chain figure's link, in two tooltips — and every one of those sentences used
  * to TYPE the name. That is the same defect as a typed count, in words instead
  * of digits, and it had already happened: `viewAbout` said "the Places tab"
- * twice, about a tab the bar has labelled "Map" since the design block. Nobody
+ * twice, about a tab the bar has labeled "Map" since the design block. Nobody
  * saw it because nothing re-derived it.
  *
  * So a tab is named here and nowhere else, and prose interpolates it. The one
@@ -1730,7 +1815,7 @@ const TABS = {
  * A COUNT IS NOT ENOUGH, AND THAT IS THE AMENDMENT. "2 failures" is the shape of
  * sentence this project refuses everywhere else: `unrecorded` folded into
  * `unchanged`, a `regional` claim falling back to a pin, a span state falling
- * through to the nearest branch that happens to have a colour. These two are not
+ * through to the nearest branch that happens to have a color. These two are not
  * two of a kind. One is a question the project declared ANSWERABLE and the
  * system declined every single time. The other is a question the system answered
  * every single time and never quoted a source for. Different failures, different
@@ -1740,7 +1825,7 @@ const TABS = {
  *
  * THE KIND IS DERIVED AND THERE IS NO FALL-THROUGH. A question that is neither
  * shape renders as unclassified and says so, exactly as SPAN_STATES renders a
- * state it does not know rather than borrowing a neighbour's colour. The day the
+ * state it does not know rather than borrowing a neighbor's color. The day the
  * archive grows a third kind of failure, this page says there is one it cannot
  * describe instead of describing it wrongly.
  * ------------------------------------------------------------------ */
@@ -2212,7 +2297,7 @@ const currentRun  = () => {
  * layer down.
  *
  * `cls` is an ORDERING and is allowed to be one: it says whether the claim
- * still holds. That is the one axis on this page where a colour ramp is
+ * still holds. That is the one axis on this page where a color ramp is
  * honest.
  * ------------------------------------------------------------------ */
 /* WHAT EACH OUTCOME IS CALLED IN FRONT OF A READER. The states themselves are
@@ -2249,7 +2334,7 @@ const SPAN_STATES = {
     box: [" warn", "Not quite verbatim.",
       `The characters below are what the file holds; the answer altered the case to
        fit its own sentence. This run was archived before <code>cite.py</code> had a
-       third match state, so it recorded <code>exact</code>; that is a labelling
+       third match state, so it recorded <code>exact</code>; that is a labeling
        defect in the archive and it is shown as it was claimed.`],
   },
   article_added: {
@@ -2266,7 +2351,7 @@ const SPAN_STATES = {
       `The characters at this offset ARE the quoted characters once runs of whitespace
        are collapsed, which is how <code>cite.py</code> matches by design. The archive
        and the record disagree about one line break. FINDING 42: this is neither a
-       broken claim nor a labelling defect, and it is counted and shown rather than
+       broken claim nor a labeling defect, and it is counted and shown rather than
        tolerated silently, because a verifier made whitespace-insensitive would hide an
        edit that changed only spacing — a real edit to a record whose offsets other
        runs depend on.`],
@@ -2295,12 +2380,12 @@ const SPAN_STATES = {
  * The first axis asks whether the archived quote still sits at its recorded
  * offset. This one asks whether the RECORD moved underneath it — and the two
  * answer different questions, so they are never merged and `unrecorded` is
- * never collapsed into either neighbour. `corpus_provenance`'s docstring gives
+ * never collapsed into either neighbor. `corpus_provenance`'s docstring gives
  * the reason and it is the whole point: collapsing "unknown" into "unchanged"
  * would report a span as a real defect on no evidence, and collapsing it into
  * "changed" would explain away every real defect the archive holds.
  *
- * DELIBERATELY NOT COLOURED. `--good/--warn/--bad` asserts an ordering, and
+ * DELIBERATELY NOT COLORED. `--good/--warn/--bad` asserts an ordering, and
  * this axis has none: a record that moved is not worse than one that did not,
  * and an archive that predates the corpus version is not a failure. The Places
  * tab already refuses that palette for `ground` for the same reason. So this
@@ -2338,7 +2423,7 @@ const PROVENANCE = {
  * moved to that surface and got STRONGER for the move. The per-panel check could
  * only assert that a state APPEARED somewhere in 1289 panels; the cross-tab
  * check asserts every cell's COUNT against the archive, so folding `unrecorded`
- * into a neighbour now fails on the arithmetic rather than on a missing
+ * into a neighbor now fails on the arithmetic rather than on a missing
  * attribute.
  *
  * `unrecorded` is still its own third answer and is still never rounded. What
@@ -2559,7 +2644,7 @@ function publicNoteHtml(docId) {
 
 /* ------------------------------------------------------------------ *
  * answer rendering: markers become buttons, quotations become clickable
- * highlights coloured by whether they still resolve to disk.
+ * highlights colored by whether they still resolve to disk.
  * ------------------------------------------------------------------ */
 function renderAnswerText(run) {
   const text = run.answer || "";
@@ -2608,7 +2693,7 @@ function renderAnswerText(run) {
       const res = spans[r.si].resolution;
       const st = res?.state || "unclaimed";
       // No fall-through. An unknown state is rendered AS unknown and says so,
-      // rather than borrowing the nearest branch's colour — which is the
+      // rather than borrowing the nearest branch's color — which is the
       // shape of FINDING 98 and the reason this table exists.
       const d = SPAN_STATES[st] || {
         cls: " unknownstate",
@@ -2676,7 +2761,7 @@ function renderQuoteProvenance(run, si) {
         <strong>This page does not yet render this citation's state.</strong>
         <code>${esc(res.state)}</code> was added to <code>classify_span</code> and not
         to this table. ${esc(res.why || "")} Shown as unknown rather than as the
-        nearest state that happens to have a colour.</div>`;
+        nearest state that happens to have a color.</div>`;
     } else if (d.box) {
       const [sev, head, body] = d.box;
       const tail = body != null ? body
@@ -2762,7 +2847,7 @@ function renderQuoteProvenance(run, si) {
    an aligned published translation, so `machine` never fires and band/flags are
    null throughout. Hiding the controls would lose that work the moment Phase 2
    adds material with no published English; showing them as if they were live
-   would be a lie. So they are shown, labelled dormant, with the reason. */
+   would be a lie. So they are shown, labeled dormant, with the reason. */
 function renderEnglishProvenance(p) {
   const e = p.english || {};
   let out = `<div class="sect"><h3>how this reached English</h3>`;
@@ -2932,7 +3017,7 @@ function renderRecordProvenance(docId) {
  * Same job as the answer-run panels above: click something, see what it
  * rests on. Here "what it rests on" is a gazetteer id and a note, not a
  * character span, so the honest version of "characters on disk" is a
- * best-effort text search (`bestEffortLocate`), clearly labelled as one.
+ * best-effort text search (`bestEffortLocate`), clearly labeled as one.
  * ------------------------------------------------------------------ */
 function placeCoordText(pl) {
   if (pl.kind === "pin" && pl.resolved) {
@@ -3251,7 +3336,7 @@ const SELECT_ATTR = {
    be making exactly the claim the shape was designed to refuse. So the chain
    opens with the arithmetic — how many records this region has, how many of
    them the map draws as points, how many are here instead — and the coordinate
-   line, when it is printed, is labelled as the band's own anchor and says what
+   line, when it is printed, is labeled as the band's own anchor and says what
    it was derived from. */
 function renderRegionProvenance(region) {
   const band = regionBands().find(b => b.region === region);
@@ -3269,7 +3354,7 @@ function renderRegionProvenance(region) {
     ${chainRow("anchor", band.anchor
         ? (band.anchorKind === "declared"
             ? `${band.anchor[1].toFixed(2)}, ${band.anchor[0].toFixed(2)} — <b>declared, not derived</b>`
-            : `${band.anchor[1].toFixed(2)}, ${band.anchor[0].toFixed(2)} — the centre of the box holding
+            : `${band.anchor[1].toFixed(2)}, ${band.anchor[0].toFixed(2)} — the center of the box holding
                this region's ${band.findspots} cached findspot${band.findspots === 1 ? "" : "s"}`)
         : "none — this region has no cached findspot, so the map has nowhere to put its band")}
     ${band.anchorKind === "declared"
@@ -3283,7 +3368,7 @@ function renderRegionProvenance(region) {
   if (band.anchorKind === "declared")
     out += `<div class="warnbox warn"><strong>This band's position was declared by a person.</strong>
       Every other band on this map is placed by derivation from cached gazetteer ids; this one is not,
-      and it is labelled here rather than left to look like the others.
+      and it is labeled here rather than left to look like the others.
       <div class="dormant stack">${esc(band.declared.why.replace(/\s+/g, " ").trim())}</div></div>`;
   const L = layoutBands(mapWindow()).find(o => o.band.region === region);
   if (L && L.crowded)
@@ -3644,7 +3729,7 @@ function regionCards() {
  * like anything else here, and without it the map was unreadable. See
  * scripts/build_coastline.py and the A5 addendum in PROGRESS.md.
  * ------------------------------------------------------------------ */
-/* Pan and zoom are held as a CENTRE plus a zoom factor, and the visible window
+/* Pan and zoom are held as a CENTER plus a zoom factor, and the visible window
    is derived from them on every draw, rather than as an SVG transform on a
    group.
 
@@ -3684,7 +3769,7 @@ const MAP_MAX_ZOOM = 60;
  *   - `charW` and `lineH` ARE the label's size, in the collider's own units. If
  *     they stop matching the type the browser draws, the collider solves
  *     against geometry that is not on screen and labels overlap silently.
- *   - `off` and `mid` place a label against a dot's edge and its centre line,
+ *   - `off` and `mid` place a label against a dot's edge and its center line,
  *     so both follow the dot radius and the type size rather than being
  *     re-guessed.
  *
@@ -3697,18 +3782,18 @@ const MAP_LABEL_PX = 14;
 const MARK = {
   dot:      8,            // a pin holding one placement
   dotMulti: 10.5,         // a pin several placements share; it carries a numeral
-  numeral:  3.6,          // baseline nudge that centres that numeral in the dot
+  numeral:  3.6,          // baseline nudge that centers that numeral in the dot
   hit:      11,           // half the obstacle box a marker shows the collider
   gap:      3,            // clearance the collider keeps between two labels
   charW:    MAP_LABEL_PX * 0.56,   // mean glyph width of the sans stack
   lineH:    MAP_LABEL_PX * 1.2,
-  off:      14.5,         // a side label's distance from the pin's centre —
+  off:      14.5,         // a side label's distance from the pin's center —
                           // FOUR units clear of `dotMulti`, not the two and a
                           // half this carried before. A label touching the pin
                           // it names was visible at Roma the moment the map was
                           // drawn larger, and the tight ratio had been here all
                           // along; it was the scale that made it legible.
-  mid:      MAP_LABEL_PX * 0.35,   // baseline nudge that centres it on the dot
+  mid:      MAP_LABEL_PX * 0.35,   // baseline nudge that centers it on the dot
 };
 
 /* ------------------------------------------------------------------ *
@@ -3765,7 +3850,7 @@ BAND.nameCharW = BAND.namePx * BAND.nameRatio;
  *
  * A BAND IS NOT A BOUNDARY AND CANNOT BE ONE. The seven regions are this
  * project's own categories, not anyone's published boundaries, and the
- * coastline's standard — a dated, citable, licence-read source whose lines are
+ * coastline's standard — a dated, citable, license-read source whose lines are
  * somebody else's — cannot be met for them. Checked rather than assumed: the UN
  * M49 geoscheme, the obvious candidate, puts IRAN IN SOUTHERN ASIA WITH INDIA
  * and Arabia with the rest of Western Asia, and has no unit called Scandinavia
@@ -3780,7 +3865,7 @@ BAND.nameCharW = BAND.namePx * BAND.nameRatio;
  * degrees of longitude and means nothing.
  *
  * A FINDSPOT IS DIFFERENT: it is where the object or the stone actually is, and
- * it is inside the region by construction. So a band's anchor is the centre of
+ * it is inside the region by construction. So a band's anchor is the center of
  * the box holding that region's own cached findspots, and every corner of that
  * box traces to an id in `data/gazetteer.json`. Nothing here is hand-placed.
  *
@@ -3805,10 +3890,10 @@ BAND.nameCharW = BAND.namePx * BAND.nameRatio;
  * which kind of anchor it is.
  *
  * WHY THIS ONE IS DECLARED, and it is a defect in the derivation rather than a
- * disagreement with it: a band's anchor is the centre of the box holding its
+ * disagreement with it: a band's anchor is the center of the box holding its
  * region's cached findspots, and Southeast Asia has exactly ONE cached findspot.
- * The box holding one point is that point, and the centre of a point is not a
- * regional centre — it is Óc Eo. The derivation is not wrong here so much as
+ * The box holding one point is that point, and the center of a point is not a
+ * regional center — it is Óc Eo. The derivation is not wrong here so much as
  * unable to run.
  *
  * THIS DECLARATION IS EXPECTED TO BECOME UNNECESSARY. Five of the six Southeast
@@ -3826,7 +3911,7 @@ const REGION_ANCHOR = {
       point on the south-western shore, and the band derived from it drifts out over
       the Indian Ocean. This corpus's South Asian material is the Periplus coast, the
       Konkan market-towns, the Ganges and a Sanskrit astronomer, and central India is
-      where that spread has its middle. A judgement about the region's reach, not a
+      where that spread has its middle. A judgment about the region's reach, not a
       coordinate from any source.`,
   },
   "Southeast Asia": {
@@ -3835,9 +3920,9 @@ const REGION_ANCHOR = {
       Kanchanaburi through the Cham coast to Srivijaya at Palembang, and the derived
       anchor is Óc Eo only because Óc Eo is the region's single cached findspot — the
       box holding one point is that point. The band is placed between Sumatra and
-      Borneo, where the records actually spread to. It is a judgement about this
+      Borneo, where the records actually spread to. It is a judgment about this
       region's reach and not a coordinate taken from any source, which is why it is
-      declared here and labelled as declared on screen.`,
+      declared here and labeled as declared on screen.`,
   },
 };
 
@@ -3995,7 +4080,7 @@ function layoutBands(view) {
     const ax = x(b.anchor[0]), ay = y(b.anchor[1]);
     /* A DECLARED POSITION IS USED AS DECLARED, and the placer does not get a
        vote. It had one, and the result was that both declared bands drifted off
-       the points a person had chosen for them — South Asia's declared centre in
+       the points a person had chosen for them — South Asia's declared center in
        India collides with the Ganges marker by nine units, so the spiral moved
        it to Rajasthan, and the whole reason for declaring a position is that
        somebody looked at the map and decided where the band belongs. A
@@ -4038,7 +4123,7 @@ function layoutBands(view) {
       bx = tx; by = ty; break;
     }
     if (bx === null) {
-      /* Nowhere clear. CENTRED ON THE ANCHOR, AND NOT CLAMPED TO THE CANVAS.
+      /* Nowhere clear. CENTERED ON THE ANCHOR, AND NOT CLAMPED TO THE CANVAS.
          The first version clamped, on the reasoning that a band which goes off
          screen takes its records with it — and that reasoning produced the
          worst defect this design has had. Zoom in twice and EVERY band's anchor
@@ -4298,7 +4383,7 @@ function buildMap() {
      is in the panel and the record lists below. A label is a convenience here,
      not the evidence. */
   // Marker positions are obstacles too, so a label never lands on a
-  // neighbouring dot — but each is tagged with its own cache_key and skipped
+  // neighboring dot — but each is tagged with its own cache_key and skipped
   // when placing that group's own label. Without the exclusion every label
   // collides with the very marker it belongs to and the map renders with no
   // names at all, which is precisely what the first attempt did.
@@ -4344,7 +4429,7 @@ function buildMap() {
        Measured, because the trade is real and goes the wrong way: at the old
        10px type 28 of the 64 marks got a label. Setting the type to 14px and
        the dots to 8/10.5 dropped that to 17 — bigger names collide with more
-       of their neighbours, and the collider drops every one that does. Adding
+       of their neighbors, and the collider drops every one that does. Adding
        the four diagonals brought it back to 24, and trimming `hit` from 13 to
        11 and `gap` from 4 to 3 was the last of it. So the map carries four
        fewer names than it did, at nearly twice the dot and 40% more type, and
@@ -4375,7 +4460,7 @@ function buildMap() {
 
 function mapLegend() {
   /* THE LEGEND MAKES THE SAME CLAIM THE PANEL DOES, so it has to be true in the
-     same way. It said flatly that a band's position is the centre of that
+     same way. It said flatly that a band's position is the center of that
      region's own cached findspots, and the moment one band was placed by
      declaration that sentence was false on the busiest surface on the page —
      the stale-pointer defect RULING 90 exists to catch, and the second time
@@ -4403,7 +4488,7 @@ function mapLegend() {
     <span class="item"><svg class="swatch" width="22" height="10"><line class="ln" x1="1" y1="5" x2="21" y2="5"/></svg>source / destination — an edge <code>subject_places</code> draws</span>
     <span class="item"><svg class="swatch" width="22" height="10"><line class="lnw" x1="1" y1="5" x2="21" y2="5"/></svg>waypoint — on the way; no order recorded among waypoints</span>
     <span class="item"><svg class="swatch" width="26" height="14"><rect class="bnd" x="1" y="2" width="24" height="10" rx="2"/><rect class="bchip" x="5" y="6" width="4" height="4"/><rect class="bchip" x="11" y="6" width="4" height="4"/><rect class="bchip" x="17" y="6" width="4" height="4"/></svg>a region band, and one square per record — where this map keeps
-      the records it cannot draw as points. Its POSITION is the centre of that region's own cached
+      the records it cannot draw as points. Its POSITION is the center of that region's own cached
       findspots${declaredBands.length
         ? ` — except ${esc(listOf(declaredBands.map(b => b.region)))}, ${one ? "whose position was" : "whose positions were"}
            manually curated`
@@ -4517,7 +4602,7 @@ function placeNotice() {
         the Tiber</div></div>
       <div class="cell" data-cell="gapsIdNoGeometry" data-count="${L.gapsIdNoGeometry.length}">
         <div class="num">${L.gapsIdNoGeometry.length}</div><div class="cap">took an identifier the
-        gazetteer holds and <b>does not give a position for</b>. Listed here rather than centred on a
+        gazetteer holds and <b>does not give a position for</b>. Listed here rather than centered on a
         guess</div></div>
       <div class="cell" data-cell="docsAllGap" data-count="${L.docsAllGap.length}">
         <div class="num">${L.docsAllGap.length}</div><div class="cap">record${L.docsAllGap.length === 1 ? "" : "s"}
@@ -4600,7 +4685,7 @@ function geographyCards() {
   const partialGapEdges = (P.edges || []).filter(e => !e.drawable);
 
   /* The finding this tab exists to state plainly, and it is structural rather
-     than editorial: `focus` is the place a passage is ORGANISED AROUND, and
+     than editorial: `focus` is the place a passage is ORGANIZED AROUND, and
      ${L.focusGaps.length} of ${L.focusTotal} of them have nowhere to draw. The
      card quotes each record's own note rather than saying what these places
      are, because naming them would be making the identification the corpus
@@ -4683,7 +4768,7 @@ function geographyCards() {
         }).join("")}</div>
     </div>
     <div class="dormant stack">Each refusal has its own reason and this page does not
-      summarise them into one — open a name to read the note that refused it. What can be said without
+      summarize them into one — open a name to read the note that refused it. What can be said without
       reading any of them is arithmetic: the same coordinate is right ${CC.taken} times here and
       wrong ${CC.refused} times, and a map that drew all ${CC.total} would be asserting an
       identification these sources declined ${CC.refused} times.</div>
@@ -4880,21 +4965,107 @@ function viewPlaces() {
  * characters. A figure that says "these are the characters on disk" must not
  * be the one thing on the page nobody checked.
  * ------------------------------------------------------------------ */
+/* THE EXAMPLE THE CHAIN FIGURE TRACES IS DECLARED. Rob chose it on 2026-09-22:
+   the Akananuru couplet on Yavana ships at Muciri, in place of the Periplus
+   passage this code happened to land on.
+
+   IT USED TO BE `QUESTIONS[0]` AND THE FIRST RESOLVED SPAN IN IT — an example
+   nobody chose. The harness comment beside the chain guard said as much: "the
+   example is chosen at render time from whatever the archive holds, so it can
+   change without anyone editing a line." Reordering the rail would have swapped
+   the figure on the tab's most-read card, silently. It is a declaration now,
+   the shape `W3_DECLARE_DONT_INFER` settled.
+
+   WHY THIS ONE EARNS THE SLOT. Old Tamil is the language this project is
+   WORST at — section 8 says so at length — and the figure now traces the
+   record that proves the chain holds anyway. It also reaches its passage at a
+   higher similarity than the Periplus example did, which is the kind of detail
+   a reader can check on the Questions tab rather than take on trust.
+
+   THE FALLBACK IS DELIBERATE, AND THE GUARD IS WHY IT IS SAFE. If the declared
+   question or record ever stops producing a resolved span, the figure still
+   draws, from whatever the archive does hold: a Home tab missing its central
+   card is worse than one tracing a different answer. The chain guard asserts
+   the DECLARED example is the one rendered, so a fallback cannot happen
+   quietly — which is the whole failure the old code had no way to report. */
+const CHAIN_EXAMPLE = {
+  question: "What does the Tamil poem say about Yavana ships at Muciri?",
+  doc_id:   "southasia-01-akananuru-149",
+  /* THE SOURCE'S OWN WORDS, SHOWN RATHER THAN DESCRIBED. Step 2 said "Old
+     Tamil" and then showed English, which asks a visitor to take this
+     project's whole premise on trust on the one card built to demonstrate it.
+
+     DECLARED AS OFFSETS, THE WAY THE MASTHEAD SPECIMENS ARE. Akananuru 149 is
+     632 characters and opens on termites and bears; the four lines that carry
+     the quoted translation are lines 8-11. Choosing them is a curation
+     decision, so it is declared here and checked, rather than inferred at
+     render time by matching the translation back onto the original — which is
+     exactly the sort of guess `W3_DECLARE_DONT_INFER` refuses. */
+  /* `must_contain` is the anchor that makes the range checkable. Offsets alone
+     are not: slide them anywhere in this poem and they still hold Tamil script
+     and still sit inside the field, so a re-curation could move the card onto
+     the lines about termites and bears with nothing to notice. யவனர் —
+     "Yavanar", the Greeks and Romans — is the word this whole example exists
+     to show, so the guard asserts the drawn lines still carry it. */
+  original: { field: "original_text_excerpt", start: 250, end: 375,
+              must_contain: "யவனர்" },
+};
+
 function chainExample() {
-  const q = QUESTIONS[0];
-  const runs = byQuestion.get(q) || [];
-  const run = runs[defaultRunIndex(runs)];
-  if (!run) return null;
-  const spans = run.grounding?.quote_spans || [];
-  const si = spans.findIndex(s => s.abs_start != null && s.resolution
-                                  && s.resolution.state === "resolved");
-  if (si < 0) return null;
-  const span = spans[si];
-  const rec = D.corpus[span.doc_id];
-  if (!rec || !rec.fields || rec.fields[span.source_field] == null) return null;
-  const passage = (run.passages || []).find(p => p.marker === span.marker);
-  return { q, run, si, span, rec, passage,
-           onDisk: rec.fields[span.source_field].slice(span.abs_start, span.abs_end) };
+  const isResolved = s => s.abs_start != null && s.resolution
+                          && s.resolution.state === "resolved";
+
+  /* The default run first, because that is the one the Questions tab opens when
+     the reader follows the button at the foot of the card; any other run that
+     carries the quotation only if the default does not. */
+  const pick = (q, docId) => {
+    const runs = byQuestion.get(q) || [];
+    if (!runs.length) return null;
+    /* EXACT SPANS FIRST, AND THIS IS NOT FUSSINESS. 610 of the archive's
+       "resolved" spans record an end offset one or two characters short of
+       their own quote — almost always the closing bracket or comma. The
+       corpus-wide check cannot see it, because it compares with `includes` in
+       either direction; this figure's check compares the characters exactly,
+       because the figure's entire claim is that the offsets ARE the quotation.
+       So the card draws a span that survives the strict comparison, and the
+       off-by-one stays a defect to be fixed in the data rather than something
+       the page's most-read card demonstrates. */
+    const usable = (s, docId2) => isResolved(s) && (!docId2 || s.doc_id === docId2);
+    const exact = [], loose = [];
+    for (const run of [runs[defaultRunIndex(runs)], ...runs]) {
+      if (!run) continue;
+      const spans = run.grounding?.quote_spans || [];
+      const build = si => {
+        const span = spans[si];
+        const rec = D.corpus[span.doc_id];
+        if (!rec || !rec.fields || rec.fields[span.source_field] == null) return null;
+        const passage = (run.passages || []).find(p => p.marker === span.marker);
+        const onDisk = rec.fields[span.source_field].slice(span.abs_start, span.abs_end);
+        const d = q === CHAIN_EXAMPLE.question && span.doc_id === CHAIN_EXAMPLE.doc_id;
+        const o = CHAIN_EXAMPLE.original;
+        const src = d && rec.fields[o.field] != null
+          ? rec.fields[o.field].slice(o.start, o.end) : null;
+        return { q, run, si, span, rec, passage, onDisk, declared: d, sourceWords: src };
+      };
+      spans.forEach((s, i) => {
+        if (!usable(s, docId)) return;
+        const c = build(i);
+        if (c) (c.onDisk === c.span.quote ? exact : loose).push(c);
+      });
+    }
+    /* THE LONGEST EXACT QUOTATION IN THE ARCHIVE, not merely in the default
+       run. The figure is showing a reader what a citation looks like, and a
+       four-word fragment shows less of it; the run that carries the best one is
+       the run the card's button opens, which is the same promise either way. */
+    exact.sort((a, b) => b.span.quote.length - a.span.quote.length);
+    if (exact.length) return exact[0];
+    if (loose.length) return loose[0];
+    return null;
+  };
+
+  return pick(CHAIN_EXAMPLE.question, CHAIN_EXAMPLE.doc_id)
+      || pick(CHAIN_EXAMPLE.question, null)
+      || pick(QUESTIONS[0], null);
 }
 
 function chainFigure() {
@@ -4917,17 +5088,19 @@ function chainFigure() {
       <div class="eyebrow sm">${n} · ${label}</div>${body}</div>`;
 
   return `<div class="card chaincard">
-    <h3>How one answer is put together</h3>
-    <p class="prose-soft chainlead">Not a diagram of the idea — this is an answer
-    the system actually produced, and every step below is read out of the archive
-    when this page loads.</p>
+    <h3>How answers are assembled</h3>
+    <p class="prose-soft chainlead">Not a diagram of the idea. Every answer on this
+    portal is assembled the same way, and this is one of them, traced end to end —
+    a real answer the system produced, with every step below read out of the
+    archive when this page loads.</p>
     <div class="chainfig">
       ${step(1, "an English question", `<p class="cq">${esc(q)}</p>`)}
       <div class="carrow" aria-hidden="true">→</div>
       ${step(2, "a source retrieved in its own language", `
         <div class="rec-title">${esc(rec.title)}</div>
+        ${c.sourceWords ? `<p class="csrc" lang="ta" translate="no">${esc(c.sourceWords)}</p>` : ""}
         <div class="rec-meta">${esc(rec.region)} · ${esc(lang)}${
-          span.within === "english" ? " — quoted from its published translation" : ""
+          span.within === "english" ? " — quoted below from its published translation" : ""
         }${passage && passage.similarity != null
           ? ` · ${passage.similarity.toFixed(2)} cosine to the question` : ""}</div>`)}
       <div class="carrow" aria-hidden="true">→</div>
@@ -4951,28 +5124,28 @@ function viewHome() {
   return `${hashNotice()}<div class="cols cols-single">
     <div>
     <div class="card">
-      <h3>Mundus Ulterior — the world further out</h3>
-      <p><em>Mundus</em> is Latin for the world; <em>ulterior</em> is the comparative of
-      <em>ulter</em>, that which lies beyond — so <strong>the world further out</strong>, the
-      country on the far side. It is how the Roman world's own language framed everywhere it
-      was not.</p>
-      <p>This project takes ${listOf(regions)} between 27 BC and the sack of Constantinople in
-      1204 AD, and asks what connected them to Rome — goods, coins, envoys, religion, hearsay.
-      <strong>It reads those connections from the sources of those regions, in their own
-      languages</strong>, rather than only from Roman texts written about them from a distance.</p>
+      <h3>Mundus Ulterior — the world beyond</h3>
+      <p><em>Mundus</em> is Latin for 'world' and <em>ulterior</em> means 'beyond'. On this
+      portal, the 'world beyond' refers to the world beyond ancient Rome.</p>
+      <p>This project takes ${listOf(regions)} between 27 BC (the start of the Roman Empire)
+      and 1204 AD (the sack of Constantinople), and asks what connected these many regions to
+      Rome. What goods, coins, envoys, religions, and stories traveled across worlds?
+      <strong>The answers come from regional sources, in their own words</strong>, rather than
+      just what Rome wrote about them.</p>
     </div>
 
     <div class="card">
-      <h3>What this portal does</h3>
+      <h3>What the Mundus Ulterior portal does</h3>
       <div class="withmap">
         <div>
-          <p>You ask a question in English. The system searches a curated corpus of primary sources in
-          their own languages, retrieves the passages that answer it, and writes an answer that quotes
-          them. <strong>Every quotation is clickable, and every click lands on
-          the exact characters in the exact file the quotation came from.</strong></p>
-          <p>The ${esc(TABS.map)} tab does the same thing for geography: every point on it comes
-          from a cached gazetteer identifier, never a hand-placed coordinate, and every place the
-          corpus names but cannot honestly plot is listed rather than dropped.</p>
+          <p>Using a set of fixed questions, the system searches a curated corpus of primary
+          sources in their own languages, retrieves the passages that answer each one, and
+          writes an answer that quotes them. <strong>Each quotation is clickable, and almost
+          every click lands on the exact characters in the exact field of the exact file the
+          quotation comes from.</strong> The few that don't are shown with the reason.</p>
+          <p>The ${esc(TABS.map)} tab does the same thing for geography: each place-point comes
+          from a cached gazetteer identifier. Every place the corpus names but cannot definitely
+          place is listed rather than dropped.</p>
         </div>
         ${fullMap() ? `<button class="homemap" type="button" data-goto="map"
           title="open the ${esc(TABS.map)} tab">${fullMap()}${mapCredit()}
@@ -4993,44 +5166,50 @@ function viewHome() {
     <div class="cols cols-single"><div>
 
     <div class="card">
-      <h3>Why it exists</h3>
-      <p><strong>An AI answer about the ancient world is normally unverifiable.</strong> It reads
-      fluently, cites nothing you can follow, and a quotation that has drifted a word looks exactly
-      like one that has not. This portal is an argument that it does not have to be that way: the
-      whole chain — question, retrieval, passage, quotation, character offset, file — is on the
-      screen and clickable.</p>
-      <p><strong>And it lets these regions speak rather than be spoken about.</strong> The
-      standard account of Rome's further world is assembled from Greek and Latin authors describing
-      it; the sources here are largely not those. A Sabaic inscription, a Chinese dynastic history
-      and a Tamil poem answer an English question in their own words.</p>
+      <h3>Why Mundus Ulterior exists</h3>
+      <p><strong>AI-based answers about the ancient world can be hard to verify.</strong> They
+      read fluently, cite things that are hard to follow, and a quote with a drifted word looks
+      exactly like one that hasn't. 'Mundus Ulterior' aims to demonstrate a more reliable and
+      transparent approach. The entire chain for answering a question from primary sources is
+      shown and clickable, from question to retrieval, passage, quotation, character offset,
+      field, and file.</p>
+      <p><strong>This approach lets regions speak about Rome in their own words.</strong>
+      Standard accounts of Rome's 'world beyond' come from Greek and Latin sources. The sources
+      here are largely not those, and where Greek is used, it comes from those boundary points.
+      A Sabaic inscription, a Chinese dynastic history, and a Tamil poem answer English
+      questions in their own words.</p>
       <!-- THE PROMISE, AND IT IS NOW KEPT RATHER THAN MADE. This sentence named
            three kinds of failure and the page showed three; the two questions
            the rail withholds were counted nowhere and named nowhere, for two
            blocks, which made this the one sentence on the tab that the rest of
            the page did not support. The fourth clause is derived — FINDING 113
            — and it points at the card that does the work rather than doing it
-           twice. -->
-      <p><strong>The failures are kept.</strong> Refusals, citations that no longer resolve and
+           twice. GUARD 58 READS THIS SENTENCE: it asserts the literal phrase
+           "The failures are kept" and re-derives the count out of
+           "so are the N question(s)". Reword either and the harness goes red. -->
+      <p><strong>The failures are kept.</strong> Refusals, citations that don't resolve, and
       places the map will not draw are counted and shown — and so are the ${withheld.length}
       question${withheld.length === 1 ? "" : "s"} this page keeps off its own question list,
-      named on the ${esc(TABS.data)} tab with what went wrong in each rather than counted and
-      left anonymous. A system that only displays its successes is not evidence of anything.</p>
+      named on the ${esc(TABS.data)} tab with what went wrong in each. 'Mundus Ulterior' is a
+      proof-of-concept. As such, only displaying successes would hinder potential future
+      development.</p>
     </div>
 
     <div class="card">
       <h3>Scope</h3>
-      <p>Every answer here was produced by asking a question of a corpus of
-      ${Object.keys(D.corpus).length} primary sources — inscriptions, literary texts, papyri and
-      excavation records — drawn from the
-      ${new Set(Object.values(D.corpus).map(r => r.region).filter(Boolean)).size} regions Rome traded
-      with or heard about, between 27 BC and 1204 AD. Sources are in ${esc(listOf(corpusLanguages()))}, and English. An English
+      <p>Each answer on Mundus Ulterior was produced by asking a question of a corpus of
+      ${Object.keys(D.corpus).length} source records (inscriptions, literary texts, papyri,
+      coins and objects, museum catalog entries, and published translations) drawn from the
+      ${regions.length} regions Rome had direct or indirect connections with, between 27 BC and
+      1204 AD. The tiers on the ${esc(TABS.data)} tab describe what each kind of record does and
+      doesn't carry. Sources are in ${esc(listOf([...corpusLanguages(), "English"]))}. An English
       question retrieves them in their own languages, and the answer quotes them.</p>
-      <p>The claim worth checking is not that the answers read well. It is that
-      <strong>every quotation resolves to a specific range of characters in a specific
-      field of a specific file</strong>. Click any highlighted phrase to see those
-      characters. Nothing on this page is generated live: these are
-      ${D.runs.length} runs archived while the system was being built, replayed against
-      the corpus as it stands today.</p>
+      <p>The valuable claim isn't that an answer reads well. It's that <strong>almost every
+      quote resolves to a specific character range in a specific field of a specific
+      file</strong>. Exceptions are shown, not hidden. Click any highlighted phrase to see those
+      characters. Nothing on this portal is generated live: these are
+      ${D.runs.length} runs archived while the system was being built, replayed from storage,
+      and re-checked against current sources.</p>
     </div>
 
     </div></div>`;
@@ -5108,7 +5287,7 @@ function questionAudit() {
     <p class="cardlead tight">Those passages carry <b>no language of their own</b>. Where one
       of these answers is opened, the language shown is taken from the record the passage came
       from, because the alternative is a blank where a reader expects a fact — and it is
-      labelled as a substitution wherever it appears, which it was not until this page was
+      labeled as a substitution wherever it appears, which it was not until this page was
       rebuilt. The character positions are unaffected: they were stored with the quotation
       rather than with the passage, and they open exactly as every other answer's do.</p>
     ${PA.questions.map(([q, n]) => `<div class="gapdoc">
@@ -5283,7 +5462,7 @@ function viewAbout() {
       record was later replaced with a fuller one. <strong>A stored quotation is only valid
       against the version of the source it was made from</strong>, and that version was not
       being recorded at the time. The quotations whose letter case differs while the record
-      claims an exact match are a labelling fault the checker no longer has; they are shown
+      claims an exact match are a labeling fault the checker no longer has; they are shown
       as they were claimed rather than corrected in place, because an archive that is tidied
       afterwards is no longer evidence that the fault existed.</p>
       ${rows}
@@ -5293,7 +5472,7 @@ function viewAbout() {
       <p class="prose-soft">The check above asks whether a stored quotation still sits where it
       said it did. Whether the <em>record</em> has been edited since is a different question, and
       it is answered by comparing the fingerprint the answer recorded against the record's
-      fingerprint today. Neither answer summarises the other, and <strong>“not knowable” is a
+      fingerprint today. Neither answer summarizes the other, and <strong>“not knowable” is a
       third answer rather than a soft “no”</strong>: counting it as unchanged would call a
       quotation defective on no evidence, and counting it as changed would explain away every
       real defect.</p>
@@ -5317,7 +5496,7 @@ function viewAbout() {
           // archive, which is a stronger claim than the per-panel attribute it
           // replaced: that guard could only say the state APPEARED, this one
           // says every count is right and nothing has been folded into a
-          // neighbour.
+          // neighbor.
           return `<div class="chain"><div data-span-state="${esc(st)}"
             data-provenance="${esc(pv)}" data-cell-count="${n}">
             <span class="k wide">${esc(OUTCOME_LABEL[st] || st)}</span>
@@ -5416,7 +5595,7 @@ function viewAbout() {
     <rect x="284" y="36" width="164" height="92" rx="3"/>
     <text x="366" y="62" class="af-title">Records</text>
     <text x="366" y="82" class="af-sub">the text, a translation or</text>
-    <text x="366" y="97" class="af-sub">a catalogue description;</text>
+    <text x="366" y="97" class="af-sub">a catalog description;</text>
     <text x="366" y="112" class="af-sub">citations; terms as read</text>
   </g>
 
@@ -5472,7 +5651,7 @@ function viewAbout() {
 opened. Opening the page replays the answer, with each quotation’s check against
 the current source records, which may have been edited since the answer was
 made.</figcaption>
-</figure><p>This ‘Methodology’ page explains how I built ‘Mundus Ulterior’: the sources, their processing, the tests, the limitations, and tooling. I also include future improvement recommendations.</p><p><strong>The answers on this site are pre-loaded.</strong> Before answer generation, I fixed the questions, the source each one should find, and whether each should be answered or declined. The answers were then generated and scored against those expectations. They were also validated against their sources. Almost every quotation resolves to a specific range of characters in its source, which can be opened and read in full. Those that don't are shown with the reason. In most cases, the system (detailed below) worked very well. However, I’ve deliberately kept the few failures, both to illustrate the current limitations, and as a guide for future improvements.</p></section><section class="mth" id="mth-2"><h2 class="eyebrow">Source compilation</h2><h3 class="mth-head">Where does the data come from?</h3><p><strong>For this project, a record is a single source.</strong> It holds the source's own words, where they can be obtained, a published translation (when available), a museum's catalogue description, or a pointer to where the text is held (see the tiers below). Records may also include citations to original/translated versions, and notes on text capture.</p><p><strong>Record candidates were named before being curated.</strong> Each sourcing round started by listing regions, the evidence sought and whether each source could be reached. The final round also listed the expected reuse rights. Sources that were considered and rejected are documented, with the reason for each, in the project's working records rather than on this site, because even discarded candidates reveal important limitations. Some rejected candidates were later reconsidered and added. Refused candidates spanned many reasons: bot blockers, login portals, redirect loops, and paywalls. Because evidence types differ, records are sorted into tiers:</p><ul><li>Source text with a published translation: the source's own words and a human translation, both cited. The strongest thing in the corpus.</li><li>Source text, machine English: the source's own words, but no reachable published translation. The claim is reachability, not existence: each record in this tier is meant to state the search that failed and where it stopped, and not every record yet does.</li><li>Published translation only: a published translation is held, but no open transcription of the source's own words could be obtained, even where one exists in print.</li><li>Catalogue record: a museum's object description, which is not the object speaking.</li><li>Pointer: the record does not carry the text itself, but states exactly where the text is held and how to find it.</li></ul><p>Reading a source and being allowed to quote it are two different facts, which are recorded separately.</p><p>Copyrighted text is quoted only where the quotation is short and bounded by the source, the work is fully cited, the terms are stated in the record in the source's own words, and the use is non-commercial research. Terms are recorded and counted; they are not yet used to exclude a source.</p><p>Terms are read off the object being quoted, and the rest of the site where needed, and copied in verbatim with the address, the reader and the date. No reuse position is inferred from the record's own description or by text-matching.</p></section><section class="mth" id="mth-3"><h2 class="eyebrow">Preparing the data</h2><h3 class="mth-head">Preparing the sources for search</h3><p>Each source is cut into passages and each passage is vectorized (given a numeric representation of its meaning). These vectors are loaded into a database that can be searched by similarity based on the following steps:</p><p><strong>Splitting.</strong> Only texts longer than a set maximum length are split, and every cut falls on a boundary the source itself provides: section markers first, then paragraphs, then line breaks, then sentence endings (Latin and Chinese sentence punctuation). No text is cut mid-sentence to fit a length, which avoids producing unintelligible passages. Most sources are short enough that no splitting was needed. Fragments below a minimum length are merged back into their neighbours.</p><p><strong>Character positions.</strong> Every passage records the exact character positions it occupies in its source field. The system repeatedly verifies that the characters sitting at those positions are the characters the passage holds. This is what makes citations openable and directly readable.</p><p><strong>Language, checked against the script.</strong> Each passage carries the language a curator declared. When the data is loaded, that declaration is checked against the writing system the text is actually in, and a passage whose script does not match its declared language is refused rather than stored, so a mislabelled language cannot reach the search.</p><p><strong>Original and translation stay separate.</strong> A source's own words and its published English translation become separate passages, each marked as belonging to the same record, rather than being merged. When an answer is written, the two are paired again. Keeping them apart is what makes it possible to test whether the source-language text can be found on its own, without the English answering for it.</p><p><strong>Numeric representation.</strong> Each passage is converted into a list of numbers (embeddings, which carry meaning rather than its spelling). Passages about similar subjects end up close together even without shared characters, which allows an English question to reach a Chinese passage. Embeddings are produced by a commercial model (Voyage AI's voyage-3.5) reached through a single internal gateway, so the model can be changed in one place.</p><p><strong>Places.</strong> Geographic coordinates are not written into a source record. Where a source names a specific place, the record stores that place's identifier in a published gazetteer (a reference list of places, each with a stable identifier and usually a location). A single component resolves identifiers into points, reading from a dated snapshot of the gazetteer. Identifiers are never written from memory, by a person or by a model.</p></section><section class="mth" id="mth-4"><h2 class="eyebrow">Building the retrieval system</h2><h3 class="mth-head">How questions find their passage</h3><p><strong>The basic path.</strong> A question is converted into the same kind of numeric representation as the passages, and the system returns the passages closest to it in meaning. There is no translation step and no keyword matching when an answer is produced.</p><p><strong>Why it works across scripts.</strong> The model (voyage-3.5) that produces those representations was trained across many languages, so a question in English and a passage in Literary Chinese can land near each other without sharing a character.</p><p><strong>How that claim is tested.</strong> For some of the test questions, English translations are removed from the pool of candidates before the test runs; the rest are tested with the translations still in place. With the English available, an English question finds the English, which proves nothing about the source-language text. With it removed, the question either reaches the original or it does not.</p><p>Early tests reported both whether the correct source was found and whether its non-English text was reachable. The second figure was lower. Padding the collection with plausible but irrelevant English material made no difference to the results at any size tested. The fall in non-English results came later, as more real sources were added: English-language targets held steady while non-English targets were found less often.</p><p><strong>Nothing is generated while you read.</strong> Every answer on this site was produced in advance and is replayed from storage, then re-checked against the current sources. Live answers, which are beyond this project’s scope, would need to be evaluated each time and for every question and answer.</p></section><section class="mth" id="mth-5"><h2 class="eyebrow">Building the harness</h2><h3 class="mth-head">The rules, and the checks that enforce them</h3><p><strong>Two kinds of written decision.</strong> A ruling is a rule the project adopts, recorded with its reasoning and rejected alternatives. Rulings are written before the work they govern. A finding is something observed, usually a defect. Rulings are decided; findings are discovered. Both are numbered, and rulings are indexed in a single register.</p><p><strong>Checks.</strong> Automated tests run against a reference version kept in the project repository: they execute its code, render every stored answer, and compare what appears against the data it describes. By rule, a failure blocks the change. Everything this page says about how the site is built describes the reference copy: the version kept in the project repository, which the checks run against. Any hosted version is built from the same data file, and checks that inspect rendered output run against the reference copy only. Incompletions are clearly noted.</p><p>Practices.</p><ul><li>Predictions before code. Each stage records what it expects, commits that record before any code is edited, and scores it afterwards without amendment. One prediction per stage is written not to flatter it.</li><li>Checks are seen to fail first. A new check is deliberately broken before it is trusted. This has repeatedly found the fault in the check rather than the code.</li><li>No figure is typed into the page. Counts are computed from the stored data, in digits and in words alike.</li></ul><p><strong>The limit.</strong> Numbers are recomputed on every build and cannot go stale. The sentences around them are typed once and never re-checked, so a sentence can stop being true while the number beside it stays correct. Where a sentence can be generated from the data instead, it now is.</p></section><section class="mth" id="mth-6"><h2 class="eyebrow">Quality tests</h2><h3 class="mth-head">What is tested, and how</h3><p><strong>Citations.</strong> Every quotation in every stored answer is re-checked against the current sources and sorted by what was found:</p><ul><li>the characters are exactly as quoted;</li><li>they differ only in capitalisation, and the record says so;</li><li>they differ only in capitalisation, but the record claims an exact match (a labelling defect, left visible rather than corrected);</li><li>they differ only in spacing;</li><li>the quotation is still in the file, at a different position;</li><li>the quotation is no longer in the file.</li></ul><p><strong>Whether the source itself changed.</strong> Mismatches have two identical-looking causes: the citation was wrong, or the source was edited after the answer was stored. Most stored answers record a fingerprint of every source they quoted, so the two can be told apart: unchanged means the mismatch is a real defect, changed means it is explained, and no fingerprint recorded means it cannot be determined. The third is kept separate since counting it either way would invent defects or explain them away.</p><p>Retrieval is scored against known ‘good question-and-source pairs’: whether the correct passage appears near the top, how far down it is, and its margin over whatever outranked it are reported two ways, since being beaten by a related passage of the same source is a different failure from being beaten by an unrelated one.</p><p>Translation is checked by translating a passage into English, translating that English back in a separate request that never sees the original, and comparing closeness of wording and closeness of meaning. Thresholds are set where no observed case falls near the line. Only the pass mark for prose has been set that way so far; the others are provisional.</p><p><strong>Places.</strong> No specific place is accepted unless it resolves through a dated snapshot of a published gazetteer. Nothing invents a point, matches on similar names, or substitutes a regional centre; every failure stops the process.</p><p><strong>No model judges another model's output.</strong> Every assertion in the scoring is a fact about text: this string appears, this identifier is among the cited sources. An uncalibrated model with no rubric marking another model's work could be wrong in the same direction and agree with it.</p><details class="evidence"><summary>Evidence — the citation check, both axes, case by case</summary>${EV.citations}</details></section><section class="mth" id="mth-7"><h2 class="eyebrow">Creating the portal</h2><h3 class="mth-head">How the portal was built</h3><p>The reference copy of this site, the version kept in the project repository and checked by the tests, is built as follows:</p><ul><li>One hand-written HTML page that opens directly from disk, alongside a generated data file and the masthead images. The page itself uses no framework, is not compiled or bundled, needs no server and loads nothing from outside; the data file and images are produced beforehand by scripts in the repository.</li><li>Every colour, and most size and spacing values, is a named token rather than a number written into the markup.</li><li>The masthead shows short specimens from the records in <span class="slot-todo">[derived: number of scripts in the masthead]</span> writing systems, some as romanised transcriptions, rendered as images so that a visitor without the relevant fonts installed does not see empty boxes. Each image is drawn in a single colour and inverted for the dark theme, so one file serves both.</li><li>Which sources appear in the masthead is a curation decision, declared in the page's code and checked against the script that draws the images. The characters shown and the alt text are read from the records.</li><li>The map is drawn as SVG by the page's own code, from a dated public coastline dataset and the gazetteer positions, with its own solver that hides any label that would overlap another.</li><li>A separate instrument measures the page's layout. It reports whether a figure moved and has no opinion on whether the page is better: a change that improved every measured figure once made the page worse to read and was reversed on human judgement.</li></ul></section><section class="mth" id="mth-8"><h2 class="eyebrow">Limitations, gaps and failures</h2><h3 class="mth-head">Limitations and failures</h3><p>Retrieval is tested against questions whose correct source is already known. For English sources, the system has found the correct source in almost every test run. The exception is the record of a carved gemstone from Khao Sam Kaeo in Thailand, which has never been found. For original language sources, results got worse as the collection grew. Of all the languages tested, Old Tamil performed worst at every stage run on the project's standard model, claude-haiku-4-5. The stronger model, claude-sonnet-5, has been tested only on rewriting questions into Old Tamil, and it succeeded every time. When an English question is searched, the Old Tamil passage it should find ranks far below where it should. When a question already written in Old Tamil is searched, the passage ranks first, but with the weakest similarity score of any script tested. In the round-trip translation test on the standard model, some attempts came back in the wrong script entirely; the stronger model has not been tested on translation. When the standard model rewrote the test questions into the collection's languages, almost every rejected rewrite was in Old Tamil: the model wrote in other South Asian scripts instead, such as Devanagari, Malayalam, Sinhala or Bengali. Why this happens has not been established. Nothing reported these results separately by language, so the decline went unnoticed for several rounds of work.</p><p><strong>The site lists the questions it holds answers for.</strong> A few are held back. Those are named here with what went wrong, because a question that never produced an answer is a different problem from one that produced answers without ever quoting a source. The page also names whichever question is currently answered worst.</p><p><strong>The map leaves out more than it shows.</strong> When a source names a region rather than a town, the map shades that region's area instead of placing a point. When it names a people, an office or an empire, that is recorded and no position is drawn; the record still appears on the map as a square in its region's band. The Chinese records naming Rome, the sources closest to the point of this project, cannot place Rome on the map. The names they use (Da Qin, and later Fulin) describe a state and its people rather than a city, and for at least one record the published translators disagree about which country is meant; drawing a single point would claim more than the texts say. Most of these records appear on the map only as squares in the East Asia band.</p><p>Known and unfixed:</p><ul><li>For every failed quotation currently shown, the cause cannot be explained. Answers only began recording which version of a source they used partway through, so for the rest there is no way to tell a wrong quotation from a source edited afterwards.</li><li>Some stored answers no longer hold the full text of the passages they were given. The page says so where that is true.</li><li>The translation checks are mostly uncalibrated. Nearly every source turned out to have a published English translation, so the machine translation those checks exist to judge almost never ran.</li><li>Improvements to the search were built and used in testing, then dropped: combining each original passage with its translation, and re-ranking results with a second model. Nothing records the decision. Neither was ever used to produce the answers on this site, and the results reported here come from the version without them.</li></ul><p><strong>What the project decided it could not do.</strong> An expansion to a much larger collection was planned, with decision gate criteria set in advance. Based on the results, corpus expansion plans were dropped rather than postponed. That said, corpus scaling and diversification can still take this project to new levels (see next section).</p><details class="evidence"><summary>Evidence — every test question by the language of the source, and the same questions as the collection grew; the withheld questions with their failure kinds; the worst-answered question with its figures; identifiers named but not used; passages organised around an unplaceable place; records considered with nothing drawable; connections named in the text but not drawn; the record declared unplaceable</summary>${EV.failures}</details></section><section class="mth" id="mth-9"><h2 class="eyebrow">Ideas for future development</h2><h3 class="mth-head">Ideas for taking ‘Mundus Ulterior’ to new levels</h3><p><strong>Report results by language as the test runs.</strong> The evidence under Limitations is derived here, on this page, from the archived runs; the test itself still prints a single total, so the one measure that has been moving is invisible at the moment a change is made. Moving that split into the test is a small job, and it is what would let the next change to the collection be judged while it is being made.</p><p><strong>Add more sources, in the languages that fail.</strong> More material in the languages where retrieval is weakest remains the obvious improvement, but the last expansion made those results worse. The likely cause is that each new source adds passages, including English translations, which compete with original-language targets for the top positions. That would need to be addressed before the corpus grows further, so that adding sources does not undo the gain.</p><p><strong>Adding Roman Imperial sources.</strong> Most of what is here is the view from outside the empire, although some sources, such as the Periplus and the writings of Cosmas Indicopleustes, were written inside it. The complement is a deliberate set of Roman and Eastern Roman (Byzantine) sources about these same regions, set beside them: the same objects, routes and embassies, described from both ends. Two accounts that disagree are better evidence than either alone. The site can already show several sources in one answer, but a view built for comparing them side by side would be new work.</p><p><strong>A longer span.</strong> The current window runs from the founding of the Roman Empire in 27 BC to the sack of Constantinople in 1204 AD. An earlier window would cover potential Roman Republic connections and a later window would follow the Eastern Roman relationships ending with the Ottoman conquest in 1453.</p><p><strong>Let specialists correct it.</strong> The highest-value change is not technical. Someone who reads Geʿez, who has excavated one of these sites, or who knows which of two competing identifications the field has settled on could correct things nobody here can check. The structure for that already exists: the placements recorded as disputed, and the sources whose terms have not been read, are both places to disagree on the record. Specialists sending corrections are an obvious addition here.</p><p><strong>Material that exercises the translation checks.</strong> As noted under Limitations, the translation checks almost never ran, because nearly every source already had a published English translation. Sources without a published translation are what would make the checks active and let their thresholds be set from observation rather than left provisional.</p><p><strong>A chat search function.</strong> There is none yet, mainly because of cost. A live answer needs a search and a model call for every question, and the services' usage limits would have to be sized for public traffic. The harder problem is presentational. Each answer here was generated in advance and scored against expectations set before it was generated. A live answer can be checked against its sources as it is written, as every answer here was, but it would need to be scored and presented differently from the prepared questions. That is doable, but it was not in scope.</p></section><section class="mth" id="mth-10"><h2 class="eyebrow">Tooling and techniques</h2><h3 class="mth-head">The Mundus Ulterior tech stack</h3><p><strong>Server side.</strong> Python. PostgreSQL 16 with the pgvector extension as the store, running in a container. Every model call (text generation and embeddings) passes through a single LiteLLM gateway, so a model is swapped in one place and adding a second never silently repoints the one existing measurements were taken on.</p><p>Models.</p><ul><li>Answer assembly, translation, and rewriting test questions into the collection's languages: Anthropic claude-haiku-4-5. A stronger tier, claude-sonnet-5, is available where a run names it and was used to re-test the Old Tamil rewrites. It is a second option rather than a replacement: repointing the first would make every stored measurement incomparable.</li><li>Embeddings: voyage-3.5, at 1,024 dimensions. The same model converts the stored passages and the incoming question, which is what puts them in the same space.</li><li>Re-scoring search results: Voyage rerank-2.5, used in retrieval testing only and not in producing the answers on this site (see Limitations).</li><li>Rejected: a locally hosted re-scoring model, because a hosted service did the same job for less cost and effort; and an open embedding model (BGE-M3), planned as a replacement and dropped because voyage-3.5 passed every cross-language test it was given.</li><li>No model judges another model's output anywhere in this project.</li></ul><p><strong>Cost of an answer.</strong> One embedding request and one text-generation call. The embedding service started on a free tier with a very low limit on requests per minute and was later moved to a paid tier. Every answer here was produced in advance, so a visitor's reading never depends on those limits or costs.</p><p><strong>Front end (reference copy).</strong> One hand-written HTML page, plus a generated data file and the masthead images: no framework, no bundler, no content delivery network and no server, and the page itself is not compiled. The data file and images are generated by scripts beforehand. The page is a set of plain functions returning HTML, which is what lets the checking script execute the page's own code and inspect what it produces.</p><p><strong>The data file the page loads is generated and never hand-edited.</strong> It joins stored answers to source records so the page can show the characters a citation points at, rather than the positions alone.</p><p><strong>Testing.</strong> Hand-written runners rather than a test framework. Much of it is mutation testing: defects are introduced deliberately, and the check meant to catch each one is confirmed to fail before the check is trusted. Playwright with headless Chromium measures the page's layout. A single script runs the core checks and prints the results, with no way to supply a figure by hand.</p><p><strong>Build environment.</strong> Developed in sessions with Anthropic's Claude, in Cowork. The sandbox cannot commit, so each commit is an instruction carried out by hand. A file write reported success without taking effect, more than once, and the checks then passed against the old file. So before anything is run against a changed file, its size, or a string the change introduced, is checked first.</p></section>
+</figure><p>This ‘Methodology’ page explains how I built ‘Mundus Ulterior’: the sources, their processing, the tests, the limitations, and tooling. I also include future improvement recommendations.</p><p><strong>The answers on this site are pre-loaded.</strong> Before answer generation, I fixed the questions, the source each one should find, and whether each should be answered or declined. The answers were then generated and scored against those expectations. They were also validated against their sources. Almost every quotation resolves to a specific range of characters in its source, which can be opened and read in full. Those that don't are shown with the reason. In most cases, the system (detailed below) worked very well. However, I’ve deliberately kept the few failures, both to illustrate the current limitations, and as a guide for future improvements.</p></section><section class="mth" id="mth-2"><h2 class="eyebrow">Source compilation</h2><h3 class="mth-head">Where does the data come from?</h3><p><strong>For this project, a record is a single source.</strong> It holds the source's own words, where they can be obtained, a published translation (when available), a museum's catalog description, or a pointer to where the text is held (see the tiers below). Records may also include citations to original/translated versions, and notes on text capture.</p><p><strong>Record candidates were named before being curated.</strong> Each sourcing round started by listing regions, the evidence sought and whether each source could be reached. The final round also listed the expected reuse rights. Sources that were considered and rejected are documented, with the reason for each, in the project's working records rather than on this site, because even discarded candidates reveal important limitations. Some rejected candidates were later reconsidered and added. Refused candidates spanned many reasons: bot blockers, login portals, redirect loops, and paywalls. Because evidence types differ, records are sorted into tiers:</p><ul><li>Source text with a published translation: the source's own words and a human translation, both cited. The strongest thing in the corpus.</li><li>Source text, machine English: the source's own words, but no reachable published translation. The claim is reachability, not existence: each record in this tier is meant to state the search that failed and where it stopped, and not every record yet does.</li><li>Published translation only: a published translation is held, but no open transcription of the source's own words could be obtained, even where one exists in print.</li><li>Catalog record: a museum's object description, which is not the object speaking.</li><li>Pointer: the record does not carry the text itself, but states exactly where the text is held and how to find it.</li></ul><p>Reading a source and being allowed to quote it are two different facts, which are recorded separately.</p><p>Copyrighted text is quoted only where the quotation is short and bounded by the source, the work is fully cited, the terms are stated in the record in the source's own words, and the use is non-commercial research. Terms are recorded and counted; they are not yet used to exclude a source.</p><p>Terms are read off the object being quoted, and the rest of the site where needed, and copied in verbatim with the address, the reader and the date. No reuse position is inferred from the record's own description or by text-matching.</p></section><section class="mth" id="mth-3"><h2 class="eyebrow">Preparing the data</h2><h3 class="mth-head">Preparing the sources for search</h3><p>Each source is cut into passages and each passage is vectorized (given a numeric representation of its meaning). These vectors are loaded into a database that can be searched by similarity based on the following steps:</p><p><strong>Splitting.</strong> Only texts longer than a set maximum length are split, and every cut falls on a boundary the source itself provides: section markers first, then paragraphs, then line breaks, then sentence endings (Latin and Chinese sentence punctuation). No text is cut mid-sentence to fit a length, which avoids producing unintelligible passages. Most sources are short enough that no splitting was needed. Fragments below a minimum length are merged back into their neighbors.</p><p><strong>Character positions.</strong> Every passage records the exact character positions it occupies in its source field. The system repeatedly verifies that the characters sitting at those positions are the characters the passage holds. This is what makes citations openable and directly readable.</p><p><strong>Language, checked against the script.</strong> Each passage carries the language a curator declared. When the data is loaded, that declaration is checked against the writing system the text is actually in, and a passage whose script does not match its declared language is refused rather than stored, so a mislabeled language cannot reach the search.</p><p><strong>Original and translation stay separate.</strong> A source's own words and its published English translation become separate passages, each marked as belonging to the same record, rather than being merged. When an answer is written, the two are paired again. Keeping them apart is what makes it possible to test whether the source-language text can be found on its own, without the English answering for it.</p><p><strong>Numeric representation.</strong> Each passage is converted into a list of numbers (embeddings, which carry meaning rather than its spelling). Passages about similar subjects end up close together even without shared characters, which allows an English question to reach a Chinese passage. Embeddings are produced by a commercial model (Voyage AI's voyage-3.5) reached through a single internal gateway, so the model can be changed in one place.</p><p><strong>Places.</strong> Geographic coordinates are not written into a source record. Where a source names a specific place, the record stores that place's identifier in a published gazetteer (a reference list of places, each with a stable identifier and usually a location). A single component resolves identifiers into points, reading from a dated snapshot of the gazetteer. Identifiers are never written from memory, by a person or by a model.</p></section><section class="mth" id="mth-4"><h2 class="eyebrow">Building the retrieval system</h2><h3 class="mth-head">How questions find their passage</h3><p><strong>The basic path.</strong> A question is converted into the same kind of numeric representation as the passages, and the system returns the passages closest to it in meaning. There is no translation step and no keyword matching when an answer is produced.</p><p><strong>Why it works across scripts.</strong> The model (voyage-3.5) that produces those representations was trained across many languages, so a question in English and a passage in Literary Chinese can land near each other without sharing a character.</p><p><strong>How that claim is tested.</strong> For some of the test questions, English translations are removed from the pool of candidates before the test runs; the rest are tested with the translations still in place. With the English available, an English question finds the English, which proves nothing about the source-language text. With it removed, the question either reaches the original or it does not.</p><p>Early tests reported both whether the correct source was found and whether its non-English text was reachable. The second figure was lower. Padding the collection with plausible but irrelevant English material made no difference to the results at any size tested. The fall in non-English results came later, as more real sources were added: English-language targets held steady while non-English targets were found less often.</p><p><strong>Nothing is generated while you read.</strong> Every answer on this site was produced in advance and is replayed from storage, then re-checked against the current sources. Live answers, which are beyond this project’s scope, would need to be evaluated each time and for every question and answer.</p></section><section class="mth" id="mth-5"><h2 class="eyebrow">Building the harness</h2><h3 class="mth-head">The rules, and the checks that enforce them</h3><p><strong>Two kinds of written decision.</strong> A ruling is a rule the project adopts, recorded with its reasoning and rejected alternatives. Rulings are written before the work they govern. A finding is something observed, usually a defect. Rulings are decided; findings are discovered. Both are numbered, and rulings are indexed in a single register.</p><p><strong>Checks.</strong> Automated tests run against a reference version kept in the project repository: they execute its code, render every stored answer, and compare what appears against the data it describes. By rule, a failure blocks the change. Everything this page says about how the site is built describes the reference copy: the version kept in the project repository, which the checks run against. Any hosted version is built from the same data file, and checks that inspect rendered output run against the reference copy only. Incompletions are clearly noted.</p><p>Practices.</p><ul><li>Predictions before code. Each stage records what it expects, commits that record before any code is edited, and scores it afterwards without amendment. One prediction per stage is written not to flatter it.</li><li>Checks are seen to fail first. A new check is deliberately broken before it is trusted. This has repeatedly found the fault in the check rather than the code.</li><li>No figure is typed into the page. Counts are computed from the stored data, in digits and in words alike.</li></ul><p><strong>The limit.</strong> Numbers are recomputed on every build and cannot go stale. The sentences around them are typed once and never re-checked, so a sentence can stop being true while the number beside it stays correct. Where a sentence can be generated from the data instead, it now is.</p></section><section class="mth" id="mth-6"><h2 class="eyebrow">Quality tests</h2><h3 class="mth-head">What is tested, and how</h3><p><strong>Citations.</strong> Every quotation in every stored answer is re-checked against the current sources and sorted by what was found:</p><ul><li>the characters are exactly as quoted;</li><li>they differ only in capitalization, and the record says so;</li><li>they differ only in capitalization, but the record claims an exact match (a labeling defect, left visible rather than corrected);</li><li>they differ only in spacing;</li><li>the quotation is still in the file, at a different position;</li><li>the quotation is no longer in the file.</li></ul><p><strong>Whether the source itself changed.</strong> Mismatches have two identical-looking causes: the citation was wrong, or the source was edited after the answer was stored. Most stored answers record a fingerprint of every source they quoted, so the two can be told apart: unchanged means the mismatch is a real defect, changed means it is explained, and no fingerprint recorded means it cannot be determined. The third is kept separate since counting it either way would invent defects or explain them away.</p><p>Retrieval is scored against known ‘good question-and-source pairs’: whether the correct passage appears near the top, how far down it is, and its margin over whatever outranked it are reported two ways, since being beaten by a related passage of the same source is a different failure from being beaten by an unrelated one.</p><p>Translation is checked by translating a passage into English, translating that English back in a separate request that never sees the original, and comparing closeness of wording and closeness of meaning. Thresholds are set where no observed case falls near the line. Only the pass mark for prose has been set that way so far; the others are provisional.</p><p><strong>Places.</strong> No specific place is accepted unless it resolves through a dated snapshot of a published gazetteer. Nothing invents a point, matches on similar names, or substitutes a regional center; every failure stops the process.</p><p><strong>No model judges another model's output.</strong> Every assertion in the scoring is a fact about text: this string appears, this identifier is among the cited sources. An uncalibrated model with no rubric marking another model's work could be wrong in the same direction and agree with it.</p><details class="evidence"><summary>Evidence — the citation check, both axes, case by case</summary>${EV.citations}</details></section><section class="mth" id="mth-7"><h2 class="eyebrow">Creating the portal</h2><h3 class="mth-head">How the portal was built</h3><p>The reference copy of this site, the version kept in the project repository and checked by the tests, is built as follows:</p><ul><li>One hand-written HTML page that opens directly from disk, alongside a generated data file and the masthead images. The page itself uses no framework, is not compiled or bundled, needs no server and loads nothing from outside; the data file and images are produced beforehand by scripts in the repository.</li><li>Every color, and most size and spacing values, is a named token rather than a number written into the markup.</li><li>The masthead shows short specimens from the records in <span class="slot-todo">[derived: number of scripts in the masthead]</span> writing systems, some as romanised transcriptions, rendered as images so that a visitor without the relevant fonts installed does not see empty boxes. Each image is drawn in a single color and inverted for the dark theme, so one file serves both.</li><li>Which sources appear in the masthead is a curation decision, declared in the page's code and checked against the script that draws the images. The characters shown and the alt text are read from the records.</li><li>The map is drawn as SVG by the page's own code, from a dated public coastline dataset and the gazetteer positions, with its own solver that hides any label that would overlap another.</li><li>A separate instrument measures the page's layout. It reports whether a figure moved and has no opinion on whether the page is better: a change that improved every measured figure once made the page worse to read and was reversed on human judgment.</li></ul></section><section class="mth" id="mth-8"><h2 class="eyebrow">Limitations, gaps and failures</h2><h3 class="mth-head">Limitations and failures</h3><p>Retrieval is tested against questions whose correct source is already known. For English sources, the system has found the correct source in almost every test run. The exception is the record of a carved gemstone from Khao Sam Kaeo in Thailand, which has never been found. For original language sources, results got worse as the collection grew. Of all the languages tested, Old Tamil performed worst at every stage run on the project's standard model, claude-haiku-4-5. The stronger model, claude-sonnet-5, has been tested only on rewriting questions into Old Tamil, and it succeeded every time. When an English question is searched, the Old Tamil passage it should find ranks far below where it should. When a question already written in Old Tamil is searched, the passage ranks first, but with the weakest similarity score of any script tested. In the round-trip translation test on the standard model, some attempts came back in the wrong script entirely; the stronger model has not been tested on translation. When the standard model rewrote the test questions into the collection's languages, almost every rejected rewrite was in Old Tamil: the model wrote in other South Asian scripts instead, such as Devanagari, Malayalam, Sinhala or Bengali. Why this happens has not been established. Nothing reported these results separately by language, so the decline went unnoticed for several rounds of work.</p><p><strong>The site lists the questions it holds answers for.</strong> A few are held back. Those are named here with what went wrong, because a question that never produced an answer is a different problem from one that produced answers without ever quoting a source. The page also names whichever question is currently answered worst.</p><p><strong>The map leaves out more than it shows.</strong> When a source names a region rather than a town, the map shades that region's area instead of placing a point. When it names a people, an office or an empire, that is recorded and no position is drawn; the record still appears on the map as a square in its region's band. The Chinese records naming Rome, the sources closest to the point of this project, cannot place Rome on the map. The names they use (Da Qin, and later Fulin) describe a state and its people rather than a city, and for at least one record the published translators disagree about which country is meant; drawing a single point would claim more than the texts say. Most of these records appear on the map only as squares in the East Asia band.</p><p>Known and unfixed:</p><ul><li>For every failed quotation currently shown, the cause cannot be explained. Answers only began recording which version of a source they used partway through, so for the rest there is no way to tell a wrong quotation from a source edited afterwards.</li><li>Some stored answers no longer hold the full text of the passages they were given. The page says so where that is true.</li><li>The translation checks are mostly uncalibrated. Nearly every source turned out to have a published English translation, so the machine translation those checks exist to judge almost never ran.</li><li>Improvements to the search were built and used in testing, then dropped: combining each original passage with its translation, and re-ranking results with a second model. Nothing records the decision. Neither was ever used to produce the answers on this site, and the results reported here come from the version without them.</li></ul><p><strong>What the project decided it could not do.</strong> An expansion to a much larger collection was planned, with decision gate criteria set in advance. Based on the results, corpus expansion plans were dropped rather than postponed. That said, corpus scaling and diversification can still take this project to new levels (see next section).</p><details class="evidence"><summary>Evidence — every test question by the language of the source, and the same questions as the collection grew; the withheld questions with their failure kinds; the worst-answered question with its figures; identifiers named but not used; passages organized around an unplaceable place; records considered with nothing drawable; connections named in the text but not drawn; the record declared unplaceable</summary>${EV.failures}</details></section><section class="mth" id="mth-9"><h2 class="eyebrow">Ideas for future development</h2><h3 class="mth-head">Ideas for taking ‘Mundus Ulterior’ to new levels</h3><p><strong>Report results by language as the test runs.</strong> The evidence under Limitations is derived here, on this page, from the archived runs; the test itself still prints a single total, so the one measure that has been moving is invisible at the moment a change is made. Moving that split into the test is a small job, and it is what would let the next change to the collection be judged while it is being made.</p><p><strong>Add more sources, in the languages that fail.</strong> More material in the languages where retrieval is weakest remains the obvious improvement, but the last expansion made those results worse. The likely cause is that each new source adds passages, including English translations, which compete with original-language targets for the top positions. That would need to be addressed before the corpus grows further, so that adding sources does not undo the gain.</p><p><strong>Adding Roman Imperial sources.</strong> Most of what is here is the view from outside the empire, although some sources, such as the Periplus and the writings of Cosmas Indicopleustes, were written inside it. The complement is a deliberate set of Roman and Eastern Roman (Byzantine) sources about these same regions, set beside them: the same objects, routes and embassies, described from both ends. Two accounts that disagree are better evidence than either alone. The site can already show several sources in one answer, but a view built for comparing them side by side would be new work.</p><p><strong>A longer span.</strong> The current window runs from the founding of the Roman Empire in 27 BC to the sack of Constantinople in 1204 AD. An earlier window would cover potential Roman Republic connections and a later window would follow the Eastern Roman relationships ending with the Ottoman conquest in 1453.</p><p><strong>Let specialists correct it.</strong> The highest-value change is not technical. Someone who reads Geʿez, who has excavated one of these sites, or who knows which of two competing identifications the field has settled on could correct things nobody here can check. The structure for that already exists: the placements recorded as disputed, and the sources whose terms have not been read, are both places to disagree on the record. Specialists sending corrections are an obvious addition here.</p><p><strong>Material that exercises the translation checks.</strong> As noted under Limitations, the translation checks almost never ran, because nearly every source already had a published English translation. Sources without a published translation are what would make the checks active and let their thresholds be set from observation rather than left provisional.</p><p><strong>A chat search function.</strong> There is none yet, mainly because of cost. A live answer needs a search and a model call for every question, and the services' usage limits would have to be sized for public traffic. The harder problem is presentational. Each answer here was generated in advance and scored against expectations set before it was generated. A live answer can be checked against its sources as it is written, as every answer here was, but it would need to be scored and presented differently from the prepared questions. That is doable, but it was not in scope.</p></section><section class="mth" id="mth-10"><h2 class="eyebrow">Tooling and techniques</h2><h3 class="mth-head">The Mundus Ulterior tech stack</h3><p><strong>Server side.</strong> Python. PostgreSQL 16 with the pgvector extension as the store, running in a container. Every model call (text generation and embeddings) passes through a single LiteLLM gateway, so a model is swapped in one place and adding a second never silently repoints the one existing measurements were taken on.</p><p>Models.</p><ul><li>Answer assembly, translation, and rewriting test questions into the collection's languages: Anthropic claude-haiku-4-5. A stronger tier, claude-sonnet-5, is available where a run names it and was used to re-test the Old Tamil rewrites. It is a second option rather than a replacement: repointing the first would make every stored measurement incomparable.</li><li>Embeddings: voyage-3.5, at 1,024 dimensions. The same model converts the stored passages and the incoming question, which is what puts them in the same space.</li><li>Re-scoring search results: Voyage rerank-2.5, used in retrieval testing only and not in producing the answers on this site (see Limitations).</li><li>Rejected: a locally hosted re-scoring model, because a hosted service did the same job for less cost and effort; and an open embedding model (BGE-M3), planned as a replacement and dropped because voyage-3.5 passed every cross-language test it was given.</li><li>No model judges another model's output anywhere in this project.</li></ul><p><strong>Cost of an answer.</strong> One embedding request and one text-generation call. The embedding service started on a free tier with a very low limit on requests per minute and was later moved to a paid tier. Every answer here was produced in advance, so a visitor's reading never depends on those limits or costs.</p><p><strong>Front end (reference copy).</strong> One hand-written HTML page, plus a generated data file and the masthead images: no framework, no bundler, no content delivery network and no server, and the page itself is not compiled. The data file and images are generated by scripts beforehand. The page is a set of plain functions returning HTML, which is what lets the checking script execute the page's own code and inspect what it produces.</p><p><strong>The data file the page loads is generated and never hand-edited.</strong> It joins stored answers to source records so the page can show the characters a citation points at, rather than the positions alone.</p><p><strong>Testing.</strong> Hand-written runners rather than a test framework. Much of it is mutation testing: defects are introduced deliberately, and the check meant to catch each one is confirmed to fail before the check is trusted. Playwright with headless Chromium measures the page's layout. A single script runs the core checks and prints the results, with no way to supply a figure by hand.</p><p><strong>Build environment.</strong> Developed in sessions with Anthropic's Claude, in Cowork. The sandbox cannot commit, so each commit is an instruction carried out by hand. A file write reported success without taking effect, more than once, and the checks then passed against the old file. So before anything is run against a changed file, its size, or a string the change introduced, is checked first.</p></section>
     </div>`;
 }
 
@@ -5906,7 +6085,7 @@ document.addEventListener("click", ev => {
     state.selection = sel;
     if (state.intro && state.view === "questions") { state.intro = false; return render(); }
     repaintPanel();
-    /* FINDING 102's fix, generalised to the thing that clicks the panel rather
+    /* FINDING 102's fix, generalized to the thing that clicks the panel rather
        than to one rail. On a wide screen the panel is sticky and already on
        screen, so this does nothing. At 860px and below it is static and sits
        ABOVE the gap lists and the region grid — so a click on a record row
