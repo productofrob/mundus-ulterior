@@ -224,3 +224,145 @@ the column after the five     open_licence_stated 13 · all_rights_reserved 15 �
 **`ui/data.js` is not regenerated for this edit.** The rights sidecar reaches no
 content hash. The Methodology figures that count the column are rebuilt at step 8
 with everything else, and until then they read 40 / 14.
+
+---
+---
+
+# 8. THE NINE — WHERE EACH RECORD'S WORDS CAME FROM. **INVESTIGATED 2026-09-22,
+# NOTHING WRITTEN**
+
+*All nine were `source_not_established`: no `citation_original`, and a `citation`
+pointing at an English Wikipedia article. Each record's quoted fields were
+matched against the article it names, and against its revision history where
+they did not match, in Claude in Chrome on 2026-09-22. Every article's footer
+reads "Text is available under the Creative Commons Attribution-ShareAlike 4.0
+License; additional terms may apply."*
+
+**All nine sources are now established, and P1 fails in the flattering direction
+it named.** Every one routes through Wikipedia. They differ in whose words
+Wikipedia is carrying:
+
+```
+SHAPE 1 -- WIKIPEDIA'S OWN PROSE. Rob's Vimose/Pattanam ruling applies as it stands
+
+scandinavia-05-thorsberg-chape  Thorsberg_chape, edited 24 Aug 2026. Glosses and
+                                apparatus verbatim ('Wolthuthewaz is
+                                well-renowned', 'the servant of Ullr, the
+                                renowned', 'alliterative long-line')
+seasia-02-oc-eo-site            Óc_Eo, edited 1 Aug 2026. 'pottery, tools,
+                                jewelry', 'casts for making jewelry', 'Antonine
+                                period'
+scandinavia-04-illerup-adal     THE FIRST SENTENCE is from Roman_Iron_Age_weapon_
+                                deposits (edited 14 Sep 2025), NOT from the
+                                Illerup_Ådal article the citation names. THE
+                                SECOND SENTENCE is on neither page, in any of the
+                                last 15 revisions of either -- see below
+arabia-02-palmyrene-tariff      Palmyra_Tariff, edited 8 May 2026. The record
+                                QUOTES NO SOURCE TEXT (pointer_only). Its
+                                descriptive fields follow the article, and the
+                                Matthews sentence kept in `notes` is on it
+
+SHAPE 2 -- A NAMED THIRD PARTY'S TEXT, SET OFF AS A QUOTATION ON WIKIPEDIA
+
+arabia-03-jsnab17               JSNab_17, edited 8 Apr 2026. O'Connor's 1986
+                                translation, introduced "This yields:". The
+                                record simplifies its diacritics (Raqash for
+                                Raqāsh, Mare 'Alma for Marē ʿAlma)
+arabia-04-jabal-dabub           Jabal_Dabub_inscription, edited 3 Sep 2026.
+                                Al-Jallad's revised reading and "In English:",
+                                both footnoted [2]
+seasia-04-dong-yen-chau         Đông_Yên_Châu_inscription, edited 29 Apr 2026.
+                                "Transliteration[1]" and "English
+                                translation[1]", Thurgood
+seasia-07-talang-tuo            Talang_Tuo_inscription, edited 20 Jun 2025.
+                                "Original Script[2]", and note 2 is "Old Malay
+                                Corpus". sealang.net. THE RECORD'S OWN NOTE SAYS
+                                THE ARTICLE "does NOT state whose transliteration
+                                it prints", and it does. The page carries a
+                                maintenance banner saying the section is a copy
+                                of source text
+
+SHAPE 3 -- UNATTRIBUTED ON WIKIPEDIA
+
+seasia-06-kedukan-bukit         Kedukan_Bukit_inscription, edited 5 Aug 2026. The
+                                transliteration table has no footnote; the
+                                references name Guy, de Casparis, Acri, and
+                                Coedès in a gloss note, but none of them against
+                                the transliteration. It writes v where Talang
+                                Tuo writes w (svasti/swasti, vulan/wulan), so the
+                                two are not from one corpus
+```
+
+## Illerup's second sentence has a source, and its wording is closest to a
+## machine summary
+
+The record reads: "The deposit contains 194 Roman denarii, four barbarous
+imitations, and a sestertius." It is on no Wikipedia page. The fact is in the
+abstract of the paper "Roman coins from Illerup Ådal (Denmark)" on academia.edu,
+https://www.academia.edu/39904493/Roman_coins_from_Illerup_%C3%85dal_Denmark_:
+
+> "There are 194 denarii, Nero to Commodus, four barbarous imitation denarii and
+> a sestertius of Antoninus Pius."
+
+**The closest wording on that page is not the author's.** It is the platform's
+"Key takeaways AI" box: "The Illerup Ådal deposit contains 194 denarii, four
+barbarous imitations, and a sestertius". The record matches that line more
+closely than the abstract. Nothing establishes which the record was taken from,
+or when. **For the record pass, and not for the rights cell.**
+
+---
+
+# 9. RULINGS ON §8, AND THE CLAUSE-2 PUBLICATIONS READ, 2026-09-22
+
+**Rob ruled on all three shapes**, and they are now RULING 99 in
+`DEPLOY_RULINGS.md`. Five cells are written: the four in shape 1 and Kedukan
+Bukit (shape 3), all `open_licence_stated`, CC BY-SA 4.0, signed
+`curator_and_model`. `check_rights` returns no problems when it is run in the
+device VM. **The column is now 18 / 15 / 7 / 5 / 3 / 2, and 4 unread.**
+
+**The four shape-2 records, read against the publication each one quotes:**
+
+```
+arabia-03-jsnab17        O'Connor, "The Arabic Loanwords in Nabatean Aramaic",
+                         JNES 45.3 (1986) 213-229
+  object                 https://www.journals.uchicago.edu/doi/10.1086/373188
+  states                 "Copyright 1986 The University of Chicago."
+  site footer            "© 2025 The University of Chicago and other publishing
+                         partners. All rights reserved, including rights for text
+                         and data mining and training of artificial intelligence
+                         technologies or similar technologies."
+  PROPOSED               all_rights_reserved
+
+arabia-04-jabal-dabub    Al-Jallad, "A pre-Islamic basmala", JSAI 52 (2022) 1-28
+  object                 https://www.academia.edu/43388891 -- the link Wikipedia's
+                         footnote [2] gives
+  rendered page          states nothing of the article's own. The only lines are
+                         the platform's footer, and the translation is not in the
+                         rendered text
+  journal site           https://jsai.huji.ac.il/ -- "©The Hebrew University of
+                         Jerusalem. All Rights Reserved"
+  PROPOSED               all_rights_reserved, ON CONDITION that Rob checks the
+                         PDF's first and last pages, as he did for Borell
+
+seasia-07-talang-tuo     Suhadi (1983), as displayed in SEAlang's Old Malay Corpus
+  object                 http://sealang.net/oldmalay/display.pl?id=OM17&author=Suhadi&year=1983
+                         -- Wikipedia's footnote [2] links exactly this. It holds
+                         the record's text (niparwuat, jayanāga, pranidhānānda,
+                         "śakawarṣātīta 606" all found) and states nothing
+  site root              http://sealang.net/ -- "All results are freely available
+                         for re-use under the Creative Commons open license." It
+                         names no specific license
+  the publication        SEAlang hosts Suhadi 1983 as a PDF, linked from
+                         http://sealang.net/oldmalay/ as archives/suhadi1983seven.pdf.
+                         Not opened: it is a PDF
+  PROPOSED               read the PDF's statement (Rob), and failing one,
+                         permission_stated_no_licence off SEAlang's root sentence
+
+seasia-04-dong-yen-chau  Thurgood, From Ancient Cham to Modern Dialects (University
+                         of Hawai'i Press, 1999), p. 3
+  object                 a printed book. Google Books shows snippet view only,
+                         https://books.google.co.uk/books?id=K4NkAAAAMAAJ, and the
+                         copyright page could not be opened. No other online copy
+                         was found
+  PROPOSED               see the question put to Rob
+```

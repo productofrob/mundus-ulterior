@@ -77,9 +77,14 @@
       "note": "ONE OBJECT, THREE CELLS, and that is stated rather than left to look like three independent verifications: africa-03-periplus-adulis, arabia-01-periplus and southasia-02-periplus-muziris all cite this same page, one reading answers all three, and each cell carries its own read_off, read_by and read_on. The practice scandinavia-07-rycksta-grikkium established.\n\nTHE 'PUBLIC DOMAIN' IN citation_original IS NOT THIS POSITION AND DOES NOT CONTRADICT IT. All three records carry '(ed. C. Müller, Geographi Graeci Minores I, Paris 1855; public domain)'. That is a true statement about the EDITION; the page states a licence about the TRANSCRIPTION. The page was searched for a public-domain banner on 2026-09-14: zero matches for `public domain` or `κοινό κτήμα`, so this is open_licence_stated and not two_positions_stated.\n\nTHE HEDGE IS PART OF THE QUOTATION. 'μπορεί να ισχύουν πρόσθετοι όροι' -- additional terms may apply -- is the source qualifying its own licence and is quoted rather than trimmed. Greek is what el.wikisource serves and is quoted as the position; Rob confirmed the Greek string on 2026-09-14 and separately rendered it into English BY MACHINE TRANSLATION ON DEMAND as 'All text is available under the Creative Commons Attribution-ShareAlike 4.0 License'. THE ENGLISH IS NOT THE SITE'S and is recorded here as a translation, not as a second stated position."
     },
     "arabia-02-palmyrene-tariff": {
-      "position": "unread",
+      "position": "open_licence_stated",
       "region": "Arabia",
-      "unread_reason": "source_not_established"
+      "licence": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "stated_verbatim": "Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply.",
+      "read_off": "https://en.wikipedia.org/wiki/Palmyra_Tariff",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "READ OFF WIKIPEDIA UNDER RULING 99, clause 1: the record's words are the article's own prose, so the cell describes the article. Unread until 2026-09-22 as source_not_established -- the record carries no citation_original -- and established that day by matching the record's quoted fields against the article named in `citation`. CC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step.\n\nTHIS RECORD QUOTES NO SOURCE TEXT. It is the corpus's one pointer_only record: its original field is a pointer to the Healey/Shifman edition and its translation field is empty, so no answer can quote it. What it does carry -- the language note ('the longest lapidary Aramaic inscription known') and the notes -- follows this article, and the one quotation it keeps, John Matthews's 'one of the most important single items of evidence for the economic life of any part of the Roman Empire', is on the article too. That sentence is Matthews's, quoted by the article, and is held in `notes` so that it cannot be cited as source evidence. Article last edited 8 May 2026, 17:37 UTC."
     },
     "arabia-03-jsnab17": {
       "position": "unread",
@@ -261,14 +266,24 @@
       "note": "THIS CELL IS READ OFF WIKIPEDIA AND NOT OFF citation_original, ON ROB'S RULING OF 2026-09-22 UNDER RULING 96: the cell is for the material the record's quoted text comes from, and this record's words were taken from the Wikipedia article, not from the archived page its citation_original names. Unread until today as archived_capture, because the rights target was computed from citation_original. CC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step, not assumed here.\n\nTHE SOURCE IS ESTABLISHED: the article carries the record's readings and glosses -- 'possibly \"Mari (the famous one) is the sword of Alla\"', 'awgns; possibly \"son/descendant of Awa\"', '[w]agni[ŋ]o' -- and the record's own translation_source says 'as summarized on Wikipedia'. Article last edited 17 March 2026, 08:12 UTC.\n\nTHE KIEL RUNENPROJEKT, FOR THE NOTE, READ UNDER RULING 95 on 2026-09-22. Object capture https://web.archive.org/web/20151122163034/http://www.runenprojekt.uni-kiel.de/abfragen/standard/deutung2.asp?findno=20&ort=Vimose&objekt=Kamm rendered; `copyright` 2 in the HTML, BOTH in archive.org's injected comment ('JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE ...'), excluded by RULING 95; the captured page states nothing. Root capture https://web.archive.org/web/20151219231222/http://www.runenprojekt.uni-kiel.de/ renders a hit counter and 'Letzte Aktualisierung: 04.03.2012', and its link set is five image links (beschreibung, abfragen, kontakt, links, English); no rights statement. The kontakt capture (20160306044941) returned no text and was not read."
     },
     "scandinavia-04-illerup-adal": {
-      "position": "unread",
+      "position": "open_licence_stated",
       "region": "Scandinavia",
-      "unread_reason": "source_not_established"
+      "licence": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "stated_verbatim": "Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply.",
+      "read_off": "https://en.wikipedia.org/wiki/Roman_Iron_Age_weapon_deposits",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "READ OFF WIKIPEDIA UNDER RULING 99, clause 1: the record's words are the article's own prose, so the cell describes the article. Unread until 2026-09-22 as source_not_established -- the record carries no citation_original -- and established that day by matching the record's quoted fields against the article named in `citation`. CC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step.\n\nREAD OFF A DIFFERENT ARTICLE FROM THE ONE THE RECORD CITES. The record's first sentence is in 'Roman Iron Age weapon deposits' -- 'gold, silver, spear shafts, shield boards, ropes, cords, leather, textiles tools, wooden vessels, spoons, beads, four horses and a cow' (the article has no comma after 'textiles'; the record adds one) -- and NOT in the Illerup Ådal article named in `citation`. The record's own original_text_note names both. Article last edited 14 September 2025, 02:58 UTC.\n\nTHE SECOND SENTENCE IS NOT FROM WIKIPEDIA AND THIS CELL DOES NOT COVER IT. 'The deposit contains 194 Roman denarii, four barbarous imitations, and a sestertius.' is on neither article, in any of the last fifteen revisions of either. The fact is in the abstract of 'Roman coins from Illerup Ådal (Denmark)' at https://www.academia.edu/39904493/Roman_coins_from_Illerup_%C3%85dal_Denmark_ -- 'There are 194 denarii, Nero to Commodus, four barbarous imitation denarii and a sestertius of Antoninus Pius.' -- and the record's wording is closer to that page's machine-generated 'Key takeaways AI' box than to the author's sentence. Handed to the deploy block's record pass."
     },
     "scandinavia-05-thorsberg-chape": {
-      "position": "unread",
+      "position": "open_licence_stated",
       "region": "Scandinavia",
-      "unread_reason": "source_not_established"
+      "licence": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "stated_verbatim": "Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply.",
+      "read_off": "https://en.wikipedia.org/wiki/Thorsberg_chape",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "READ OFF WIKIPEDIA UNDER RULING 99, clause 1: the record's words are the article's own prose, so the cell describes the article. Unread until 2026-09-22 as source_not_established -- the record carries no citation_original -- and established that day by matching the record's quoted fields against the article named in `citation`. CC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step.\n\nSOURCE ESTABLISHED: the article carries the record's translation field verbatim, readings and apparatus together -- \"'Wolthuthewaz is well-renowned'\", \"'the servant of Ullr, the renowned'\", \"'inherited property of Wulthuthewaz'\", 'alliterative long-line' -- and `owlþuþewaz`. The record's own translation_source already says the readings are 'summarised in the Wikipedia article'. Article last edited 24 August 2026, 01:23 UTC."
     },
     "seasia-01-oc-eo-medallion": {
       "position": "all_rights_reserved",
@@ -281,9 +296,14 @@
       "note": "READ BY ROB OFF THE PAPER'S OWN PDF, AS SERVED FROM THIS PAGE, AND NOT OFF THE PAGE -- FINDING 120 once more, caught this time by a condition written before the reading. The model read the rendered page on 2026-09-22 and found no statement belonging to the paper: `copyright` 2, `©` 3, `all rights reserved` 1, `creative commons` 0, creativecommons anchors 0, and every hit belonged to something else. '© 2026 Academia. All rights reserved' is the platform's footer -- the delivery, not the source, on RULING 95's reasoning, and FINDING 121's shape of a signal that belongs to the host. '© Ecole francaise d'Extrême-Orient, fonds Vietnam EFEO-VIE01835' and the other credits are IMAGE credits for the paper's figures, a component this record does not quote (RULING 96). The rendered page names no journal, so the model proposed states_no_terms ON CONDITION that Rob open the PDF; Rob found the publisher's line quoted here, and the cell is that line. The line has the line break in the PDF closed up.\n\nTHE SOURCE IS ESTABLISHED AND IT IS THIS PAPER: the rendered text holds the record's legend and measurements -- 'Slightly corrupted legend ANTONINVS AVG PIVS NVRP (or NVAP) XV', 'Diameter: 19 mm. Thickness of the gold sheet 0.3 mm. Weight 1.4135 g. Gold, fineness: 916'. The cell was unread as host_refuses; academia.edu rendered in Claude in Chrome on 2026-09-22 and did not refuse."
     },
     "seasia-02-oc-eo-site": {
-      "position": "unread",
+      "position": "open_licence_stated",
       "region": "Southeast Asia",
-      "unread_reason": "source_not_established"
+      "licence": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "stated_verbatim": "Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply.",
+      "read_off": "https://en.wikipedia.org/wiki/%C3%93c_Eo",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "READ OFF WIKIPEDIA UNDER RULING 99, clause 1: the record's words are the article's own prose, so the cell describes the article. Unread until 2026-09-22 as source_not_established -- the record carries no citation_original -- and established that day by matching the record's quoted fields against the article named in `citation`. CC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step.\n\nSOURCE ESTABLISHED: the article carries the record's text -- 'pottery, tools, jewelry', 'casts for making jewelry', 'Antonine period', 'Jiaozhou' -- and the record's own original_text_note says 'English synthesis from Wikipedia'. Article last edited 1 August 2026, 09:54 UTC."
     },
     "seasia-03-khao-sam-kaeo": {
       "position": "open_licence_stated",
@@ -311,9 +331,14 @@
       "note": "The object states its own licence in its own text and marks it twice with rel=\"license\", both anchors pointing at creativecommons.org/licenses/by/3.0/deed.en_US.\n\nFIRST OF ONLY TWO CLEAN CORROBORATIONS IN THIS BLOCK. The record's notes announce it as 'THE FIRST RECORD IN THIS CORPUS UNDER AN EXPLICIT OPEN LICENCE' and the object agrees, on the version as well as the licence -- checked character by character after seasia-03-khao-sam-kaeo turned out to be 3.0 on the metadata and 4.0 on the object.\n\nNames an individual author, Arlo Griffiths, as the copyright holder rather than an institution. The site root was NOT hunted for terms: FINDING 120 applies to silences, and this object speaks."
     },
     "seasia-06-kedukan-bukit": {
-      "position": "unread",
+      "position": "open_licence_stated",
       "region": "Southeast Asia",
-      "unread_reason": "source_not_established"
+      "licence": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "stated_verbatim": "Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply.",
+      "read_off": "https://en.wikipedia.org/wiki/Kedukan_Bukit_inscription",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "READ OFF WIKIPEDIA UNDER RULING 99, clause 3: the record's transliteration is copied from this article, and the article does not say whose it is. Rob's ruling of 2026-09-22 reads the cell off the only page that states terms for these words as printed, and records the gap here rather than attributing the reading. Unread until that day as source_not_established.\n\nTHE GAP, MEASURED: the article's Transliteration table carries no footnote. Its references name Guy (2014), Caillat and de Casparis (1991), de Casparis (1978) and Acri (2016) against other statements, and Coedès only inside a gloss note on `siddhayatra`. It writes v where the Talang Tuo article's transliteration writes w (svasti/swasti, vulan/wulan), so the two are not from one corpus, and Talang Tuo's is footnoted to SEAlang's Old Malay Corpus. The record's own original_text_note already says 'what is not established is whose transliteration this is'. The inscription is 7th-century. Article last edited 5 August 2026, 22:39 UTC.\n\nCC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step."
     },
     "seasia-07-talang-tuo": {
       "position": "unread",

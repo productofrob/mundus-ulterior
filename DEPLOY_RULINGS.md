@@ -133,3 +133,51 @@ them, and doing so needed a record pass, which is where they now go.
 runs a wider one over the rendered text, and it must exclude quotation fields:
 a British spelling inside a quoted source or published translation is the
 source's own, and it stays.
+
+---
+---
+
+# DECLARED DURING THE READINGS, 2026-09-22
+
+# RULING 99 — **THE CELL DESCRIBES WHOEVER WROTE THE WORDS THE RECORD QUOTES.**
+
+Declared from three decisions Rob took on 2026-09-22, all put to him with a
+recommendation and all taken on it. They are one rule, and it is written down
+before a fourth case turns up. RULING 96 says the cell is for "the material the
+record's quoted text comes from". Fourteen records turned out to have copied
+their words from an intermediary, English Wikipedia in every case, and "comes
+from" then has two readings. This ruling picks between them.
+
+```
+CLAUSE 1  THE INTERMEDIARY'S OWN PROSE     the cell describes the intermediary.
+                                           Vimose, Pattanam, Thorsberg, Óc Eo,
+                                           Illerup, Palmyra: Wikipedia, CC BY-SA 4.0
+
+CLAUSE 2  A NAMED THIRD PARTY'S TEXT,      the cell describes the third party's
+          SET OFF AS A QUOTATION BY THE    publication. The intermediary is the
+          INTERMEDIARY                     delivery and goes in the note, on RULING
+                                           95's reasoning. JSNab 17 (O'Connor 1986),
+                                           Jabal Dabub (Al-Jallad 2022), Đông Yên
+                                           Châu (Thurgood 1999), Talang Tuo (Suhadi
+                                           1983, via SEAlang)
+
+CLAUSE 3  NO AUTHOR NAMED ANYWHERE          the cell describes the intermediary, and
+                                           the note states the gap. Kedukan Bukit
+```
+
+**Why clause 2 is not clause 1.** Wikipedia's license covers what its editors
+wrote. A translation it quotes under its own quotation rules is not relicensed
+by the footer beneath it. Recording CC BY-SA 4.0 for O'Connor's translation would
+put an open license on words their author never licensed. That is FINDING 69's
+error, a license verified against the wrong object, made one layer further out.
+
+**The line between the clauses is drawn on the page, not on scholarship.** A
+gloss inside Wikipedia's running prose, cited with a footnote, is clause 1 (the
+Vimose and Thorsberg glosses). A text the article sets off and introduces as
+someone else's ("This yields:", "In English:[2]", "English translation[1]",
+"Original Script[2]") is clause 2. The alternative, tracing every cited gloss to
+the scholar it summarizes, has no stopping point.
+
+**What it does not settle:** whether a clause-2 publication that cannot be
+reached online can be read at all. Thurgood (1999) is a printed book with no
+preview, and the first case of it is put to Rob separately.

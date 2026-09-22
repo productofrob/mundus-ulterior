@@ -1,4 +1,4 @@
-# Rulings register — 1 to 52, and 80 to 98. **53 to 79 ARE NOT INDEXED
+# Rulings register — 1 to 52, and 80 to 99. **53 to 79 ARE NOT INDEXED
 # HERE**, and the note under the table says why.
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
@@ -48,7 +48,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 96          RIGHTS_VALIDATION_RULINGS.md  full text, "# RULING N" heading
 97          ui/index.html:1461        full text, in the block comment above
                                       LANG_REFERENCED_NOT_HELD. No rulings file
-98          DEPLOY_RULINGS.md         full text, "# RULING N" heading
+98-99       DEPLOY_RULINGS.md         full text, "# RULING N" headings
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -69,7 +69,15 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 99. The next free finding is 125.**
+**The next free ruling number is 100. The next free finding is 125.**
+
+> **UPDATED BY THE DEPLOY BLOCK'S READINGS, 2026-09-22.** This line read *"The
+> next free ruling number is 99."* The readings then used **RULING 99** (the cell
+> describes whoever wrote the words the record quotes: an intermediary's own prose
+> is read off the intermediary, a named third party's text that the intermediary
+> quotes is read off the third party's publication, and where no author is named
+> the intermediary is read and the gap is stated). It is declared in
+> `DEPLOY_RULINGS.md`, and carried here in the same commit.
 
 > **UPDATED BY THE DEPLOY BLOCK, 2026-09-22.** This line read *"The next free
 > ruling number is 97. The next free finding is 123."* Its ruling half had gone
