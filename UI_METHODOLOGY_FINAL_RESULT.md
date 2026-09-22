@@ -179,7 +179,7 @@ what the table says, from the run of 2026-09-06 over 561 passages
 
 ## 4. WHAT THIS BLOCK LEAVES OPEN
 
-**Handed to the next thread, in Rob's order:**
+**This block is closed.** Handed to the next threads, in Rob's order:
 
 ```
 1  the Home tab's text                S1–S8. Home still says "You ask a question in English",
@@ -197,8 +197,15 @@ what the table says, from the run of 2026-09-06 over 561 passages
 - **Four evidence panels were cut rather than built**: the passage table, the retrieval test
   set, the test suites and the rulings register, and the translation and place audits. The
   copy no longer advertises them.
-- **§6 of the predictions document is unscored, and the block does not close without it.**
-  Nothing in this document can score it. Rob has to use the tab at both widths.
+- **§6 of the predictions document is SCORED, and the block closes.** Rob reviewed the
+  rebuilt tab on 2026-09-22 and raised nothing: "Section 6 is OK as is." None of the three
+  candidates named in advance was confirmed — the collapsed evidence was not found to be
+  hiding the strongest material, ten sections in a nav was not found to be too much
+  navigation, and the figure was not found to be saying the same thing as the paragraph
+  below it. **The prediction expected at least one finding and got none, so it is REFUTED,
+  which is the best outcome it had available.** It is recorded here rather than softened:
+  a review that finds nothing is weaker evidence than a review that finds something, and
+  this is the first tab in this project to come out of one clean.
 
 ---
 
