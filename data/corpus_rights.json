@@ -112,14 +112,24 @@
       "note": "The other half of FINDING 69, from the opposite direction. F5_CANDIDATES.md recorded this source as 'the one verified open'. It is REACHABLE -- a deposit in the Hungarian Academy of Sciences' repository at real.mtak.hu, free to read under a repository policy -- and it is under NO Creative Commons licence at all. Reachable and licensed are two facts and one word was carrying both."
     },
     "eastasia-01-weilue": {
-      "position": "unread",
+      "position": "all_rights_reserved",
       "region": "East Asia",
-      "unread_reason": "host_refuses"
+      "licence": null,
+      "stated_verbatim": "Draft English translation by John E. Hill © September, 2004",
+      "read_off": "https://depts.washington.edu/silkroad/texts/weilue/weilue.html",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "A BARE COPYRIGHT LINE ON THE OBJECT, taken as all_rights_reserved on the southasia-07 and africa-01 precedent. Object searched 2026-09-22: `copyright` 0, `©` 1 (this line), `licen[cs]e` 0, `creative commons` 0, `all rights reserved` 0, `terms of use` 0, creativecommons anchors 0. The record quotes 130 words of this translation.\n\nTHE SITE STATES MORE, ON ITS OWN COPYRIGHT PAGE, linked 'Copyright' from the root https://depts.washington.edu/silkroad/ -- https://depts.washington.edu/silkroad/copyright.html, read 2026-09-22: 'Materials on the Silk Road Seattle web site are copyrighted by Silk Road Seattle or by the individual authors, photographers or museums. Much of the material is freely available for non-profit educational use, but note in particular the restrictions imposed by museums on any copying of their images without permission. [...] If you wish to download or copy materials for re-distribution and in particular for any profit-generating enterprise, you must request permission.' RECORDED AS all_rights_reserved ON ROB'S RULING OF 2026-09-22, over permission_stated_no_licence: the permission is hedged ('Much of the material') and does not name this translation, whose copyright the object states as Hill's own, and the page sends other holders' permissions to 'contact them directly'. RULING 74's conditions apply in full. The redistribution sentence is a copyright notice and not an agreement a reader clicks through, which is the difference from PHI and why RULING 98 does not reach it.\n\nTHIS CELL IS FOR THE TRANSLATION AND NOT FOR THE SOURCE TEXT -- RULING 96, on the eastasia-08-songshi-fulin precedent: two components from two hosts, and the English is what the record quotes. The rights target was first computed from citation_original, which is the Chinese, and the cell was unread as host_refuses; zh.wikisource.org rendered in Claude in Chrome on 2026-09-22 and did not refuse.\n\nTHE CHINESE, FOR THE NOTE: https://zh.wikisource.org/wiki/%E4%B8%89%E5%9C%8B%E5%BF%97/%E5%8D%B730 -- footer read 2026-09-22: '本站的全部文字在知识共享 署名-相同方式共享 4.0协议之条款下提供，附加条款亦可能应用。' (all text on the site under CC BY-SA 4.0; additional terms may apply). `公有領域`/`公有领域` 0, so no public-domain template on the page. A creativecommons anchor points to by-sa/4.0. The page holds the record's excerpt (大秦國一號犁靬 found). The record's original_text_note already says the transcription is CC BY-SA 4.0, and that holds."
     },
     "eastasia-02-hou-hanshu": {
-      "position": "unread",
+      "position": "all_rights_reserved",
       "region": "East Asia",
-      "unread_reason": "host_refuses"
+      "licence": null,
+      "stated_verbatim": "Translated by John E. Hill © September 2003",
+      "read_off": "https://depts.washington.edu/silkroad/texts/hhshu/hou_han_shu.html",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "A BARE COPYRIGHT LINE ON THE OBJECT, taken as all_rights_reserved on the southasia-07 and africa-01 precedent. Object searched 2026-09-22: `copyright` 0, `©` 1 (this line), `licen[cs]e` 0, `creative commons` 0, `all rights reserved` 0, `terms of use` 0, creativecommons anchors 0. The record quotes 81 words of this translation.\n\nTHE SITE STATES MORE, ON ITS OWN COPYRIGHT PAGE, linked 'Copyright' from the root https://depts.washington.edu/silkroad/ -- https://depts.washington.edu/silkroad/copyright.html, read 2026-09-22: 'Materials on the Silk Road Seattle web site are copyrighted by Silk Road Seattle or by the individual authors, photographers or museums. Much of the material is freely available for non-profit educational use, but note in particular the restrictions imposed by museums on any copying of their images without permission. [...] If you wish to download or copy materials for re-distribution and in particular for any profit-generating enterprise, you must request permission.' RECORDED AS all_rights_reserved ON ROB'S RULING OF 2026-09-22, over permission_stated_no_licence: the permission is hedged ('Much of the material') and does not name this translation, whose copyright the object states as Hill's own, and the page sends other holders' permissions to 'contact them directly'. RULING 74's conditions apply in full. The redistribution sentence is a copyright notice and not an agreement a reader clicks through, which is the difference from PHI and why RULING 98 does not reach it.\n\nTHIS CELL IS FOR THE TRANSLATION AND NOT FOR THE SOURCE TEXT -- RULING 96, on the eastasia-08-songshi-fulin precedent: two components from two hosts, and the English is what the record quotes. The rights target was first computed from citation_original, which is the Chinese, and the cell was unread as host_refuses; zh.wikisource.org rendered in Claude in Chrome on 2026-09-22 and did not refuse.\n\nTHE CHINESE, FOR THE NOTE: https://zh.wikisource.org/zh-hans/%E5%BE%8C%E6%BC%A2%E6%9B%B8/%E5%8D%B788 -- footer read 2026-09-22: '本站的全部文字在知识共享 署名-相同方式共享 4.0协议之条款下提供，附加条款亦可能应用。' (all text on the site under CC BY-SA 4.0; additional terms may apply). `公有領域`/`公有领域` 0, so no public-domain template on the page. No creativecommons anchor on this page; the footer names the license in text. THE zh-hans URL SERVES THE SIMPLIFIED CONVERSION: the page reads 献 and 玳瑁 where the record holds 獻 and 瑇瑁, which the record's original_text_note already accounts for."
     },
     "eastasia-03-hwangnam-glass": {
       "position": "all_rights_reserved",
@@ -241,9 +251,14 @@
       "note": "No stated_verbatim, because the position may not carry a quotation and there is nothing to quote. SEARCHED AT THE SITE ROOT AND NOT ONLY AT THE OBJECT, after the epigraphy.packhum.org gate showed that an object page's silence does not establish a site's -- FINDING 120. On 2026-09-14: the object page, en.natmus.dk root, /shortcuts/privacy-policy/ (14,245 characters) and /digital-collections/ all return `copyright` 0, `©` 0, `licen[cs]e` 0, `creative commons` 0, `ophavsret` 0. The privacy policy's two `rights` hits are GDPR data-subject rights. There is no terms page and no copyright page in the site's link set.\n\nTHE RAW HTML DISAGREES WITH THE RENDERED PAGE AND THE RENDERED PAGE IS RIGHT. Counting raw HTML returns `copyright` 2 and `licence` 1 on both object pages, ENTIRELY from an invisible TYPO3 comment: 'TYPO3 is a free open source Content Management Framework ... licensed under GNU/GPL. TYPO3 is copyright 1998-2019 of Kasper Skaarhoj.' That is the content management system's own licence, not the museum's position on its text -- the same species as seasia-08-pong-tuk-lamp's Joomla template credit, and half of FINDING 121.\n\nSEARCHED AND REJECTED: pure.kb.dk, the Royal Danish Library's research portal, carries an all-rights-reserved footer on an organisation page for Nationalmuseet. Different host, different publisher, cited by neither record -- it is not this source speaking. Recorded so that finding it later is not mistaken for finding something this pass missed.\n\nRead in the desktop app's own browser pane; Claude in Chrome refuses this domain outright. The site announces it has been superseded by www.nationalmuseet.dk, which is a citation-durability risk for a later thread and not a rights matter."
     },
     "scandinavia-03-vimose": {
-      "position": "unread",
+      "position": "open_licence_stated",
       "region": "Scandinavia",
-      "unread_reason": "archived_capture"
+      "licence": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "stated_verbatim": "Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply.",
+      "read_off": "https://en.wikipedia.org/wiki/Vimose_inscriptions",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "THIS CELL IS READ OFF WIKIPEDIA AND NOT OFF citation_original, ON ROB'S RULING OF 2026-09-22 UNDER RULING 96: the cell is for the material the record's quoted text comes from, and this record's words were taken from the Wikipedia article, not from the archived page its citation_original names. Unread until today as archived_capture, because the rights target was computed from citation_original. CC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step, not assumed here.\n\nTHE SOURCE IS ESTABLISHED: the article carries the record's readings and glosses -- 'possibly \"Mari (the famous one) is the sword of Alla\"', 'awgns; possibly \"son/descendant of Awa\"', '[w]agni[ŋ]o' -- and the record's own translation_source says 'as summarized on Wikipedia'. Article last edited 17 March 2026, 08:12 UTC.\n\nTHE KIEL RUNENPROJEKT, FOR THE NOTE, READ UNDER RULING 95 on 2026-09-22. Object capture https://web.archive.org/web/20151122163034/http://www.runenprojekt.uni-kiel.de/abfragen/standard/deutung2.asp?findno=20&ort=Vimose&objekt=Kamm rendered; `copyright` 2 in the HTML, BOTH in archive.org's injected comment ('JAVASCRIPT APPENDED BY WAYBACK MACHINE, COPYRIGHT INTERNET ARCHIVE ...'), excluded by RULING 95; the captured page states nothing. Root capture https://web.archive.org/web/20151219231222/http://www.runenprojekt.uni-kiel.de/ renders a hit counter and 'Letzte Aktualisierung: 04.03.2012', and its link set is five image links (beschreibung, abfragen, kontakt, links, English); no rights statement. The kontakt capture (20160306044941) returned no text and was not read."
     },
     "scandinavia-04-illerup-adal": {
       "position": "unread",
@@ -256,9 +271,14 @@
       "unread_reason": "source_not_established"
     },
     "seasia-01-oc-eo-medallion": {
-      "position": "unread",
+      "position": "all_rights_reserved",
       "region": "Southeast Asia",
-      "unread_reason": "host_refuses"
+      "licence": null,
+      "stated_verbatim": "© Kommission für Archäologie Außereuropäischer Kulturen des Deutschen Archäologischen Instituts, Bonn, 2014",
+      "read_off": "https://www.academia.edu/12682533/The_Power_of_Images_Coin_Portraits_of_Roman_Emperors_on_Jewellery_Pendants_in_Early_Southeast_Asia",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "READ BY ROB OFF THE PAPER'S OWN PDF, AS SERVED FROM THIS PAGE, AND NOT OFF THE PAGE -- FINDING 120 once more, caught this time by a condition written before the reading. The model read the rendered page on 2026-09-22 and found no statement belonging to the paper: `copyright` 2, `©` 3, `all rights reserved` 1, `creative commons` 0, creativecommons anchors 0, and every hit belonged to something else. '© 2026 Academia. All rights reserved' is the platform's footer -- the delivery, not the source, on RULING 95's reasoning, and FINDING 121's shape of a signal that belongs to the host. '© Ecole francaise d'Extrême-Orient, fonds Vietnam EFEO-VIE01835' and the other credits are IMAGE credits for the paper's figures, a component this record does not quote (RULING 96). The rendered page names no journal, so the model proposed states_no_terms ON CONDITION that Rob open the PDF; Rob found the publisher's line quoted here, and the cell is that line. The line has the line break in the PDF closed up.\n\nTHE SOURCE IS ESTABLISHED AND IT IS THIS PAPER: the rendered text holds the record's legend and measurements -- 'Slightly corrupted legend ANTONINVS AVG PIVS NVRP (or NVAP) XV', 'Diameter: 19 mm. Thickness of the gold sheet 0.3 mm. Weight 1.4135 g. Gold, fineness: 916'. The cell was unread as host_refuses; academia.edu rendered in Claude in Chrome on 2026-09-22 and did not refuse."
     },
     "seasia-02-oc-eo-site": {
       "position": "unread",
@@ -331,9 +351,14 @@
       "note": "The record cites papyri.info/ddbdp/sb;18;13167, which redirects to this path; read_off records the URL AS REACHED. Two rel=\"license\" elements, both pointing at creativecommons.org/licenses/by/3.0/.\n\nSECOND AND LAST CLEAN CORROBORATION IN THIS BLOCK. citation_original says '(DDbDP, CC BY 3.0)' and the object agrees, licence and version both.\n\nTHIS CELL COVERS THE GREEK ONLY -- RULING 96. The record uses two sources: the Greek transcription from DDbDP, and the English translation from attalus.org, which is the record's `citation` and was not read by this block. eastasia-08-songshi-fulin is the same case and the ruling now settles both: the cell records the position on the material the record's quoted text comes from."
     },
     "southasia-04-pattanam": {
-      "position": "unread",
+      "position": "open_licence_stated",
       "region": "South Asia",
-      "unread_reason": "archived_capture"
+      "licence": "Creative Commons Attribution-ShareAlike 4.0 License",
+      "stated_verbatim": "Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply.",
+      "read_off": "https://en.wikipedia.org/wiki/Muziris",
+      "read_on": "2026-09-22",
+      "read_by": "curator_and_model",
+      "note": "THIS CELL IS READ OFF WIKIPEDIA AND NOT OFF citation_original, ON ROB'S RULING OF 2026-09-22 UNDER RULING 96: the cell is for the material the record's quoted text comes from, and this record's words were taken from the Wikipedia article, not from the archived page its citation_original names. Unread until today as archived_capture, because the rights target was computed from citation_original. CC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step, not assumed here.\n\nTHE SOURCE IS ESTABLISHED, NEAR-VERBATIM: the article reads 'Mediterranean objects: (100 BC to 400 AD) Amphora and terra sigillata shards; fragments of Roman glass pillar bowls; and gaming counters', and the record reads 'Mediterranean objects (100 BC to 400 AD): Amphora and terra sigillata shards; fragments of Roman glass pillar bowls; and gaming counters.' The record's own note says 'Summary drawn from Wikipedia's synthesis of KCHR season reports'. Article last edited 10 August 2026, 14:48 UTC; the record's citation points at its 'Archeological excavations' section.\n\nTHE KCHR HANDBOOK, FOR THE NOTE: https://web.archive.org/web/20160304031410/http://www.keralahistory.ac.in/pdf2013/pattanam_7th_season_handbook1.pdf DID NOT RENDER in Claude in Chrome on 2026-09-22 -- the Wayback toolbar loaded over a blank frame. Unread, and under RULING 95 it could not be states_no_terms.\n\nA CITATION DEFECT, SEPARATE FROM THE RIGHTS: citation_original names a document this record's text was never taken from. The record's note promises to 'pull the primary KCHR ... Handbook ... during ingestion', and that was never done. Handed to the deploy block's record pass."
     },
     "southasia-05-brihatsamhita": {
       "position": "states_no_terms",
