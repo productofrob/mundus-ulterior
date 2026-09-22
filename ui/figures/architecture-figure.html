@@ -3,8 +3,9 @@
 
      ONE FIGURE, ONE CLAIM: everything that produces an answer happens
      before a visitor arrives, and the only thing that happens when they
-     arrive is the checking — against the same files the answer was built
-     from. Every other component is left out on purpose.
+     arrive is the replay — with the result of the check each quotation last
+     had, made against the records as they stand now rather than against the
+     versions the answer was built from. Every other component is left out on purpose.
 
      NO NEW COLOURS. It reads --ink, --ink-soft, --ink-faint, --paper-deep,
      --line, --accent-soft and --accent-line off :root, so it themes with
@@ -59,7 +60,7 @@
 <figure class="archfig">
 <div class="af-scroll">
 <svg viewBox="0 0 1000 336" role="img"
-     aria-label="Everything that produces an answer happens before you open the page: sources become records, records are split into passages and indexed, and a question produces a stored answer. When you open the page, that stored answer is replayed and every quotation in it is re-checked against the same source files.">
+     aria-label="Everything that produces an answer happens before you open the page: sources become records, records are split into passages and indexed, and a question plus a model produces a stored answer. When you open the page, that stored answer is replayed, and each quotation is shown with the result of its most recent check against the source records as they stand now.">
   <defs>
     <marker id="af-arrow" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -80,9 +81,9 @@
   <g class="af-box">
     <rect x="284" y="36" width="164" height="92" rx="3"/>
     <text x="366" y="62" class="af-title">Records</text>
-    <text x="366" y="82" class="af-sub">the original text, an</text>
-    <text x="366" y="97" class="af-sub">English translation,</text>
-    <text x="366" y="112" class="af-sub">citations, reuse terms</text>
+    <text x="366" y="82" class="af-sub">the text, a translation or</text>
+    <text x="366" y="97" class="af-sub">a catalogue description;</text>
+    <text x="366" y="112" class="af-sub">citations; terms as read</text>
   </g>
 
   <g class="af-box">
@@ -95,9 +96,9 @@
   <g class="af-box">
     <rect x="820" y="36" width="164" height="92" rx="3"/>
     <text x="902" y="62" class="af-title">Stored answers</text>
-    <text x="902" y="82" class="af-sub">a citation on every</text>
-    <text x="902" y="97" class="af-sub">claim, kept whether</text>
-    <text x="902" y="112" class="af-sub">they passed or failed</text>
+    <text x="902" y="82" class="af-sub">each claim meant to</text>
+    <text x="902" y="97" class="af-sub">carry a citation; every</text>
+    <text x="902" y="112" class="af-sub">answer kept, pass or fail</text>
   </g>
 
   <line x1="184" y1="82" x2="276" y2="82" class="af-line" marker-end="url(#af-arrow)"/>
@@ -109,13 +110,14 @@
   <text x="498" y="103" class="af-note">passages</text>
 
   <line x1="720" y1="82" x2="812" y2="82" class="af-line" marker-end="url(#af-arrow)"/>
-  <text x="766" y="70" class="af-note">a question</text>
-  <text x="766" y="103" class="af-note">finds passages</text>
+  <text x="766" y="62" class="af-note">a question finds</text>
+  <text x="766" y="78" class="af-note">passages;</text>
+  <text x="766" y="111" class="af-note">a model writes it</text>
 
   <!-- the two inputs that meet at read time -->
   <line x1="366" y1="132" x2="366" y2="228" class="af-line" marker-end="url(#af-arrow)"/>
-  <text x="380" y="172" class="af-note af-start">compared against</text>
-  <text x="380" y="188" class="af-note af-start">the same files</text>
+  <text x="380" y="172" class="af-note af-start">checked against the</text>
+  <text x="380" y="188" class="af-note af-start">records as they are now</text>
 
   <line x1="902" y1="132" x2="902" y2="228" class="af-line" marker-end="url(#af-arrow)"/>
   <text x="888" y="172" class="af-note af-end">the stored answer</text>
@@ -126,13 +128,14 @@
 
   <g class="af-box af-box-live">
     <rect x="16" y="236" width="968" height="84" rx="3"/>
-    <text x="500" y="268" class="af-title">No answers are generated on the fly. The stored answer is replayed,</text>
-    <text x="500" y="292" class="af-title">and every quotation in it is re-checked against the source text as it stands today.</text>
-    <text x="500" y="311" class="af-sub">Each quotation is shown with the result of that check, including the ones that fail.</text>
+    <text x="500" y="268" class="af-title">No answers are generated on the fly. The stored answer is replayed, and each</text>
+    <text x="500" y="292" class="af-title">quotation is shown with the result of its most recent check against the source text,</text>
+    <text x="500" y="311" class="af-sub">made when the site’s data was last rebuilt — including the checks that fail.</text>
   </g>
 </svg>
 </div>
-<figcaption>Every answer was produced, scored, and stored prior to opening. Page
-opening replays the answer and re-runs quotation checks against the sources the
-answer was built from.</figcaption>
+<figcaption>Every answer was produced, scored and stored before the page is
+opened. Opening the page replays the answer, with each quotation’s check against
+the current source records, which may have been edited since the answer was
+made.</figcaption>
 </figure>
