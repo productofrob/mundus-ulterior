@@ -325,9 +325,14 @@
       "note": "READ OFF THE PDF BY THE CURATOR. The model could not render it -- the browser tab froze and the capture timed out after 30 seconds -- so this is the one cell in the block where the curator read the object and the model could not.\n\nTHE OBJECT AND THE PAGE THAT SERVES IT STATE DIFFERENT VERSIONS. The repository item page at real.mtak.hu/141407/ states 'Text 11_HoppalK_DissArch_2021_v01.pdf Available under License Creative Commons Attribution Non-commercial.' with NO VERSION PRINTED and an anchor to creativecommons.org/licenses/by-nc/3.0/. The article itself says 4.0 and names THE AUTHORS as rights holders, which the repository page does not mention. The object's statement is the position; the repository's metadata is recorded here as differing from it. Had this cell closed on the model's reading it would have recorded 3.0 over a document that says 4.0 -- the clearest single vindication in this block of opening the object."
     },
     "seasia-04-dong-yen-chau": {
-      "position": "unread",
+      "position": "all_rights_reserved",
       "region": "Southeast Asia",
-      "unread_reason": "source_not_established"
+      "licence": null,
+      "stated_verbatim": "Oceanic Linguistics Special Publications © 1999 University of Hawaii Press",
+      "read_off": "https://www.jstor.org/stable/20006770",
+      "read_on": "2026-09-23",
+      "read_by": "curator_and_model",
+      "note": "READ UNDER RULING 99, clause 2: the record's words are Thurgood's transliteration and translation, which Wikipedia sets off as 'Transliteration[1]' and 'English translation[1]', both footnoted to Thurgood 1999, p. 3. The cell describes the book. Unread until 2026-09-23 as source_not_established, a reason that had been wrong since 2026-09-22, when the source was established and only the book's own statement was missing: Google Books showed snippet view only, and the model found no copyright page online. ROB FOUND THE LINE on JSTOR's record of the book, and the model then read the same page: under 'Rights & Usage' it reads 'This item is part of a JSTOR Collection. For terms and use, please refer to our Terms and Conditions' followed by the quoted line and 'Request Permissions'. A bare copyright line, taken as all_rights_reserved on the southasia-07 and africa-01 precedent. RULING 74's conditions apply in full.\n\nJSTOR IS A HOST, NOT THE SOURCE, AND ITS TERMS ARE NOT READ INTO THIS CELL, on RULING 95's reasoning: this record's words were not taken through JSTOR, and JSTOR's Terms and Conditions govern JSTOR's users, not a quotation reached by another route. Its footer, '©2000–2026 ITHAKA. All Rights Reserved.', is the platform's.\n\nTHE PUBLICATION: Graham Thurgood, From Ancient Cham to Modern Dialects: Two Thousand Years of Language Contact and Change (Oceanic Linguistics Special Publications 28, University of Hawai'i Press, 1999), ISBN 0824821319. THE DELIVERY, FOR THE NOTE: https://en.wikipedia.org/wiki/%C4%90%C3%B4ng_Y%C3%AAn_Ch%C3%A2u_inscription (last edited 29 April 2026)."
     },
     "seasia-05-my-son-b6": {
       "position": "open_licence_stated",

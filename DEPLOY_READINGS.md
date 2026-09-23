@@ -397,3 +397,33 @@ still says `source_not_established`. Its source IS established (RULING 99 clause
 2, Thurgood 1999). What is missing is the publication's own statement. It stays
 as it is until Rob reports what the copy says, because a new `unread_reason` is a
 schema change and may not be needed.
+
+---
+
+# 11. THE LAST CELL, AND THE COLUMN IS CLOSED, 2026-09-23
+
+`seasia-04-dong-yen-chau` is `all_rights_reserved`. Rob found "Oceanic Linguistics
+Special Publications © 1999 University of Hawaii Press" on JSTOR's record of the
+book, https://www.jstor.org/stable/20006770, and the model read the same page.
+JSTOR is recorded as a host, and its Terms and Conditions are not read into the
+cell, on RULING 95's reasoning, because the record's words did not come through
+JSTOR.
+
+```
+THE RIGHTS COLUMN, 2026-09-23     54 of 54 read
+
+open_licence_stated          18   all_rights_reserved          17
+states_no_terms               8   permission_stated_no_licence  6
+two_positions_stated          3   public_domain                 2
+unread                        0
+```
+
+**Every one of the fourteen was read before a public URL exists**, which is what
+`DEPLOY_START.md` §2 ruled. None of them forced a record to change or leave. The
+two PHI records are RULING 98's, and they were decided before the readings began.
+
+**Two cells are read again later, and that is known now.** `africa-04` and
+`africa-05` currently record PHI's "personal study only" gate. When RULING 98's
+collation lands, both records cite OGIS and their cells are read again. For
+`africa-04`, that reading also has to settle Satzinger's English: under RULING 96
+the answers quote it, and nobody has read its terms (DEPLOY_PREDICTIONS.md P5).
