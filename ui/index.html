@@ -24,6 +24,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mundus Ulterior — answers and their sources</title>
+<!-- DEPLOY BLOCK, 2026-09-23. An empty inline icon, so a browser does not ask the host for
+     /favicon.ico. Cloudflare Pages answers any path it does not hold with this page, so
+     every visit was downloading index.html a second time as its icon (126 KB compressed). -->
+<link rel="icon" href="data:,">
 <style>
   /* ================================================================== *
    * THE DESIGN SYSTEM.
@@ -1305,10 +1309,10 @@
   .mth { margin: 0 0 var(--s-8); scroll-margin-top: 56px; }
   .mth-head { font-family: var(--font-serif); font-size: var(--t-xl); line-height: var(--lh-tight);
               margin: 0 0 var(--s-4); }
-  /* A MEASURE, and it is not decoration: this column is 1,075px wide at 1600px
-     and prose set across the whole of it is unreadable. The evidence panels
-     keep the full width, because a table is not prose. */
-  .mth p, .mth li { max-width: 68ch; }
+  /* NO MEASURE, ON ROB'S RULING OF 2026-09-23 after seeing the deployed site
+     on a wide screen: the Methodology prose runs the full width of its column,
+     as Home and Questions already do. It carried a 68ch measure until then. */
+  .mth p, .mth li { max-width: none; }
   .mth p { font-size: var(--t-base); line-height: var(--lh-prose); margin: 0 0 var(--s-4); }
   .mth ul { margin: 0 0 var(--s-4); padding-left: var(--s-6); }
   .mth li { font-size: var(--t-base); line-height: var(--lh-body); margin: 0 0 var(--s-3); }
@@ -1356,7 +1360,7 @@
   .archfig .af-line    { stroke: var(--ink-faint); stroke-width: 1.25; fill: none; }
 
   .archfig figcaption  { font-family: var(--font-sans); font-size: var(--t-s, 13px);
-                         color: var(--ink-soft); max-width: 68ch; line-height: 1.5;
+                         color: var(--ink-soft); max-width: none; line-height: 1.5;
                          margin-top: var(--s-3, 12px); }
 
 </style>
