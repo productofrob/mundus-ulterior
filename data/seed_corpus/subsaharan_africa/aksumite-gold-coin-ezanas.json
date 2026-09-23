@@ -1,12 +1,12 @@
 {
   "id": "africa-02-aksumite-coin",
   "region": "Sub-Saharan Africa",
-  "title": "Aksumite gold coin of King Ezanas",
+  "title": "Aksumite gold coin of King Ezana",
   "source_type": "coin_record",
   "language_code": [
     "en"
   ],
-  "language_note": "British Museum catalogue record in English; Aksumite coin legends are typically in Greek (for gold/silver issues aimed at external trade) or Ge'ez, not transcribed in this record.",
+  "language_note": "British Museum catalog record in English; Aksumite coin legends are typically in Greek (for gold/silver issues aimed at external trade) or Ge'ez, not transcribed in this record.",
   "date": "c. 340-400 CE",
   "findspot": "Found/acquired in Yemen, ~300km north of Aden; minted at Aksum",
   "findspot_places": [

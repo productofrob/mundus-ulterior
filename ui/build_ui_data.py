@@ -629,7 +629,7 @@ def classify_span(span: dict, corpus: dict[str, dict]) -> dict:
         return {"state": "case_only", "found": found,
                 "why": f"differs from the quotation only in letter case; the checker "
                        f"matched it without regard to case but recorded the match as "
-                       f"{recorded!r} — a labelling fault, shown as it was claimed"}
+                       f"{recorded!r} — a labeling fault, shown as it was claimed"}
 
     # FINDING 42. The verifier was stricter than the matcher it verifies, and
     # it failed into the loudest category it has. `collapse` is IMPORTED from

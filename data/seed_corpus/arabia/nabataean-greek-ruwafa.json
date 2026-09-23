@@ -36,7 +36,7 @@
       "gazetteer_id": "814740",
       "uri": "https://pleiades.stoa.org/places/814740",
       "role": "focus",
-      "note": "The people the whole monument is organised around: they found the temple in A, make it in B, complete and consecrate it in C, and build it in E. Pleiades 814740 Thamudaei, confirmed present in the pinned 2026-08-10 dump with a real polygon extent — 36.0–37.0 E, 27.0–28.0 N, roughly located, Roman period — so this is the `regional` form that draws an extent rather than a pin, which is what a people is. Ground `regional` and not `stated`: the text names the people, and a people's territory is not a specific place, so PLACES.md's requirement that `stated` name a point does not hold here."
+      "note": "The people the whole monument is organized around: they found the temple in A, make it in B, complete and consecrate it in C, and build it in E. Pleiades 814740 Thamudaei, confirmed present in the pinned 2026-08-10 dump with a real polygon extent — 36.0–37.0 E, 27.0–28.0 N, roughly located, Roman period — so this is the `regional` form that draws an extent rather than a pin, which is what a people is. Ground `regional` and not `stated`: the text names the people, and a people's territory is not a specific place, so PLACES.md's requirement that `stated` name a point does not hold here."
     },
     {
       "name": "the tribe Roḇaṯō / Ροβαθου",

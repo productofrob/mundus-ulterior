@@ -6,9 +6,9 @@
   "language_code": [
     "en"
   ],
-  "language_note": "Museum catalogue record in English. The object carries no inscription the Walters transcribes and this record claims no source-language text. On a find record `original_text_excerpt` holds the institution's object description and nothing else.",
+  "language_note": "Museum catalog record in English. The object carries no inscription the Walters transcribes and this record claims no source-language text. On a find record `original_text_excerpt` holds the institution's object description and nothing else.",
   "date": "2nd century CE (Sabaean), as the Walters dates it — and the description dates the STYLE separately, to \"the 2nd and 3rd centuries CE\", which is the sentence the record exists for.",
-  "findspot": "NOT RECORDED. The Walters states a place of ORIGIN and no findspot: its `GEOGRAPHIES` field reads `Yemen, Marib (Place of Origin)`. The provenance chain is market-derived and the museum publishes it in full — `James Nash, London, 1963, by purchase; Giraud and Carolyn Foster, Baltimore, 1965, by purchase; Walters Art Museum, 2014, by gift.` The object was exhibited in 2008 as `Faces of Ancient Arabia: The Giraud and Carolyn Foster Collection of South Arabian Art`. All of that is the museum's, quoted rather than summarised, because a South Arabian object with a London-market provenance is one whose chain a later reader will want to see rather than be told about.",
+  "findspot": "NOT RECORDED. The Walters states a place of ORIGIN and no findspot: its `GEOGRAPHIES` field reads `Yemen, Marib (Place of Origin)`. The provenance chain is market-derived and the museum publishes it in full — `James Nash, London, 1963, by purchase; Giraud and Carolyn Foster, Baltimore, 1965, by purchase; Walters Art Museum, 2014, by gift.` The object was exhibited in 2008 as `Faces of Ancient Arabia: The Giraud and Carolyn Foster Collection of South Arabian Art`. All of that is the museum's, quoted rather than summarized, because a South Arabian object with a London-market provenance is one whose chain a later reader will want to see rather than be told about.",
   "origin_places": [
     {
       "name": "Maʾrib (Marib), Yemen — the Walters' stated place of origin",

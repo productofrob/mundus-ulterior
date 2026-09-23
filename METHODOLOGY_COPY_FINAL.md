@@ -13,7 +13,7 @@ Record candidates were named before being curated. Each sourcing round started b
 * Catalogue record: a museum's object description, which is not the object speaking.
 * Pointer: the record does not carry the text itself, but states exactly where the text is held and how to find it.
 Reading a source and being allowed to quote it are two different facts, which are recorded separately.
-Copyrighted text is quoted only where the quotation is short and bounded by the source, the work is fully cited, the terms are stated in the record in the source's own words, and the use is non-commercial research. Terms are recorded and counted; they are not yet used to exclude a source.
+Copyrighted text is quoted only where the quotation is short and bounded by the source, the work is fully cited, the terms are stated in the record in the source's own words, and the use is non-commercial research. Terms have been read and recorded for every source. Where a source's terms restrict use to personal study, its text is taken from a public-domain edition of the same work instead; no source has been excluded on its terms.
 Terms are read off the object being quoted, and the rest of the site where needed, and copied in verbatim with the address, the reader and the date. No reuse position is inferred from the record's own description or by text-matching.
 
 3. Preparing the data

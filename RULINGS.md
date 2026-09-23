@@ -1,4 +1,4 @@
-# Rulings register — 1 to 52, and 80 to 99. **53 to 79 ARE NOT INDEXED
+# Rulings register — 1 to 52, and 80 to 100. **53 to 79 ARE NOT INDEXED
 # HERE**, and the note under the table says why.
 
 *Created 2026-08-21, at the close of Block D's TASK 0 and TASK 1. Extended the
@@ -48,7 +48,7 @@ section anywhere — they exist only as one-line entries in a numbered list in
 96          RIGHTS_VALIDATION_RULINGS.md  full text, "# RULING N" heading
 97          ui/index.html:1461        full text, in the block comment above
                                       LANG_REFERENCED_NOT_HELD. No rulings file
-98-99       DEPLOY_RULINGS.md         full text, "# RULING N" headings
+98-100      DEPLOY_RULINGS.md         full text, "# RULING N" headings
 ```
 
 ## Why 53 to 79 are not indexed, written by the session that tried
@@ -69,7 +69,15 @@ careful pass by somebody who checks each entry against the file that DECLARES it
 rather than the file that mentions it, and it is worth doing.** W3 is not that
 session: it had already caught itself getting it wrong.
 
-**The next free ruling number is 100. The next free finding is 125.**
+**The next free ruling number is 101. The next free finding is 126.**
+
+> **UPDATED BY THE DEPLOY BLOCK'S RECORD PASS, 2026-09-23.** This line read
+> *"The next free ruling number is 100. The next free finding is 125."* The pass
+> used **RULING 100** (an archived language code is read through a correction
+> only where one is declared, per record and per code: JSNab 17's `xna` is shown
+> as `arc`) and **FINDING 125** (JSNab 17's English is an adaptation of
+> O'Connor's, declared rather than corrected because 52 archived quotations
+> depend on it). Both are in `DEPLOY_RULINGS.md`.
 
 > **UPDATED BY THE DEPLOY BLOCK'S READINGS, 2026-09-22.** This line read *"The
 > next free ruling number is 99."* The readings then used **RULING 99** (the cell

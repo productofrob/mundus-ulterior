@@ -6,7 +6,7 @@
   "language_code": [
     "en"
   ],
-  "language_note": "Museum catalogue record in English. Coin legends are in Pahlavi script but the BM record does not transcribe them; flagged for follow-up during ingestion if legend transliteration is needed.",
+  "language_note": "Museum catalog record in English. Coin legends are in Pahlavi script but the BM record does not transcribe them; flagged for follow-up during ingestion if legend transliteration is needed.",
   "date": "241–272 CE",
   "findspot": "Not recorded (acquired via Robertson sale, 1843)",
   "no_places_reason": "Considered 2026-08-13 and no placement is possible. The findspot is 'Not recorded (acquired via Robertson sale, 1843)' — absent rather than vague, so not even a `regional` placement would be honest. The record carries no mint attribution either, so `origin_places` has nothing to hold. This field exists so that 'considered, nothing to place' can be told apart from 'not yet curated'.",

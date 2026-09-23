@@ -181,3 +181,48 @@ the scholar it summarizes, has no stopping point.
 **What it does not settle:** whether a clause-2 publication that cannot be
 reached online can be read at all. Thurgood (1999) is a printed book with no
 preview, and the first case of it is put to Rob separately.
+
+---
+---
+
+# DECLARED DURING THE RECORD PASS, 2026-09-23
+
+# RULING 100 — **AN ARCHIVED LANGUAGE CODE IS READ THROUGH A CORRECTION ONLY
+# WHERE ONE IS DECLARED, PER RECORD AND PER CODE.**
+
+S9's fix needed it. `arabia-03-jsnab17`, a Nabataean Aramaic epitaph, was curated
+with `xna` (Ancient North Arabian). The Safaitic memorial `arabia-06-syllaeus`
+uses the same code correctly, so no single name for `xna` could label both. The
+record now declares `arc` and `arb`. The archive is never rewritten, and it still
+carries `xna` on 124 passages and one ranking pair drawn from JSNab 17.
+
+```
+THE TABLE     ARCHIVED_LANG_RECODED in ui/index.html:
+              { "arabia-03-jsnab17": { xna: "arc" } }
+READ BY       archivedLang(docId, code), wherever the page shows an archived
+              passage's language, and for the label of the retrieval table's
+              rows. The row KEYS, the data-lang attributes the harness reads,
+              stay the archived codes, so the guard's re-derivation is unchanged
+NOT INFERRED  an archived code that differs from its record for any other reason
+              is shown as archived: translation chunks are `en`, mixed chunks
+              are `mul`, and a generic "prefer the record" rule would relabel
+              both of those wrongly
+```
+
+Declared by the model while implementing S9 on 2026-09-23, after Rob ruled that
+JSNab 17's English is kept and declared. Confirmed by Rob on 2026-09-23 at the record pass's review, on the model's recommendation to keep it.
+
+# FINDING 125 — **JSNAB 17'S ENGLISH IS AN ADAPTATION OF O'CONNOR'S, NOT A COPY,
+# AND FIFTY-TWO ARCHIVED QUOTATIONS DEPEND ON IT AS IT STANDS.**
+
+The rights readings (RULING 99, clause 2) compared the record's English with
+O'Connor's translation as https://en.wikipedia.org/wiki/JSNab_17 prints it. The
+record drops the diacritics, renders "berat" as "daughter", adds a gloss after
+the god's name, drops the editor's parentheses, and condenses the closing curse.
+It is declared in the record's new `reference_translation_note` rather than
+corrected, on Rob's ruling of 2026-09-23. Restoring O'Connor's exact words would
+unresolve most of the 52 archived quotations into this field.
+
+**What it leaves open:** the record's tier is `verbatim_with_provenance`, and its
+own `original_text_note` calls the transliteration "a paraphrase
+reconstruction". Whether the tier is right is not decided here.

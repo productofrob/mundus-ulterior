@@ -1,13 +1,13 @@
 {
   "_": "Generated beside ui/data.js by ui/build_ui_data.py. Never edited by hand, and never read as truth: check_ui.mjs re-derives every figure below from data.js itself and fails on disagreement. It exists so a change to a 9.5MB single-line file can be reviewed (debt row 7, FINDING 74).",
-  "generated": "2026-09-22T13:08:36+00:00",
+  "generated": "2026-09-23T09:02:33+00:00",
   "data_js": {
-    "bytes": 9782002,
-    "sha256": "74d5d3fbccebb997545bafecafba4fb924c7c8bd925ebfb568501fc7a15e80d6"
+    "bytes": 9784003,
+    "sha256": "4acef54c7b58134ae0919197359c87e2bb6573174299138b7073849027d4729e"
   },
   "corpus": {
     "records": 54,
-    "digest": "0e7845055e440c7c46535f1aa2e5ea55e5116ed733d77bbb616404e8bdc2c839",
+    "digest": "2f8947b3bd78c5edecb97cd34a0039ad4576cdb8331882e0703222e29c987581",
     "digest_algorithm": "sha256-of-canonical-json-v1",
     "languages": [
       "arb",
@@ -41,7 +41,7 @@
       "Southeast Asia": 9,
       "Sub-Saharan Africa": 7
     },
-    "sha256": "10f7eedef640cee24a257d439a06972253f0c6d8605e3c844487da566e593703"
+    "sha256": "224d0c787936108ec0fd055f9f25354c4b02a78f0a733d27706473c1e259facb"
   },
   "runs": {
     "count": 685,
@@ -88,7 +88,7 @@
       "p7-answer-v4": 15
     },
     "with_corpus_version": 608,
-    "sha256": "7b37569a7f06a2335435eabb9aed6e1065d8c89d2a7e06c9bde528d0c68f7bae"
+    "sha256": "de67c0c1a37f86739ee0c8f8c33a58966b79ced260718398d59fa2e6ea2fea15"
   },
   "spans": {
     "claimed": 1289,
@@ -104,7 +104,7 @@
       "changed": 1121,
       "unrecorded": 168
     },
-    "sha256": "d43eaa0360593946c6f6fe26e3b271f27151d3ec7c2baa03f3cd8a5a0ef84ac6"
+    "sha256": "c9a230f074dc06dd252a562c30bd0e9fd68ea8d7232e259e0552834622ee7809"
   },
   "places": {
     "stats": {
@@ -123,7 +123,7 @@
       "persia-03-coin"
     ],
     "unconsidered": [],
-    "sha256": "8891057f92d28536dbc52b94928b011c9a4d77636294e20655f8d487e75405fe"
+    "sha256": "70fab6bcddd3a4a08374f34902990701c3e224b47f3b244b2044fb5c970301c7"
   },
   "coastline": {
     "source": "Natural Earth",

@@ -52,3 +52,53 @@ For each record, either **"identical"** or a list such as **"word 12: OGIS has a
 smooth breathing"**. If it is easier, paste a screenshot of the OGIS lines into
 the chat. The model will then list candidate differences word by word for you to
 confirm against the page. It will not transcribe the Greek itself.
+
+---
+---
+
+# THE MODEL'S READING, 2026-09-23 — **SIX DIFFERENCES, FOR ROB TO CONFIRM**
+
+*Rob sent screenshots of p. 303 and p. 293. The model read those and pp. 292, 294,
+305, and 306 in the Internet Archive viewer. It compared each page with the
+record's words below. It transcribed nothing, and each item names the word
+number and what the page shows.*
+
+## Where the texts sit
+
+```
+africa-04 Silko (OGIS 201)    words  1-8    p. 303   last line, ending "Αἰθιό-"
+                              words  8-16   p. 305   first line
+                              words 17-26   p. 306   first line
+africa-05 Adulis (OGIS 199)   words  1-40   p. 292   left column, from "ταῦτα"
+                              words 41-58   p. 293   left column
+                              words 59-73   p. 294   left column, ending
+                                                     "ἐπολέμησα."
+```
+
+## The differences
+
+```
+africa-04  word  1   record ἐγὼ           OGIS Ἐγὼ           capital       p. 303  (Rob's screenshot)
+africa-04  word  8   record Αἰθιόπων      OGIS Αἰθιόπων,     comma after   p. 305
+africa-04  word 24   record ἔδωκεν        OGIS ἔδωκέν        second acute  p. 306
+                                                             before the
+                                                             enclitic μοι
+africa-05  word 17   record ὑποτάξας,     OGIS ὑποτάξας      no comma      p. 292
+africa-05  word 41   record Ἀραβίτας      OGIS Ἀρραβίτας     double rho    p. 293  (Rob's screenshot)
+africa-05  word 48   record διαπεμψάμενος,  OGIS διαπεμψάμενος  no comma   p. 293  (Rob's screenshot)
+```
+
+**Everything else matches**, apart from what the sheet said to ignore. OGIS also
+prints signs the record will declare as omitted: stone line-division strokes
+(| and ‖), the scholia reference marks (†ⁱ, †ᵏ, †ˡ, *ᵐ), the margin letters B
+and C, line numbers, and note numbers.
+
+**Not yet applied.** RULING 98 says the edition's characters stand. The six
+edits land in the record pass, together with the new citation and the note,
+once Rob has confirmed them.
+
+**APPLIED 2026-09-23**, after Rob confirmed all six against the pages. Both
+records now cite OGIS, their notes name PHI as a cross-reference only, and their
+rights cells are read off the OGIS scan (`public_domain`). The English
+components are recorded in the notes: Satzinger states no terms, and McCrindle
+via tertullian.org states public domain.
