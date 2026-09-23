@@ -366,3 +366,34 @@ seasia-04-dong-yen-chau  Thurgood, From Ancient Cham to Modern Dialects (Univers
                          was found
   PROPOSED               see the question put to Rob
 ```
+
+---
+
+# 10. THREE OF THE FOUR CONFIRMED, 2026-09-23
+
+```
+arabia-03-jsnab17        all_rights_reserved            O'Connor, "Copyright 1986
+                                                        The University of Chicago."
+arabia-04-jabal-dabub    states_no_terms                the page and its PDF state
+                                                        nothing (the PDF checked by Rob)
+seasia-07-talang-tuo     permission_stated_no_licence   SEAlang's root sentence;
+                                                        Suhadi's PDF states nothing
+                                                        (checked by Rob)
+seasia-04-dong-yen-chau  UNREAD                         Rob is finding a copy of
+                                                        Thurgood (1999)
+```
+
+**One proposal was withdrawn before Rob ruled, and the withdrawal is recorded.**
+§9 proposed `all_rights_reserved` for Jabal Dabub off the JSAI website's footer.
+The africa-01-ezana-stone precedent does not read a different host into a cell:
+the article is served from academia.edu, not from jsai.huji.ac.il. The proposal
+became `states_no_terms`, with the footer quoted in the note.
+
+**The column is now 18 open / 16 all rights reserved / 8 states no terms / 6
+permission / 3 two positions / 2 public domain, and 1 unread.**
+
+**The one unread cell's reason is now wrong, and that is known.** `seasia-04`
+still says `source_not_established`. Its source IS established (RULING 99 clause
+2, Thurgood 1999). What is missing is the publication's own statement. It stays
+as it is until Rob reports what the copy says, because a new `unread_reason` is a
+schema change and may not be needed.

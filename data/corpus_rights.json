@@ -87,14 +87,23 @@
       "note": "READ OFF WIKIPEDIA UNDER RULING 99, clause 1: the record's words are the article's own prose, so the cell describes the article. Unread until 2026-09-22 as source_not_established -- the record carries no citation_original -- and established that day by matching the record's quoted fields against the article named in `citation`. CC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step.\n\nTHIS RECORD QUOTES NO SOURCE TEXT. It is the corpus's one pointer_only record: its original field is a pointer to the Healey/Shifman edition and its translation field is empty, so no answer can quote it. What it does carry -- the language note ('the longest lapidary Aramaic inscription known') and the notes -- follows this article, and the one quotation it keeps, John Matthews's 'one of the most important single items of evidence for the economic life of any part of the Roman Empire', is on the article too. That sentence is Matthews's, quoted by the article, and is held in `notes` so that it cannot be cited as source evidence. Article last edited 8 May 2026, 17:37 UTC."
     },
     "arabia-03-jsnab17": {
-      "position": "unread",
+      "position": "all_rights_reserved",
       "region": "Arabia",
-      "unread_reason": "source_not_established"
+      "licence": null,
+      "stated_verbatim": "Copyright 1986 The University of Chicago.",
+      "read_off": "https://www.journals.uchicago.edu/doi/10.1086/373188",
+      "read_on": "2026-09-23",
+      "read_by": "curator_and_model",
+      "note": "READ UNDER RULING 99, clause 2: the record's words are a named third party's text that Wikipedia sets off as a quotation, so the cell describes the third party's publication and Wikipedia is the delivery. Unread until 2026-09-23 as source_not_established. The model read the object on 2026-09-22 and Rob confirmed on 2026-09-23, which is the date recorded.\n\nTHE PUBLICATION: M. O'Connor, 'The Arabic Loanwords in Nabatean Aramaic', Journal of Near Eastern Studies 45.3 (1986) 213-229, reached through https://doi.org/10.1086/373188. The article page's COPYRIGHT panel carries the quoted line; the site footer adds '© 2025 The University of Chicago and other publishing partners. All rights reserved, including rights for text and data mining and training of artificial intelligence technologies or similar technologies.' THAT CLAUSE WAS PUT IN FRONT OF ROB before he confirmed: this portal quotes the translation and does not mine or train on it. RULING 74's conditions apply in full.\n\nTHE DELIVERY, FOR THE NOTE: https://en.wikipedia.org/wiki/JSNab_17 (last edited 8 April 2026) reproduces O'Connor's translation after 'This yields:', footnoted to the article. The record copies it with its diacritics simplified (Raqash for Raqāsh, Mare 'Alma for Marē ʿAlma), which the record pass should reconcile."
     },
     "arabia-04-jabal-dabub": {
-      "position": "unread",
+      "position": "states_no_terms",
       "region": "Arabia",
-      "unread_reason": "source_not_established"
+      "licence": null,
+      "read_off": "https://www.academia.edu/43388891/Al_Jallad_2022_The_pre_Islamic_basmala_Reflections_on_its_first_epigraphic_attestation_and_its_original_significance",
+      "read_on": "2026-09-23",
+      "read_by": "curator_and_model",
+      "note": "READ UNDER RULING 99, clause 2: the record's words are a named third party's text that Wikipedia sets off as a quotation, so the cell describes the third party's publication and Wikipedia is the delivery. Unread until 2026-09-23 as source_not_established. The model read the object on 2026-09-22 and Rob confirmed on 2026-09-23, which is the date recorded.\n\nTHE PUBLICATION: Ahmad Al-Jallad, 'A pre-Islamic basmala: reflections on its first epigraphic attestation and its original significance', Jerusalem Studies in Arabic and Islam 52 (2022) 1-28, at the academia.edu link Wikipedia's footnote gives (https://www.academia.edu/43388891, reached at the URL above). THE OBJECT STATES NOTHING: the model searched the rendered page on 2026-09-22 and found only the platform's footer, '© 2026 Academia. All rights reserved', which is the host and not the source (FINDING 121's shape); Rob opened the PDF on 2026-09-23 and found no copyright or license line on its first or last page.\n\nTHE JOURNAL'S OWN SITE IS A DIFFERENT HOST AND IS NOT READ INTO THIS CELL, on the africa-01-ezana-stone precedent: https://jsai.huji.ac.il/ carries '©The Hebrew University of Jerusalem. All Rights Reserved' in its footer, and does not serve this article. The model first proposed all_rights_reserved off that footer and withdrew it against the precedent before Rob ruled.\n\nTHE DELIVERY, FOR THE NOTE: https://en.wikipedia.org/wiki/Jabal_Dabub_inscription (last edited 3 September 2026) prints the revised reading and 'In English:', both footnoted [2] to this article."
     },
     "arabia-05-ruwafa": {
       "position": "open_licence_stated",
@@ -341,9 +350,14 @@
       "note": "READ OFF WIKIPEDIA UNDER RULING 99, clause 3: the record's transliteration is copied from this article, and the article does not say whose it is. Rob's ruling of 2026-09-22 reads the cell off the only page that states terms for these words as printed, and records the gap here rather than attributing the reading. Unread until that day as source_not_established.\n\nTHE GAP, MEASURED: the article's Transliteration table carries no footnote. Its references name Guy (2014), Caillat and de Casparis (1991), de Casparis (1978) and Acri (2016) against other statements, and Coedès only inside a gloss note on `siddhayatra`. It writes v where the Talang Tuo article's transliteration writes w (svasti/swasti, vulan/wulan), so the two are not from one corpus, and Talang Tuo's is footnoted to SEAlang's Old Malay Corpus. The record's own original_text_note already says 'what is not established is whose transliteration this is'. The inscription is 7th-century. Article last edited 5 August 2026, 22:39 UTC.\n\nCC BY-SA asks for attribution and the license named wherever the adapted text is shown; whether the portal's record panel names it is checked at the deploy block's look step."
     },
     "seasia-07-talang-tuo": {
-      "position": "unread",
+      "position": "permission_stated_no_licence",
       "region": "Southeast Asia",
-      "unread_reason": "source_not_established"
+      "licence": null,
+      "stated_verbatim": "All results are freely available for re-use under the Creative Commons open license.",
+      "read_off": "http://sealang.net/",
+      "read_on": "2026-09-23",
+      "read_by": "curator_and_model",
+      "note": "READ UNDER RULING 99, clause 2: the record's words are a named third party's text that Wikipedia sets off as a quotation, so the cell describes the third party's publication and Wikipedia is the delivery. Unread until 2026-09-23 as source_not_established. The model read the object on 2026-09-22 and Rob confirmed on 2026-09-23, which is the date recorded.\n\nREAD OFF THE SITE ROOT, NOT THE OBJECT: the object is SEAlang's display of the transliteration, http://sealang.net/oldmalay/display.pl?id=OM17&author=Suhadi&year=1983 -- exactly what Wikipedia's footnote [2] links -- which holds the record's text ('niparwuat', 'jayanāga', 'pranidhānānda', 'śakawarṣātīta 606') and states nothing. The source is the same host, and its root states the sentence quoted (RULING 96, LOCATIONS). It names Creative Commons but NO SPECIFIC LICENSE, so open_licence_stated would claim a license nobody named, which is why this is the permission position.\n\nTHE TRANSLITERATION IS SUHADI'S (1983), and SEAlang hosts that publication as http://sealang.net/oldmalay/archives/suhadi1983seven.pdf. Rob opened it on 2026-09-23 and found no copyright or license line on its first or last page. The record's own original_text_note says Wikipedia does 'NOT state whose transliteration it prints'; it does, and the record pass corrects the note.\n\nTHE DELIVERY, FOR THE NOTE: https://en.wikipedia.org/wiki/Talang_Tuo_inscription (last edited 20 June 2025), which carries a maintenance banner saying the section copies source text."
     },
     "southasia-01-akananuru-149": {
       "position": "permission_stated_no_licence",
