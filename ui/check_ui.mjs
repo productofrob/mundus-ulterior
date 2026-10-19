@@ -127,7 +127,7 @@ try {
     " renderPlaceProvenance, renderGroupProvenance, renderEdgeProvenance," +
     " buildMap, mapState, mapWindow, mapBase, MARK, MAP_LABEL_PX," +
     " viewHome, viewQuestions, viewPlaces, viewAbout," +
-    " BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample, CHAIN_EXAMPLE," +
+    " chainExample, CHAIN_EXAMPLE," +
     " railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS," +
     " pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice, homeSelection," +
     " SPAN_STATES, PROVENANCE, PANEL_EMPTY, SELECT_ATTR, renderPanel, langName, placeLedger,"
@@ -149,7 +149,7 @@ const { D, P, byQuestion, QUESTIONS, state, renderAnswerText,
         renderRecordProvenance, renderPlaceProvenance, renderGroupProvenance,
         renderEdgeProvenance, buildMap, mapState, mapWindow, mapBase, MARK, MAP_LABEL_PX,
         viewHome, viewQuestions, viewPlaces, viewAbout,
-        BANNER, BANNER_H, BANNER_NATIVE, bannerText, chainExample, CHAIN_EXAMPLE,
+        chainExample, CHAIN_EXAMPLE,
         railPartition, showableRuns, caseOf, REFUSAL_REASONS, refusalReason, PUBLIC_NOTES, TABS,
         pushSelection, stepSelection, clearTrail, canStep, panelNav, placeNotice,
         homeSelection,
@@ -375,56 +375,77 @@ catch (e) { note(false, `the home view threw: ${e.message}`); }
   }
 }
 
-/* ---- 2c. the masthead script band ----
+/* ---- 2c. the masthead landscape ----
  *
- * The band shows source text as IMAGES, because live web type would give a
- * visitor without a Tamil, Devanagari, CJK or polytonic Greek font a row of
- * tofu boxes. An image is the one thing on this page a reader cannot check by
- * clicking, so it is checked here instead, on four counts:
+ * RETIRED 2026-10-19, with the script band they guarded: "every masthead
+ * specimen has its record, its characters and its image" and "native script
+ * and romanised transliteration are not confused". The band and the map
+ * thumbnail left the header on visitor feedback, so nothing those two read is
+ * on the page. They are retired, not relaxed: there is no weaker claim left
+ * for them to make. ui/build_banner.mjs and ui/banner/ are unreferenced now and
+ * are left where they are for the repository cleanup.
  *
- *   - the page's declared list and ui/banner/manifest.json agree. They are two
- *     declarations of one curation decision, in two files, and nothing else
- *     would notice them drifting apart
- *   - the record each specimen names still exists
- *   - the declared start is still IN that record's field. If a record is
- *     re-curated and the substring goes, the page silently drops the specimen
- *     and this says so
- *   - the characters the page reads back for the alt text are the characters
- *     the generator baked into the image. An image whose alt text has drifted
- *     from the picture is a caption that lies, and it is exactly the class of
- *     defect FINDING 98 was: three renderings of one thing, disagreeing.
+ * What replaced them is a landscape drawn inline in the header. It is
+ * decoration, and the three ways it can go wrong are the three things this
+ * page's design system exists to stop:
+ *
+ *   - the header starts LOADING something: an <img>, or a url() that is not one
+ *     of the drawing's own gradients. The page opens from disk and loads
+ *     nothing it does not hold
+ *   - a COLOR gets written into the drawing. Every paint is a class rule that
+ *     reads a --hz- token, and every class the drawing uses has one
+ *   - the DARK THEME falls back to the light landscape. Every --hz- token with
+ *     a value of its own is redefined in BOTH dark blocks, the media query and
+ *     the explicit [data-theme="dark"]; a token that is var(--another) follows
+ *     that token, which the dark theme already redefines
  */
 {
-  let manifest = null;
-  try { manifest = JSON.parse(readFileSync(join(UI, "banner", "manifest.json"), "utf8")); }
-  catch (e) { note(false, `ui/banner/manifest.json is unreadable: ${e.message}`); }
+  const head = (html.match(/<header class="top">[\s\S]*?<\/header>/) || [""])[0];
+  const svg = (head.match(/<svg class="horizon"[\s\S]*?<\/svg>/) || [""])[0];
+  const css = (html.match(/<style>([\s\S]*?)<\/style>/) || ["", ""])[1];
 
-  if (manifest) {
-    const byCode = new Map(manifest.specimens.map(sp => [sp.code, sp]));
-    const problems = [];
-    if (manifest.specimens.length !== BANNER.length)
-      problems.push(`the page declares ${BANNER.length} specimen(s), the manifest ${manifest.specimens.length}`);
-    for (const s of BANNER) {
-      const m = byCode.get(s.code);
-      if (!m) { problems.push(`${s.code}: declared on the page, absent from the manifest`); continue; }
-      if (m.doc !== s.doc)     problems.push(`${s.code}: page says ${s.doc}, manifest says ${m.doc}`);
-      if (m.from !== s.from)   problems.push(`${s.code}: the declared start differs between page and manifest`);
-      if (m.w !== s.w)         problems.push(`${s.code}: declared width ${s.w} but the image was rendered ${m.w}`);
-      if (!D.corpus[s.doc])    problems.push(`${s.code}: ${s.doc} is not in the corpus`);
-      const text = bannerText(s);
-      if (text == null)        problems.push(`${s.code}: the declared start "${s.from}" is no longer in ${s.doc}`);
-      else if (text !== m.text) problems.push(`${s.code}: the page reads "${text}" where the image shows "${m.text}"`);
-      try { statSync(join(UI, "banner", `${s.code}.png`)); }
-      catch { problems.push(`${s.code}: ui/banner/${s.code}.png is missing`); }
-    }
-    note(problems.length === 0,
-         `every masthead specimen (${BANNER.length}) has its record, its characters and its image` +
-         (problems.length ? ` — ${problems.slice(0, 4).join("; ")}` : ""));
+  const loads = [];
+  if (!svg) loads.push('there is no <svg class="horizon"> in the header');
+  if (/<img\b/i.test(head)) loads.push("the header holds an <img>");
+  for (const m of head.matchAll(/url\(([^)]*)\)/g))
+    if (!/^#hz-[\w-]+$/.test(m[1])) loads.push(`the header references url(${m[1]})`);
+  note(loads.length === 0,
+       "the masthead loads nothing: no image, and no url() but its own gradients" +
+       (loads.length ? ` — ${loads.join("; ")}` : ""));
 
-    const nat = BANNER.filter(s => BANNER_NATIVE.has(s.code)).length;
-    note(BANNER.every(s => BANNER_NATIVE.has(s.code) === !!byCode.get(s.code)?.native),
-         `native script and romanised transliteration are not confused (${nat} native of ${BANNER.length})`);
+  const paint = [];
+  for (const m of svg.matchAll(/\s(fill|stroke|stop-color|stop-opacity|color|style)="([^"]*)"/g))
+    if (!(m[1] === "fill" && /^url\(#hz-[\w-]+\)$/.test(m[2]))) paint.push(m[0].trim());
+  const classes = new Set([...svg.matchAll(/class="([^"]*)"/g)].flatMap(m => m[1].split(/\s+/)));
+  classes.delete("horizon");
+  for (const c of classes)
+    if (!new RegExp(`\\.horizon \\.${c}\\s*\\{`).test(css)) paint.push(`.${c} has no rule`);
+  note(svg !== "" && paint.length === 0,
+       `the masthead drawing writes no color of its own (${classes.size} classes, each with a rule)` +
+       (paint.length ? ` — ${paint.slice(0, 4).join("; ")}` : ""));
+
+  const block = sel => {
+    const at = css.indexOf(sel);
+    if (at < 0) return "";
+    const open = css.indexOf("{", at);
+    return css.slice(open + 1, css.indexOf("}", open));
+  };
+  const defs = b => new Map([...b.matchAll(/(--hz-[\w-]+)\s*:\s*([^;]+);/g)].map(m => [m[1], m[2].trim()]));
+  const light = defs(block(":root {"));
+  const darkMq = defs(block(':root:not([data-theme="light"]) {'));
+  const darkSet = defs(block(':root[data-theme="dark"] {'));
+  const read = new Set([...css.matchAll(/var\((--hz-[\w-]+)/g)].map(m => m[1]));
+  const dark = [];
+  if (!read.size) dark.push("no rule reads a --hz- token");
+  for (const tok of read) {
+    if (!light.has(tok)) { dark.push(`${tok} is read but :root never defines it`); continue; }
+    if (/^var\(--[\w-]+\)$/.test(light.get(tok))) continue;
+    if (!darkMq.has(tok)) dark.push(`${tok} is not redefined in the dark media query`);
+    if (!darkSet.has(tok)) dark.push(`${tok} is not redefined under [data-theme="dark"]`);
   }
+  note(dark.length === 0,
+       `the dark theme redraws the masthead rather than inheriting the light one (${read.size} tokens)` +
+       (dark.length ? ` — ${dark.slice(0, 4).join("; ")}` : ""));
 }
 
 /* ---- 2b. Phase 2, A5: every placement is reachable, plotted or not ----
