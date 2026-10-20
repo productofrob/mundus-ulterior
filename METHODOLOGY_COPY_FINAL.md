@@ -65,7 +65,7 @@ Heading: How the portal was built
 The reference copy of this site, the version kept in the project repository and checked by the tests, is built as follows:
 * One hand-written HTML page that opens directly from disk, alongside a generated data file. The page itself uses no framework, is not compiled or bundled, needs no server, and loads nothing from outside; the data file is produced beforehand by a script in the repository.
 * Every colour, and most size and spacing values, is a named token rather than a number written into the markup.
-* The landscape in the masthead is decoration and makes no claim about the sources. It is drawn inside the page from the same named color tokens as everything else, so it needs no image file, and the dark theme redraws it rather than inverting it.
+* The landscape in the masthead, with a Roman eagle standard on a far ridge and a Han banner on a near one, is an artistic interpretation and makes no claim about the sources. It is drawn inside the page from the same named color tokens as everything else, so it needs no image file, and the dark theme redraws it rather than inverting it.
 * The map is drawn as SVG by the page's own code, from a dated public coastline dataset and the gazetteer positions, with its own solver that hides any label that would overlap another.
 * A separate instrument measures the page's layout. It reports whether a figure moved and has no opinion on whether the page is better: a change that improved every measured figure once made the page worse to read and was reversed on human judgement.
 
