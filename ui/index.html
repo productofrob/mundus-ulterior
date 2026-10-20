@@ -86,6 +86,9 @@
        overpowered the claim beneath it. About a tenth off the desktop end;
        the phone end barely moves, because it was not the problem. */
     --t-3xl: clamp(25px, 2.9vw, 34px);
+    /* The masthead wordmark, and only that (2026-10-20): it sits on the
+       landscape now and was reading small there. */
+    --t-mast: clamp(32px, 3vw, 44px);
 
     --lh-tight: 1.25;
     --lh-snug:  1.45;
@@ -323,11 +326,14 @@
   .brand { display: flex; flex-direction: column; gap: var(--s-2); min-width: 0; flex: 1 1 auto; }
   .themebtn[hidden] { display: none; }
   .brand h1 {
-    font-size: var(--t-2xl); margin: 0; letter-spacing: .005em; line-height: var(--lh-tight);
+    font-size: var(--t-mast); margin: 0; letter-spacing: .005em; line-height: var(--lh-tight);
   }
   /* --ink-soft, not --ink-faint: the subtitle now sits on the sky, and faint
      ink on it measures about 3.3:1. */
-  .brand .sub { color: var(--ink-soft); font-size: var(--t-s); font-family: var(--font-sans); }
+  .brand .sub { color: var(--ink-soft); font-size: var(--t-l); font-family: var(--font-sans); }
+  /* A browser may break after an en dash even between no-break spaces, so the
+     range is held together here: a phone wraps before the dates, not inside them. */
+  .brand .sub .dates { white-space: nowrap; }
   .themebtn {
     font: inherit; font-family: var(--font-sans); font-size: var(--t-2xs);
     letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft);
@@ -1167,8 +1173,8 @@
        run into the text. */
     .horizon .hz-em { display: none; }
     main { padding: var(--s-5) var(--s-5) var(--s-8); }
-    .brand h1 { font-size: var(--t-xl); }
-    .brand .sub { font-size: var(--t-xs); }
+    .brand h1 { font-size: var(--t-2xl); }
+    .brand .sub { font-size: var(--t-m); }
     .statstrip {
       flex-wrap: nowrap; overflow-x: auto; gap: var(--s-5);
       padding-bottom: var(--s-2);
@@ -1342,7 +1348,7 @@
     <div class="brandbar">
       <div class="brand">
         <h1>Mundus Ulterior</h1>
-        <span class="sub">Rome and the wider world, 27 BC – 1204 AD: source-based answers</span>
+        <span class="sub">Rome and wider world: <span class="dates">27 BC – 1204 AD</span></span>
       </div>
       <button class="themebtn" id="themebtn" type="button" hidden>theme</button>
     </div>
