@@ -23,7 +23,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Mundus Ulterior — answers and their sources</title>
+<title>Mundus Ulterior — Rome and wider world: 27 BC – 1204 AD</title>
 <!-- DEPLOY BLOCK, 2026-09-23. An empty inline icon, so a browser does not ask the host for
      /favicon.ico. Cloudflare Pages answers any path it does not hold with this page, so
      every visit was downloading index.html a second time as its icon (126 KB compressed). -->
@@ -1392,10 +1392,10 @@
 -->
 <main id="main"><div class="boot">
   <h2>Loading the evidence.</h2>
-  <p>Every archived answer, every source record and every citation span travel
-  to you in one file, because each quotation on this page has to resolve to a
-  named range of characters in a named field of a named file — and that means
-  shipping the characters, not a summary of them.</p>
+  <p>Every archived answer, every source record, and every citation span travel
+  to you in one file, because each quotation must resolve to a named range of
+  characters in a named field of a named file. This demands shipping the actual
+  characters instead of just a summary.</p>
   <div class="bootbar"><i></i></div>
 </div></main>
 
@@ -1510,6 +1510,13 @@ function corpusLanguages() {
 const listOf = xs => xs.length < 2 ? (xs[0] || "")
   : xs.length === 2 ? xs.join(" and ")
   : xs.slice(0, -1).join(", ") + ", and " + xs[xs.length - 1];
+
+/* A count written as a word is still a count, so it is derived like one: Home's
+   "explores seven regions" reads the region list, never a typed "seven". Past
+   twelve it falls back to digits rather than inventing a spelling. */
+const NUM_WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven",
+                   "eight", "nine", "ten", "eleven", "twelve"];
+const numWord = n => NUM_WORDS[n] || String(n);
 
 /* ------------------------------------------------------------------ *
  * Phase 2, A5: places, grounds and the network subject_places implies.
@@ -4486,27 +4493,27 @@ function mapLegend() {
   const shared = (P.groups || []).filter(g => g.members.length > 1);
   const specimen = shared.length ? Math.min(...shared.map(g => g.members.length)) : 0;
   return `<div class="maplegend">
-    <span class="item"><svg class="swatch" width="14" height="14"><circle class="pt" cx="7" cy="7" r="4"/></svg>stated / identified — a specific place</span>
-    ${shared.length ? `<span class="item"><svg class="swatch" width="16" height="16"><circle class="ptm" cx="8" cy="8" r="6"/><text class="swn" x="8" y="11">${specimen}</text></svg>a numeral — how many placements share that point; one record can make two</span>` : ""}
+    <span class="item"><svg class="swatch" width="14" height="14"><circle class="pt" cx="7" cy="7" r="4"/></svg>stated / identified: a specific place</span>
+    ${shared.length ? `<span class="item"><svg class="swatch" width="16" height="16"><circle class="ptm" cx="8" cy="8" r="6"/><text class="swn" x="8" y="11">${specimen}</text></svg>a numeral: how many placements share that point; one record can make two</span>` : ""}
     <span class="item"><svg class="swatch" width="14" height="14"><circle class="ct" cx="7" cy="7" r="4"/></svg>a contested identification is among the placements here</span>
-    <span class="item"><svg class="swatch" width="18" height="14"><rect class="ext" x="2" y="2" width="14" height="10" rx="2"/></svg>regional — the area Pleiades gives it; never a pin</span>
-    <span class="item"><svg class="swatch" width="22" height="10"><line class="ln" x1="1" y1="5" x2="21" y2="5"/></svg>source / destination — an edge between two places a record names</span>
-    <span class="item"><svg class="swatch" width="22" height="10"><line class="lnw" x1="1" y1="5" x2="21" y2="5"/></svg>waypoint — on the way; no order recorded among waypoints</span>
-    <span class="item"><svg class="swatch" width="26" height="14"><rect class="bnd" x="1" y="2" width="24" height="10" rx="2"/><rect class="bchip" x="5" y="6" width="4" height="4"/><rect class="bchip" x="11" y="6" width="4" height="4"/><rect class="bchip" x="17" y="6" width="4" height="4"/></svg>a region band, and one square per record — where this map keeps
+    <span class="item"><svg class="swatch" width="18" height="14"><rect class="ext" x="2" y="2" width="14" height="10" rx="2"/></svg>regional: the area Pleiades gives it; never a pin</span>
+    <span class="item"><svg class="swatch" width="22" height="10"><line class="ln" x1="1" y1="5" x2="21" y2="5"/></svg>source / destination: an edge between two places a record names</span>
+    <span class="item"><svg class="swatch" width="22" height="10"><line class="lnw" x1="1" y1="5" x2="21" y2="5"/></svg>waypoint: on the way; no order recorded among waypoints</span>
+    <span class="item"><svg class="swatch" width="26" height="14"><rect class="bnd" x="1" y="2" width="24" height="10" rx="2"/><rect class="bchip" x="5" y="6" width="4" height="4"/><rect class="bchip" x="11" y="6" width="4" height="4"/><rect class="bchip" x="17" y="6" width="4" height="4"/></svg>a region band, and one square per record: where this map keeps
       the records it cannot draw as points. Its POSITION is the center of that region's own cached
       findspots${declaredBands.length
-        ? ` — except ${esc(listOf(declaredBands.map(b => b.region)))}, ${one ? "whose position was" : "whose positions were"}
+        ? `, except ${esc(listOf(declaredBands.map(b => b.region)))}, ${one ? "whose position was" : "whose positions were"}
            manually curated`
         : ""}; its SIZE is how many records are in it and is not a claim about specific territory. A band
       is not a boundary: the seven regions are this project's categories and not derived from prior
       publications</span>
     ${D.coastline ? `<span class="item note">Coastline: ${esc(D.coastline.source)}
-      ${esc(D.coastline.scale)}, ${esc(D.coastline.terms)}, retrieved ${esc(D.coastline.retrieved)} —
-      a modern reference frame, not evidence, and no ancient shoreline</span>` : ""}
-    <span class="item note">Labels are dropped where they would collide —
+      ${esc(D.coastline.scale)}, ${esc(D.coastline.terms)}, retrieved ${esc(D.coastline.retrieved)}.
+      It is a modern reference frame, not evidence, and does not show the ancient shoreline</span>` : ""}
+    <span class="item note">Labels are dropped where they would collide:
       every point is clickable and every name is listed below</span>
     <span class="item note">Some edges join places closer together than the points that draw them,
-      so they have no length to click — every edge is listed on the panel of both points it joins</span>
+      so they have no length to click: every edge is listed on the panel of both points it joins</span>
   </div>`;
 }
 
@@ -5094,10 +5101,9 @@ function chainFigure() {
 
   return `<div class="card chaincard">
     <h3>How answers are assembled</h3>
-    <p class="prose-soft chainlead">Not a diagram of the idea. Every answer on this
-    portal is assembled the same way, and this is one of them, traced end to end —
-    a real answer the system produced, with every step below read out of the
-    archive when this page loads.</p>
+    <p class="prose-soft chainlead">Each answer on this portal is assembled the same
+    way. Answers the system produced are traced end-to-end, with each step read from
+    the archive when the page loads.</p>
     <div class="chainfig">
       ${step(1, "an English question", `<p class="cq">${esc(q)}</p>`)}
       <div class="carrow" aria-hidden="true">→</div>
@@ -5132,11 +5138,10 @@ function viewHome() {
       <h3>Mundus Ulterior — the world beyond</h3>
       <p><em>Mundus</em> is Latin for 'world' and <em>ulterior</em> means 'beyond'. On this
       portal, the 'world beyond' refers to the world beyond ancient Rome.</p>
-      <p>This project takes ${listOf(regions)} between 27 BC (the start of the Roman Empire)
-      and 1204 AD (the sack of Constantinople), and asks what connected these many regions to
-      Rome. What goods, coins, envoys, religions, and stories traveled across worlds?
-      <strong>The answers come from regional sources, in their own words</strong>, rather than
-      just what Rome wrote about them.</p>
+      <p>This project explores ${numWord(regions.length)} regions between 27 BC and 1204 AD and
+      asks what connected them to the Roman Empire. What goods, coins, envoys, religions, and
+      stories traveled between worlds from ${listOf(regions)}? <strong>The answers come from
+      these regions' own words rather than just what the Romans wrote about them.</strong></p>
     </div>
 
     <div class="card">
@@ -5144,19 +5149,19 @@ function viewHome() {
       <div class="withmap">
         <div>
           <p>Using a set of fixed questions, the system searches a curated corpus of primary
-          sources in their own languages, retrieves the passages that answer each one, and
-          writes an answer that quotes them. <strong>Each quotation is clickable, and almost
-          every click lands on the passage it quotes, in the exact field of the exact file it
-          comes from.</strong> The few that don't are shown with the reason.</p>
+          sources in their own languages, retrieves the relevant passages, and writes an
+          answer that quotes them. <strong>Each quotation is clickable, with (almost) every
+          click landing on the quoted passage.</strong> The few that don't are shown with the
+          reason.</p>
           <p>The ${esc(TABS.map)} tab does the same thing for geography: each place-point comes
           from a cached gazetteer identifier. Every place the corpus names but cannot definitely
-          place is listed rather than dropped.</p>
+          place is listed instead of dropped.</p>
         </div>
         ${fullMap() ? `<button class="homemap" type="button" data-goto="map"
           title="open the ${esc(TABS.map)} tab">${fullMap()}${mapCredit()}
           <span class="homemap-cap">${(P.groups || []).length} places drawn from a cached
-            gazetteer id · ${placeLedger().gaps.length} the corpus names and this map
-            will not draw</span></button>` : ""}
+            gazetteer id · ${placeLedger().gaps.length} the corpus names but cannot be
+            placed on the map</span></button>` : ""}
       </div>
     </div>
 
@@ -5172,15 +5177,16 @@ function viewHome() {
 
     <div class="card">
       <h3>Why Mundus Ulterior exists</h3>
-      <p><strong>AI-based answers about the ancient world can be hard to verify.</strong> They
-      read fluently, cite things that are hard to follow, and a quote with a drifted word looks
+      <p><strong>AI-based answers about the ancient world can be hard to verify.</strong>
+      Answers read fluently but cite things that are hard to follow, and a drifted quote looks
       exactly like one that hasn't. 'Mundus Ulterior' aims to demonstrate a more reliable and
-      transparent approach. The entire chain for answering a question from primary sources is
+      transparent approach via strict grounding in primary sources. The entire chain for answering a question from primary sources is
       shown and clickable, from question to retrieval, passage, quotation, character offset,
       field, and file.</p>
-      <p><strong>This approach lets regions speak about Rome in their own words.</strong>
-      Standard accounts of Rome's 'world beyond' come from Greek and Latin sources. The sources
-      here are largely not those, and where Greek is used, it comes from those boundary points.
+      <p><strong>Ancient regions speak about Rome in their own words.</strong>
+      Standard accounts of Rome's 'world beyond' come from Greek and Latin sources. 'Mundus
+      Ulterior' sources here are largely not those, and where Greek is used, it comes from those
+      border areas.
       A Sabaic inscription, a Chinese dynastic history, and a Tamil poem answer English
       questions in their own words.</p>
       <!-- THE PROMISE, AND IT IS NOW KEPT RATHER THAN MADE. This sentence named
@@ -5191,12 +5197,12 @@ function viewHome() {
            — and it points at the card that does the work rather than doing it
            twice. GUARD 58 READS THIS SENTENCE: it asserts the literal phrase
            "The failures are kept" and re-derives the count out of
-           "so are the N question(s)". Reword either and the harness goes red. -->
+           "as are the N question(s)". Reword either and the harness goes red. -->
       <p><strong>The failures are kept.</strong> Refusals, citations that don't resolve, and
-      places the map will not draw are counted and shown — and so are the ${withheld.length}
+      places the map cannot draw are counted and shown, as are the ${withheld.length}
       question${withheld.length === 1 ? "" : "s"} this page keeps off its own question list,
-      named on the ${esc(TABS.data)} tab with what went wrong in each. 'Mundus Ulterior' is a
-      proof-of-concept. As such, only displaying successes would hinder potential future
+      named on the ${esc(TABS.data)} tab with what went wrong in each. Because 'Mundus Ulterior'
+      is a proof-of-concept, only displaying successes would hinder potential future
       development.</p>
     </div>
 
@@ -5207,7 +5213,7 @@ function viewHome() {
       coins and objects, museum catalog entries, and published translations) drawn from the
       ${regions.length} regions Rome had direct or indirect connections with, between 27 BC and
       1204 AD. The tiers on the ${esc(TABS.data)} tab describe what each kind of record does and
-      doesn't carry. Sources are in ${esc(listOf([...corpusLanguages(), "English"]))}. An English
+      doesn't contain. Sources are in ${esc(listOf([...corpusLanguages(), "English"]))}. An English
       question retrieves them in their own languages, and the answer quotes them.</p>
       <p>The valuable claim isn't that an answer reads well. It's that <strong>almost every
       quote resolves to a specific character range in a specific field of a specific

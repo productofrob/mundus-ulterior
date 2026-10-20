@@ -1118,7 +1118,7 @@ if (D.coastline && D.coastline.polygons) {
 
    Without (2) a later block could quietly restore it to the map, or print it on
    both, and (1) would stay green on either. Home promises that "places the map
-   will not draw are counted and shown"; this is where the page keeps that
+   cannot draw are counted and shown"; this is where the page keeps that
    promise, and a guard that could not say WHERE would be asserting the promise
    is kept somewhere. ---- */
 {
@@ -1537,7 +1537,7 @@ if (D.coastline && D.coastline.polygons) {
      word after it — the same assumption the 2g literal made and the same way it
      was wrong. Written this way first because that mistake is on the record
      twice already. */
-  else if (!new RegExp(`so are the ${rail.withheld.length}\\s+questions?`).test(home))
+  else if (!new RegExp(`as are the ${rail.withheld.length}\\s+questions?`).test(home))
     problems.push("Home's promise does not carry the withheld count the card derives");
 
   note(problems.length === 0,
