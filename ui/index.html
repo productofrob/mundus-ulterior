@@ -1246,19 +1246,44 @@
   /* STICKY, AND ONE ROW ON A PHONE. Ten chips wrap to seven rows at 390px, and
      a sticky block that tall is most of the viewport — so on a narrow screen it
      scrolls sideways in one row instead, and only sticks where it fits. */
-  .secnav { display: flex; gap: var(--s-2); padding: var(--s-3) 0; margin: 0 0 var(--s-6);
+  /* LARGER AND IN THE ACCENT, on Rob's order of 2026-10-23: the chips were
+     11.5px gray text on a gray hairline, the quietest thing on the tab, and
+     read as decoration rather than as the way round ten sections. They now
+     carry the accent wash at the size of the figure titles, and fill solid on
+     hover and keyboard focus. */
+  .secnav { display: flex; gap: var(--s-3); padding: var(--s-4) 0; margin: 0 0 var(--s-6);
             background: var(--paper); border-bottom: var(--rule) solid var(--line);
             overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* At this size the ten chips need three rows below about 1060px, and a
+     sticky block of three rows is 149px of a tablet's screen; from 1100px they
+     fit in two (105px). So they wrap from 860px as before, and stick from
+     1100px — the same rule as before, that it only sticks where it fits. */
   @media (min-width: 860px) {
-    .secnav { position: sticky; top: 0; z-index: 3; flex-wrap: wrap; overflow-x: visible; }
+    .secnav { flex-wrap: wrap; overflow-x: visible; }
   }
-  .secnav a { font-family: var(--font-sans); font-size: var(--t-xs); color: var(--ink-soft);
-              text-decoration: none; border: var(--rule) solid var(--line);
-              border-radius: var(--r-pill); padding: 3px 10px; white-space: nowrap; }
-  .secnav a:hover { color: var(--ink); border-color: var(--accent-line); background: var(--accent-soft); }
+  @media (min-width: 1100px) {
+    .secnav { position: sticky; top: 0; z-index: 3; }
+  }
+  .secnav a { font-family: var(--font-sans); font-size: var(--t-m); font-weight: 500; line-height: 1.2;
+              color: var(--ink); text-decoration: none; background: var(--accent-soft);
+              border: var(--rule) solid var(--accent-line); border-radius: var(--r-pill);
+              padding: 8px 16px; white-space: nowrap; }
+  .secnav a:hover, .secnav a:focus-visible { color: var(--on-accent); background: var(--accent);
+                                             border-color: var(--accent); outline: none; }
   .mth { margin: 0 0 var(--s-8); scroll-margin-top: 56px; }
-  .mth-head { font-family: var(--font-serif); font-size: var(--t-xl); line-height: var(--lh-tight);
-              margin: 0 0 var(--s-4); }
+  /* THE SECTION TITLE LEADS, on Rob's order of 2026-10-23. Each section opens
+     with its name (the h2, the same words as its chip in the nav) and then a
+     heading for what it says (the h3). The name was an 11px gray eyebrow over
+     a 21px black heading, so the subheading outranked the title. Now the title
+     is the largest serif on the tab, in the ink, and the subheading sits under
+     it smaller and softer. `.eyebrow` itself is untouched: it is the same
+     small label on the other tabs, and only the Methodology section titles
+     are raised. */
+  .mth > h2.eyebrow { font-family: var(--font-serif); font-size: var(--t-2xl); font-weight: 700;
+                      line-height: var(--lh-tight); text-transform: none; letter-spacing: 0;
+                      color: var(--ink); margin: 0 0 var(--s-2); }
+  .mth-head { font-family: var(--font-serif); font-size: var(--t-l); font-weight: 400;
+              line-height: var(--lh-tight); color: var(--ink-soft); margin: 0 0 var(--s-5); }
   /* NO MEASURE, ON ROB'S RULING OF 2026-09-23 after seeing the deployed site
      on a wide screen: the Methodology prose runs the full width of its column,
      as Home and Questions already do. It carried a 68ch measure until then. */
@@ -6507,10 +6532,20 @@ document.addEventListener("click", ev => {
   /* The Methodology section nav. `href="#data"` so the address bar keeps the
      tab's own address (RULING 84) and a section link is never a hash the router
      has to resolve; the scroll is done here instead. */
+  /* 2026-10-23: the section lands BELOW the nav when the nav is stuck. It used
+     to rely on `scroll-margin-top: 56px` against a nav 78px tall, so the top
+     of every section sat under the nav; at the larger chips the nav is 105px.
+     The offset is now the nav's own height, measured when it is clicked. */
   const sec = ev.target.closest(".secnav a[data-sec]");
   if (sec) {
     const target = document.getElementById(sec.getAttribute("data-sec"));
-    if (target) { ev.preventDefault(); target.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
+    if (target) {
+      ev.preventDefault();
+      const nav = sec.closest(".secnav");
+      const over = nav && getComputedStyle(nav).position === "sticky" ? nav.getBoundingClientRect().height : 0;
+      window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - over - 16, behavior: "smooth" });
+      return;
+    }
   }
 
   const tab = ev.target.closest(".tab");
