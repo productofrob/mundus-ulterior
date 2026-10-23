@@ -1009,6 +1009,25 @@
   .horizon .hz-r4     { fill: var(--hz-ridge-4); }
   .horizon .hz-em-far  { fill: var(--hz-emblem-far); }
   .horizon .hz-em-near { fill: var(--hz-emblem-near); }
+  /* THE STANDARDS HAVE THREE PLACEMENTS, one shown at a time (2026-10-23).
+     The strip is cropped from the top and, below about 900px, from both
+     sides, so one position cannot suit every width:
+       1100px and up  the approved placement (.hz-em-desk, .hz-em-full)
+       760-1099px     the Han banner moves left (.hz-em-tab): at its full
+                      position the theme button sat on its flag
+       under 760px    a smaller pair on the nearer ridges (.hz-em-phone),
+                      below the subtitle and inside the narrow crop */
+  .horizon .hz-em-tab   { display: none; }
+  .horizon .hz-em-phone { display: none; }
+  @media (max-width: 1099px) {
+    .horizon .hz-em-full { display: none; }
+    .horizon .hz-em-tab  { display: inline; }
+  }
+  @media (max-width: 759px) {
+    .horizon .hz-em-desk  { display: none; }
+    .horizon .hz-em-tab   { display: none; }
+    .horizon .hz-em-phone { display: inline; }
+  }
   .horizon .hz-veil   { opacity: .6; }
   .horizon .hz-foot   { opacity: .73; }
 
@@ -1168,10 +1187,6 @@
     .brandbar { padding: var(--s-5) var(--s-5) 0; gap: var(--s-4); }
     .tabs { padding: var(--s-3) var(--s-5) 0; }
     .statline { padding: var(--s-3) var(--s-5) 0; }
-    /* The standards stay on the desktop. Here the strip is cropped to its
-       middle and the subtitle wraps across it, so they would be cut off or
-       run into the text. */
-    .horizon .hz-em { display: none; }
     main { padding: var(--s-5) var(--s-5) var(--s-8); }
     .brand h1 { font-size: var(--t-2xl); }
     .brand .sub { font-size: var(--t-m); }
@@ -1214,6 +1229,13 @@
     /* The chain becomes a column and the arrows turn to point down. */
     .chainfig { grid-template-columns: 1fr; }
     .chainfig .carrow { transform: rotate(90deg); }
+  }
+  /* THE SMALLEST PHONES. Under 360px the theme button leaves too little of
+     the brand row for the title at --t-2xl, so it broke onto two lines and
+     pushed the subtitle down onto the standards. It steps down to the size it
+     had on every phone before 2026-10-20 and stays on one line. */
+  @media (max-width: 359px) {
+    .brand h1 { font-size: var(--t-xl); }
   }
 
   /* ---------------------------------------------------------------- *
@@ -1321,7 +1343,7 @@
       <path class="hz-r1" d="M0 297.5 C 250 275, 420 252.5, 640 269.4 S 1000 241.3, 1240 260.9 S 1620 230, 1880 253.6 S 2300 280.6, 2520 258.1 S 2850 241.3, 3000 260.9 L 3000 500 L 0 500 Z"/>
       <rect y="269.4" width="3000" height="78.8" fill="url(#hz-mist)"/>
       <path class="hz-r2" d="M0 334.1 C 200 311.6, 380 300.3, 560 318.9 S 900 343.6, 1120 322.3 S 1500 288.5, 1760 313.3 S 2150 352.6, 2420 327.9 S 2800 299.8, 3000 322.3 L 3000 500 L 0 500 Z"/>
-      <g class="hz-em hz-em-far" transform="translate(1380 306.1) scale(0.84)">
+      <g class="hz-em-far hz-em-desk" transform="translate(1380 306.1) scale(0.84)">
         <rect x="-2.6" y="-104" width="5.2" height="104"/>
         <path d="M-22 -112 L22 -112 L27 -108 L22 -104 L-22 -104 L-27 -108 Z"/>
         <path d="M-6 -112 L6 -112 L5 -121 L-5 -121 Z"/>
@@ -1332,7 +1354,7 @@
       </g>
       <rect y="325.6" width="3000" height="73.1" fill="url(#hz-mist)"/>
       <path class="hz-r3" d="M0 379.1 C 260 360.5, 520 394.3, 760 376.3 S 1180 348.1, 1460 372.9 S 1900 408.9, 2200 386.4 S 2650 358.3, 3000 386.4 L 3000 500 L 0 500 Z"/>
-      <g class="hz-em hz-em-near" transform="translate(2560 371.6) scale(0.92)">
+      <g class="hz-em-near hz-em-full" transform="translate(2560 371.6) scale(0.92)">
         <rect x="-2.4" y="-212" width="4.8" height="212"/>
         <path d="M0 -230 L-5.5 -212 L5.5 -212 Z"/>
         <rect x="-3" y="-208" width="54" height="4.5" rx="1.5"/>
@@ -1341,8 +1363,35 @@
         <path d="M25 -147 C 34 -126, 51 -115, 71 -108 C 56 -121, 41 -131, 34 -147 Z"/>
         <path d="M40 -147 C 51 -128, 68 -119, 90 -114 C 73 -124, 58 -133, 49 -147 Z"/>
       </g>
+      <g class="hz-em-near hz-em-tab" transform="translate(2200 390.4) scale(0.92)">
+        <rect x="-2.4" y="-212" width="4.8" height="212"/>
+        <path d="M0 -230 L-5.5 -212 L5.5 -212 Z"/>
+        <rect x="-3" y="-208" width="54" height="4.5" rx="1.5"/>
+        <path d="M5 -204 L50 -204 C 55 -184, 46 -166, 52 -146 L 7 -146 C 12 -166, 2 -184, 5 -204 Z"/>
+        <path d="M10 -147 C 17 -128, 32 -117, 50 -108 C 37 -119, 24 -130, 19 -147 Z"/>
+        <path d="M25 -147 C 34 -126, 51 -115, 71 -108 C 56 -121, 41 -131, 34 -147 Z"/>
+        <path d="M40 -147 C 51 -128, 68 -119, 90 -114 C 73 -124, 58 -133, 49 -147 Z"/>
+      </g>
+      <g class="hz-em-near hz-em-phone" transform="translate(1500 380.4) scale(0.6)">
+        <rect x="-2.6" y="-104" width="5.2" height="104"/>
+        <path d="M-22 -112 L22 -112 L27 -108 L22 -104 L-22 -104 L-27 -108 Z"/>
+        <path d="M-6 -112 L6 -112 L5 -121 L-5 -121 Z"/>
+        <path d="M-7 -118 C -10 -128, -7 -139, 0 -143 C 7 -139, 10 -128, 7 -118 Z"/>
+        <path d="M1 -139 C 3 -146, 8 -150, 13 -150 C 16 -150, 18 -148, 19 -146 L 26 -144.5 L 19 -142.5 C 16 -140.5, 11 -140.5, 6 -136 Z"/>
+        <path d="M-4 -139 C -14 -143, -30 -147, -49 -156 C -45 -149, -44 -147, -40 -146 C -42 -142, -41 -140, -37 -139 C -38 -135, -36 -133, -32 -133 C -32 -129, -29 -127, -25 -128 C -20 -124, -12 -126, -6 -128 Z"/>
+        <path d="M4 -139 C 14 -143, 30 -147, 49 -156 C 45 -149, 44 -147, 40 -146 C 42 -142, 41 -140, 37 -139 C 38 -135, 36 -133, 32 -133 C 32 -129, 29 -127, 25 -128 C 20 -124, 12 -126, 6 -128 Z"/>
+      </g>
       <rect class="hz-veil" y="381.9" width="3000" height="67.5" fill="url(#hz-mist)"/>
       <path class="hz-r4" d="M0 438.1 C 300 420.1, 600 448.3, 900 431.4 S 1500 407.8, 1800 432.5 S 2400 457.3, 2700 438.1 S 2950 426.9, 3000 433.8 L 3000 500 L 0 500 Z"/>
+      <g class="hz-em-near hz-em-phone" transform="translate(1800 436.5) scale(0.55)">
+        <rect x="-2.4" y="-212" width="4.8" height="212"/>
+        <path d="M0 -230 L-5.5 -212 L5.5 -212 Z"/>
+        <rect x="-3" y="-208" width="54" height="4.5" rx="1.5"/>
+        <path d="M5 -204 L50 -204 C 55 -184, 46 -166, 52 -146 L 7 -146 C 12 -166, 2 -184, 5 -204 Z"/>
+        <path d="M10 -147 C 17 -128, 32 -117, 50 -108 C 37 -119, 24 -130, 19 -147 Z"/>
+        <path d="M25 -147 C 34 -126, 51 -115, 71 -108 C 56 -121, 41 -131, 34 -147 Z"/>
+        <path d="M40 -147 C 51 -128, 68 -119, 90 -114 C 73 -124, 58 -133, 49 -147 Z"/>
+      </g>
       <rect class="hz-foot" y="432.5" width="3000" height="67.5" fill="url(#hz-mist)"/>
     </svg>
     <div class="brandbar">
