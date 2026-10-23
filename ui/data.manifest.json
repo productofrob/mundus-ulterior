@@ -1,9 +1,9 @@
 {
   "_": "Generated beside ui/data.js by ui/build_ui_data.py. Never edited by hand, and never read as truth: check_ui.mjs re-derives every figure below from data.js itself and fails on disagreement. It exists so a change to a 9.5MB single-line file can be reviewed (debt row 7, FINDING 74).",
-  "generated": "2026-09-23T09:02:33+00:00",
+  "generated": "2026-10-23T13:38:43+00:00",
   "data_js": {
-    "bytes": 9784003,
-    "sha256": "4acef54c7b58134ae0919197359c87e2bb6573174299138b7073849027d4729e"
+    "bytes": 9819314,
+    "sha256": "bd24c61cf5fd5bfde5aa95a9a9a9c664310693135fded8f0c89784628dcb6dd3"
   },
   "corpus": {
     "records": 54,
@@ -41,7 +41,15 @@
       "Southeast Asia": 9,
       "Sub-Saharan Africa": 7
     },
-    "sha256": "224d0c787936108ec0fd055f9f25354c4b02a78f0a733d27706473c1e259facb"
+    "tiers": {
+      "catalogue_record": 16,
+      "pointer_only": 1,
+      "published_translation_only": 4,
+      "verbatim_machine_english": 4,
+      "verbatim_with_provenance": 29
+    },
+    "passages": 170,
+    "sha256": "26a91274dc5bd76df90b44967b7b8daed0e1ea91389ac1ae5d76b22b0d4b69da"
   },
   "runs": {
     "count": 685,

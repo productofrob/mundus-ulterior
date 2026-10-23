@@ -81,6 +81,16 @@ from ingest.loader import (                   # noqa: E402
     CORPUS_DIGEST_ALGORITHM,
 )
 from ingest import gazetteer as gz     # noqa: E402
+# The Methodology figures, 2026-10-23. `load_corpus` is taken under another name
+# because this file already has a `load_corpus` of its own, which reads the seed
+# records for display; the loader's is the one that cuts them into passages.
+from ingest.loader import load_corpus as cut_corpus_into_passages  # noqa: E402
+from ingest.fidelity import (                 # noqa: E402
+    check_declared_tiers, declared_script_disagreement, derive_record_tier,
+    script_mix,
+)
+
+TIERS_PATH = REPO / "data" / "corpus_tiers.json"
 
 # FINDING 10: this process's own stdout. On Windows `print` writes through a
 # stream whose encoding comes from the console code page, and through a PIPE or
@@ -153,6 +163,82 @@ def load_corpus() -> dict[str, dict]:
         }
         corpus[doc_id] = entry
     return corpus
+
+
+def attach_passages_and_tiers(corpus: dict[str, dict]) -> list[str]:
+    """Give every record its passages and its tier, for the Methodology figures.
+
+    Added 2026-10-23, when the Methodology tab gained figures that draw one
+    record's passages (§3) and the tier of every record (§2). Neither was in the
+    bundle: passages exist only in the database and in archived runs, and an
+    archived run records the passages AS THEY WERE CUT THEN - the Periplus §56
+    passage sits at 1301-2220 in one run and 1511-2430 in a later one. A figure
+    drawn from the archive would draw a record that no longer exists.
+
+    So the passages are cut here, by the loader that ingestion uses, from the
+    records on disk today. Each one carries what the figure says about it: its
+    positions, its declared language, the script its characters are in, and
+    whether the loader's own cross-check finds the two in agreement.
+
+    The tier is the DECLARED one, from data/corpus_tiers.json, and it is only
+    attached once `derive_record_tier` agrees with it - the check ingest.verify
+    makes (ruling 43). A figure that counted declarations nothing had checked
+    would be counting what a curator believed rather than what the records are.
+
+    Returns the problems found. An empty list means every record has both.
+    """
+    problems: list[str] = []
+    cut = cut_corpus_into_passages(CORPUS_DIR)
+
+    by_doc: dict[str, list[dict]] = {}
+    for c in cut.chunks:
+        field_text = (corpus.get(c.doc_id) or {}).get("fields", {}).get(c.source_field)
+        # The chunker's one promise, checked where it is relied on: the
+        # characters at the positions are the passage. A figure that prints the
+        # positions is claiming exactly this.
+        if field_text is None or field_text[c.char_start:c.char_end] != c.text:
+            problems.append(f"{c.chunk_id}: the record's characters at "
+                            f"{c.char_start}-{c.char_end} are not the passage")
+            continue
+        mix = script_mix(c.text)
+        # The dominant script by share; ties go to the name that sorts first so
+        # a rebuild cannot flip it.
+        script = (sorted(mix.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
+                  if mix else None)
+        by_doc.setdefault(c.doc_id, []).append({
+            "id": c.chunk_id,
+            "role": c.role,
+            "field": c.source_field,
+            "start": c.char_start,
+            "end": c.char_end,
+            "declared": c.declared_lang,
+            "script": script,
+            "script_agrees": (declared_script_disagreement(c.text, c.declared_lang) is None
+                              if c.declared_lang else None),
+            "eligible": c.eligible_for_retrieval,
+        })
+
+    declared = json.loads(TIERS_PATH.read_text(encoding="utf-8")).get("tiers") or {}
+    rows: dict[str, list[tuple]] = {}
+    for c in cut.chunks:
+        rows.setdefault(c.doc_id, []).append(
+            (c.role, c.text_fidelity, c.lang, c.eligible_for_retrieval))
+    derived = {
+        d.doc_id: derive_record_tier(d.source_type, rows.get(d.doc_id, []),
+                                     getattr(d, "translation_source", None))
+        for d in cut.documents
+    }
+    problems.extend(f"record tier: {p}" for p in check_declared_tiers(declared, derived))
+
+    for doc_id, entry in corpus.items():
+        entry["passages"] = by_doc.get(doc_id, [])
+        if not entry["passages"]:
+            problems.append(f"{doc_id}: the loader cut no passages from it")
+        if doc_id in declared:
+            entry["tier"] = declared[doc_id]
+        else:
+            problems.append(f"{doc_id}: no declared tier")
+    return problems
 
 
 def load_runs() -> list[dict]:
@@ -802,6 +888,11 @@ def build_manifest(bundle: dict, data_js: bytes, buckets: dict,
                                  for c in rec.get("language_code") or []}),
             "regions": dict(sorted(Counter(
                 rec.get("region") or "(none)" for rec in corpus.values()).items())),
+            # The Methodology figures, 2026-10-23: the declared tier of every
+            # record (§2) and the passages the loader cuts today (§3).
+            "tiers": dict(sorted(Counter(
+                rec.get("tier") or "(none)" for rec in corpus.values()).items())),
+            "passages": sum(len(rec.get("passages") or []) for rec in corpus.values()),
             "sha256": _digest(corpus),
         },
         "runs": {
@@ -963,6 +1054,17 @@ def main(argv: list[str] | None = None) -> int:
     corpus = load_corpus()
     runs = load_runs()
     print(f"{len(runs)} archived run(s), {len(corpus)} seed record(s)")
+
+    cut_problems = attach_passages_and_tiers(corpus)
+    if cut_problems:
+        print(f"\nFAILED: {len(cut_problems)} record(s) cannot give the Methodology "
+              f"figures their passages or their tier:")
+        for problem in cut_problems[:8]:
+            print(f"  x {problem}")
+        return 2
+    print(f"passages: {sum(len(e['passages']) for e in corpus.values())} cut by the "
+          f"loader; tiers: " + ", ".join(
+              f"{t} {n}" for t, n in sorted(Counter(e['tier'] for e in corpus.values()).items())))
 
     places = build_places(CORPUS_DIR, GAZETTEER_PATH)
     ps = places["stats"]

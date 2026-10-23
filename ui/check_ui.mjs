@@ -2119,6 +2119,103 @@ if (D.coastline && D.coastline.polygons) {
        + (problems.length ? ` — ${problems.join("; ")}` : ""));
 }
 
+/* ---- GUARD 64. THE METHODOLOGY FIGURES ARE DRAWN FROM THE DATA. ADDED
+   2026-10-23, the day six figures joined the tab on Rob's order.
+
+   A figure is a typed count with more ink on it. Each of these prints numbers
+   — a bar's length is a number too — and every one is computed by the
+   function that draws it. That is the claim; this is the separation. Each
+   figure is read back off the rendered tab, and each number is re-derived
+   here from the bundle WITHOUT calling the function that drew it.
+
+   FIVE CLAIMS:
+
+     1  all six figures are on the tab
+     2  §2: one row per tier, each count the number of records that declare it,
+        and the rows add up to the corpus — a record whose tier had no row
+        would otherwise drop out of the figure without a mark
+     3  §3: the segments are the example record's original-language passages,
+        in order, at the positions the bundle carries, and those positions hold
+        characters; the ruler's length is the field's
+     4  §6: the bars are the span audit, recounted from the spans themselves
+     5  §8: one point per comparable run in each series, with that run's
+        figures, and no point the series does not hold ---- */
+{
+  const problems = [];
+  const html = viewAbout();
+
+  for (const f of ["tiers", "passages", "withheld", "citations", "retrieval", "span"])
+    if (!html.includes(`data-mfig="${f}"`)) problems.push(`the ${f} figure is not on the tab`);
+
+  // 2. Tiers, counted from the records.
+  const n = Object.keys(D.corpus).length;
+  const want = {};
+  for (const rec of Object.values(D.corpus)) want[rec.tier] = (want[rec.tier] || 0) + 1;
+  const printed = {};
+  for (const m of html.matchAll(/data-tier="([^"]+)" data-tier-n="(\d+)"/g)) printed[m[1]] = Number(m[2]);
+  for (const [tier, count] of Object.entries(want))
+    if (printed[tier] !== count)
+      problems.push(`§2: ${tier} is declared by ${count} record(s) and the figure prints ${printed[tier]}`);
+  const rowSum = Object.values(printed).reduce((a, b) => a + b, 0);
+  if (rowSum !== n) problems.push(`§2: the rows add up to ${rowSum}, the corpus is ${n}`);
+  const fr = html.match(/data-mfig="tiers" data-fig-records="(\d+)"/);
+  if (!fr || Number(fr[1]) !== n) problems.push(`§2: the figure says ${fr && fr[1]} records, the corpus is ${n}`);
+
+  // 3. The passages of the example record.
+  const fp = html.match(/data-mfig="passages" data-fig-doc="([^"]+)" data-fig-chars="(\d+)"/);
+  if (!fp) problems.push("§3: the figure does not name its record");
+  else {
+    const rec = D.corpus[fp[1]] || {};
+    const text = (rec.fields || {}).original_text_excerpt || "";
+    if (Number(fp[2]) !== text.length)
+      problems.push(`§3: the ruler says ${fp[2]} characters, the field holds ${text.length}`);
+    const wantSegs = (rec.passages || []).filter(p => p.role === "original").map(p => `${p.start}-${p.end}`);
+    const gotSegs = [...html.matchAll(/data-fig-seg="(\d+-\d+)"/g)].map(m => m[1]);
+    if (!wantSegs.length) problems.push(`§3: the bundle carries no passages for ${fp[1]}`);
+    if (JSON.stringify(gotSegs) !== JSON.stringify(wantSegs))
+      problems.push(`§3: the figure draws ${gotSegs.join(", ")}, the bundle cuts ${wantSegs.join(", ")}`);
+    let prev = 0;
+    for (const s of wantSegs) {
+      const [a, b] = s.split("-").map(Number);
+      if (a < prev || b <= a || b > text.length || !text.slice(a, b).trim())
+        problems.push(`§3: the passage at ${s} is out of order, empty or past the end of the field`);
+      prev = b;
+    }
+  }
+
+  // 4. The span audit, recounted from the spans.
+  const spans = D.runs.flatMap(r => (r.grounding?.quote_spans || []).filter(s => s.resolution));
+  const states = {};
+  for (const s of spans) states[s.resolution.state] = (states[s.resolution.state] || 0) + 1;
+  const ft = html.match(/data-mfig="citations" data-fig-total="(\d+)"/);
+  if (!ft || Number(ft[1]) !== spans.length)
+    problems.push(`§6: the figure counts ${ft && ft[1]} quotations, the runs hold ${spans.length}`);
+  const drawn = {};
+  for (const m of html.matchAll(/data-fig-outcome="([^"]+)" data-fig-n="(\d+)"/g)) drawn[m[1]] = Number(m[2]);
+  for (const [st, count] of Object.entries(states))
+    if (drawn[st] !== count) problems.push(`§6: ${st} holds ${count} and the figure draws ${drawn[st]}`);
+  for (const st of Object.keys(drawn))
+    if (!(st in states)) problems.push(`§6: the figure draws ${st}, which no span is in`);
+
+  // 5. The retrieval series, point by point.
+  const series = (D.retrieval && D.retrieval.series) || [];
+  const pts = [...html.matchAll(/data-fig-run="([^"]+)" data-fig-series="(en|oth)" data-fig-found="(\d+)" data-fig-pairs="(\d+)"/g)];
+  if (pts.length !== series.length * 2)
+    problems.push(`§8: ${pts.length} points for ${series.length} runs in two series`);
+  for (const sr of series) for (const [key, half] of [["en", sr.english], ["oth", sr.other]]) {
+    const hit = pts.filter(m => m[1] === String(sr.timestamp) && m[2] === key);
+    if (hit.length !== 1) { problems.push(`§8: the run of ${sr.timestamp} has ${hit.length} ${key} point(s)`); continue; }
+    if (Number(hit[0][3]) !== half.found || Number(hit[0][4]) !== half.pairs)
+      problems.push(`§8: the run of ${sr.timestamp} draws ${key} ${hit[0][3]} of ${hit[0][4]}, `
+        + `the archive holds ${half.found} of ${half.pairs}`);
+  }
+
+  note(problems.length === 0,
+       `the six Methodology figures are drawn from the bundle (${n} tiered records, `
+       + `${spans.length} quotations, ${series.length} runs re-derived)`
+       + (problems.length ? ` — ${problems.join("; ")}` : ""));
+}
+
 /* ---- 2g. no count on this page is written down ----
  *
  * The page shipped `"All 24 records, by region"`, `"a corpus of 24 primary
@@ -2199,6 +2296,12 @@ if (D.coastline && D.coastline.polygons) {
     const tally = (xs, f) => { const t = {}; for (const x of xs) { const k = f(x); t[k] = (t[k]||0)+1; } return t; };
     const derived = {
       "corpus.records": [manifest.corpus?.records, Object.keys(D.corpus).length],
+      // 2026-10-23: the passages and tiers the Methodology figures draw.
+      "corpus.passages": [manifest.corpus?.passages,
+                          Object.values(D.corpus).reduce((k, r) => k + (r.passages || []).length, 0)],
+      "corpus.tiers": [JSON.stringify(manifest.corpus?.tiers),
+                       JSON.stringify(Object.fromEntries(Object.entries(
+                         tally(Object.values(D.corpus), r => r.tier || "(none)")).sort()))],
       "runs.count": [manifest.runs?.count, D.runs.length],
       "runs.with_corpus_version": [manifest.runs?.with_corpus_version,
                                     D.runs.filter(r => r.corpus_version).length],

@@ -335,7 +335,49 @@ def test_whitespace_only_is_a_category_and_not_a_fabrication() -> None:
            "tolerant branch rather than reported as a fabrication")
 
 
+def test_passages_and_tiers() -> None:
+    """2026-10-23. The Methodology figures draw one record's passages (§3) and
+    every record's tier (§2), and the build now carries both. Two ways for that
+    to go wrong quietly, each a GUARD below: positions that no longer hold the
+    passage they name, and a record with no declared tier."""
+    print("\nattach_passages_and_tiers: what the Methodology figures draw")
+
+    corpus = bud.load_corpus()
+    problems = bud.attach_passages_and_tiers(corpus)
+    expect(problems == [],
+           f"every record gets its passages and its tier ({len(corpus)} records)"
+           + (f" -- {problems[:2]}" if problems else ""))
+    example = corpus.get("southasia-02-periplus-muziris", {})
+    text = example.get("fields", {}).get("original_text_excerpt", "")
+    originals = [p for p in example.get("passages", []) if p["role"] == "original"]
+    expect(len(originals) > 1 and all(text[p["start"]:p["end"]].strip() for p in originals),
+           "the §3 example is cut into more than one passage, and each holds characters")
+
+    # A record whose text moved after it was cut: the figure would print
+    # positions that hold something else.
+    edited = bud.load_corpus()
+    field = edited["southasia-02-periplus-muziris"]["fields"]
+    field["original_text_excerpt"] = "X" + field["original_text_excerpt"]
+    expect(any("are not the passage" in p for p in bud.attach_passages_and_tiers(edited)),
+           "GUARD positions that no longer hold their passage are refused")
+
+    # A record nobody tiered: the §2 figure would drop it without a mark.
+    declared = json.loads(bud.TIERS_PATH.read_text(encoding="utf-8"))
+    declared["tiers"].pop("southasia-02-periplus-muziris")
+    saved = bud.TIERS_PATH
+    with tempfile.TemporaryDirectory() as tmp:
+        bud.TIERS_PATH = Path(tmp) / "corpus_tiers.json"
+        bud.TIERS_PATH.write_text(json.dumps(declared), encoding="utf-8")
+        try:
+            untiered = bud.attach_passages_and_tiers(bud.load_corpus())
+        finally:
+            bud.TIERS_PATH = saved
+    expect(any("southasia-02-periplus-muziris" in p and "tier" in p for p in untiered),
+           "GUARD a record with no declared tier is refused")
+
+
 def main() -> int:
+    test_passages_and_tiers()
     test_authored_coordinate()
     test_identified_without_citation()
     test_verify_placement_shape_aggregates()
