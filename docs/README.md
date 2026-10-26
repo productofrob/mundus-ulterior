@@ -300,4 +300,5 @@ From 2026-10-23: preparing this repository, including what was withdrawn from it
 - [`GITHUB_RELEASE_RULINGS.md`](GITHUB_RELEASE_RULINGS.md): RULINGS 101 and 102, and FINDING 126.
 - [`GITHUB_RELEASE_READINGS.md`](GITHUB_RELEASE_READINGS.md): Each of the 54 rights cells read again, for a repository rather than the site.
 - [`GITHUB_RELEASE_HISTORY_SCAN.md`](GITHUB_RELEASE_HISTORY_SCAN.md): What the history held of the withdrawn text, and the rewrite that removed it.
+- [`GITHUB_RELEASE_RESULT.md`](GITHUB_RELEASE_RESULT.md): The release, scored against its predictions.
 - [`COMMIT_MAP.md`](COMMIT_MAP.md): Old commit hashes to new.
