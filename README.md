@@ -5,6 +5,8 @@ the sources themselves.**
 
 Live site: **https://mundus-ulterior.pages.dev/**
 
+Case study: **https://www.productofrob.com/field-experiments#mundus-ulterior**
+
 Mundus Ulterior gathers 54 source records from seven regions beyond the Roman
 Empire: Sub-Saharan Africa, Arabia, Persia, South Asia, Southeast Asia, East
 Asia, and Scandinavia. Each record holds an inscription, a chronicle passage, a
