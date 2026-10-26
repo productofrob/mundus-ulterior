@@ -2,7 +2,7 @@
  * THE METHODOLOGY TAB'S LAYOUT INSTRUMENT.
  *
  * `node ui/measure_data.mjs <dir> [label]`, where <dir> holds an index.html
- * with data.js and banner/ beside it.
+ * with data.js beside it.
  *
  * WHY IT EXISTS AT ALL. `ui/measure_map.mjs` measures `#map`. Every layout
  * figure ever quoted about `#data` — including the 17,970 pixels that

@@ -2,7 +2,7 @@
  * THE MAP TAB'S LAYOUT INSTRUMENT.
  *
  * `node ui/measure_map.mjs <dir> [label]`, where <dir> holds an index.html
- * with data.js and banner/ beside it.
+ * with data.js beside it.
  *
  * WHERE THIS RUNS. It needs Playwright and a headless Chromium and is NOT part
  * of `node ui/check_ui.mjs`. The harness is what stops a redesign breaking what

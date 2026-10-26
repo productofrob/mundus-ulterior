@@ -382,8 +382,8 @@ catch (e) { note(false, `the home view threw: ${e.message}`); }
  * and romanised transliteration are not confused". The band and the map
  * thumbnail left the header on visitor feedback, so nothing those two read is
  * on the page. They are retired, not relaxed: there is no weaker claim left
- * for them to make. ui/build_banner.mjs and ui/banner/ are unreferenced now and
- * are left where they are for the repository cleanup.
+ * for them to make. ui/build_banner.mjs and ui/banner/ were unreferenced from
+ * then on, and were removed in the release commit of 2026-10-26.
  *
  * What replaced them is a landscape drawn inline in the header. It is
  * decoration, and the three ways it can go wrong are the three things this
@@ -882,8 +882,9 @@ if (D.coastline && D.coastline.polygons) {
    which labels fit by solving collisions in viewBox units, using metrics
    derived from `MAP_LABEL_PX` in the script. No expression can be shared
    between a CSS custom property and a script constant, so the size is declared
-   in both places — the BANNER pattern, where the specimen list is declared in
-   this file and in ui/build_banner.mjs and a check asserts they agree.
+   in both places — the pattern the retired masthead banner used, where the
+   specimen list was declared in this file and in ui/build_banner.mjs (removed
+   2026-10-26) and a check asserted they agreed.
 
    THE FAILURE THIS CATCHES IS SILENT AND LOOKS FINE IN THE SOURCE. Raise the
    CSS value alone and every label is drawn larger than the size the collider
