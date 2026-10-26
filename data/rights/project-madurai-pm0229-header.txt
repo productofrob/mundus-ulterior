@@ -1,0 +1,19 @@
+அகநானுறு
+akanAnURu
+In tamil script, unicode/utf-8 format
+
+
+Acknowledgements:
+
+Our Sincere thanks go to Dr. Thomas Malten and Colleagues of the Univ. of Koeln, Germany
+for providing us with the transliterated/romanized version of the etext and giving us permission
+to release the TSCII version as part of Project Madurai etext collections.
+TSCII proof reading by Mr. Sivakumar of Chennai and Mr. Raju Rajendran, USA
+Preparation of HTML and PDF versions: Dr. K. Kalyanasundaram, Lausanne, Switzerland.
+
+© Project Madurai, 1998-2006 .
+Project Madurai is an open, voluntary, worldwide initiative devoted to preparation
+of electronic texts of tamil literary works and to distribute them free on the Internet.
+Details of Project Madurai are available at the website
+http://www.projectmadurai.org/
+You are welcome to freely distribute this file, provided this header page is kept intact.
