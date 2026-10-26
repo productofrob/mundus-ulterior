@@ -990,6 +990,11 @@
      hides with `hidden` will hit the same wall, and this is where the note
      lives. */
   .statstrip[hidden] { display: none; }
+  /* THE LINK LINE, 2026-10-26, on Rob's order: the case study, the repository
+     and the contact address, one line under the stat strip on every tab. It
+     carries `.statstrip` for the strip's own type, size and phone behavior;
+     its links take the page's link color. */
+  .linkstrip { margin-top: var(--s-2); }
 
 
   /* ---------- the masthead landscape ----------
@@ -1636,7 +1641,8 @@
 </header>
 <!-- THE STAT LINE left the header with the masthead, 2026-10-19. Still on
      every tab: the first quiet line under the tabs. -->
-<div class="statline"><div class="statstrip" id="statstrip"></div></div>
+<div class="statline"><div class="statstrip" id="statstrip"></div>
+  <div class="statstrip linkstrip"><span><a href="https://www.productofrob.com/field-experiments#mundus-ulterior">Case Study writeup</a>. <a href="https://github.com/productofrob/mundus-ulterior">GitHub Repo</a>. <a href="mailto:rob@productofrob.com">Contact</a>.</span></div></div>
 
 <!--
   THE LOADING STATE, and it is deliberately not a spinner.
