@@ -57,6 +57,7 @@ Used across every phase.
 - [`PROGRESS.md`](PROGRESS.md): Begun as the Phase 1 progress tracker, and kept as the project's running log, with the standing lessons.
 - [`STARTUP.md`](STARTUP.md): What to start, in what order, at the beginning of every working session.
 - [`RULINGS.md`](RULINGS.md): The register of rulings: which document declares each one. It says plainly where it is incomplete.
+- [`PHASE1_README.md`](PHASE1_README.md): The repository's README as it stood in August, with a module-by-module map of the Python code. Replaced at the root by the release README; its counts are from that time.
 
 ## Phase 2 plan
 
