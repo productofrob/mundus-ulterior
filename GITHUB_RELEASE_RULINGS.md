@@ -1,6 +1,7 @@
 # GitHub release: rulings and findings. **RULING 101**, declared 2026-10-26,
-# before any rights target was opened or any file edited, and **FINDING 126**,
-# declared the same day by the redistribution pass.
+# before any rights target was opened or any file edited; **FINDING 126**,
+# declared the same day by the redistribution pass; and **RULING 102**, taken the
+# same day on the history scan.
 
 *On the numbers: `RULINGS.md` gives the next free ruling as 101 and the next free
 finding as 126, and nothing written since `DEPLOY_RESULT.md` has used either. The
@@ -130,4 +131,49 @@ for the license to be named with a link or URI, and Methodology §2 gives one.
             126's site half waits with them
 2026-10-26  All 54 redistribution readings confirmed, together with the Tamil
             title of the Madurai header, checked against the page
+2026-10-26  D1 confirmed against the history scan, as RULING 102
 ```
+
+---
+
+# RULING 102 — **A FULL COPY OF TEXT TAKEN FROM A RESTRICTED SOURCE LEAVES THE
+# PUBLIC HISTORY. A PHRASE OF THE ANCIENT TEXT STAYS.**
+
+Taken by Rob on 2026-10-26, on the history scan (`GITHUB_RELEASE_HISTORY_SCAN.md`),
+from three options, with the recommendation.
+
+PHI Greek Inscriptions' gate reads: *"I agree to use this website only for
+personal study and not to make copies except for my personal use."* RULING 98
+made that the rule for the portal. The scan found PHI's copies of the Silko and
+Adulis excerpts in 23 blobs of the history, one of them the current
+`DEPLOY_COLLATION.md`, and phrases of 3 to 7 words in five documents and one
+commit message.
+
+```
+REMOVED    every full copy of text a restricted source supplied: each version
+           of a record, of data.js, or of a document that carries the copied
+           excerpt whole. Each is replaced in place by a bracketed notice
+           saying what was withdrawn, under which rulings, and where the
+           record's text comes from now
+KEPT       a phrase of a few words, quoted in a document or a commit message,
+           whose letters any public-domain edition prints. That is the
+           ancient text, not the restricted source's copy of it. The
+           collation sheet's list of single-word differences is kept on the
+           same ground
+WHERE      in the public clone only, in the same git filter-repo pass as D2's
+           address mapping. The working repository is never rewritten
+```
+
+**Why not keep everything.** The scan measured PHI's text at six characters from
+OGIS's public-domain edition, so what would be republished is almost all
+public-domain text. It would still be copies made under terms that said not to
+make them, and RULING 98 exists to keep those terms.
+
+**Why not remove the phrases too.** That would edit the wording of five
+documents and a commit message, including a finding whose subject is the
+characters of one phrase, for words that are the inscription itself.
+
+**What it costs.** The public history between 2026-08-31 and 2026-09-23 cannot
+rebuild those records and bundles byte for byte. The working repository is kept,
+and still can. No archived answer changes, because none quoted the withdrawn
+text.
