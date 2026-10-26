@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: >-
+  If you use this work, please cite it as below. The source texts it holds
+  are not the project's own: cite each from its record, as DATA_RIGHTS.md
+  explains.
+title: "Mundus Ulterior"
+abstract: >-
+  A research portal on ancient Rome seen from beyond its frontiers, 27 BC to
+  1204 AD. It holds 54 source records from seven regions, in their original
+  languages beside published translations, and prepared questions whose
+  archived answers quote those sources and are re-checked against them. It
+  adds a map of the places the sources name, and a full account of the
+  method and of what did not work.
+type: software
+authors:
+  - family-names: Padilla
+    given-names: Rob
+repository-code: "https://github.com/productofrob/mundus-ulterior"
+url: "https://mundus-ulterior.pages.dev/"
+keywords:
+  - digital humanities
+  - ancient history
+  - Roman Empire
+  - cross-lingual retrieval
+  - retrieval-augmented generation
+  - citation
+  - provenance

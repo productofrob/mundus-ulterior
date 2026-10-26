@@ -39,3 +39,20 @@ translated, never placed on the map, never presented as evidence.
 Selection is restricted to objects whose date range falls entirely outside
 27 BC – 1204 AD, and to a department allowlist that `--probe` must confirm
 against departments actually observed in the live API before `--fetch` will run.
+
+RE-READ 2026-10-26, FOR THE PUBLIC REPOSITORY
+---------------------------------------------
+The note above asks for the page to be re-read, and its wording quoted, if this
+material is ever relied on outside the project. A public repository is that
+case. Read 2026-10-26 off https://www.clevelandart.org/open-access-api, in
+Chrome, during the GitHub release (docs/GITHUB_RELEASE_READINGS.md, section 4):
+
+    "To the extent possible under law, the Cleveland Museum of Art has waived
+    all copyright and related or neighboring rights to this dataset using
+    Creative Commons Zero."
+
+    "The Cleveland Museum of Art provides datasets of information on more than
+    64,000 artwork records in its Collection for unrestricted commercial and
+    noncommercial use."
+
+The attestation above stands, and the page's own wording now backs it.
